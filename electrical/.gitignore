@@ -1,0 +1,22 @@
+# CadSoft/Autodesk EAGLE backup and autosave files
+*.b#?
+*.s#?
+*.l#?
+*.brd.bak
+*.sch.bak
+*.lbr.bak
+*.brd~
+*.sch~
+*.lbr~
+*.lck
+
+# Temporary files created by EAGLE/CAM processing
+*.$$$
+
+# Per-user EAGLE project state
+eagle.epf
+
+# Operating-system clutter
+.DS_Store
+Thumbs.db
+Desktop.ini
