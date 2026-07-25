@@ -602,6 +602,38 @@ Source: je999f5.pdf</description>
 <smd name="4" x="1.255" y="-0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
 <smd name="5" x="1.255" y="0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
 </package>
+<package name="TO220-BUCK">
+<description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
+<pad name="1" x="-2.54" y="0" drill="1.016" shape="long" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1.016" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1.016" shape="long" rot="R90"/>
+<text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<wire x1="-5.7" y1="1.2" x2="5.7" y2="1.2" width="0.127" layer="21"/>
+<wire x1="5.7" y1="1.2" x2="5.7" y2="-7.3" width="0.127" layer="21"/>
+<wire x1="5.7" y1="-7.3" x2="-5.7" y2="-7.3" width="0.127" layer="21"/>
+<wire x1="-5.7" y1="-7.3" x2="-5.7" y2="1.2" width="0.127" layer="21"/>
+</package>
+<package name="FUSE_5MM">
+<wire x1="-3.2258" y1="-10.127" x2="-3.2258" y2="-4.1072" width="0.2032" layer="21"/>
+<wire x1="-3.2258" y1="-10.127" x2="3.2258" y2="-10.127" width="0.2032" layer="21"/>
+<wire x1="3.2258" y1="-10.127" x2="3.2258" y2="-4.031" width="0.2032" layer="21"/>
+<wire x1="3.2258" y1="-4.031" x2="-3.2258" y2="-4.031" width="0.2032" layer="21"/>
+<wire x1="3.2258" y1="10.127" x2="3.2258" y2="4.1072" width="0.2032" layer="21"/>
+<wire x1="3.2258" y1="10.127" x2="-3.2258" y2="10.127" width="0.2032" layer="21"/>
+<wire x1="-3.2258" y1="10.127" x2="-3.2258" y2="4.031" width="0.2032" layer="21"/>
+<wire x1="-3.2258" y1="4.031" x2="3.2258" y2="4.031" width="0.2032" layer="21"/>
+<wire x1="-2.921" y1="9.812" x2="-2.921" y2="-9.619" width="0.2032" layer="51"/>
+<wire x1="-2.921" y1="-9.619" x2="0.254" y2="-9.619" width="0.2032" layer="51"/>
+<wire x1="0.254" y1="-9.619" x2="2.794" y2="-9.619" width="0.2032" layer="51"/>
+<wire x1="2.794" y1="-9.619" x2="2.794" y2="9.177" width="0.2032" layer="51"/>
+<wire x1="2.794" y1="9.177" x2="2.794" y2="9.812" width="0.2032" layer="51"/>
+<wire x1="2.794" y1="9.812" x2="-2.921" y2="9.812" width="0.2032" layer="51"/>
+<pad name="1" x="0" y="-10" drill="2.54" diameter="3.556"/>
+<pad name="2" x="0" y="-4.158" drill="2.54" diameter="3.556"/>
+<pad name="4" x="0" y="10" drill="2.54" diameter="3.556" rot="R180"/>
+<pad name="3" x="0" y="4.158" drill="2.54" diameter="3.556" rot="R180"/>
+</package>
 </packages>
 </library>
 </libraries>
@@ -797,12 +829,12 @@ Source: je999f5.pdf</description>
 <element name="R1" library="hot-wand" package="0603-RES" value="100Ω" x="-15.2" y="-14.5"/>
 <element name="C2" library="hot-wand" package="0805" value="1uF" x="-18.2" y="-13.6"/>
 <element name="R2" library="hot-wand" package="0805" value="22Ω" x="-21.2" y="-14.2"/>
-<element name="L1" library="hot-wand" package="0207/7" value="22uH" x="-17.8" y="-19.3"/>
+<element name="L1" library="hot-wand" package="0207/7" value="22uH CECL" x="-17.8" y="-19.3"/>
 <element name="C3" library="hot-wand" package="0805" value="33nF" x="-24.2" y="-18.6"/>
-<element name="Q1" library="hot-wand" package="SOT23-3" value="" x="-27.3" y="-18.9"/>
+<element name="Q1" library="hot-wand" package="SOT23-3" value="BC846B" x="-27.3" y="-18.9"/>
 <element name="C4" library="hot-wand" package="0805" value="3n3" x="-30.3" y="-18.6"/>
 <element name="R3" library="hot-wand" package="0603-RES" value="4K7" x="-30.3" y="-21.9"/>
-<element name="R4" library="hot-wand" package="0603-RES" value="470Ω" x="-30.3" y="-24.9"/>
+<element name="R4" library="hot-wand" package="0603-RES" value="1K" x="-30.3" y="-24.9"/>
 <element name="R5" library="hot-wand" package="0603-RES" value="2K2" x="-30.3" y="-27.9"/>
 <element name="C5" library="hot-wand" package="0805" value="47pF 1000V" x="-33.3" y="-27.6"/>
 <element name="C6" library="hot-wand" package="0805" value="47pF 1000V" x="-36.3" y="-27.6"/>
@@ -868,16 +900,16 @@ Source: je999f5.pdf</description>
 <element name="R11" library="hot-wand" package="0603-RES" value="22K" x="-127.9" y="-177"/>
 <element name="R12" library="hot-wand" package="0603-RES" value="270K" x="-127.9" y="-180"/>
 <element name="C38" library="hot-wand" package="0805" value="100nF" x="-130.9" y="-179.7"/>
-<element name="L8" library="hot-wand" package="INDUCTOR-1206" value="33u" x="-128.5" y="-184.8"/>
-<element name="L9" library="hot-wand" package="INDUCTOR-1206" value="4u7" x="-128.5" y="-190"/>
+<element name="L8" library="hot-wand" package="INDUCTOR-1206" value="33u SL1016T" x="-128.5" y="-184.8"/>
+<element name="L9" library="hot-wand" package="INDUCTOR-1206" value="4u7 IHLP2525CZ" x="-128.5" y="-190"/>
 <element name="D9" library="hot-wand" package="SOD-323" value="STPS3L60S" x="-134" y="-191.1"/>
 <element name="R13" library="hot-wand" package="0603-RES" value="1K" x="-134" y="-194.4"/>
 <element name="C39" library="hot-wand" package="0805" value="3n3" x="-137" y="-194.1"/>
 <element name="C40" library="hot-wand" package="PANASONIC_D" value="100uF 50V" x="-134.5" y="-199.4"/>
-<element name="R14" library="hot-wand" package="0603-RES" value="22K" x="-137" y="-204.1"/>
+<element name="R14" library="hot-wand" package="0603-RES" value="2K2" x="-137" y="-204.1"/>
 <element name="R15" library="hot-wand" package="0603-RES" value="6K8" x="-137" y="-207.1"/>
 <element name="VR1" library="hot-wand" package="TRIM_POT" value="10K" x="-137.4" y="-212.4"/>
-<element name="C41" library="hot-wand" package="0805" value="15nF" x="-140" y="-214"/>
+<element name="C41" library="hot-wand" package="0805" value="15nF (DNP)" x="-140" y="-214"/>
 <element name="D10" library="hot-wand" package="SMA-DIODE" value="BZX55C22" x="-138.6" y="-218.2"/>
 <element name="R16" library="hot-wand" package="0603-RES" value="1K" x="-140" y="-221.1"/>
 <element name="C42" library="hot-wand" package="PANASONIC_D" value="100uF 50V" x="-137.5" y="-226.1"/>
@@ -904,6 +936,17 @@ Source: je999f5.pdf</description>
 <element name="R24" library="hot-wand" package="0603-RES" value="27K" x="-155.5" y="-257.5"/>
 <element name="C46" library="hot-wand" package="0805" value="100n" x="-155.5" y="-251.2"/>
 <element name="R25" library="hot-wand" package="0603-RES" value="100Ω" x="-155.5" y="-260.5"/>
+<element name="IC1" library="hot-wand" package="TO220-BUCK" value="12V R-78K12-2.0" x="-151.8" y="-267.3"/>
+<element name="IC2" library="hot-wand" package="TO220-BUCK" value="3V3 R-78K3.3" x="-151.8" y="-274.5"/>
+<element name="D11" library="hot-wand" package="SMA-DIODE" value="BZX55C22" x="-154.6" y="-284.1"/>
+<element name="R26" library="hot-wand" package="0603-RES" value="1K" x="-156" y="-287"/>
+<element name="C47" library="hot-wand" package="EIA3528" value="10uF" x="-161.4" y="-286.7"/>
+<element name="C48" library="hot-wand" package="EIA3528" value="10uF" x="-169.2" y="-286.7"/>
+<element name="C49" library="hot-wand" package="EIA3528" value="10uF" x="-177" y="-286.7"/>
+<element name="D12" library="hot-wand" package="SMA-DIODE" value="2A" x="-178" y="-290.9"/>
+<element name="D13" library="hot-wand" package="SMA-DIODE" value="" x="-178" y="-294.7"/>
+<element name="F1" library="hot-wand" package="FUSE_5MM" value="8A" x="-184.3" y="-283.8"/>
+<element name="R27" library="hot-wand" package="0603-RES" value="1K" x="-186.1" y="-297.6"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -980,6 +1023,11 @@ Source: je999f5.pdf</description>
 <contactref element="C45" pad="2"/>
 <contactref element="R23" pad="1"/>
 <contactref element="C46" pad="2"/>
+<contactref element="IC1" pad="2"/>
+<contactref element="IC2" pad="2"/>
+<contactref element="C47" pad="C"/>
+<contactref element="C48" pad="C"/>
+<contactref element="C49" pad="C"/>
 <wire x1="-88.1" y1="-132.75" x2="-84.36" y2="-144.7" width="0" layer="19" extent="1-1"/>
 <wire x1="-88.1" y1="-131.8" x2="-88.1" y2="-132.75" width="0" layer="19" extent="1-1"/>
 <wire x1="-91.35" y1="-125.8" x2="-88.1" y2="-131.8" width="0" layer="19" extent="1-1"/>
@@ -1038,6 +1086,11 @@ Source: je999f5.pdf</description>
 <wire x1="-154.6" y1="-247.8" x2="-153.35" y2="-245.1" width="0" layer="19" extent="1-1"/>
 <wire x1="-154.6" y1="-251.2" x2="-154.6" y2="-247.8" width="0" layer="19" extent="1-1"/>
 <wire x1="-156.35" y1="-254.5" x2="-154.6" y2="-251.2" width="0" layer="19" extent="1-1"/>
+<wire x1="-151.8" y1="-267.3" x2="-156.35" y2="-254.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-151.8" y1="-274.5" x2="-151.8" y2="-267.3" width="0" layer="19" extent="1-1"/>
+<wire x1="-163.05" y1="-286.7" x2="-151.8" y2="-274.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-170.85" y1="-286.7" x2="-163.05" y2="-286.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-178.65" y1="-286.7" x2="-170.85" y2="-286.7" width="0" layer="19" extent="1-1"/>
 <wire x1="24.13" y1="20.32" x2="-4.45" y2="-11.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="RF-OUT">
@@ -1094,12 +1147,20 @@ Source: je999f5.pdf</description>
 <contactref element="C4" pad="1"/>
 <contactref element="R3" pad="1"/>
 <contactref element="R4" pad="1"/>
+<contactref element="R27" pad="1"/>
+<wire x1="-31.15" y1="-24.9" x2="-186.95" y2="-297.6" width="0" layer="19" extent="1-1"/>
 <wire x1="-31.15" y1="-21.9" x2="-31.15" y2="-24.9" width="0" layer="19" extent="1-1"/>
 <wire x1="-31.2" y1="-18.6" x2="-31.15" y2="-21.9" width="0" layer="19" extent="1-1"/>
 <wire x1="-27.3" y1="-17.8" x2="-31.2" y2="-18.6" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="3.3V">
 <contactref element="R3" pad="2"/>
+<contactref element="C49" pad="A"/>
+<contactref element="D13" pad="A"/>
+<contactref element="IC2" pad="3"/>
+<wire x1="-175.35" y1="-286.7" x2="-180.15" y2="-294.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-149.26" y1="-274.5" x2="-175.35" y2="-286.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-29.45" y1="-21.9" x2="-149.26" y2="-274.5" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="R5" pad="1"/>
@@ -1111,6 +1172,8 @@ Source: je999f5.pdf</description>
 <contactref element="R4" pad="2"/>
 <contactref element="L1" pad="2"/>
 <contactref element="C3" pad="1"/>
+<contactref element="R27" pad="2"/>
+<wire x1="-29.45" y1="-27.9" x2="-185.25" y2="-297.6" width="0" layer="19" extent="1-1"/>
 <wire x1="-29.45" y1="-24.9" x2="-29.45" y2="-27.9" width="0" layer="19" extent="1-1"/>
 <wire x1="-25.1" y1="-18.6" x2="-29.45" y2="-24.9" width="0" layer="19" extent="1-1"/>
 <wire x1="-13.99" y1="-19.3" x2="-25.1" y2="-18.6" width="0" layer="19" extent="1-1"/>
@@ -1262,9 +1325,13 @@ Source: je999f5.pdf</description>
 <contactref element="U1" pad="1"/>
 <contactref element="C33" pad="2"/>
 <contactref element="C34" pad="2"/>
+<contactref element="C48" pad="A"/>
+<contactref element="D12" pad="C"/>
 <wire x1="-104.7" y1="-164" x2="-82.6" y2="-158.7" width="0" layer="19" extent="1-1"/>
 <wire x1="-107.7" y1="-164" x2="-104.7" y2="-164" width="0" layer="19" extent="1-1"/>
 <wire x1="-90.5" y1="-130.85" x2="-82.6" y2="-158.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-167.55" y1="-286.7" x2="-107.7" y2="-164" width="0" layer="19" extent="1-1"/>
+<wire x1="-175.85" y1="-290.9" x2="-167.55" y2="-286.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$17">
 <contactref element="C30" pad="2"/>
@@ -1281,15 +1348,23 @@ Source: je999f5.pdf</description>
 <wire x1="-154.65" y1="-260.5" x2="-107.75" y2="-167.3" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="DC-IN">
-<contactref element="JP1" pad="2"/>
 <contactref element="U2" pad="2"/>
 <contactref element="C35" pad="A"/>
 <contactref element="C36" pad="+"/>
 <contactref element="R24" pad="2"/>
+<contactref element="IC2" pad="1"/>
+<contactref element="IC1" pad="1"/>
+<contactref element="C47" pad="A"/>
+<contactref element="D13" pad="C"/>
+<contactref element="F1" pad="3"/>
+<wire x1="-184.3" y1="-279.642" x2="-175.85" y2="-294.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-159.75" y1="-286.7" x2="-175.85" y2="-294.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-154.34" y1="-274.5" x2="-159.75" y2="-286.7" width="0" layer="19" extent="1-1"/>
+<wire x1="-154.34" y1="-267.3" x2="-154.34" y2="-274.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-154.65" y1="-257.5" x2="-154.34" y2="-267.3" width="0" layer="19" extent="1-1"/>
 <wire x1="-120" y1="-172.3" x2="-154.65" y2="-257.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-120.85" y1="-167" x2="-120" y2="-172.3" width="0" layer="19" extent="1-1"/>
 <wire x1="-117.1" y1="-163.565" x2="-120.85" y2="-167" width="0" layer="19" extent="1-1"/>
-<wire x1="29.21" y1="20.32" x2="-117.1" y2="-163.565" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$19">
 <contactref element="U2" pad="6"/>
@@ -1326,8 +1401,8 @@ Source: je999f5.pdf</description>
 <contactref element="C40" pad="+"/>
 <contactref element="R15" pad="2"/>
 <contactref element="C41" pad="2"/>
-<contactref element="D10" pad="A"/>
-<wire x1="-139.1" y1="-214" x2="-140.75" y2="-218.2" width="0" layer="19" extent="1-1"/>
+<contactref element="D10" pad="C"/>
+<wire x1="-136.45" y1="-218.2" x2="-139.1" y2="-214" width="0" layer="19" extent="1-1"/>
 <wire x1="-136.15" y1="-207.1" x2="-139.1" y2="-214" width="0" layer="19" extent="1-1"/>
 <wire x1="-132.1" y1="-199.4" x2="-136.15" y2="-207.1" width="0" layer="19" extent="1-1"/>
 <wire x1="-131.04" y1="-190" x2="-132.1" y2="-199.4" width="0" layer="19" extent="1-1"/>
@@ -1342,6 +1417,8 @@ Source: je999f5.pdf</description>
 <contactref element="C41" pad="1"/>
 <contactref element="R16" pad="1"/>
 <contactref element="VR1" pad="3"/>
+<contactref element="D11" pad="C"/>
+<wire x1="-140.85" y1="-221.1" x2="-152.45" y2="-284.1" width="0" layer="19" extent="1-1"/>
 <wire x1="-137.4" y1="-214.94" x2="-140.85" y2="-221.1" width="0" layer="19" extent="1-1"/>
 <wire x1="-140.9" y1="-214" x2="-137.4" y2="-214.94" width="0" layer="19" extent="1-1"/>
 <wire x1="-132.32" y1="-212.4" x2="-137.4" y2="-214.94" width="0" layer="19" extent="1-1"/>
@@ -1355,12 +1432,7 @@ Source: je999f5.pdf</description>
 <contactref element="VR1" pad="2"/>
 <wire x1="-137.85" y1="-207.1" x2="-137.4" y2="-209.86" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$27">
-<contactref element="R16" pad="2"/>
-<contactref element="D10" pad="C"/>
-<wire x1="-136.45" y1="-218.2" x2="-139.15" y2="-221.1" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="CURR-SENS-IN-POS">
+<signal name="CURR-SENS-POSI">
 <contactref element="L9" pad="P$2"/>
 <contactref element="C42" pad="+"/>
 <contactref element="R17" pad="1"/>
@@ -1400,6 +1472,29 @@ Source: je999f5.pdf</description>
 </signal>
 <signal name="MCU-GATE">
 <contactref element="R25" pad="1"/>
+</signal>
+<signal name="N$28">
+<contactref element="R26" pad="2"/>
+<contactref element="D11" pad="A"/>
+<wire x1="-156.75" y1="-284.1" x2="-155.15" y2="-287" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="PWR-ATTENU">
+<contactref element="R26" pad="1"/>
+</signal>
+<signal name="N$26">
+<contactref element="IC1" pad="3"/>
+<contactref element="D12" pad="A"/>
+<wire x1="-149.26" y1="-267.3" x2="-180.15" y2="-290.9" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$29">
+<contactref element="F1" pad="1"/>
+<contactref element="JP1" pad="2"/>
+<wire x1="29.21" y1="20.32" x2="-184.3" y2="-293.8" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$27">
+<contactref element="R16" pad="2"/>
+<contactref element="D10" pad="A"/>
+<wire x1="-140.75" y1="-218.2" x2="-139.15" y2="-221.1" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
