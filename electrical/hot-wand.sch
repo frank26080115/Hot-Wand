@@ -7800,7 +7800,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <part name="JP2" library="hot-wand" deviceset="M02" device="PTH4"/>
 <part name="GND9" library="hot-wand" deviceset="GND" device=""/>
 <part name="T1" library="hot-wand" deviceset="XFORMER-1:14:14" device=""/>
-<part name="C11" library="hot-wand" deviceset="CAP" device="0805" value="10pF 500V"/>
+<part name="C33" library="hot-wand" deviceset="CAP" device="0805" value="10pF 500V"/>
 <part name="D8" library="hot-wand" deviceset="DIODE" device="SOD" value="4148"/>
 <part name="D5" library="hot-wand" deviceset="DIODE" device="SOD" value="4148"/>
 <part name="D6" library="hot-wand" deviceset="DIODE" device="SOD" value="4148"/>
@@ -7848,8 +7848,8 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <part name="L4" library="hot-wand" deviceset="INDUCTOR" device="-T130-6" value="180nH"/>
 <part name="C9" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
 <part name="C10" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
+<part name="C11" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
 <part name="C12" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
-<part name="C33" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
 <part name="D4" library="hot-wand" deviceset="DIODE" device="SOD" value="ES1J"/>
 <part name="D7" library="hot-wand" deviceset="TVS" device="" value="1,5KE150CA"/>
 <part name="GND15" library="hot-wand" deviceset="GND" device=""/>
@@ -8025,7 +8025,7 @@ Crss 26pF</text>
 <instance part="JP2" gate="G$1" x="195.58" y="-38.1" rot="MR0"/>
 <instance part="GND9" gate="1" x="185.42" y="-43.18"/>
 <instance part="T1" gate="G$1" x="132.08" y="-43.18"/>
-<instance part="C11" gate="G$1" x="160.02" y="-43.18"/>
+<instance part="C33" gate="G$1" x="160.02" y="-43.18"/>
 <instance part="D8" gate="G$1" x="129.54" y="-76.2" smashed="yes" rot="R90">
 <attribute name="NAME" x="127.7874" y="-77.47" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="131.2926" y="-72.644" size="1.778" layer="96" rot="R270"/>
@@ -8166,11 +8166,11 @@ Crss 26pF</text>
 <attribute name="NAME" x="-90.424" y="-41.021" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-82.804" y="-38.481" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="C12" gate="G$1" x="-93.98" y="-50.8" smashed="yes" rot="R90">
+<instance part="C11" gate="G$1" x="-93.98" y="-50.8" smashed="yes" rot="R90">
 <attribute name="NAME" x="-98.044" y="-48.641" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-90.424" y="-46.101" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="C33" gate="G$1" x="-86.36" y="-58.42" smashed="yes" rot="R90">
+<instance part="C12" gate="G$1" x="-86.36" y="-58.42" smashed="yes" rot="R90">
 <attribute name="NAME" x="-86.36" y="-60.833" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-82.804" y="-53.721" size="1.778" layer="96" rot="R180"/>
 </instance>
@@ -8692,7 +8692,7 @@ Crss 26pF</text>
 <pinref part="T1" gate="G$1" pin="P2"/>
 <pinref part="JP2" gate="G$1" pin="2"/>
 <wire x1="142.24" y1="-35.56" x2="160.02" y2="-35.56" width="0.1524" layer="91"/>
-<pinref part="C11" gate="G$1" pin="1"/>
+<pinref part="C33" gate="G$1" pin="1"/>
 <wire x1="160.02" y1="-35.56" x2="165.1" y2="-35.56" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="-35.56" x2="187.96" y2="-35.56" width="0.1524" layer="91"/>
 <wire x1="160.02" y1="-38.1" x2="160.02" y2="-35.56" width="0.1524" layer="91"/>
@@ -8715,7 +8715,7 @@ Crss 26pF</text>
 <wire x1="132.08" y1="-50.8" x2="134.62" y2="-50.8" width="0.1524" layer="91"/>
 <pinref part="T1" gate="G$1" pin="3"/>
 <wire x1="134.62" y1="-50.8" x2="134.62" y2="-45.72" width="0.1524" layer="91"/>
-<pinref part="C11" gate="G$1" pin="2"/>
+<pinref part="C33" gate="G$1" pin="2"/>
 <wire x1="160.02" y1="-45.72" x2="160.02" y2="-50.8" width="0.1524" layer="91"/>
 <wire x1="160.02" y1="-50.8" x2="142.748" y2="-50.8" width="0.1524" layer="91"/>
 <junction x="134.62" y="-50.8"/>
@@ -8953,7 +8953,7 @@ Crss 26pF</text>
 </net>
 <net name="N$11" class="0">
 <segment>
-<pinref part="C33" gate="G$1" pin="2"/>
+<pinref part="C12" gate="G$1" pin="2"/>
 <wire x1="-83.82" y1="-58.42" x2="-81.28" y2="-58.42" width="0.1524" layer="91"/>
 <wire x1="-81.28" y1="-58.42" x2="-81.28" y2="-50.8" width="0.1524" layer="91"/>
 <pinref part="L4" gate="G$1" pin="1"/>
@@ -8964,7 +8964,7 @@ Crss 26pF</text>
 <wire x1="-91.44" y1="-35.56" x2="-81.28" y2="-35.56" width="0.1524" layer="91"/>
 <pinref part="C10" gate="G$1" pin="2"/>
 <wire x1="-83.82" y1="-43.18" x2="-81.28" y2="-43.18" width="0.1524" layer="91"/>
-<pinref part="C12" gate="G$1" pin="2"/>
+<pinref part="C11" gate="G$1" pin="2"/>
 <wire x1="-91.44" y1="-50.8" x2="-81.28" y2="-50.8" width="0.1524" layer="91"/>
 <junction x="-81.28" y="-43.18"/>
 <junction x="-81.28" y="-35.56"/>
@@ -8978,10 +8978,10 @@ Crss 26pF</text>
 <pinref part="C10" gate="G$1" pin="1"/>
 <wire x1="-91.44" y1="-43.18" x2="-111.76" y2="-43.18" width="0.1524" layer="91"/>
 <wire x1="-111.76" y1="-43.18" x2="-111.76" y2="-35.56" width="0.1524" layer="91"/>
-<pinref part="C12" gate="G$1" pin="1"/>
+<pinref part="C11" gate="G$1" pin="1"/>
 <wire x1="-99.06" y1="-50.8" x2="-111.76" y2="-50.8" width="0.1524" layer="91"/>
 <wire x1="-111.76" y1="-50.8" x2="-111.76" y2="-43.18" width="0.1524" layer="91"/>
-<pinref part="C33" gate="G$1" pin="1"/>
+<pinref part="C12" gate="G$1" pin="1"/>
 <wire x1="-91.44" y1="-58.42" x2="-93.98" y2="-58.42" width="0.1524" layer="91"/>
 <wire x1="-93.98" y1="-58.42" x2="-111.76" y2="-58.42" width="0.1524" layer="91"/>
 <wire x1="-111.76" y1="-58.42" x2="-111.76" y2="-50.8" width="0.1524" layer="91"/>
