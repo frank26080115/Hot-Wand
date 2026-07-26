@@ -325,18 +325,6 @@ Source: TOP MAGNETICS CORPORATION .. tfi.pdf</description>
 <text x="-18" y="7" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
 <text x="-18" y="8" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
-<package name="C1702-05">
-<description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
-diameter 3.5 mm, vertical, grid 5.08 mm</description>
-<wire x1="2.54" y1="0" x2="0.762" y2="0" width="1.0668" layer="51"/>
-<wire x1="-2.54" y1="0" x2="-0.889" y2="0" width="1.0668" layer="51"/>
-<circle x="-2.54" y="0" radius="1.778" width="0.1524" layer="21"/>
-<pad name="C" x="-2.54" y="0" drill="1.397" shape="octagon"/>
-<pad name="A" x="2.54" y="0" drill="1.397" shape="octagon"/>
-<text x="-4.318" y="2.032" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-4.318" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-<rectangle x1="-0.7366" y1="-0.5334" x2="0.635" y2="0.5334" layer="21"/>
-</package>
 <package name="SMA-DIODE">
 <description>&lt;B&gt;Diode&lt;/B&gt;&lt;p&gt;
 Basic SMA packaged diode. Good for reverse polarization protection. Common part #: MBRA140</description>
@@ -371,18 +359,21 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 <rectangle x1="-5.08" y1="2.032" x2="5.08" y2="3.048" layer="21"/>
 </package>
-<package name="0411V">
-<description>&lt;b&gt;RESISTOR&lt;/b&gt;&lt;p&gt;
-type 0411, grid 3.81 mm</description>
-<wire x1="1.27" y1="0" x2="0.3048" y2="0" width="0.762" layer="51"/>
-<wire x1="-1.5748" y1="0" x2="-2.54" y2="0" width="0.762" layer="51"/>
-<circle x="-2.54" y="0" radius="2.032" width="0.1524" layer="21"/>
-<circle x="-2.54" y="0" radius="1.016" width="0.1524" layer="51"/>
-<pad name="1" x="-2.54" y="0" drill="0.9144" shape="octagon"/>
-<pad name="2" x="1.27" y="0" drill="0.9144" shape="octagon"/>
-<text x="-0.508" y="1.143" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-0.5334" y="-2.413" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-<rectangle x1="-1.4732" y1="-0.381" x2="0.2032" y2="0.381" layer="21"/>
+<package name="R2512">
+<description>&lt;b&gt;RESISTOR&lt;/b&gt;</description>
+<wire x1="-2.362" y1="1.473" x2="2.387" y2="1.473" width="0.1524" layer="51"/>
+<wire x1="-2.362" y1="-1.473" x2="2.387" y2="-1.473" width="0.1524" layer="51"/>
+<wire x1="-3.973" y1="1.983" x2="3.973" y2="1.983" width="0.0508" layer="39"/>
+<wire x1="3.973" y1="1.983" x2="3.973" y2="-1.983" width="0.0508" layer="39"/>
+<wire x1="3.973" y1="-1.983" x2="-3.973" y2="-1.983" width="0.0508" layer="39"/>
+<wire x1="-3.973" y1="-1.983" x2="-3.973" y2="1.983" width="0.0508" layer="39"/>
+<smd name="1" x="-2.8" y="0" dx="1.8" dy="3.2" layer="1"/>
+<smd name="2" x="2.8" y="0" dx="1.8" dy="3.2" layer="1"/>
+<text x="-2.54" y="1.905" size="1.27" layer="25">&gt;NAME</text>
+<text x="-2.54" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-3.2004" y1="-1.5494" x2="-2.3505" y2="1.5507" layer="51"/>
+<rectangle x1="2.3622" y1="-1.5494" x2="3.2121" y2="1.5507" layer="51"/>
+<rectangle x1="-0.5001" y1="-1" x2="0.5001" y2="1" layer="35"/>
 </package>
 <package name="SOT95P280X145-6N-7-V">
 <description>Original name &lt;b&gt;SOT95P280X145-6N-7-V&lt;/b&gt;&lt;p&gt;
@@ -1298,13 +1289,13 @@ Max Component Height - 1.45mm</description>
 <element name="C11" library="hot-wand" package="0805" value="100nF" x="85.3" y="58.9" rot="MR270"/>
 <element name="C12" library="hot-wand" package="0805" value="100nF" x="83.3" y="58.9" rot="MR270"/>
 <element name="D4" library="hot-wand" package="SMA-DIODE" value="ES1J" x="88" y="62" rot="MR180"/>
-<element name="D7" library="hot-wand" package="C1702-05" value="1,5KE150CA" x="94" y="66" rot="R90"/>
+<element name="D7" library="hot-wand" package="SMC" value="SM15T150CA" x="94.5" y="66" rot="MR90"/>
 <element name="L3" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="69" y="47" rot="R270"/>
 <element name="Q1" library="hot-wand" package="TO220V" value="STP19NF20" x="86" y="66"/>
 <element name="D11" library="hot-wand" package="SOD-323" value="STPS0540Z" x="80" y="67" rot="MR90"/>
-<element name="R13" library="hot-wand" package="0411V" value="DNP" x="73" y="66" rot="R270"/>
-<element name="R12" library="hot-wand" package="0411V" value="150Ω 2W" x="77" y="66" rot="R270"/>
-<element name="D10" library="hot-wand" package="SMA-DIODE" value="SMBJ15CA" x="70" y="67" rot="MR270"/>
+<element name="R13" library="hot-wand" package="R2512" value="DNP" x="72" y="66" rot="MR270"/>
+<element name="R12" library="hot-wand" package="R2512" value="150Ω 2W" x="77" y="66" rot="MR270"/>
+<element name="D10" library="hot-wand" package="SMA-DIODE" value="SMBJ15CA" x="68" y="67" rot="MR270"/>
 <element name="U2" library="hot-wand" package="SOT95P280X145-6N-7-V" value="" x="52.4" y="66.8" rot="MR0"/>
 <element name="R15" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="67.2" rot="MR180"/>
 <element name="R17" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="65.2" rot="MR180"/>
@@ -1710,7 +1701,7 @@ Max Component Height - 1.45mm</description>
 <signal name="N$7">
 <contactref element="D4" pad="C"/>
 <contactref element="D7" pad="C"/>
-<wire x1="90.15" y1="62" x2="94" y2="63.46" width="0" layer="19" extent="16-16"/>
+<wire x1="90.15" y1="62" x2="94.5" y2="62.3" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="+24V">
 <contactref element="L3" pad="2"/>
@@ -1733,10 +1724,10 @@ Max Component Height - 1.45mm</description>
 <contactref element="D11" pad="1"/>
 <contactref element="L8" pad="2"/>
 <wire x1="80" y1="65.85" x2="83.46" y2="66" width="0" layer="19" extent="16-16"/>
-<wire x1="77" y1="64.73" x2="80" y2="65.85" width="0" layer="19" extent="16-16"/>
-<wire x1="73" y1="64.73" x2="77" y2="64.73" width="0" layer="19" extent="1-1"/>
-<wire x1="70" y1="64.85" x2="73" y2="64.73" width="0" layer="19" extent="16-16"/>
-<wire x1="66.5" y1="60" x2="70" y2="64.85" width="0" layer="19" extent="16-16"/>
+<wire x1="77" y1="63.2" x2="80" y2="65.85" width="0" layer="19" extent="16-16"/>
+<wire x1="72" y1="63.2" x2="77" y2="63.2" width="0" layer="19" extent="16-16"/>
+<wire x1="68" y1="64.85" x2="72" y2="63.2" width="0" layer="19" extent="16-16"/>
+<wire x1="66.5" y1="60" x2="68" y2="64.85" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="N$14">
 <contactref element="U2" pad="2"/>

@@ -18614,15 +18614,15 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <part name="C11" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
 <part name="C12" library="hot-wand" deviceset="CAP" device="0805" value="100nF"/>
 <part name="D4" library="hot-wand" deviceset="DIODE" device="SMA" value="ES1J"/>
-<part name="D7" library="hot-wand" deviceset="TVS" device="C1702-05" value="1,5KE150CA"/>
+<part name="D7" library="hot-wand" deviceset="TVS" device="SMC" value="SM15T150CA"/>
 <part name="GND15" library="hot-wand" deviceset="GND" device=""/>
 <part name="L3" library="hot-wand" deviceset="INDUCTOR" device="-K16X8X6" value="9uH"/>
 <part name="P+2" library="hot-wand" deviceset="+24V" device=""/>
 <part name="Q1" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="STP19NF20"/>
 <part name="GND16" library="hot-wand" deviceset="GND" device=""/>
 <part name="D11" library="hot-wand" deviceset="DIODE-ZENER" device="-BZT52" value="STPS0540Z"/>
-<part name="R13" library="hot-wand" deviceset="R-US_" device="0411/3V" value="DNP"/>
-<part name="R12" library="hot-wand" deviceset="R-US_" device="0411/3V" value="150Ω 2W"/>
+<part name="R13" library="hot-wand" deviceset="R-US_" device="R2512" value="DNP"/>
+<part name="R12" library="hot-wand" deviceset="R-US_" device="R2512" value="150Ω 2W"/>
 <part name="D10" library="hot-wand" deviceset="TVS" device="" value="SMBJ15CA"/>
 <part name="U2" library="hot-wand" deviceset="1EDN8511B" device=""/>
 <part name="R15" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
@@ -18810,6 +18810,7 @@ Crss 26pF</text>
 <text x="-13.97" y="-577.088" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V</text>
 <text x="-111.76" y="-449.58" size="5.08" layer="97">XT-30 DC Input</text>
 <text x="-144.78" y="-546.1" size="5.08" layer="97">USB-PD Input</text>
+<text x="-138.43" y="-89.916" size="1.016" layer="96" rot="R180" align="bottom-right">CRGP2512F150R</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="0" y="0"/>
