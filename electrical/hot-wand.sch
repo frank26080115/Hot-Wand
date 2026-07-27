@@ -9185,6 +9185,50 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <wire x1="5.5" y1="1.5" x2="5.5" y2="-1" width="0.127" layer="21"/>
 <wire x1="-5.5" y1="1.5" x2="-5.5" y2="-1" width="0.127" layer="21"/>
 </package>
+<package name="SOP65P640X120-20N">
+<wire x1="-2.25" y1="3.3" x2="2.25" y2="3.3" width="0.127" layer="51"/>
+<wire x1="2.25" y1="3.3" x2="2.25" y2="-3.3" width="0.127" layer="51"/>
+<wire x1="2.25" y1="-3.3" x2="-2.25" y2="-3.3" width="0.127" layer="51"/>
+<wire x1="-2.25" y1="-3.3" x2="-2.25" y2="3.3" width="0.127" layer="51"/>
+<wire x1="2.25" y1="3.3" x2="-2.25" y2="3.3" width="0.127" layer="21"/>
+<wire x1="-2.25" y1="-3.3" x2="2.25" y2="-3.3" width="0.127" layer="21"/>
+<circle x="-4.2" y="3" radius="0.1" width="0.2" layer="21"/>
+<circle x="-4.2" y="3" radius="0.1" width="0.2" layer="51"/>
+<wire x1="-3.91" y1="3.38" x2="-2.5" y2="3.38" width="0.05" layer="39"/>
+<wire x1="-2.5" y1="3.38" x2="-2.5" y2="3.55" width="0.05" layer="39"/>
+<wire x1="-2.5" y1="3.55" x2="2.5" y2="3.55" width="0.05" layer="39"/>
+<wire x1="2.5" y1="3.55" x2="2.5" y2="3.38" width="0.05" layer="39"/>
+<wire x1="2.5" y1="3.38" x2="3.91" y2="3.38" width="0.05" layer="39"/>
+<wire x1="3.91" y1="3.38" x2="3.91" y2="-3.38" width="0.05" layer="39"/>
+<wire x1="3.91" y1="-3.38" x2="2.5" y2="-3.38" width="0.05" layer="39"/>
+<wire x1="2.5" y1="-3.38" x2="2.5" y2="-3.55" width="0.05" layer="39"/>
+<wire x1="2.5" y1="-3.55" x2="-2.5" y2="-3.55" width="0.05" layer="39"/>
+<wire x1="-2.5" y1="-3.55" x2="-2.5" y2="-3.38" width="0.05" layer="39"/>
+<wire x1="-2.5" y1="-3.38" x2="-3.91" y2="-3.38" width="0.05" layer="39"/>
+<wire x1="-3.91" y1="-3.38" x2="-3.91" y2="3.38" width="0.05" layer="39"/>
+<text x="-3.30588125" y="3.706590625" size="0.814246875" layer="25">&gt;NAME</text>
+<text x="-3.30273125" y="-4.50373125" size="0.813475" layer="27">&gt;VALUE</text>
+<smd name="1" x="-2.88" y="2.925" dx="1.56" dy="0.41" layer="1"/>
+<smd name="2" x="-2.88" y="2.275" dx="1.56" dy="0.41" layer="1"/>
+<smd name="3" x="-2.88" y="1.625" dx="1.56" dy="0.41" layer="1"/>
+<smd name="4" x="-2.88" y="0.975" dx="1.56" dy="0.41" layer="1"/>
+<smd name="5" x="-2.88" y="0.325" dx="1.56" dy="0.41" layer="1"/>
+<smd name="6" x="-2.88" y="-0.325" dx="1.56" dy="0.41" layer="1"/>
+<smd name="7" x="-2.88" y="-0.975" dx="1.56" dy="0.41" layer="1"/>
+<smd name="8" x="-2.88" y="-1.625" dx="1.56" dy="0.41" layer="1"/>
+<smd name="9" x="-2.88" y="-2.275" dx="1.56" dy="0.41" layer="1"/>
+<smd name="10" x="-2.88" y="-2.925" dx="1.56" dy="0.41" layer="1"/>
+<smd name="11" x="2.88" y="-2.925" dx="1.56" dy="0.41" layer="1"/>
+<smd name="12" x="2.88" y="-2.275" dx="1.56" dy="0.41" layer="1"/>
+<smd name="13" x="2.88" y="-1.625" dx="1.56" dy="0.41" layer="1"/>
+<smd name="14" x="2.88" y="-0.975" dx="1.56" dy="0.41" layer="1"/>
+<smd name="15" x="2.88" y="-0.325" dx="1.56" dy="0.41" layer="1"/>
+<smd name="16" x="2.88" y="0.325" dx="1.56" dy="0.41" layer="1"/>
+<smd name="17" x="2.88" y="0.975" dx="1.56" dy="0.41" layer="1"/>
+<smd name="18" x="2.88" y="1.625" dx="1.56" dy="0.41" layer="1"/>
+<smd name="19" x="2.88" y="2.275" dx="1.56" dy="0.41" layer="1"/>
+<smd name="20" x="2.88" y="2.925" dx="1.56" dy="0.41" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -9667,6 +9711,34 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <text x="7.62" y="7.62" size="5.08" layer="94" align="center-left">OLED</text>
 <text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
 <text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+</symbol>
+<symbol name="STM32F030F4P6">
+<wire x1="-33.02" y1="-22.86" x2="-33.02" y2="22.86" width="0.254" layer="94"/>
+<wire x1="-33.02" y1="22.86" x2="48.26" y2="22.86" width="0.254" layer="94"/>
+<wire x1="48.26" y1="22.86" x2="48.26" y2="-22.86" width="0.254" layer="94"/>
+<wire x1="48.26" y1="-22.86" x2="-33.02" y2="-22.86" width="0.254" layer="94"/>
+<text x="-33.042" y="23.6282" size="2.540690625" layer="95">&gt;NAME</text>
+<text x="-33.0413" y="-26.1687" size="2.54066875" layer="96">&gt;VALUE</text>
+<pin name="BOOT0" x="-38.1" y="15.24" length="middle" direction="in"/>
+<pin name="PF0/OSC_IN" x="-38.1" y="7.62" length="middle"/>
+<pin name="PF1/OSC_OUT" x="-38.1" y="5.08" length="middle"/>
+<pin name="NRST" x="-38.1" y="20.32" length="middle"/>
+<pin name="VDDA" x="53.34" y="15.24" length="middle" direction="pwr" rot="R180"/>
+<pin name="PA0/ADC_IN0" x="-38.1" y="-2.54" length="middle"/>
+<pin name="PA1/ADC_IN1" x="-38.1" y="-5.08" length="middle"/>
+<pin name="PA2/USART1_TX/ADC_IN2" x="-38.1" y="-7.62" length="middle"/>
+<pin name="PA3/USART1_RX/ADC_IN3" x="-38.1" y="-10.16" length="middle"/>
+<pin name="PA4/TIM14_CH1/ADC_IN4" x="-38.1" y="-12.7" length="middle"/>
+<pin name="PA5/ADC_IN5" x="-38.1" y="-15.24" length="middle"/>
+<pin name="PA6/TIM3_CH1/TIM16_CH1/ADC_IN6" x="53.34" y="5.08" length="middle" rot="R180"/>
+<pin name="PA7/TIM1_CH1N/ADC_IN7" x="53.34" y="2.54" length="middle" rot="R180"/>
+<pin name="PB1/TIM1_CH3N/ADC_IN9" x="53.34" y="7.62" length="middle" rot="R180"/>
+<pin name="VSS" x="53.34" y="-20.32" length="middle" direction="pwr" rot="R180"/>
+<pin name="VDD" x="53.34" y="20.32" length="middle" direction="pwr" rot="R180"/>
+<pin name="PA9/USART1_TX/TIM1_CH2/I2C1_SCL" x="53.34" y="0" length="middle" rot="R180"/>
+<pin name="PA10/USART1_RX/TIM1_CH3/I2C1_SDA" x="53.34" y="-2.54" length="middle" rot="R180"/>
+<pin name="PA13/IR_OUT/SWDIO" x="53.34" y="-7.62" length="middle" rot="R180"/>
+<pin name="PA14/USART1_TX/SWCLK" x="53.34" y="-12.7" length="middle" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -18797,6 +18869,50 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 </device>
 </devices>
 </deviceset>
+<deviceset name="STM32F030F4P6" prefix="U">
+<description> &lt;a href="https://pricing.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part?ref=eda"&gt;Check availability&lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="STM32F030F4P6" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SOP65P640X120-20N">
+<connects>
+<connect gate="G$1" pin="BOOT0" pad="1"/>
+<connect gate="G$1" pin="NRST" pad="4"/>
+<connect gate="G$1" pin="PA0/ADC_IN0" pad="6"/>
+<connect gate="G$1" pin="PA1/ADC_IN1" pad="7"/>
+<connect gate="G$1" pin="PA10/USART1_RX/TIM1_CH3/I2C1_SDA" pad="18"/>
+<connect gate="G$1" pin="PA13/IR_OUT/SWDIO" pad="19"/>
+<connect gate="G$1" pin="PA14/USART1_TX/SWCLK" pad="20"/>
+<connect gate="G$1" pin="PA2/USART1_TX/ADC_IN2" pad="8"/>
+<connect gate="G$1" pin="PA3/USART1_RX/ADC_IN3" pad="9"/>
+<connect gate="G$1" pin="PA4/TIM14_CH1/ADC_IN4" pad="10"/>
+<connect gate="G$1" pin="PA5/ADC_IN5" pad="11"/>
+<connect gate="G$1" pin="PA6/TIM3_CH1/TIM16_CH1/ADC_IN6" pad="12"/>
+<connect gate="G$1" pin="PA7/TIM1_CH1N/ADC_IN7" pad="13"/>
+<connect gate="G$1" pin="PA9/USART1_TX/TIM1_CH2/I2C1_SCL" pad="17"/>
+<connect gate="G$1" pin="PB1/TIM1_CH3N/ADC_IN9" pad="14"/>
+<connect gate="G$1" pin="PF0/OSC_IN" pad="2"/>
+<connect gate="G$1" pin="PF1/OSC_OUT" pad="3"/>
+<connect gate="G$1" pin="VDD" pad="16"/>
+<connect gate="G$1" pin="VDDA" pad="5"/>
+<connect gate="G$1" pin="VSS" pad="15"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="AVAILABILITY" value="In Stock"/>
+<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=eda"/>
+<attribute name="DESCRIPTION" value="                                                      ARM® Cortex®-M0 STM32F0 Microcontroller IC 32-Bit Single-Core 48MHz 16KB (16K x 8) FLASH                                              "/>
+<attribute name="MF" value="STMicroelectronics"/>
+<attribute name="MP" value="STM32F030F4P6"/>
+<attribute name="PACKAGE" value="TSSOP-20 STMicroelectronics"/>
+<attribute name="PRICE" value="None"/>
+<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=snap"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -18999,6 +19115,8 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device=""/>
 <part name="GND44" library="hot-wand" deviceset="GND" device=""/>
 <part name="U6" library="hot-wand" deviceset="OLED-SSD1306-4PIN" device="-0.91N-VERT"/>
+<part name="U7" library="hot-wand" deviceset="STM32F030F4P6" device=""/>
+<part name="GND45" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -19497,6 +19615,8 @@ thresh 2.1V</text>
 <instance part="SW1" gate="G$1" x="17.78" y="-218.44"/>
 <instance part="GND44" gate="1" x="27.94" y="-226.06"/>
 <instance part="U6" gate="A" x="12.7" y="-259.08"/>
+<instance part="U7" gate="G$1" x="149.86" y="-266.7"/>
+<instance part="GND45" gate="1" x="205.74" y="-292.1"/>
 </instances>
 <busses>
 </busses>
