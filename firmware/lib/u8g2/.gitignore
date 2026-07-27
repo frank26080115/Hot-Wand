@@ -1,0 +1,6 @@
+# The PlatformIO manifest builds only the portable C source tree.
+/cppsrc/
+
+# Keep only the SSD1306 controller implementations selected by library.json.
+/csrc/u8x8_d_*.c
+!/csrc/u8x8_d_ssd1306_*.c

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+  "name": "U8g2",
+  "version": "2.36.18",
+  "description": "U8g2 monochrome display library, limited to SSD1306 controller drivers for this project.",
+  "keywords": [
+    "display",
+    "oled",
+    "ssd1306",
+    "u8g2",
+    "u8x8"
+  ],
+  "license": "BSD-2-Clause",
+  "homepage": "https://github.com/olikraus/u8g2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olikraus/u8g2.git"
+  },
+  "frameworks": "stm32cube",
+  "platforms": "ststm32",
+  "headers": [
+    "u8g2.h",
+    "u8x8.h"
+  ],
+  "build": {
+    "srcDir": "csrc",
+    "includeDir": "csrc",
+    "srcFilter": [
+      "+<*.c>",
+      "-<u8x8_d_*.c>",
+      "+<u8x8_d_ssd1306_*.c>"
+    ]
+  }
+}
