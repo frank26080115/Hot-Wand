@@ -1,5 +1,5 @@
+#include "oled.h"
 #include "stm32f0xx_hal.h"
-#include "ssd1306.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,71 +10,19 @@
 #endif
 
 #define OLED_WIDTH 128U
-#define OLED_HEIGHT 32U
-#define OLED_ADDRESS_7BIT 0x3CU
-#define OLED_FRAMEBUFFER_SIZE ((OLED_WIDTH * OLED_HEIGHT) / 8U)
 
 /* 100 kHz standard-mode I2C with the reset-default 8 MHz HSI clock. */
 #define I2C_TIMING_100KHZ_AT_8MHZ 0x2000090EU
 
-typedef struct {
-    char character;
-    uint8_t columns[5];
-} Glyph5x7;
-
-static const Glyph5x7 font_5x7[] = {
-    {' ', {0x00U, 0x00U, 0x00U, 0x00U, 0x00U}},
-    {'0', {0x3EU, 0x51U, 0x49U, 0x45U, 0x3EU}},
-    {'3', {0x21U, 0x41U, 0x45U, 0x4BU, 0x31U}},
-    {'A', {0x7EU, 0x11U, 0x11U, 0x11U, 0x7EU}},
-    {'D', {0x7FU, 0x41U, 0x41U, 0x22U, 0x1CU}},
-    {'E', {0x7FU, 0x49U, 0x49U, 0x49U, 0x41U}},
-    {'F', {0x7FU, 0x09U, 0x09U, 0x09U, 0x01U}},
-    {'H', {0x7FU, 0x08U, 0x08U, 0x08U, 0x7FU}},
-    {'L', {0x7FU, 0x40U, 0x40U, 0x40U, 0x40U}},
-    {'M', {0x7FU, 0x02U, 0x0CU, 0x02U, 0x7FU}},
-    {'N', {0x7FU, 0x04U, 0x08U, 0x10U, 0x7FU}},
-    {'O', {0x3EU, 0x41U, 0x41U, 0x41U, 0x3EU}},
-    {'T', {0x01U, 0x01U, 0x7FU, 0x01U, 0x01U}},
-    {'W', {0x3FU, 0x40U, 0x38U, 0x40U, 0x3FU}},
-};
-
 static UART_HandleTypeDef uart1;
 static I2C_HandleTypeDef i2c1;
-static uint8_t oled_framebuffer[OLED_FRAMEBUFFER_SIZE];
+static OLED_Handle oled;
 
 static void USART1_TX_Init(void);
 static void I2C1_Init(void);
 static void UART_Write(const char *text);
-static int32_t OLED_SendI2C(void *user_context,
-                            uint8_t i2c_address_7bit,
-                            const uint8_t *data,
-                            size_t length);
 static void OLED_RenderDemo(void);
-static void Framebuffer_DrawText(uint16_t x,
-                                 uint16_t y,
-                                 const char *text,
-                                 uint8_t scale);
-static void Framebuffer_DrawCharacter(uint16_t x,
-                                      uint16_t y,
-                                      char character,
-                                      uint8_t scale);
-static void Framebuffer_SetPixel(uint16_t x, uint16_t y);
-static const uint8_t *Font_GetGlyph(char character);
 static void Error_Handler(void);
-
-static const OLED_Config oled = {
-    .bus_type = OLED_BUS_I2C,
-    .width = OLED_WIDTH,
-    .height = OLED_HEIGHT,
-    .user_context = &i2c1,
-    .transport = {
-        .i2c = {
-            .i2c_address_7bit = OLED_ADDRESS_7BIT,
-            .send_fn = OLED_SendI2C,
-        },
-    },
-};
 
 int main(void)
 {
@@ -86,31 +34,21 @@ int main(void)
     USART1_TX_Init();
     I2C1_Init();
 
-    UART_Write("SSD1306 demo starting\r\n");
+    UART_Write("U8g2 SSD1306 demo starting\r\n");
 
-    if (OLED_BufferSize(&oled) != sizeof(oled_framebuffer)) {
-        UART_Write("Unexpected OLED buffer size\r\n");
-        Error_Handler();
-    }
-
-    /* U6 has no reset pin, so allow its power-on reset to settle. */
-    HAL_Delay(100U);
-
-    if (OLED_Init(&oled) != OLED_OK) {
-        UART_Write("SSD1306 initialization failed\r\n");
+    if (!OLED_Init(&oled, &i2c1)) {
+        UART_Write("U8g2 SSD1306 initialization failed\r\n");
         Error_Handler();
     }
 
     OLED_RenderDemo();
 
-    if (OLED_DrawBitmap(&oled,
-                        oled_framebuffer,
-                        sizeof(oled_framebuffer)) != OLED_OK) {
-        UART_Write("SSD1306 drawing failed\r\n");
+    if (!OLED_SendBuffer(&oled)) {
+        UART_Write("U8g2 SSD1306 drawing failed\r\n");
         Error_Handler();
     }
 
-    UART_Write("SSD1306 128x32 demo ready\r\n");
+    UART_Write("U8g2 SSD1306 128x32 demo ready\r\n");
 
     for (;;) {
         HAL_Delay(1000U);
@@ -224,100 +162,19 @@ static void UART_Write(const char *text)
     }
 }
 
-static int32_t OLED_SendI2C(void *user_context,
-                            uint8_t i2c_address_7bit,
-                            const uint8_t *data,
-                            size_t length)
-{
-    I2C_HandleTypeDef *handle = (I2C_HandleTypeDef *)user_context;
-
-    if ((handle == NULL) || (data == NULL) ||
-        (length == 0U) || (length > UINT16_MAX)) {
-        return OLED_ERR_INVALID_ARG;
-    }
-
-    if (HAL_I2C_Master_Transmit(handle,
-                                (uint16_t)(i2c_address_7bit << 1U),
-                                (uint8_t *)data,
-                                (uint16_t)length,
-                                100U) != HAL_OK) {
-        return OLED_ERR_IO;
-    }
-
-    return OLED_OK;
-}
-
 static void OLED_RenderDemo(void)
 {
-    memset(oled_framebuffer, 0, sizeof(oled_framebuffer));
+    u8g2_t *graphics = OLED_GetGraphics(&oled);
 
-    Framebuffer_DrawText(16U, 1U, "HOT WAND", 2U);
-    Framebuffer_DrawText(22U, 22U, "F030 OLED DEMO", 1U);
-}
-
-static void Framebuffer_DrawText(uint16_t x,
-                                 uint16_t y,
-                                 const char *text,
-                                 uint8_t scale)
-{
-    if ((text == NULL) || (scale == 0U)) {
-        return;
+    if (graphics == NULL) {
+        Error_Handler();
     }
 
-    while (*text != '\0') {
-        Framebuffer_DrawCharacter(x, y, *text, scale);
-        x = (uint16_t)(x + (6U * scale));
-        text++;
-    }
-}
-
-static void Framebuffer_DrawCharacter(uint16_t x,
-                                      uint16_t y,
-                                      char character,
-                                      uint8_t scale)
-{
-    const uint8_t *glyph = Font_GetGlyph(character);
-
-    for (uint8_t column = 0U; column < 5U; column++) {
-        for (uint8_t row = 0U; row < 7U; row++) {
-            if ((glyph[column] & (uint8_t)(1U << row)) == 0U) {
-                continue;
-            }
-
-            for (uint8_t dx = 0U; dx < scale; dx++) {
-                for (uint8_t dy = 0U; dy < scale; dy++) {
-                    Framebuffer_SetPixel(
-                        (uint16_t)(x + ((uint16_t)column * scale) + dx),
-                        (uint16_t)(y + ((uint16_t)row * scale) + dy));
-                }
-            }
-        }
-    }
-}
-
-static void Framebuffer_SetPixel(uint16_t x, uint16_t y)
-{
-    size_t byte_index;
-
-    if ((x >= OLED_WIDTH) || (y >= OLED_HEIGHT)) {
-        return;
-    }
-
-    byte_index = ((size_t)(y / 8U) * OLED_WIDTH) + x;
-    oled_framebuffer[byte_index] |= (uint8_t)(1U << (y & 7U));
-}
-
-static const uint8_t *Font_GetGlyph(char character)
-{
-    for (size_t index = 0U;
-         index < (sizeof(font_5x7) / sizeof(font_5x7[0]));
-         index++) {
-        if (font_5x7[index].character == character) {
-            return font_5x7[index].columns;
-        }
-    }
-
-    return font_5x7[0].columns;
+    u8g2_ClearBuffer(graphics);
+    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+    u8g2_DrawStr(graphics, 40U, 11U, "HOT WAND");
+    u8g2_DrawHLine(graphics, 0U, 15U, OLED_WIDTH);
+    u8g2_DrawStr(graphics, 16U, 29U, "U8G2 + STM32F030");
 }
 
 static void Error_Handler(void)
