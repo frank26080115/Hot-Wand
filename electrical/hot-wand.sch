@@ -22131,15 +22131,18 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="SJ2" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
 <part name="VR3" library="hot-wand" deviceset="POT" device="35WR1KLFTR_V2" value="4K7"/>
 <part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
-<part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
-<part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
+<part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="P+15" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="C59" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="C60" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND56" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND57" library="hot-wand" deviceset="GND" device=""/>
-<part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM"/>
-<part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM"/>
+<part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950"/>
+<part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950"/>
+<part name="FAN1" library="hot-wand" deviceset="M02" device="POLAR"/>
+<part name="GND58" library="hot-wand" deviceset="GND" device=""/>
+<part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -22745,6 +22748,9 @@ thresh 2.1V</text>
 <instance part="GND57" gate="1" x="63.5" y="-330.2"/>
 <instance part="THERM1" gate="G$1" x="53.34" y="-317.5" rot="R270"/>
 <instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270"/>
+<instance part="FAN1" gate="G$1" x="114.3" y="-314.96"/>
+<instance part="GND58" gate="1" x="124.46" y="-320.04"/>
+<instance part="P+16" gate="1" x="127" y="-304.8"/>
 </instances>
 <busses>
 </busses>
@@ -23275,6 +23281,12 @@ thresh 2.1V</text>
 <pinref part="THERM1" gate="G$1" pin="2"/>
 <wire x1="53.34" y1="-322.58" x2="53.34" y2="-325.12" width="0.1524" layer="91"/>
 <junction x="63.5" y="-325.12"/>
+</segment>
+<segment>
+<pinref part="FAN1" gate="G$1" pin="1"/>
+<pinref part="GND58" gate="1" pin="GND"/>
+<wire x1="121.92" y1="-314.96" x2="124.46" y2="-314.96" width="0.1524" layer="91"/>
+<wire x1="124.46" y1="-314.96" x2="124.46" y2="-317.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="RF-OUT" class="0">
@@ -23821,6 +23833,18 @@ thresh 2.1V</text>
 <wire x1="-71.12" y1="-292.1" x2="-58.42" y2="-292.1" width="0.1524" layer="91"/>
 <junction x="-58.42" y="-292.1"/>
 </segment>
+<segment>
+<pinref part="FAN1" gate="G$1" pin="2"/>
+<wire x1="121.92" y1="-312.42" x2="127" y2="-312.42" width="0.1524" layer="91"/>
+<wire x1="127" y1="-312.42" x2="127" y2="-307.34" width="0.1524" layer="91"/>
+<pinref part="P+16" gate="1" pin="+12V"/>
+</segment>
+<segment>
+<pinref part="R39" gate="G$1" pin="1"/>
+<wire x1="-17.78" y1="-302.26" x2="-17.78" y2="-294.64" width="0.1524" layer="91"/>
+<wire x1="-17.78" y1="-294.64" x2="5.08" y2="-294.64" width="0.1524" layer="91"/>
+<label x="5.08" y="-294.64" size="1.27" layer="95" xref="yes"/>
+</segment>
 </net>
 <net name="N$17" class="0">
 <segment>
@@ -24153,12 +24177,6 @@ thresh 2.1V</text>
 <pinref part="IC1" gate="G$1" pin="OUT"/>
 <pinref part="D12" gate="G$1" pin="A"/>
 <wire x1="-78.74" y1="-292.1" x2="-76.2" y2="-292.1" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="R39" gate="G$1" pin="1"/>
-<wire x1="-17.78" y1="-302.26" x2="-17.78" y2="-294.64" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="-294.64" x2="5.08" y2="-294.64" width="0.1524" layer="91"/>
-<label x="5.08" y="-294.64" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="DC-SRC" class="0">

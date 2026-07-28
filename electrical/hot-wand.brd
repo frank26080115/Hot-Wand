@@ -36,8 +36,8 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
@@ -48,7 +48,7 @@
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
-<layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
 <layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
@@ -117,7 +117,7 @@
 </layers>
 <board>
 <plain>
-<wire x1="18.3" y1="42.5" x2="18.3" y2="42.7" width="0" layer="41"/>
+<wire x1="18.4" y1="38.2" x2="18.4" y2="42.7" width="0" layer="41"/>
 <wire x1="15.5" y1="47.5" x2="15.5" y2="47.1" width="0" layer="41"/>
 <wire x1="15.5" y1="48.5" x2="15.5" y2="48.7" width="0" layer="41"/>
 <wire x1="15.8" y1="52.4" x2="15.8" y2="52.9" width="0" layer="41"/>
@@ -175,6 +175,10 @@
 <vertex x="112" y="72.1"/>
 <vertex x="92" y="72.1"/>
 </polygon>
+<text x="20.2" y="34.5" size="1" layer="21" font="vector" ratio="10">FAN+</text>
+<text x="24.2" y="28.8" size="1" layer="21" font="vector" ratio="10" rot="R180">FAN-</text>
+<wire x1="13.9" y1="37" x2="16.8" y2="37" width="0" layer="41"/>
+<wire x1="16.8" y1="37" x2="17.3" y2="37.5" width="0" layer="41"/>
 </plain>
 <libraries>
 <library name="hot-wand">
@@ -1256,6 +1260,19 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="2" y1="-1" x2="-2" y2="-1" width="0.127" layer="25"/>
 <wire x1="-2" y1="-1" x2="-2" y2="1" width="0.127" layer="25"/>
 </package>
+<package name="MOLEX-1X2">
+<wire x1="-1.27" y1="3.048" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
+<wire x1="3.81" y1="3.048" x2="3.81" y2="-2.54" width="0.127" layer="21"/>
+<wire x1="3.81" y1="3.048" x2="-1.27" y2="3.048" width="0.127" layer="21"/>
+<wire x1="3.81" y1="-2.54" x2="2.54" y2="-2.54" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-2.54" x2="0" y2="-2.54" width="0.127" layer="21"/>
+<wire x1="0" y1="-2.54" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
+<wire x1="0" y1="-2.54" x2="0" y2="-1.27" width="0.127" layer="21"/>
+<wire x1="0" y1="-1.27" x2="2.54" y2="-1.27" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-1.27" x2="2.54" y2="-2.54" width="0.127" layer="21"/>
+<pad name="1" x="0" y="0" drill="1.016" diameter="1.8796" shape="square"/>
+<pad name="2" x="2.54" y="0" drill="1.016" diameter="1.8796"/>
+</package>
 </packages>
 </library>
 </libraries>
@@ -1904,7 +1921,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="R29" library="hot-wand" package="0603-RES" value="10K" x="22" y="35.8" smashed="yes" rot="MR180">
 <attribute name="NAME" x="21.111" y="35.038" size="0.8128" layer="26" font="vector" rot="MR180"/>
-<attribute name="VALUE" x="21.084" y="33.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="21.016" y="33.857" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="Q6" library="hot-wand" package="POWERPAK-SO8-X2" value="DMTH64M2LPDWQ-13" x="15" y="40" smashed="yes">
 <attribute name="NAME" x="11.4946" y="43.00463125" size="0.8128" layer="25" font="vector"/>
@@ -2041,9 +2058,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="26.3015" y="51.411" size="0.8128" layer="25" rot="R90"/>
 <attribute name="VALUE" x="26.0205" y="53.716" size="0.4064" layer="27" rot="R270"/>
 </element>
-<element name="LED2" library="hot-wand" package="LED-0603" value="" x="36.5" y="50.1" smashed="yes" rot="R90">
-<attribute name="NAME" x="35.611" y="51.8985" size="0.8128" layer="25"/>
-<attribute name="VALUE" x="37.516" y="51.1795" size="0.4064" layer="27" rot="R180"/>
+<element name="LED2" library="hot-wand" package="LED-0603" value="" x="25.8" y="41.1" smashed="yes">
+<attribute name="NAME" x="26.1015" y="42.711" size="0.8128" layer="25" rot="R90"/>
+<attribute name="VALUE" x="26.8795" y="40.084" size="0.4064" layer="27" rot="R90"/>
 </element>
 <element name="LED3" library="hot-wand" package="LED-0603" value="" x="31.1" y="8.8" smashed="yes">
 <attribute name="NAME" x="31.5015" y="10.411" size="0.8128" layer="25" rot="R90"/>
@@ -2053,9 +2070,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="26.589" y="55.662" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="26.616" y="54.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
-<element name="R39" library="hot-wand" package="0603-RES" value="2K2" x="36.5" y="48.7" smashed="yes">
-<attribute name="NAME" x="35.611" y="50.862" size="0.8128" layer="25" font="vector"/>
-<attribute name="VALUE" x="35.184" y="48.257" size="0.4064" layer="27" font="vector"/>
+<element name="R39" library="hot-wand" package="0603-RES" value="2K2" x="25.8" y="38" smashed="yes" rot="R90">
+<attribute name="NAME" x="25.038" y="37.211" size="0.8128" layer="25" font="vector" rot="R90"/>
+<attribute name="VALUE" x="26.243" y="36.684" size="0.4064" layer="27" font="vector" rot="R90"/>
 </element>
 <element name="R40" library="hot-wand" package="0603-RES" value="1K" x="29.1" y="7" smashed="yes">
 <attribute name="NAME" x="27.711" y="7.762" size="0.8128" layer="25" font="vector"/>
@@ -2080,11 +2097,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="104.592" y="10.87" size="0.8128" layer="25"/>
 <attribute name="VALUE" x="106.708" y="11.251" size="0.4064" layer="27" rot="R180"/>
 </element>
-<element name="R42" library="hot-wand" package="0603-RES" value="27K" x="45.6" y="25.8" smashed="yes" rot="MR0">
+<element name="R42" library="hot-wand" package="0603-RES" value="2K2" x="45.6" y="25.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="47.111" y="26.638" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="44.184" y="26.243" size="0.4064" layer="28" font="vector" rot="MR180"/>
 </element>
-<element name="R43" library="hot-wand" package="0603-RES" value="27K" x="45.6" y="27.8" smashed="yes" rot="MR0">
+<element name="R43" library="hot-wand" package="0603-RES" value="2K2" x="45.6" y="27.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="46.489" y="28.562" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="46.916" y="27.357" size="0.4064" layer="28" font="vector" rot="MR0"/>
 </element>
@@ -2096,12 +2113,13 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="54.911" y="21.638" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="54.384" y="22.843" size="0.4064" layer="28" font="vector" rot="MR180"/>
 </element>
-<element name="THERM1" library="hot-wand" package="1X02-2MM" value="" x="56.1" y="19" smashed="yes">
+<element name="THERM1" library="hot-wand" package="1X02-2MM" value="10K/~3950" x="56.1" y="19" smashed="yes">
 <attribute name="NAME" x="58.4" y="18.6" size="0.8128" layer="25"/>
 </element>
-<element name="THERM2" library="hot-wand" package="1X02-2MM" value="" x="56.1" y="24.3" smashed="yes">
+<element name="THERM2" library="hot-wand" package="1X02-2MM" value="10K/~3950" x="56.1" y="24.3" smashed="yes">
 <attribute name="NAME" x="58.4" y="23.9" size="0.8128" layer="25"/>
 </element>
+<element name="FAN1" library="hot-wand" package="MOLEX-1X2" value="" x="22.4" y="30.4" smashed="yes" rot="R90"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -2317,7 +2335,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="48.7" y="70.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="48.8" y="66.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="46.7" y="66.4" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="39.7" y="65.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="39.4" y="57" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="43.4" y="57" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="39.4" y="56" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2385,8 +2402,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="31.5" y="47" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="31.4" y="43" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="32.1" y="38.8" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="33.2" y="37" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="33" y="35.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="33.2" y="36.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="37.1" y="40" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="38.1" y="38.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="38.1" y="41.8" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2407,7 +2423,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="14.92" y="27.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="11.02" y="27.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="15.92" y="26.4" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="15.12" y="36.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="15.12" y="36.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="12.42" y="36.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="12.42" y="35.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="15.12" y="35" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2427,7 +2443,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="20.12" y="41.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.12" y="39.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.02" y="37.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="16.42" y="36.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="16.42" y="36.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="16.42" y="35" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="18.02" y="35" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.02" y="35" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2681,7 +2697,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="48.4" y="37" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="32.4" y="49.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="37" y="68" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="39" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="66" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40" y="71" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="21" y="11" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="14" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2703,7 +2719,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="40.4" y="30.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="43" y="30.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="43" y="32" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="40.5" y="37" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40.6" y="38" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40.5" y="40" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40.5" y="42" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40.5" y="45" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2875,6 +2891,69 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="62.5" y="25.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="68.2" y="30.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="0.6" y="29.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.4" y="62.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.4" y="61.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.4" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39.6" y="62.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.2" y="62.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.2" y="61.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39.6" y="61.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.2" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39.6" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="FAN1" pad="1"/>
+<via x="40.6" y="36" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="33.2" y="37.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="27.5" y="38" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="27.5" y="36" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="24.8" y="36" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="26.8" y="35" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="65" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="65" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="68" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38" y="68" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="66" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="68" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="68" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="66" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="65" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="65" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="66" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="67" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="68" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="69" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="70" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37" y="71" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38" y="71" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39" y="71" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="71" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="42" y="71" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39.4" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.5" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.5" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.5" y="57" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.5" y="57" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.5" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.5" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="36.5" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="36.5" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="36.5" y="57" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="35.5" y="57" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="35.5" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="35.5" y="55" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="RF-OUT">
 <contactref element="T1" pad="P1"/>
@@ -3293,6 +3372,17 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="54.15" y1="70.15" x2="54.15" y2="70.3" width="0.4064" layer="16"/>
 <wire x1="54.15" y1="70.3" x2="55.65" y2="70.3" width="0.4064" layer="16"/>
 <via x="52.72" y="65.2" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="FAN1" pad="2"/>
+<contactref element="R39" pad="1"/>
+<wire x1="41.65" y1="40" x2="41.65" y2="37.50249375" width="0.8128" layer="16"/>
+<wire x1="41.65" y1="37.50249375" x2="41.14750625" y2="37" width="0.8128" layer="16"/>
+<wire x1="41.14750625" y1="37" x2="37.3" y2="37" width="0.8128" layer="16"/>
+<via x="37.3" y="37" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="37.3" y1="37" x2="25.8" y2="37" width="0.8128" layer="1"/>
+<wire x1="25.8" y1="37" x2="25.8" y2="34.0187" width="0.8128" layer="1"/>
+<wire x1="25.8" y1="34.0187" x2="24.7213" y2="32.94" width="0.8128" layer="1"/>
+<wire x1="24.7213" y1="32.94" x2="22.4" y2="32.94" width="0.8128" layer="1"/>
+<wire x1="25.8" y1="37.15" x2="25.8" y2="37" width="0.4064" layer="1"/>
 </signal>
 <signal name="N$17">
 <contactref element="C37" pad="2"/>
@@ -3592,9 +3682,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="34.9" y="46"/>
 <vertex x="34.9" y="43.3"/>
 </polygon>
-<contactref element="R39" pad="1"/>
-<wire x1="35.04" y1="45" x2="35.04" y2="48.09" width="0.4064" layer="1"/>
-<wire x1="35.04" y1="48.09" x2="35.65" y2="48.7" width="0.4064" layer="1"/>
 </signal>
 <signal name="DC-SRC">
 <contactref element="F1" pad="1"/>
@@ -3619,8 +3706,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="22" y="61"/>
 <vertex x="23.5" y="59.5"/>
 <vertex x="23.5" y="47.7"/>
-<vertex x="19" y="43.2"/>
-<vertex x="14" y="43.2"/>
+<vertex x="19.2" y="43.4"/>
+<vertex x="14.2" y="43.4"/>
 <vertex x="12.8" y="42"/>
 <vertex x="12.8" y="41.7"/>
 </polygon>
@@ -3993,8 +4080,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$47">
 <contactref element="R39" pad="2"/>
 <contactref element="LED2" pad="A"/>
-<wire x1="37.35" y1="48.7" x2="37.35" y2="50" width="0.4064" layer="1"/>
-<wire x1="37.35" y1="50" x2="37.25" y2="50.1" width="0.4064" layer="1"/>
+<wire x1="25.8" y1="38.85" x2="25.8" y2="40.35" width="0.4064" layer="1"/>
 </signal>
 <signal name="N$48">
 <contactref element="R40" pad="2"/>
