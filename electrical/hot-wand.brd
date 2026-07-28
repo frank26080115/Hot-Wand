@@ -32,10 +32,10 @@
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
@@ -48,8 +48,8 @@
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
-<layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
-<layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
@@ -140,6 +140,40 @@
 <vertex x="43.2" y="61"/>
 <vertex x="43.2" y="72"/>
 <vertex x="44.8" y="72"/>
+</polygon>
+<text x="28" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">Vtgt</text>
+<text x="22.9" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">GND</text>
+<text x="25.5" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">SWCLK (UART TX)</text>
+<text x="20.4" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">SWDIO</text>
+<text x="17.9" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">NRST</text>
+<text x="15.3" y="3.8" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">NC/SWO</text>
+<text x="54.8" y="6.9" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">GND</text>
+<text x="52.3" y="6.9" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">+3V3</text>
+<text x="49.8" y="6.9" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">SCL</text>
+<text x="47.2" y="6.9" size="0.8128" layer="21" font="vector" rot="R90" align="center-left">SDA</text>
+<wire x1="36.9" y1="61.7" x2="36.9" y2="61.5" width="0" layer="42"/>
+<text x="3" y="15.8" size="2.5" layer="1" font="vector" ratio="15" rot="R90" align="center">HOT WAND</text>
+<text x="3" y="15.8" size="2.5" layer="29" font="vector" ratio="15" rot="R90" align="center">HOT WAND</text>
+<wire x1="1" y1="6" x2="5" y2="6" width="0" layer="41"/>
+<wire x1="5" y1="6" x2="5" y2="25" width="0" layer="41"/>
+<wire x1="5" y1="25" x2="1" y2="25" width="0" layer="41"/>
+<wire x1="1" y1="25" x2="1" y2="6" width="0" layer="41"/>
+<text x="6" y="11" size="1" layer="21" font="vector" ratio="10" rot="R90" align="center">20260727A</text>
+<polygon width="0.2032" layer="29" spacing="0.2032">
+<vertex x="67" y="71.9"/>
+<vertex x="67" y="64"/>
+<vertex x="70" y="61"/>
+<vertex x="80" y="61"/>
+<vertex x="80" y="72"/>
+<vertex x="67" y="72"/>
+</polygon>
+<polygon width="0.2032" layer="29" spacing="0.2032">
+<vertex x="92" y="71.9"/>
+<vertex x="92" y="62"/>
+<vertex x="94.1" y="62"/>
+<vertex x="112" y="62"/>
+<vertex x="112" y="72.1"/>
+<vertex x="92" y="72.1"/>
 </polygon>
 </plain>
 <libraries>
@@ -245,8 +279,6 @@
 <wire x1="1.35" y1="0.8" x2="1.35" y2="-0.8" width="0.2032" layer="51"/>
 <wire x1="1.35" y1="-0.8" x2="-1.35" y2="-0.8" width="0.2032" layer="51"/>
 <wire x1="-1.35" y1="-0.8" x2="-1.35" y2="0.8" width="0.2032" layer="51"/>
-<wire x1="-0.85" y1="0.8" x2="0.85" y2="0.8" width="0.2032" layer="21"/>
-<wire x1="0.85" y1="-0.8" x2="-0.85" y2="-0.8" width="0.2032" layer="21"/>
 <smd name="A" x="1.625" y="0" dx="0.91" dy="1.22" layer="1"/>
 <smd name="C" x="-1.625" y="0" dx="0.91" dy="1.22" layer="1" rot="R180"/>
 <text x="-2" y="1" size="1.27" layer="25">&gt;NAME</text>
@@ -254,6 +286,9 @@
 <rectangle x1="-1.8" y1="-0.55" x2="-1.425" y2="0.55" layer="51"/>
 <rectangle x1="1.425" y1="-0.55" x2="1.8" y2="0.55" layer="51" rot="R180"/>
 <rectangle x1="-0.95" y1="-0.775" x2="-0.65" y2="0.8" layer="21"/>
+<wire x1="-0.7" y1="0" x2="0.3" y2="0.4" width="0.2032" layer="21"/>
+<wire x1="0.3" y1="0.4" x2="0.3" y2="-0.4" width="0.2032" layer="21"/>
+<wire x1="0.3" y1="-0.4" x2="-0.7" y2="0" width="0.2032" layer="21"/>
 </package>
 <package name="SMA">
 <description>&lt;b&gt;SMA&lt;/b&gt; CASE 403D-02&lt;p&gt;
@@ -275,6 +310,9 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <rectangle x1="-1.5" y1="-1.75" x2="-0.75" y2="1.75" layer="51"/>
 <rectangle x1="-1.5" y1="1.25" x2="-0.75" y2="1.75" layer="21"/>
 <rectangle x1="-1.5" y1="-1.75" x2="-0.75" y2="-1.25" layer="21"/>
+<wire x1="-0.6" y1="0" x2="0.6" y2="1" width="0.3048" layer="21"/>
+<wire x1="0.6" y1="1" x2="0.6" y2="-1" width="0.3048" layer="21"/>
+<wire x1="0.6" y1="-1" x2="-0.6" y2="0" width="0.3048" layer="21"/>
 </package>
 <package name="SOD-323">
 <wire x1="-0.9" y1="0.65" x2="-0.5" y2="0.65" width="0.2032" layer="21"/>
@@ -379,11 +417,15 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <wire x1="2.3" y1="-1" x2="2.3" y2="-1.45" width="0.2032" layer="21"/>
 <wire x1="2.3" y1="-1.45" x2="-2.3" y2="-1.45" width="0.2032" layer="21"/>
 <wire x1="-2.3" y1="-1.45" x2="-2.3" y2="-1" width="0.2032" layer="21"/>
-<wire x1="1" y1="1" x2="1" y2="-1" width="0.2032" layer="21"/>
+<wire x1="1" y1="1" x2="1" y2="0" width="0.2032" layer="21"/>
 <smd name="A" x="-2.15" y="0" dx="1.27" dy="1.47" layer="1" rot="R180"/>
 <smd name="C" x="2.15" y="0" dx="1.27" dy="1.47" layer="1"/>
 <text x="-2.286" y="1.651" size="0.4064" layer="25">&gt;NAME</text>
 <text x="0.254" y="1.651" size="0.4064" layer="27">&gt;VALUE</text>
+<wire x1="1" y1="0" x2="1" y2="-1" width="0.2032" layer="21"/>
+<wire x1="1" y1="0" x2="-0.4" y2="0.6" width="0.2032" layer="21"/>
+<wire x1="-0.4" y1="0.6" x2="-0.4" y2="-0.6" width="0.2032" layer="21"/>
+<wire x1="-0.4" y1="-0.6" x2="1" y2="0" width="0.2032" layer="21"/>
 </package>
 <package name="TO220V">
 <description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
@@ -438,7 +480,6 @@ Max Component Height - 1.45mm</description>
 <wire x1="2.1" y1="-1.7" x2="2.1" y2="1.7" width="0.1" layer="39"/>
 <wire x1="-2.1" y1="1.7" x2="2.1" y2="1.7" width="0.1" layer="39"/>
 <wire x1="-2.1" y1="-1.7" x2="-2.1" y2="1.7" width="0.1" layer="39"/>
-<wire x1="0" y1="-0.5" x2="0" y2="0.5" width="0.1" layer="23"/>
 <circle x="-1.3" y="1.7" radius="0.125" width="0.25" layer="21"/>
 <wire x1="0.425" y1="-1.45" x2="0.425" y2="1.45" width="0.2" layer="21"/>
 <wire x1="-0.425" y1="1.45" x2="0.425" y2="1.45" width="0.2" layer="21"/>
@@ -446,7 +487,8 @@ Max Component Height - 1.45mm</description>
 <wire x1="-0.425" y1="-1.45" x2="-0.425" y2="1.45" width="0.2" layer="21"/>
 <text x="-2.15" y="1.696" size="2.032" layer="25" font="vector" ratio="13" rot="SR0">&gt;NAME</text>
 <text x="-2.15" y="-3.638" size="2.032" layer="27" font="vector" ratio="13" rot="SR0">&gt;VALUE</text>
-<wire x1="0.5" y1="0" x2="-0.5" y2="0" width="0.1" layer="23"/>
+<wire x1="-1.9" y1="0.8" x2="-1.9" y2="1.5" width="0.2032" layer="21"/>
+<wire x1="-1.9" y1="1.5" x2="-1" y2="1.5" width="0.2032" layer="21"/>
 </package>
 <package name="IND-10X6MM">
 <wire x1="-4" y1="3" x2="-5" y2="3" width="0.127" layer="21"/>
@@ -1197,6 +1239,16 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
+<package name="LED-0603">
+<wire x1="0.46" y1="0.17" x2="0" y2="0.17" width="0.2032" layer="21"/>
+<wire x1="-0.46" y1="0.17" x2="0" y2="0.17" width="0.2032" layer="21"/>
+<wire x1="0" y1="0.17" x2="0.2338" y2="-0.14" width="0.2032" layer="21"/>
+<wire x1="-0.0254" y1="0.1546" x2="-0.2184" y2="-0.14" width="0.2032" layer="21"/>
+<smd name="C" x="0" y="0.75" dx="0.8" dy="0.8" layer="1"/>
+<smd name="A" x="0" y="-0.75" dx="0.8" dy="0.8" layer="1"/>
+<text x="-0.6985" y="-0.889" size="0.4064" layer="25" rot="R90">&gt;NAME</text>
+<text x="1.0795" y="-1.016" size="0.4064" layer="27" rot="R90">&gt;VALUE</text>
+</package>
 </packages>
 </library>
 </libraries>
@@ -1380,73 +1432,241 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </pass>
 </autorouter>
 <elements>
-<element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0"/>
-<element name="JP1" library="hot-wand" package="1X02_XTRA_BIG" value="" x="7.97" y="63.02"/>
-<element name="T1" library="hot-wand" package="XFORMER-K16X8X6-1:14:14" value="" x="86.5" y="6.1" rot="R180"/>
-<element name="C33" library="hot-wand" package="0805" value="10pF 500V" x="90.6" y="6.1" rot="MR180"/>
-<element name="D8" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="3.2" rot="MR90"/>
-<element name="D5" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="3.2" rot="MR270"/>
-<element name="D6" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="9" rot="MR270"/>
-<element name="D9" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="9" rot="MR90"/>
-<element name="R10" library="hot-wand" package="0603-RES" value="100Ω" x="99.4" y="6.1" rot="MR180"/>
-<element name="C34" library="hot-wand" package="0603-CAP" value="1uF" x="101.9" y="7.9" rot="MR90"/>
-<element name="R21" library="hot-wand" package="0603-RES" value="22Ω" x="69.4" y="16.6" rot="MR180"/>
-<element name="L9" library="hot-wand" package="TFI0410" value="22uH CECL" x="72" y="23" rot="R90"/>
-<element name="C42" library="hot-wand" package="0805" value="33nF" x="74.7" y="29.4" rot="MR180"/>
-<element name="Q3" library="hot-wand" package="SOT23-3" value="BC846B" x="69" y="25.1" rot="MR180"/>
-<element name="C41" library="hot-wand" package="0603-CAP" value="3n3" x="47" y="13.2" rot="MR270"/>
-<element name="R18" library="hot-wand" package="0603-RES" value="4K7" x="49.1" y="13.2" rot="MR270"/>
-<element name="R20" library="hot-wand" package="0805" value="1K" x="74" y="26.6" rot="MR90"/>
-<element name="R22" library="hot-wand" package="0603-RES" value="2K2" x="69.5" y="27.6" rot="MR180"/>
-<element name="C27" library="hot-wand" package="0805" value="47pF 1000V" x="85.9" y="16.7" rot="MR90"/>
-<element name="C28" library="hot-wand" package="0805" value="47pF 1000V" x="88" y="16.7" rot="MR90"/>
-<element name="C29" library="hot-wand" package="0805" value="47pF 1000V" x="90" y="16.7" rot="MR90"/>
-<element name="C30" library="hot-wand" package="0805" value="47pF 1000V" x="84.4" y="14.3" rot="MR0"/>
-<element name="C31" library="hot-wand" package="0805" value="47pF 1000V" x="96.7" y="15.2" rot="MR180"/>
-<element name="C32" library="hot-wand" package="0805" value="DNP" x="96.7" y="13" rot="MR180"/>
-<element name="L6" library="hot-wand" package="IND_T130-6_X2" value="540nH" x="93" y="19" locked="yes"/>
-<element name="C20" library="hot-wand" package="0805" value="47pF 1000V" x="97" y="32.4" rot="MR180"/>
-<element name="C21" library="hot-wand" package="0805" value="47pF 1000V" x="97" y="22.7" rot="MR180"/>
-<element name="C22" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="23.5" rot="MR0"/>
-<element name="C23" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="25.5" rot="MR0"/>
-<element name="C24" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="27.5" rot="MR0"/>
-<element name="C25" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="29.5" rot="MR0"/>
-<element name="C26" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="31.5" rot="MR0"/>
-<element name="L5" library="hot-wand" package="IND_T130-6_X2" value="400nH" x="93" y="36" locked="yes"/>
-<element name="C19" library="hot-wand" package="0805" value="DNP" x="89.1" y="48.5" rot="MR0"/>
-<element name="C18" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="46.5" rot="MR0"/>
-<element name="C17" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="44.5" rot="MR0"/>
-<element name="C16" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="42.5" rot="MR0"/>
-<element name="C15" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="40.5" rot="MR0"/>
-<element name="C14" library="hot-wand" package="0805" value="100pF 1000V" x="97" y="39.7" rot="MR180"/>
-<element name="C13" library="hot-wand" package="0805" value="100pF 1000V" x="97" y="49.4" rot="MR180"/>
-<element name="L4" library="hot-wand" package="IND_T130-6_X2" value="180nH" x="93" y="53" locked="yes"/>
-<element name="C9" library="hot-wand" package="0805" value="100nF" x="89.3" y="58.9" rot="MR270"/>
-<element name="C10" library="hot-wand" package="0805" value="100nF" x="87.3" y="58.9" rot="MR270"/>
-<element name="C11" library="hot-wand" package="0805" value="100nF" x="85.3" y="58.9" rot="MR270"/>
-<element name="C12" library="hot-wand" package="0805" value="100nF" x="83.3" y="58.9" rot="MR270"/>
-<element name="D4" library="hot-wand" package="SMA-DIODE" value="ES1J" x="88" y="63" rot="MR180"/>
-<element name="D7" library="hot-wand" package="SMC" value="SM15T150CA" x="94.5" y="66" rot="MR90"/>
-<element name="L3" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="69" y="47" rot="R270"/>
-<element name="Q1" library="hot-wand" package="TO220V" value="STP19NF20" x="86" y="67"/>
-<element name="D11" library="hot-wand" package="SOD-323" value="STPS0540Z" x="80" y="66" rot="MR90"/>
-<element name="R13" library="hot-wand" package="R2512" value="DNP" x="72" y="67" rot="MR270"/>
-<element name="R12" library="hot-wand" package="R2512" value="150Ω 2W" x="77" y="67" rot="MR270"/>
-<element name="D10" library="hot-wand" package="SMA-DIODE" value="SMBJ15CA" x="68" y="66.6" rot="MR270"/>
-<element name="U2" library="hot-wand" package="SOT95P280X145-6N-7-V" value="" x="52.4" y="67.8" rot="MR0"/>
-<element name="R15" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="68.2" rot="MR180"/>
-<element name="R17" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="66.2" rot="MR180"/>
-<element name="Q2" library="hot-wand" package="TO220V" value="IRF510" x="61" y="67"/>
-<element name="L7" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="57" y="47" rot="R270"/>
-<element name="C38" library="hot-wand" package="0805" value="100nF" x="58.4" y="61" rot="MR0"/>
-<element name="C37" library="hot-wand" package="0805" value="100nF" x="58.4" y="59.4" rot="MR0"/>
-<element name="L8" library="hot-wand" package="IND-10X6MM" value="180nH" x="61" y="60"/>
-<element name="C39" library="hot-wand" package="0805" value="100pF" x="62.7" y="61" rot="MR180"/>
-<element name="C40" library="hot-wand" package="0805" value="100pF" x="62.7" y="62.7" rot="MR180"/>
-<element name="C35" library="hot-wand" package="0603-CAP" value="100nF" x="53.3" y="70.3" rot="MR180"/>
-<element name="C36" library="hot-wand" package="0603-CAP" value="1uF" x="56.5" y="70.3" rot="MR0"/>
-<element name="R16" library="hot-wand" package="0603-RES" value="6K8" x="49.8" y="70" rot="MR270"/>
-<element name="U1" library="hot-wand" package="VREG_LM5017MR/NOPB" value="TPS54560DDA" x="38.4" y="61.6" rot="MR180">
+<element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0" smashed="yes"/>
+<element name="JP1" library="hot-wand" package="1X02_XTRA_BIG" value="" x="7.97" y="63.02" smashed="yes"/>
+<element name="T1" library="hot-wand" package="XFORMER-K16X8X6-1:14:14" value="" x="86.5" y="6.1" smashed="yes" rot="R180">
+<attribute name="NAME" x="84.5" y="2.1" size="0.8128" layer="25" font="vector" rot="R180"/>
+</element>
+<element name="C33" library="hot-wand" package="0805" value="10pF 500V" x="90.6" y="6.1" smashed="yes" rot="MR180">
+<attribute name="NAME" x="88.962" y="6.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="88.916" y="4.903" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="D8" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="3.2" smashed="yes" rot="MR90">
+<attribute name="NAME" x="95.2" y="5.5" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="D5" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="3.2" smashed="yes" rot="MR270">
+<attribute name="NAME" x="99.5" y="1" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="D6" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="95.2" y="9.3" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="D9" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="9" smashed="yes" rot="MR90">
+<attribute name="NAME" x="99.4" y="7.4" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="R10" library="hot-wand" package="0603-RES" value="100Ω" x="99.4" y="6.1" smashed="yes" rot="MR180">
+<attribute name="NAME" x="100.011" y="5.238" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="97.884" y="6.543" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C34" library="hot-wand" package="0603-CAP" value="1uF" x="101.9" y="7.9" smashed="yes" rot="MR90">
+<attribute name="NAME" x="101.911" y="6.138" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="106.516" y="4.857" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R21" library="hot-wand" package="0603-RES" value="22Ω" x="69.4" y="16.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="70.589" y="17.462" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="70.616" y="18.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="L9" library="hot-wand" package="TFI0410" value="22uH CECL" x="72" y="23" smashed="yes" rot="R90">
+<attribute name="NAME" x="70.6546" y="28.56" size="0.8128" layer="25" font="vector" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="72.4826" y="20.1244" size="0.8128" layer="27" font="vector" ratio="10" rot="R90"/>
+</element>
+<element name="C42" library="hot-wand" package="0805" value="33nF" x="74.7" y="29.4" smashed="yes" rot="MR180">
+<attribute name="NAME" x="75.962" y="30.4255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="76.016" y="31.603" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="Q3" library="hot-wand" package="SOT23-3" value="BC846B" x="69" y="24.8" smashed="yes" rot="MR180">
+<attribute name="NAME" x="67.8255" y="22.878" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="67.216" y="24.0095" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C41" library="hot-wand" package="0603-CAP" value="3n3" x="47" y="13.2" smashed="yes" rot="MR270">
+<attribute name="NAME" x="46.638" y="11.789" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="47.743" y="11.716" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="R18" library="hot-wand" package="0603-RES" value="4K7" x="49.1" y="13.2" smashed="yes" rot="MR270">
+<attribute name="NAME" x="49.962" y="11.711" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="51.057" y="11.684" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R20" library="hot-wand" package="0805" value="1K" x="74" y="26.6" smashed="yes" rot="MR90">
+<attribute name="NAME" x="76.1255" y="25.538" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="R22" library="hot-wand" package="0603-RES" value="2K2" x="69.5" y="27.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="69.589" y="28.462" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="69.616" y="29.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C27" library="hot-wand" package="0805" value="47pF 1000V" x="85.9" y="16.7" smashed="yes" rot="MR90">
+<attribute name="NAME" x="85.2255" y="18.338" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="C28" library="hot-wand" package="0805" value="47pF 1000V" x="88" y="16.7" smashed="yes" rot="MR90">
+<attribute name="NAME" x="87.3255" y="18.338" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="C29" library="hot-wand" package="0805" value="47pF 1000V" x="90" y="16.7" smashed="yes" rot="MR90">
+<attribute name="NAME" x="89.3255" y="18.338" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="C30" library="hot-wand" package="0805" value="47pF 1000V" x="84.4" y="14.3" smashed="yes" rot="MR0">
+<attribute name="NAME" x="82.862" y="14.7255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="84.816" y="15.903" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C31" library="hot-wand" package="0805" value="47pF 1000V" x="96.7" y="15.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="98.238" y="16.3745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="90.884" y="17.797" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C32" library="hot-wand" package="0805" value="DNP" x="96.7" y="13" smashed="yes" rot="MR180">
+<attribute name="NAME" x="98.538" y="13.5745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="100.284" y="14.297" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="L6" library="hot-wand" package="IND_T130-6_X2" value="540nH" x="93" y="19" smashed="yes">
+<attribute name="NAME" x="94" y="18" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="94" y="19" size="0.8128" layer="27" font="vector"/>
+</element>
+<element name="C20" library="hot-wand" package="0805" value="47pF 1000V" x="97" y="32.4" smashed="yes" rot="MR180">
+<attribute name="NAME" x="95.738" y="31.3745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="95.684" y="30.397" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C21" library="hot-wand" package="0805" value="47pF 1000V" x="97" y="22.7" smashed="yes" rot="MR180">
+<attribute name="NAME" x="98.362" y="23.7255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="95.684" y="25.597" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C22" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="23.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="23.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C23" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="25.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="25.1255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C24" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="27.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="27.1255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C25" library="hot-wand" package="0805" value="47pF 1000V" x="89.1" y="29.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="28.2255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="87.516" y="29.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C26" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="31.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="90.062" y="32.7255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="90.116" y="34.003" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="L5" library="hot-wand" package="IND_T130-6_X2" value="400nH" x="93" y="36" smashed="yes">
+<attribute name="NAME" x="94" y="35" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="94" y="36" size="0.8128" layer="27" font="vector"/>
+</element>
+<element name="C19" library="hot-wand" package="0805" value="DNP" x="97" y="49.4" smashed="yes" rot="MR180">
+<attribute name="NAME" x="98.062" y="50.4255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="98.016" y="51.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C18" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="46.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="46.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C17" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="44.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="44.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C16" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="42.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="42.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="C15" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="40.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="40.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="90.516" y="38.603" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C14" library="hot-wand" package="0805" value="100pF 1000V" x="97" y="39.7" smashed="yes" rot="MR180">
+<attribute name="NAME" x="95.538" y="38.7745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="95.484" y="37.697" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C13" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="48.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="87.462" y="48.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="90.516" y="49.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="L4" library="hot-wand" package="IND_T130-6_X2" value="180nH" x="93" y="53" smashed="yes">
+<attribute name="NAME" x="94" y="52" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="94" y="53" size="0.8128" layer="27" font="vector"/>
+</element>
+<element name="C9" library="hot-wand" package="0805" value="100nF" x="89.3" y="58.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="89.6745" y="57.462" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="C10" library="hot-wand" package="0805" value="100nF" x="87.3" y="58.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="87.6745" y="57.462" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="C11" library="hot-wand" package="0805" value="100nF" x="85.3" y="58.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="85.6745" y="57.462" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="C12" library="hot-wand" package="0805" value="100nF" x="83.3" y="58.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="83.6745" y="57.462" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="82.297" y="60.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="D4" library="hot-wand" package="SMA-DIODE" value="ES1J" x="88" y="63" smashed="yes" rot="MR180">
+<attribute name="NAME" x="84.886" y="62.951" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="84.946" y="61.951" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="D7" library="hot-wand" package="SMC" value="SM15T150CA" x="94.5" y="66" smashed="yes" rot="MR90">
+<attribute name="NAME" x="97.859" y="62.541" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="99.071" y="62.541" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="L3" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="69" y="47" smashed="yes" rot="R270">
+<attribute name="NAME" x="69" y="43" size="0.8128" layer="25" font="vector" rot="R90"/>
+<attribute name="VALUE" x="70" y="43" size="0.8128" layer="27" font="vector" rot="R90"/>
+</element>
+<element name="Q1" library="hot-wand" package="TO220V" value="STP19NF20" x="86" y="67" smashed="yes">
+<attribute name="NAME" x="89.806" y="70.329" size="0.8128" layer="25" font="vector" ratio="10"/>
+</element>
+<element name="D11" library="hot-wand" package="SOD-323" value="STPS0540Z" x="80" y="66" smashed="yes" rot="MR90">
+<attribute name="NAME" x="80.984" y="64.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="R13" library="hot-wand" package="R2512" value="DNP" x="72" y="67" smashed="yes" rot="MR270">
+<attribute name="NAME" x="70.16" y="62.795" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="70.16" y="61.775" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R12" library="hot-wand" package="R2512" value="150Ω 2W" x="77" y="67" smashed="yes" rot="MR270">
+<attribute name="NAME" x="75.26" y="62.795" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="74.875" y="67.64" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="D10" library="hot-wand" package="SMA-DIODE" value="SMBJ15CA" x="68" y="66.6" smashed="yes" rot="MR270">
+<attribute name="NAME" x="66.051" y="69.214" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="U2" library="hot-wand" package="SOT95P280X145-6N-7-V" value="" x="52.4" y="67.8" smashed="yes" rot="MR0">
+<attribute name="NAME" x="51.75" y="66.004" size="0.8128" layer="26" font="vector" ratio="13" rot="SMR180"/>
+<attribute name="VALUE" x="54.55" y="64.162" size="2.032" layer="28" font="vector" ratio="13" rot="SMR0"/>
+</element>
+<element name="R15" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="68.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="54.911" y="65.338" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="54.284" y="68.643" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R17" library="hot-wand" package="0603-RES" value="4Ω" x="55.8" y="66.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="54.911" y="64.338" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="54.384" y="66.743" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="Q2" library="hot-wand" package="TO220V" value="IRF510" x="61" y="67" smashed="yes">
+<attribute name="NAME" x="64.606" y="70.429" size="0.8128" layer="25" font="vector" ratio="10"/>
+</element>
+<element name="L7" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="57" y="47" smashed="yes" rot="R270">
+<attribute name="NAME" x="56" y="49" size="0.8128" layer="25" font="vector" rot="R270"/>
+<attribute name="VALUE" x="57" y="49" size="0.8128" layer="27" font="vector" rot="R270"/>
+</element>
+<element name="C38" library="hot-wand" package="0805" value="100nF" x="58.4" y="61" smashed="yes" rot="MR0">
+<attribute name="NAME" x="58.538" y="57.3745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="57.784" y="56.297" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C37" library="hot-wand" package="0805" value="100nF" x="58.4" y="59.4" smashed="yes" rot="MR0">
+<attribute name="NAME" x="58.538" y="58.3745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+</element>
+<element name="L8" library="hot-wand" package="IND-10X6MM" value="180nH" x="61" y="60" smashed="yes">
+<attribute name="NAME" x="59" y="59" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="59" y="60" size="0.8128" layer="27" font="vector"/>
+</element>
+<element name="C39" library="hot-wand" package="0805" value="100pF" x="62.7" y="61" smashed="yes" rot="MR180">
+<attribute name="NAME" x="61.838" y="59.0745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="61.384" y="57.997" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C40" library="hot-wand" package="0805" value="100pF" x="62.7" y="62.7" smashed="yes" rot="MR180">
+<attribute name="NAME" x="61.838" y="60.0745" size="0.8128" layer="26" font="vector" rot="MR180"/>
+</element>
+<element name="C35" library="hot-wand" package="0603-CAP" value="100nF" x="53.3" y="70.3" smashed="yes" rot="MR180">
+<attribute name="NAME" x="54.289" y="70.962" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="51.784" y="70.843" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C36" library="hot-wand" package="0603-CAP" value="1uF" x="56.5" y="70.3" smashed="yes" rot="MR0">
+<attribute name="NAME" x="57.489" y="70.962" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="57.916" y="69.757" size="0.4064" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R16" library="hot-wand" package="0603-RES" value="6K8" x="49.8" y="70" smashed="yes" rot="MR270">
+<attribute name="NAME" x="48.989" y="70.862" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="50.243" y="71.416" size="0.4064" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="U1" library="hot-wand" package="VREG_LM5017MR/NOPB" value="TPS54560DDA" x="38.4" y="61.6" smashed="yes" rot="MR180">
 <attribute name="AVAILABILITY" value="In Stock" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="MF" value="Texas Instruments" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="MP" value="TPS54560DDA" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -1455,29 +1675,81 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PRICE" value="None" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/TPS54560DDA/Texas+Instruments/view-part/?ref=eda" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="PACKAGE" value="HSOIC-8 Texas Instruments" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="34.45" y="58.9" size="0.8128" layer="26" font="vector" rot="MR180"/>
 </element>
-<element name="C5" library="hot-wand" package="EIA3528" value="10uF" x="31" y="62" rot="MR180"/>
-<element name="C6" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="470uF" x="30" y="59">
+<element name="C5" library="hot-wand" package="EIA3528" value="10uF" x="31" y="62" smashed="yes" rot="MR180">
+<attribute name="NAME" x="28.03" y="63.17" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="26.94" y="63.47" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="C6" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="470uF" x="30" y="59" smashed="yes">
 <attribute name="PARTNUM" value="UHW1H471MPD" x="30" y="59" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="28.995" y="61.582" size="0.8128" layer="27" font="vector"/>
+<attribute name="NAME" x="29.038" y="60.521" size="0.8128" layer="25" font="vector"/>
 </element>
-<element name="C7" library="hot-wand" package="0603-CAP" value="100nF" x="44.2" y="62.7" rot="MR0"/>
-<element name="R7" library="hot-wand" package="0603-RES" value="22K" x="44.2" y="60.7" rot="MR180"/>
-<element name="R6" library="hot-wand" package="0603-RES" value="270K" x="37.7" y="65.3" rot="MR0"/>
-<element name="C1" library="hot-wand" package="0603-CAP" value="100nF" x="38.4" y="58"/>
-<element name="D1" library="hot-wand" package="SMC" value="STPS3L60S" x="38" y="51" rot="MR0"/>
-<element name="R8" library="hot-wand" package="0603-RES" value="1K" x="46.7" y="64.5" rot="MR270"/>
-<element name="C8" library="hot-wand" package="0603-CAP" value="3n3" x="48.8" y="64.5" rot="MR270"/>
-<element name="C2" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="100uF 50V" x="44" y="34.7"/>
-<element name="R11" library="hot-wand" package="0603-RES" value="2K2" x="103.9" y="8.3" rot="MR270"/>
-<element name="R4" library="hot-wand" package="0603-RES" value="6K8" x="48.8" y="51.6" rot="MR270"/>
-<element name="VR1" library="hot-wand" package="TRIM_3362P-1-103LF" value="10K" x="48.8" y="57" rot="R270"/>
-<element name="C3" library="hot-wand" package="0805" value="15nF (DNP)" x="54.9" y="56.2" rot="MR270"/>
-<element name="R5" library="hot-wand" package="0603-RES" value="1K" x="53.1" y="56.2" rot="MR270"/>
-<element name="C4" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="100uF 50V" x="55" y="31.5"/>
-<element name="R1" library="hot-wand" package="1206" value="0R1" x="63" y="38.2" rot="MR180"/>
-<element name="R2" library="hot-wand" package="1206" value="0R1" x="63" y="40.6" rot="MR180"/>
-<element name="R3" library="hot-wand" package="1206" value="0R1" x="63" y="43" rot="MR180"/>
-<element name="U3" library="hot-wand" package="SOT95P280X145-5N" value="INA138" x="63" y="35.4" rot="MR180">
+<element name="C7" library="hot-wand" package="0603-CAP" value="100nF" x="44.2" y="62.7" smashed="yes" rot="MR0">
+<attribute name="NAME" x="43.989" y="63.462" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="45.616" y="62.257" size="0.4064" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R7" library="hot-wand" package="0603-RES" value="22K" x="44.2" y="60.7" smashed="yes" rot="MR180">
+<attribute name="NAME" x="42.711" y="59.838" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="42.684" y="58.843" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R6" library="hot-wand" package="0603-RES" value="270K" x="36.5" y="65.3" smashed="yes" rot="MR0">
+<attribute name="NAME" x="37.389" y="66.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="38.416" y="67.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C1" library="hot-wand" package="0603-CAP" value="100nF" x="38.4" y="58" smashed="yes">
+<attribute name="NAME" x="38.389" y="57.238" size="0.8128" layer="25" font="vector" rot="R180"/>
+<attribute name="VALUE" x="39.716" y="56.243" size="0.8128" layer="27" font="vector" rot="R180"/>
+</element>
+<element name="D1" library="hot-wand" package="SMC" value="STPS3L60S" x="38" y="51" smashed="yes" rot="MR0">
+<attribute name="NAME" x="33.659" y="53.559" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="R8" library="hot-wand" package="0603-RES" value="1K" x="46.7" y="64.5" smashed="yes" rot="MR270">
+<attribute name="NAME" x="45.989" y="66.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="46.016" y="67.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C8" library="hot-wand" package="0603-CAP" value="3n3" x="48.8" y="64.5" smashed="yes" rot="MR270">
+<attribute name="NAME" x="49.662" y="63.511" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="50.657" y="63.484" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="C2" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="100uF 50V" x="44" y="34.7" smashed="yes">
+<attribute name="VALUE" x="40.995" y="36.982" size="0.8128" layer="27" font="vector"/>
+<attribute name="NAME" x="43.038" y="36.021" size="0.8128" layer="25" font="vector"/>
+</element>
+<element name="R11" library="hot-wand" package="0603-RES" value="2K2" x="103.9" y="8.3" smashed="yes" rot="MR270">
+<attribute name="NAME" x="104.062" y="10.111" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="105.157" y="10.084" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R4" library="hot-wand" package="0603-RES" value="6K8" x="48.8" y="51.6" smashed="yes" rot="MR270">
+<attribute name="NAME" x="49.238" y="50.089" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="48.043" y="50.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="VR1" library="hot-wand" package="TRIM_3362P-1-103LF" value="10K" x="48.8" y="57" smashed="yes" rot="R270">
+<attribute name="NAME" x="45.511040625" y="60.10828125" size="0.8128" layer="25" font="vector" rot="R270"/>
+<attribute name="VALUE" x="46.48783125" y="60.10741875" size="0.8128" layer="27" font="vector" rot="R270"/>
+</element>
+<element name="C3" library="hot-wand" package="0805" value="15nF (DNP)" x="54.9" y="56.2" smashed="yes" rot="MR270">
+<attribute name="NAME" x="55.8255" y="55.338" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="R5" library="hot-wand" package="0603-RES" value="1K" x="53.1" y="56.2" smashed="yes" rot="MR270">
+<attribute name="NAME" x="52.662" y="57.911" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="51.657" y="57.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="C4" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="100uF 50V" x="55" y="31.5" smashed="yes">
+<attribute name="VALUE" x="51.895" y="34.082" size="0.8128" layer="27" font="vector"/>
+<attribute name="NAME" x="54.038" y="33.021" size="0.8128" layer="25" font="vector"/>
+</element>
+<element name="R1" library="hot-wand" package="1206" value="0R1" x="63" y="38.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="60.457" y="39.07" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="R2" library="hot-wand" package="1206" value="0R1" x="63" y="40.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="65.43" y="41.657" size="0.8128" layer="26" font="vector" rot="MR180"/>
+</element>
+<element name="R3" library="hot-wand" package="1206" value="0R1" x="63" y="43" smashed="yes" rot="MR180">
+<attribute name="NAME" x="65.43" y="43.957" size="0.8128" layer="26" font="vector" rot="MR180"/>
+</element>
+<element name="U3" library="hot-wand" package="SOT95P280X145-5N" value="INA138" x="63" y="35.4" smashed="yes" rot="MR180">
 <attribute name="AVAILABILITY" value="In Stock" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="MF" value="Texas Instruments" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="MP" value="INA138NA/3K" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -1486,36 +1758,104 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PRICE" value="None" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/INA138NA/3K/Texas+Instruments/view-part/?ref=eda" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="PACKAGE" value="SOT-23-5 Texas Instruments" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="60.2" y="35.6" size="0.8128" layer="26" font="vector" rot="MR270"/>
 </element>
-<element name="R25" library="hot-wand" package="0603-RES" value="100K" x="62.6" y="30.6" rot="MR0"/>
-<element name="C46" library="hot-wand" package="0603-CAP" value="1uF" x="66.1" y="33.3" rot="MR90"/>
-<element name="C49" library="hot-wand" package="0603-CAP" value="100n" x="62.6" y="32.6" rot="MR180"/>
-<element name="R24" library="hot-wand" package="0603-RES" value="3K" x="51.3" y="19.1" rot="MR90"/>
-<element name="R23" library="hot-wand" package="0603-RES" value="27K" x="67.1" y="38.2" rot="MR0"/>
-<element name="C47" library="hot-wand" package="0603-CAP" value="100n" x="49.2" y="19.1" rot="MR270"/>
-<element name="R27" library="hot-wand" package="0603-RES" value="3K" x="32.5" y="25" rot="MR270"/>
-<element name="R26" library="hot-wand" package="0603-RES" value="27K" x="30.4" y="25" rot="MR90"/>
-<element name="C48" library="hot-wand" package="0603-CAP" value="100n" x="34.6" y="25" rot="MR90"/>
-<element name="R14" library="hot-wand" package="0603-RES" value="100Ω" x="47.5" y="69.1" rot="MR180"/>
-<element name="IC1" library="hot-wand" package="TO220-BUCK" value="12V R-78K12-2.0" x="32.5" y="45"/>
-<element name="IC2" library="hot-wand" package="TO220-BUCK" value="3V3 R-78K3.3" x="32.5" y="33"/>
-<element name="D3" library="hot-wand" package="SOD-323" value="BZX55C22" x="46.6" y="57.4" rot="MR270"/>
-<element name="R9" library="hot-wand" package="0603-RES" value="1K" x="46.6" y="54.1" rot="MR90"/>
-<element name="C43" library="hot-wand" package="EIA3528" value="10uF" x="31.8" y="40.7" rot="MR0"/>
-<element name="C44" library="hot-wand" package="EIA3528" value="10uF" x="40" y="40" rot="MR180"/>
-<element name="C45" library="hot-wand" package="EIA3528" value="10uF" x="33.7" y="37" rot="MR180"/>
-<element name="D12" library="hot-wand" package="SMA-DIODE" value="2A" x="40" y="44" rot="MR180"/>
-<element name="D13" library="hot-wand" package="SMA-DIODE" value="DIODE-SCHOTTKY_" x="32.5" y="29" rot="MR0"/>
-<element name="F1" library="hot-wand" package="FUSE_5MM" value="8A" x="24" y="68.2" rot="R270">
+<element name="R25" library="hot-wand" package="0603-RES" value="100K" x="62.6" y="30.6" smashed="yes" rot="MR0">
+<attribute name="NAME" x="61.411" y="29.738" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="60.984" y="28.743" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C46" library="hot-wand" package="0603-CAP" value="1uF" x="66.1" y="33.3" smashed="yes" rot="MR90">
+<attribute name="NAME" x="66.862" y="32.411" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="67.957" y="32.384" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="C49" library="hot-wand" package="0603-CAP" value="100n" x="62.6" y="32.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="60.889" y="32.162" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="61.084" y="33.143" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R24" library="hot-wand" package="0603-RES" value="3K" x="51.3" y="19.1" smashed="yes" rot="MR90">
+<attribute name="NAME" x="52.162" y="18.211" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="53.257" y="18.184" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R23" library="hot-wand" package="0603-RES" value="27K" x="67.1" y="38.2" smashed="yes" rot="MR0">
+<attribute name="NAME" x="68.711" y="38.038" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="68.684" y="36.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C47" library="hot-wand" package="0603-CAP" value="100n" x="49.2" y="19.1" smashed="yes" rot="MR270">
+<attribute name="NAME" x="48.338" y="20.189" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="49.743" y="20.516" size="0.4064" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="R27" library="hot-wand" package="0603-RES" value="3K" x="32.5" y="25" smashed="yes" rot="MR270">
+<attribute name="NAME" x="32.038" y="23.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="33.143" y="23.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="R26" library="hot-wand" package="0603-RES" value="27K" x="30.4" y="25" smashed="yes" rot="MR90">
+<attribute name="NAME" x="29.538" y="26.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="28.443" y="26.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="C48" library="hot-wand" package="0603-CAP" value="100n" x="34.6" y="25" smashed="yes" rot="MR90">
+<attribute name="NAME" x="34.938" y="23.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="34.157" y="23.584" size="0.4064" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R14" library="hot-wand" package="0603-RES" value="100Ω" x="47.5" y="69.1" smashed="yes" rot="MR180">
+<attribute name="NAME" x="45.789" y="68.762" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="45.816" y="69.857" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="IC1" library="hot-wand" package="TO220-BUCK" value="12V R-78K12-2.0" x="32.5" y="45" smashed="yes">
+<attribute name="NAME" x="27.106" y="48.229" size="0.8128" layer="25" font="vector" ratio="10"/>
+<attribute name="VALUE" x="27.098" y="47.198" size="0.8128" layer="27" font="vector" ratio="10"/>
+</element>
+<element name="IC2" library="hot-wand" package="TO220-BUCK" value="3V3 R-78K3.3" x="32.5" y="33" smashed="yes">
+<attribute name="NAME" x="38.294" y="24.271" size="0.8128" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="VALUE" x="38.302" y="25.302" size="0.8128" layer="27" font="vector" ratio="10" rot="R180"/>
+</element>
+<element name="D3" library="hot-wand" package="SOD-323" value="BZX55C22" x="46.6" y="57.4" smashed="yes" rot="MR270">
+<attribute name="NAME" x="46.216" y="59.211" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="R9" library="hot-wand" package="0603-RES" value="1K" x="46.6" y="54.1" smashed="yes" rot="MR90">
+<attribute name="NAME" x="45.838" y="53.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="44.843" y="53.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="C43" library="hot-wand" package="EIA3528" value="10uF" x="31.8" y="40.7" smashed="yes" rot="MR0">
+<attribute name="NAME" x="34.67" y="39.63" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="29.56" y="39.43" size="0.4064" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="C44" library="hot-wand" package="EIA3528" value="10uF" x="40" y="40" smashed="yes" rot="MR180">
+<attribute name="NAME" x="38.43" y="38.13" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="42.24" y="41.27" size="0.4064" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="C45" library="hot-wand" package="EIA3528" value="10uF" x="33.7" y="37" smashed="yes" rot="MR180">
+<attribute name="NAME" x="30.73" y="38.07" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="35.94" y="38.27" size="0.4064" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="D12" library="hot-wand" package="SMA-DIODE" value="2A" x="40" y="44" smashed="yes" rot="MR180">
+<attribute name="NAME" x="42.914" y="43.749" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="42.954" y="45.349" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="D13" library="hot-wand" package="SMA-DIODE" value="" x="32.5" y="29" smashed="yes" rot="MR0">
+<attribute name="NAME" x="29.386" y="28.551" size="0.8128" layer="26" font="vector" rot="MR0"/>
+</element>
+<element name="F1" library="hot-wand" package="FUSE_5MM" value="8A" x="24" y="68.2" smashed="yes" rot="R270">
 <attribute name="PARTNUM" value="952001100010000" x="24" y="68.2" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="R19" library="hot-wand" package="0805" value="1K" x="72" y="26.6" rot="MR90"/>
-<element name="L1" library="hot-wand" package="IND_RADIAL_D12.7_P6.35" value="33u SL1016T" x="45" y="47"/>
-<element name="L2" library="hot-wand" package="IND_IHLP-2525CZ_VIS-M" value="4u7 IHLP2525CZ" x="55" y="41.4" rot="MR180"/>
-<element name="D2" library="hot-wand" package="SOD123FL" value="MMSZ22T1G" x="53.1" y="52.4" rot="MR90"/>
-<element name="JP3" library="hot-wand" package="XT30PW" value="XT-CONNECTOR-XT30PW" x="3" y="53" rot="R90"/>
-<element name="D14" library="hot-wand" package="SMA" value="40V" x="7.7" y="50.6" rot="MR0"/>
-<element name="U4" library="hot-wand" package="SOT95P280X145-6N" value="LM74700QDBVTQ1" x="19.5" y="45.3" rot="MR0">
+<element name="R19" library="hot-wand" package="0805" value="1K" x="72" y="26.6" smashed="yes" rot="MR90">
+<attribute name="NAME" x="75.0255" y="25.538" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="L1" library="hot-wand" package="IND_RADIAL_D12.7_P6.35" value="33u SL1016T" x="45" y="47" smashed="yes">
+<attribute name="NAME" x="41.189" y="49.37" size="0.8128" layer="25" font="vector" ratio="10"/>
+<attribute name="VALUE" x="41.189" y="48.26" size="0.8128" layer="27" font="vector" ratio="10"/>
+</element>
+<element name="L2" library="hot-wand" package="IND_IHLP-2525CZ_VIS-M" value="4u7 IHLP2525CZ" x="55" y="41.4" smashed="yes" rot="MR180">
+<attribute name="NAME" x="51.4234" y="37.535" size="0.8128" layer="28" font="vector" ratio="6" rot="SMR180"/>
+</element>
+<element name="D2" library="hot-wand" package="SOD123FL" value="MMSZ22T1G" x="53.1" y="52.4" smashed="yes" rot="MR90">
+<attribute name="NAME" x="53.5" y="50.1" size="0.8128" layer="26" font="vector" rot="MR270"/>
+</element>
+<element name="JP3" library="hot-wand" package="XT30PW" value="XT-CONNECTOR-XT30PW" x="3" y="53" smashed="yes" rot="R90"/>
+<element name="D14" library="hot-wand" package="SMA" value="40V" x="7.3" y="50.6" smashed="yes" rot="MR0">
+<attribute name="NAME" x="9.55" y="53" size="0.8128" layer="26" font="vector" ratio="10" rot="MR0"/>
+<attribute name="VALUE" x="9.55" y="54" size="0.8128" layer="28" font="vector" ratio="10" rot="MR0"/>
+</element>
+<element name="U4" library="hot-wand" package="SOT95P280X145-6N" value="LM74700QDBVTQ1" x="19.5" y="45.3" smashed="yes" rot="MR0">
 <attribute name="MF" value="Texas Instruments" x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MP" value="LM74700QDBVTQ1" x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/LM74700QDBVTQ1/Texas+Instruments/view-part/?ref=snap" x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
@@ -1523,12 +1863,23 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="DESCRIPTION" value="                                                      3.2-V to 65-V, 80-uA IQ automotive ideal diode controller                                              " x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/LM74700QDBVTQ1/Texas+Instruments/view-part/?ref=eda" x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="PACKAGE" value="SOT-23-6 Texas Instruments" x="19.5" y="45.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="22.2" y="46.7" size="0.8128" layer="26" font="vector" rot="MR180"/>
 </element>
-<element name="Q4" library="hot-wand" package="POWERPAK-SO8-X1" value="SIRS5800DP-T1-GE3" x="19.5" y="49.9"/>
-<element name="C50" library="hot-wand" package="0603-CAP" value="100n" x="19.5" y="48" rot="MR180"/>
-<element name="C51" library="hot-wand" package="0603-CAP" value="100n" x="19.5" y="50" rot="MR0"/>
-<element name="U5" library="hot-wand" package="QFN-16" value="AP53781-QFN16" x="13" y="29.8" rot="MR0"/>
-<element name="JP4" library="hot-wand" package="SAMESKY_UJC-H-G-SMT-2-P6-TR-DRILL" value="USBC-CHGONLY-4M-DRILL" x="2.6" y="40" rot="R270">
+<element name="Q4" library="hot-wand" package="POWERPAK-SO8-X1" value="SIRS5800DP-T1-GE3" x="19.5" y="49.9" smashed="yes">
+<attribute name="NAME" x="15.9946" y="52.90463125" size="0.8128" layer="25" font="vector"/>
+</element>
+<element name="C50" library="hot-wand" package="0603-CAP" value="100n" x="19.5" y="48" smashed="yes" rot="MR180">
+<attribute name="NAME" x="21.111" y="48.338" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="20.916" y="47.457" size="0.4064" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C51" library="hot-wand" package="0603-CAP" value="100n" x="19.5" y="50" smashed="yes" rot="MR0">
+<attribute name="NAME" x="21.011" y="50.438" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="20.916" y="49.457" size="0.4064" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="U5" library="hot-wand" package="QFN-16" value="AP53781-QFN16" x="13" y="29.8" smashed="yes" rot="MR0">
+<attribute name="NAME" x="16.3" y="31.85" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="JP4" library="hot-wand" package="SAMESKY_UJC-H-G-SMT-2-P6-TR-DRILL" value="USBC-CHGONLY-4M-DRILL" x="2.6" y="40" smashed="yes" rot="R270">
 <attribute name="MF" value="Same Sky" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MP" value="UJC-H-G-SMT-2-P6-TR" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/UJC-H-G-SMT-2-P6-TR/Same+Sky/view-part/?ref=snap" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1537,20 +1888,51 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/UJC-H-G-SMT-2-P6-TR/Same+Sky/view-part/?ref=eda" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="PACKAGE" value="None" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="Q5" library="hot-wand" package="SOT23-3" value="SSM3K388R,LF" x="22" y="42.3" rot="MR0"/>
-<element name="R28" library="hot-wand" package="0603-RES" value="10K" x="22" y="39.6" rot="MR180"/>
-<element name="R29" library="hot-wand" package="0603-RES" value="10K" x="22" y="35.8" rot="MR180"/>
-<element name="Q6" library="hot-wand" package="POWERPAK-SO8-X2" value="DMTH64M2LPDWQ-13" x="15" y="40"/>
-<element name="R30" library="hot-wand" package="0603-RES" value="4K3" x="13.4" y="34.9" rot="MR270"/>
-<element name="R31" library="hot-wand" package="0603-RES" value="200Ω" x="10.9" y="34.3" rot="MR180"/>
-<element name="C52" library="hot-wand" package="0603-CAP" value="100n" x="7.9" y="32.3" rot="MR180"/>
-<element name="R32" library="hot-wand" package="0603-RES" value="26K" x="17" y="27.3" rot="MR270"/>
-<element name="R34" library="hot-wand" package="0603-RES" value="10K" x="19.5" y="52" rot="MR180"/>
-<element name="D15" library="hot-wand" package="SOD-323" value="12V" x="22" y="37.6" rot="MR0"/>
-<element name="D16" library="hot-wand" package="SMA" value="40V" x="8.3" y="39.2" rot="MR0"/>
-<element name="HEATSINK1" library="hot-wand" package="HEATSINK-5042" value="HEATSINK-5042" x="61" y="70.14"/>
-<element name="HEATSINK2" library="hot-wand" package="HEATSINK-5042" value="HEATSINK-5042" x="86" y="70.14"/>
-<element name="JP2" library="hot-wand" package="CONN_73330-0030_MOL" value="COAX-FTYPE-PCB-MNT" x="68.5" y="7" locked="yes" rot="R180">
+<element name="Q5" library="hot-wand" package="SOT23-3" value="SSM3K388R,LF" x="22" y="42.3" smashed="yes" rot="MR0">
+<attribute name="NAME" x="23.878" y="41.3745" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="R28" library="hot-wand" package="0603-RES" value="10K" x="22" y="39.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="23.511" y="39.738" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="26.416" y="39.957" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R29" library="hot-wand" package="0603-RES" value="10K" x="22" y="35.8" smashed="yes" rot="MR180">
+<attribute name="NAME" x="21.111" y="35.038" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="21.084" y="33.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="Q6" library="hot-wand" package="POWERPAK-SO8-X2" value="DMTH64M2LPDWQ-13" x="15" y="40" smashed="yes">
+<attribute name="NAME" x="11.4946" y="43.00463125" size="0.8128" layer="25" font="vector"/>
+</element>
+<element name="R30" library="hot-wand" package="0603-RES" value="4K3" x="13.4" y="34.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="14.262" y="34.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="15.257" y="33.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R31" library="hot-wand" package="0603-RES" value="200Ω" x="10.9" y="34.3" smashed="yes" rot="MR180">
+<attribute name="NAME" x="11.789" y="35.162" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="12.316" y="33.857" size="0.4064" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C52" library="hot-wand" package="0603-CAP" value="100n" x="7.9" y="32.3" smashed="yes" rot="MR180">
+<attribute name="NAME" x="6.691" y="31.418" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="5.924" y="30.343" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R32" library="hot-wand" package="0603-RES" value="26K" x="17" y="27.3" smashed="yes" rot="MR270">
+<attribute name="NAME" x="17.962" y="26.211" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="18.957" y="26.184" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R34" library="hot-wand" package="0603-RES" value="10K" x="19.5" y="52" smashed="yes" rot="MR180">
+<attribute name="NAME" x="20.789" y="52.862" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="20.816" y="53.957" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="D15" library="hot-wand" package="SOD-323" value="12V" x="22" y="37.6" smashed="yes" rot="MR0">
+<attribute name="NAME" x="20.189" y="37.216" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="19.316" y="38.203" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="D16" library="hot-wand" package="SMA" value="40V" x="8.3" y="39.2" smashed="yes" rot="MR0">
+<attribute name="NAME" x="10.95" y="41.5" size="0.8128" layer="26" font="vector" ratio="10" rot="MR0"/>
+<attribute name="VALUE" x="10.95" y="42.6" size="0.8128" layer="28" font="vector" ratio="10" rot="MR0"/>
+</element>
+<element name="HEATSINK1" library="hot-wand" package="HEATSINK-5042" value="HEATSINK-5042" x="61" y="70.14" smashed="yes"/>
+<element name="HEATSINK2" library="hot-wand" package="HEATSINK-5042" value="HEATSINK-5042" x="86" y="70.14" smashed="yes"/>
+<element name="JP2" library="hot-wand" package="CONN_73330-0030_MOL" value="COAX-FTYPE-PCB-MNT" x="68.5" y="7" locked="yes" smashed="yes" rot="R180">
 <attribute name="MF" value="Molex" x="68.5" y="7" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MP" value="733300030" x="68.5" y="7" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/733300030/Molex/view-part/?ref=snap" x="68.5" y="7" size="1.778" layer="27" rot="R180" display="off"/>
@@ -1559,7 +1941,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/733300030/Molex/view-part/?ref=eda" x="68.5" y="7" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="PACKAGE" value="None" x="68.5" y="7" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="SW1" library="hot-wand" package="SW_1-1825027-1" value="SW-TACT-SIDE" x="37" y="4.5">
+<element name="SW1" library="hot-wand" package="SW_1-1825027-1" value="TACT-SIDE" x="37" y="4.5" smashed="yes">
 <attribute name="COMMENT" value="1-1825027-1" x="37" y="4.5" size="1.778" layer="27" display="off"/>
 <attribute name="MF" value="TE Connectivity" x="37" y="4.5" size="1.778" layer="27" display="off"/>
 <attribute name="MP" value="1-1825027-1" x="37" y="4.5" size="1.778" layer="27" display="off"/>
@@ -1569,9 +1951,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="DESCRIPTION" value="                                                      FSMRA4JH04=R/A,TACT PB SW,160G SPST-NO                                              " x="37" y="4.5" size="1.778" layer="27" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/1-1825027-1/TE+Connectivity+Alcoswitch+Switches/view-part/?ref=eda" x="37" y="4.5" size="1.778" layer="27" display="off"/>
 <attribute name="PACKAGE" value="None" x="37" y="4.5" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="33.49406875" y="9.253040625" size="0.8128" layer="25" font="vector"/>
 </element>
-<element name="U6" library="hot-wand" package="OLED-0.91IN-VERT" value="OLED-SSD1306-4PIN-0.91N-VERT" x="51" y="5"/>
-<element name="U7" library="hot-wand" package="SOP65P640X120-20N" value="STM32F030F4P6" x="42" y="18" rot="MR270">
+<element name="U6" library="hot-wand" package="OLED-0.91IN-VERT" value="SSD1306-4PIN-0.91N-VERT" x="51" y="5" smashed="yes"/>
+<element name="U7" library="hot-wand" package="SOP65P640X120-20N" value="STM32F030F4P6" x="42" y="18" smashed="yes" rot="MR270">
 <attribute name="AVAILABILITY" value="In Stock" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="MF" value="STMicroelectronics" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="MP" value="STM32F030F4P6" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
@@ -1580,11 +1963,21 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PRICE" value="None" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=eda" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PACKAGE" value="TSSOP-20 STMicroelectronics" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="NAME" x="38.593409375" y="22.40588125" size="0.8128" layer="26" font="vector" rot="MR270"/>
 </element>
-<element name="R33" library="hot-wand" package="0603-RES" value="10K" x="19.1" y="6.2" rot="MR180"/>
-<element name="C53" library="hot-wand" package="0603-CAP" value="100n" x="43" y="13" rot="MR180"/>
-<element name="C54" library="hot-wand" package="0603-CAP" value="100n" x="45.2" y="23.8" rot="MR180"/>
-<element name="Y1" library="hot-wand" package="XTAL-4SMD-3.2X2.5-V2" value="27.12 MHz 10pF" x="39.8" y="25" rot="MR90">
+<element name="R33" library="hot-wand" package="0603-RES" value="10K" x="19.1" y="6.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="20.389" y="7.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="20.416" y="8.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="C53" library="hot-wand" package="0603-CAP" value="100n" x="43" y="13" smashed="yes" rot="MR180">
+<attribute name="NAME" x="42.111" y="12.238" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="41.284" y="11.243" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C54" library="hot-wand" package="0603-CAP" value="100n" x="45.2" y="23.8" smashed="yes" rot="MR180">
+<attribute name="NAME" x="46.711" y="24.138" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="43.784" y="24.343" size="0.4064" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="Y1" library="hot-wand" package="XTAL-4SMD-3.2X2.5-V2" value="27.12 MHz 10pF" x="39.8" y="25" smashed="yes" rot="MR90">
 <attribute name="AVAILABILITY" value="In Stock" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="MF" value="Abracon LLC" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="MP" value="ABM8-27.120MHZ-10-D1G-T" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
@@ -1593,17 +1986,86 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PRICE" value="None" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/ABM8-27.120MHZ-10-D1G-T/Abracon/view-part/?ref=eda" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="PACKAGE" value="NON-STANDARD-4 ABRACON" x="39.8" y="25" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="NAME" x="41.85" y="26.95" size="0.8128" layer="26" font="vector" rot="MR0"/>
 </element>
-<element name="C55" library="hot-wand" package="0603-CAP" value="10p" x="42.9" y="24.9" rot="MR90"/>
-<element name="C56" library="hot-wand" package="0603-CAP" value="10p" x="36.7" y="25" rot="MR270"/>
-<element name="JP5" library="hot-wand" package="1X06_LOCK" value="" x="28" y="2" rot="R180"/>
-<element name="D17" library="hot-wand" package="SOD-323" value="STPS0540Z" x="35.9" y="2.6" rot="MR180"/>
-<element name="C57" library="hot-wand" package="0603-CAP" value="1uF" x="53.2" y="7.5" rot="MR0"/>
-<element name="R35" library="hot-wand" package="0603-RES" value="4K7" x="47.8" y="2.9" rot="MR180"/>
-<element name="R36" library="hot-wand" package="0603-RES" value="4K7" x="51" y="2.9" rot="MR180"/>
-<element name="R37" library="hot-wand" package="0603-RES" value="DNP" x="48.8" y="57" rot="MR270"/>
-<element name="VR2" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="1K" x="66.7" y="22.1" rot="R90"/>
-<element name="SJ1" library="hot-wand" package="SJ_2S-NO" value="" x="72" y="22.8" rot="MR270"/>
+<element name="C55" library="hot-wand" package="0603-CAP" value="10p" x="42.9" y="24.9" smashed="yes" rot="MR90">
+<attribute name="NAME" x="43.662" y="26.511" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="42.457" y="23.484" size="0.4064" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="C56" library="hot-wand" package="0603-CAP" value="10p" x="36.7" y="25" smashed="yes" rot="MR270">
+<attribute name="NAME" x="36.262" y="26.811" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="37.243" y="26.416" size="0.4064" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="JP5" library="hot-wand" package="1X06_LOCK" value="" x="28" y="2" smashed="yes" rot="R180">
+<attribute name="VALUE" x="29.27" y="5.302" size="1.27" layer="27" font="vector" rot="R180"/>
+</element>
+<element name="D17" library="hot-wand" package="SOD-323" value="3V6" x="35.9" y="2.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="37.511" y="3.084" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="37.584" y="1.997" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="C57" library="hot-wand" package="1206" value="1uF" x="53.5" y="7.5" smashed="yes" rot="MR0">
+<attribute name="NAME" x="54.77" y="8.843" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="54.797" y="9.876" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R35" library="hot-wand" package="0603-RES" value="4K7" x="47.8" y="2.9" smashed="yes" rot="MR180">
+<attribute name="NAME" x="46.911" y="2.138" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="46.884" y="1.043" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R36" library="hot-wand" package="0603-RES" value="4K7" x="51" y="2.9" smashed="yes" rot="MR180">
+<attribute name="NAME" x="50.111" y="2.138" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="50.084" y="1.143" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="R37" library="hot-wand" package="0603-RES" value="DNP" x="48.8" y="57" smashed="yes" rot="MR270">
+<attribute name="NAME" x="49.562" y="56.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
+</element>
+<element name="VR2" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="1K" x="67.1" y="23.5" smashed="yes">
+<attribute name="NAME" x="64.65" y="25.65" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="66.35" y="26.65" size="0.8128" layer="27" font="vector" rot="R180" align="top-left"/>
+</element>
+<element name="SJ1" library="hot-wand" package="SJ_2S-NO" value="" x="72" y="22.8" smashed="yes" rot="MR270">
+<attribute name="NAME" x="72.992" y="21.93" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="73.651" y="23.708" size="0.4064" layer="28" rot="MR270"/>
+</element>
+<element name="C58" library="hot-wand" package="0603-CAP" value="3n3" x="44.7" y="55.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="43.938" y="56.789" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="VALUE" x="42.943" y="56.816" size="0.8128" layer="28" font="vector" rot="MR270"/>
+</element>
+<element name="LED1" library="hot-wand" package="LED-0603" value="" x="27.1" y="52.7" smashed="yes" rot="R180">
+<attribute name="NAME" x="26.3015" y="51.411" size="0.8128" layer="25" rot="R90"/>
+<attribute name="VALUE" x="26.0205" y="53.716" size="0.4064" layer="27" rot="R270"/>
+</element>
+<element name="LED2" library="hot-wand" package="LED-0603" value="" x="36.5" y="50.1" smashed="yes" rot="R90">
+<attribute name="NAME" x="35.611" y="51.8985" size="0.8128" layer="25"/>
+<attribute name="VALUE" x="37.516" y="51.1795" size="0.4064" layer="27" rot="R180"/>
+</element>
+<element name="LED3" library="hot-wand" package="LED-0603" value="" x="31.1" y="8.8" smashed="yes">
+<attribute name="NAME" x="31.5015" y="10.411" size="0.8128" layer="25" rot="R90"/>
+<attribute name="VALUE" x="32.1795" y="7.784" size="0.4064" layer="27" rot="R90"/>
+</element>
+<element name="R38" library="hot-wand" package="0603-RES" value="2K2" x="28.3" y="56" smashed="yes" rot="MR0">
+<attribute name="NAME" x="26.589" y="55.662" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="26.616" y="54.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="R39" library="hot-wand" package="0603-RES" value="2K2" x="36.5" y="48.7" smashed="yes">
+<attribute name="NAME" x="35.611" y="50.862" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="35.184" y="48.257" size="0.4064" layer="27" font="vector"/>
+</element>
+<element name="R40" library="hot-wand" package="0603-RES" value="1K" x="29.1" y="7" smashed="yes">
+<attribute name="NAME" x="27.711" y="7.762" size="0.8128" layer="25" font="vector"/>
+<attribute name="VALUE" x="27.684" y="6.657" size="0.8128" layer="27" font="vector"/>
+</element>
+<element name="LED4" library="hot-wand" package="LED-0603" value="" x="69.1" y="36.3" smashed="yes" rot="R180">
+<attribute name="NAME" x="69.7985" y="37.189" size="0.8128" layer="25" rot="R270"/>
+<attribute name="VALUE" x="68.0205" y="37.316" size="0.4064" layer="27" rot="R270"/>
+</element>
+<element name="R41" library="hot-wand" package="0603-RES" value="2K2" x="67.1" y="40.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="66.211" y="39.438" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="66.084" y="41.343" size="0.8128" layer="28" font="vector" rot="MR180"/>
+</element>
+<element name="SJ2" library="hot-wand" package="SJ_2S-NO" value="" x="36.6" y="21.6" smashed="yes" rot="MR180">
+<attribute name="NAME" x="34.892" y="20.33" size="0.8128" layer="26" rot="MR180"/>
+<attribute name="VALUE" x="35.692" y="23.251" size="0.4064" layer="28" rot="MR180"/>
+</element>
 </elements>
 <signals>
 <signal name="GND">
@@ -1877,8 +2339,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="32.4" y="52.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="34" y="55" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="34" y="57" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="28.5" y="57" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="28.5" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="28.5" y="57.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="28.5" y="54.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.5" y="53" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.5" y="51" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="29.3" y="63.8" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1970,7 +2432,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="67.4" y="46" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="67.4" y="44" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="67.4" y="42" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="67.4" y="40" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="70" y="40.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="35" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="37" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="39" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2010,7 +2472,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="SW1" pad="2"/>
 <contactref element="C54" pad="2"/>
 <contactref element="C53" pad="2"/>
-<contactref element="U7" pad="1"/>
 <contactref element="U7" pad="15"/>
 <contactref element="Y1" pad="4"/>
 <contactref element="Y1" pad="2"/>
@@ -2042,7 +2503,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="44.9" y="13" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="43.1" y="19.5" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="U7" pad="7"/>
-<via x="36.4" y="19.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="36.3" y="19.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="36.4" y="18.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="41" y="18.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40.7" y="16.5" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2126,16 +2587,16 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="35" y="15" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="33" y="11" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="32.2" y="11.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="30" y="8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="30" y="8.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="29.2" y="8.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="27" y="4.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.9" y="4.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="27" y="7.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="26.6" y="6.4" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="24.6" y="7.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="23.4" y="6.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="22.8" y="7.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="21.6" y="6.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="24.7" y="7.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="23.4" y="6.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="22.8" y="7.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="21.5" y="6.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="19.1" y="7.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="18" y="8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="18.5" y="5" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2155,9 +2616,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="53" y="1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="45" y="3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="41" y="3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="39.5" y="10.1" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="40.4" y="9.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="37.7" y="8.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="39.4" y="10.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="40.4" y="9.2" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37.6" y="8.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="36.2" y="4.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="29" y="13.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="29" y="12" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2165,8 +2626,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="27.1" y="10.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="27.1" y="15.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="27.1" y="17" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="35.7" y="22" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="52" y="15.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="33.6" y="21.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="52" y="15.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="52" y="13.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55.5" y="22.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="56.8" y="19.9" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2237,8 +2698,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="57.7" y="19" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55.3" y="16.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="61.2" y="22.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="64" y="24.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="64" y="23.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="64" y="24.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="64" y="23.1" extent="1-16" drill="0.3" shape="octagon"/>
 <wire x1="67.2" y1="2.7" x2="64.2" y2="2.7" width="1.016" layer="16"/>
 <wire x1="64.2" y1="2.7" x2="61.2" y2="2.7" width="1.016" layer="16"/>
 <wire x1="64.2" y1="2.7" x2="64.2" y2="5.5" width="1.016" layer="16"/>
@@ -2269,6 +2730,105 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="98.8" y="44.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="98.8" y="42.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="98.8" y="46.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="66.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="53" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="40" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="33" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="25" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="16" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.6" y="5.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="10.9" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="4.6" y="4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="9.5" y="6.3" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="C58" pad="1"/>
+<via x="63" y="37.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="64.3" y="35.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="66.9" y="37" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="78.8" y="19.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="77.2" y="19.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="79.4" y="15" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="76.6" y="15" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="76.6" y="17" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="79.4" y="17" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="77.3" y="23" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="78.7" y="23" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="78.7" y="27" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="77.3" y="27" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="77.3" y="32" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="78.7" y="32" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="78.7" y="37" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="77.3" y="37" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="LED1" pad="C"/>
+<contactref element="LED2" pad="C"/>
+<contactref element="LED3" pad="C"/>
+<contactref element="LED4" pad="C"/>
+<wire x1="69.1" y1="1.6" x2="71.5" y2="1.6" width="1.016" layer="16"/>
+<wire x1="71.5" y1="1.6" x2="72.7" y2="2.8" width="1.016" layer="16"/>
+<wire x1="72.8" y1="11.3" x2="70.2" y2="11.3" width="1.016" layer="16"/>
+<wire x1="66.8" y1="11.3" x2="64.2" y2="11.3" width="1.016" layer="16"/>
+<polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no">
+<vertex x="38.6" y="64.4"/>
+<vertex x="38.6" y="63.9"/>
+<vertex x="39.7" y="63.9"/>
+<vertex x="39.7" y="64.4"/>
+</polygon>
+<polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no">
+<vertex x="37.1" y="59.3"/>
+<vertex x="37.1" y="58.8"/>
+<vertex x="39.7" y="58.8"/>
+<vertex x="39.7" y="59.3"/>
+</polygon>
+<wire x1="40.44" y1="60.34" x2="39.66" y2="60.34" width="0.1524" layer="16"/>
+<via x="73.7" y="70.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="70.3" y="70.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="70.3" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="73.7" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="75.3" y="70.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="78.7" y="70.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="78.7" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="75.3" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="72" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="77" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="75.3" y="69.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="73.7" y="69.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="71.2" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="72.8" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="76.2" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<via x="77.8" y="68.8" extent="1-16" drill="0.3" shape="square"/>
+<polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no">
+<vertex x="88.3" y="67.7"/>
+<vertex x="90.1" y="67.7"/>
+<vertex x="90.1" y="66.4"/>
+<vertex x="88.3" y="66.4"/>
+</polygon>
+<polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no">
+<vertex x="64.2" y="67.7"/>
+<vertex x="65.1" y="67.7"/>
+<vertex x="65.1" y="66.3"/>
+<vertex x="63.3" y="66.3"/>
+<vertex x="63.3" y="67.7"/>
+</polygon>
+<via x="70.3" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="71.2" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="72" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="72.8" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="73.7" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="75.3" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="76.2" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="77" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="77.8" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="78.7" y="67.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="92.6" y="67.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="93.6" y="67.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="94.5" y="67.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="95.4" y="67.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="96.4" y="67.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="69.1" y="34.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="70" y="38.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="50.1" y="13.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="50.1" y="15.2" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="SJ2" pad="1"/>
+<via x="38.3" y="20.6" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="RF-OUT">
 <contactref element="T1" pad="P1"/>
@@ -2349,17 +2909,16 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="49.1" y1="14.5" x2="52.3" y2="14.5" width="0.2032" layer="16"/>
 <wire x1="47" y1="14.05" x2="47" y2="14.5" width="0.2032" layer="16"/>
 <wire x1="49.1" y1="14.05" x2="49.1" y2="14.5" width="0.2032" layer="16"/>
-<wire x1="52.3" y1="14.5" x2="61.8" y2="24" width="0.2032" layer="16"/>
-<wire x1="61.8" y1="24" x2="69" y2="24" width="0.2032" layer="16"/>
+<wire x1="52.3" y1="14.5" x2="61.5" y2="23.7" width="0.2032" layer="16"/>
+<wire x1="61.5" y1="23.7" x2="65.4" y2="23.7" width="0.2032" layer="16"/>
 <contactref element="SJ1" pad="2"/>
 <contactref element="VR2" pad="3"/>
-<via x="67.8" y="21.8" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="67.7" y1="20.4" x2="67.8" y2="20.5" width="0.4064" layer="1"/>
-<wire x1="67.8" y1="20.5" x2="67.8" y2="21.8" width="0.4064" layer="1"/>
-<wire x1="67.8" y1="21.8" x2="67.8" y2="24" width="0.2032" layer="16"/>
-<wire x1="67.8" y1="24" x2="69" y2="24" width="0.2032" layer="16"/>
-<wire x1="72" y1="22.35" x2="70.65" y2="22.35" width="0.4064" layer="16"/>
-<wire x1="70.65" y1="22.35" x2="69" y2="24" width="0.4064" layer="16"/>
+<wire x1="65.4" y1="23.7" x2="69" y2="23.7" width="0.2032" layer="16"/>
+<wire x1="72" y1="22.35" x2="70.35" y2="22.35" width="0.4064" layer="16"/>
+<wire x1="70.35" y1="22.35" x2="69" y2="23.7" width="0.4064" layer="16"/>
+<wire x1="65.4" y1="22.5" x2="65.4" y2="20.7" width="0.4064" layer="1"/>
+<via x="65.4" y="20.7" extent="1-16" drill="0.8" diameter="1.8" shape="octagon"/>
+<wire x1="65.4" y1="20.7" x2="65.4" y2="23.7" width="0.2032" layer="16"/>
 </signal>
 <signal name="3.3V">
 <contactref element="R18" pad="2"/>
@@ -2378,13 +2937,13 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="JP5" pad="1"/>
 <contactref element="U6" pad="2"/>
 <contactref element="C57" pad="2"/>
-<wire x1="41.675" y1="20.88" x2="41.675" y2="15.12" width="0.2032" layer="16"/>
-<wire x1="44.35" y1="23.8" x2="43.65" y2="23.1" width="0.2032" layer="16"/>
-<wire x1="43.65" y1="23.1" x2="42.3" y2="23.1" width="0.2032" layer="16"/>
-<wire x1="42.3" y1="23.1" x2="41.675" y2="22.475" width="0.2032" layer="16"/>
-<wire x1="41.675" y1="22.475" x2="41.675" y2="20.88" width="0.2032" layer="16"/>
-<wire x1="41.675" y1="15.12" x2="41.675" y2="13.475" width="0.2032" layer="16"/>
-<wire x1="41.675" y1="13.475" x2="42.15" y2="13" width="0.2032" layer="16"/>
+<wire x1="41.675" y1="20.88" x2="41.675" y2="15.12" width="0.254" layer="16"/>
+<wire x1="44.35" y1="23.8" x2="43.55" y2="23" width="0.254" layer="16"/>
+<wire x1="43.55" y1="23" x2="42.2" y2="23" width="0.254" layer="16"/>
+<wire x1="42.2" y1="23" x2="41.675" y2="22.475" width="0.254" layer="16"/>
+<wire x1="41.675" y1="22.475" x2="41.675" y2="20.88" width="0.254" layer="16"/>
+<wire x1="41.675" y1="15.12" x2="41.675" y2="13.475" width="0.254" layer="16"/>
+<wire x1="41.675" y1="13.475" x2="42.15" y2="13" width="0.254" layer="16"/>
 <contactref element="R36" pad="2"/>
 <contactref element="R35" pad="2"/>
 <wire x1="48.65" y1="2.9" x2="49.55" y2="2" width="0.2032" layer="16"/>
@@ -2403,21 +2962,24 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="51.46694375" y1="2" x2="28" y2="2" width="0.8128" layer="1"/>
 <wire x1="51.85" y1="2.9" x2="52.27" y2="3.32" width="0.4064" layer="16"/>
 <wire x1="52.27" y1="3.32" x2="52.27" y2="5" width="0.4064" layer="16"/>
-<wire x1="28" y1="2" x2="28" y2="7.1" width="0.8128" layer="1"/>
+<wire x1="28" y1="2" x2="28" y2="6.8" width="0.8128" layer="1"/>
+<wire x1="28" y1="6.8" x2="28" y2="7.1" width="0.8128" layer="1"/>
 <wire x1="28" y1="7.1" x2="28" y2="20" width="0.8128" layer="1"/>
 <wire x1="28" y1="20" x2="35.04" y2="27.04" width="0.8128" layer="1"/>
 <wire x1="35.04" y1="27.04" x2="35.04" y2="33" width="0.8128" layer="1"/>
 <wire x1="49.1" y1="12.35" x2="49.1" y2="10.4" width="0.4064" layer="16"/>
 <via x="20.9" y="7.1" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="20.9" y1="7.1" x2="28" y2="7.1" width="0.2032" layer="1"/>
-<wire x1="19.95" y1="6.2" x2="20.9" y2="7.1" width="0.2032" layer="16"/>
-<wire x1="52.35" y1="7.5" x2="52.35" y2="7.4" width="0.2032" layer="16"/>
+<wire x1="20.9" y1="7.1" x2="28" y2="7.1" width="0.254" layer="1"/>
+<wire x1="19.95" y1="6.2" x2="20.9" y2="7.1" width="0.254" layer="16"/>
+<wire x1="52.1" y1="7.5" x2="52.35" y2="7.4" width="0.2032" layer="16"/>
 <wire x1="52.35" y1="7.4" x2="52.27" y2="7.4" width="0.2032" layer="16"/>
+<contactref element="R40" pad="1"/>
+<wire x1="28.25" y1="7" x2="28" y2="6.8" width="0.4064" layer="1"/>
 </signal>
 <signal name="N$8">
 <contactref element="R22" pad="1"/>
 <contactref element="Q3" pad="1"/>
-<wire x1="68.05" y1="26.1" x2="68.05" y2="27" width="0.4064" layer="16"/>
+<wire x1="68.05" y1="25.8" x2="68.05" y2="27" width="0.4064" layer="16"/>
 <wire x1="68.05" y1="27" x2="68.65" y2="27.6" width="0.4064" layer="16"/>
 </signal>
 <signal name="N$9">
@@ -2570,6 +3132,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="66.5" y="37.8"/>
 <vertex x="66.5" y="47.5"/>
 </polygon>
+<contactref element="R41" pad="1"/>
 </signal>
 <signal name="RF-GATE">
 <contactref element="Q1" pad="1"/>
@@ -2731,6 +3294,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="30.4" y1="25.85" x2="30.4" y2="28.95" width="0.4064" layer="16"/>
 <wire x1="30.4" y1="28.95" x2="30.35" y2="29" width="0.4064" layer="16"/>
 <contactref element="F1" pad="4"/>
+<contactref element="R38" pad="1"/>
 </signal>
 <signal name="N$19">
 <contactref element="U1" pad="6"/>
@@ -2746,9 +3310,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$21">
 <contactref element="U1" pad="4"/>
 <contactref element="R6" pad="2"/>
-<wire x1="35.7" y1="63.505" x2="36.4" y2="63.505" width="0.2032" layer="16"/>
-<wire x1="36.4" y1="63.505" x2="36.4" y2="64.85" width="0.2032" layer="16"/>
-<wire x1="36.4" y1="64.85" x2="36.85" y2="65.3" width="0.2032" layer="16"/>
+<wire x1="35.7" y1="63.505" x2="35.3" y2="63.505" width="0.4064" layer="16"/>
+<wire x1="35.3" y1="63.505" x2="35.3" y2="64.95" width="0.4064" layer="16"/>
+<wire x1="35.3" y1="64.95" x2="35.65" y2="65.3" width="0.4064" layer="16"/>
 </signal>
 <signal name="N$22">
 <contactref element="U1" pad="1"/>
@@ -2823,15 +3387,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="51.34" y1="57" x2="48.8" y2="59.54" width="0.4064" layer="16"/>
 <wire x1="105.5" y1="9.1" x2="103.95" y2="9.1" width="0.4064" layer="16"/>
 <wire x1="103.95" y1="9.1" x2="103.9" y2="9.15" width="0.4064" layer="16"/>
-<wire x1="78" y1="13" x2="78" y2="23" width="0.4064" layer="1"/>
-<via x="78" y="23" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="78" y1="23" x2="78" y2="30" width="0.4064" layer="16"/>
-<via x="78" y="30" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="78" y1="30" x2="78" y2="35" width="0.4064" layer="1"/>
-<via x="78" y="35" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="78" y1="35" x2="78" y2="40" width="0.4064" layer="16"/>
-<via x="78" y="40" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="78" y1="40" x2="78" y2="55" width="0.4064" layer="1"/>
+<wire x1="78" y1="13" x2="78" y2="55" width="0.4064" layer="1"/>
 <wire x1="78" y1="55" x2="76.5" y2="56.5" width="0.4064" layer="1"/>
 <wire x1="76.5" y1="56.5" x2="57.5" y2="56.5" width="0.4064" layer="1"/>
 <via x="57.5" y="56.5" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2905,19 +3461,20 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="C48" pad="1"/>
 <contactref element="U7" pad="6"/>
 <via x="42.3" y="19.6" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="42.3" y1="19.6" x2="39" y2="19.6" width="0.2032" layer="1"/>
-<wire x1="39" y1="19.6" x2="37.6" y2="21" width="0.2032" layer="1"/>
-<via x="37.6" y="21" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="42.3" y1="19.6" x2="37.5" y2="19.6" width="0.2032" layer="1"/>
+<via x="34.9" y="20.9" extent="1-16" drill="0.3" shape="octagon"/>
 <wire x1="42.325" y1="20.88" x2="42.325" y2="19.625" width="0.2032" layer="16"/>
 <wire x1="42.325" y1="19.625" x2="42.3" y2="19.6" width="0.2032" layer="16"/>
-<wire x1="37.6" y1="21" x2="34.9" y2="23.7" width="0.2032" layer="16"/>
 <wire x1="34.9" y1="23.7" x2="34.6" y2="23.7" width="0.2032" layer="16"/>
-<wire x1="34.5" y1="23.7" x2="32.5" y2="23.7" width="0.2032" layer="16"/>
+<wire x1="34.6" y1="23.7" x2="32.5" y2="23.7" width="0.2032" layer="16"/>
 <wire x1="32.5" y1="23.7" x2="30.4" y2="23.7" width="0.2032" layer="16"/>
 <wire x1="30.4" y1="23.7" x2="30.4" y2="24.15" width="0.2032" layer="16"/>
 <wire x1="32.5" y1="24.15" x2="32.5" y2="23.7" width="0.2032" layer="16"/>
 <wire x1="34.6" y1="24.15" x2="34.6" y2="23.7" width="0.2032" layer="16"/>
-<wire x1="34.6" y1="23.7" x2="34.5" y2="23.7" width="0.2032" layer="16"/>
+<wire x1="37.5" y1="19.6" x2="36.2" y2="20.9" width="0.2032" layer="1"/>
+<wire x1="36.2" y1="20.9" x2="34.9" y2="20.9" width="0.2032" layer="1"/>
+<wire x1="34.9" y1="20.9" x2="34.9" y2="24.15" width="0.3048" layer="16"/>
+<wire x1="34.9" y1="24.15" x2="34.6" y2="24.15" width="0.3048" layer="16"/>
 </signal>
 <signal name="MCU-GATE">
 <contactref element="R14" pad="1"/>
@@ -2942,6 +3499,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="R9" pad="2"/>
 <contactref element="D3" pad="2"/>
 <wire x1="46.6" y1="54.95" x2="46.6" y2="56.25" width="0.4064" layer="16"/>
+<contactref element="C58" pad="2"/>
+<wire x1="46.6" y1="54.95" x2="44.8" y2="54.95" width="0.4064" layer="16"/>
+<wire x1="44.8" y1="54.95" x2="44.7" y2="55.05" width="0.4064" layer="16"/>
 </signal>
 <signal name="PWR-ATTENU">
 <contactref element="R9" pad="1"/>
@@ -2960,7 +3520,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="45.35" y1="52" x2="46.6" y2="53.25" width="0.2032" layer="16"/>
 <via x="48.4" y="16.4" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
-<signal name="N$26">
+<signal name="12V-2">
 <contactref element="IC1" pad="3"/>
 <contactref element="D12" pad="A"/>
 <polygon width="0.254" layer="16" spacing="0.2032" isolate="0.254" thermals="no" rank="2">
@@ -2971,6 +3531,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="34.9" y="46"/>
 <vertex x="34.9" y="43.3"/>
 </polygon>
+<contactref element="R39" pad="1"/>
+<wire x1="35.04" y1="45" x2="35.04" y2="48.09" width="0.4064" layer="1"/>
+<wire x1="35.04" y1="48.09" x2="35.65" y2="48.7" width="0.4064" layer="1"/>
 </signal>
 <signal name="DC-SRC">
 <contactref element="F1" pad="1"/>
@@ -3094,7 +3657,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="18.65" y1="52" x2="18.245" y2="52" width="0.2032" layer="16"/>
 <wire x1="18.245" y1="52" x2="18.245" y2="50.5" width="0.2032" layer="16"/>
 <contactref element="D14" pad="C"/>
-<wire x1="9.7" y1="50.6" x2="10" y2="50.5" width="1" layer="16"/>
+<wire x1="9.3" y1="50.6" x2="10" y2="50.5" width="1" layer="16"/>
 <wire x1="10" y1="50.5" x2="13" y2="50.5" width="1" layer="16"/>
 </signal>
 <signal name="N$32">
@@ -3227,12 +3790,14 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="Q5" pad="3"/>
 <contactref element="U4" pad="3"/>
 <contactref element="R34" pad="2"/>
-<wire x1="23.1" y1="49.25" x2="23.1" y2="44.714003125" width="0.2032" layer="16"/>
+<wire x1="23.1" y1="49.85" x2="23.1" y2="44.714003125" width="0.2032" layer="16"/>
 <wire x1="23.1" y1="44.714003125" x2="22.735996875" y2="44.35" width="0.2032" layer="16"/>
 <wire x1="22.735996875" y1="44.35" x2="22" y2="44.35" width="0.2032" layer="16"/>
 <wire x1="22" y1="44.35" x2="20.755" y2="44.35" width="0.2032" layer="16"/>
 <wire x1="22" y1="43.4" x2="22" y2="44.35" width="0.2032" layer="16"/>
-<wire x1="23.1" y1="49.25" x2="20.35" y2="52" width="0.2032" layer="16"/>
+<wire x1="23.1" y1="49.85" x2="21.35" y2="51.6" width="0.2032" layer="16"/>
+<wire x1="21.35" y1="51.6" x2="20.35" y2="51.6" width="0.2032" layer="16"/>
+<wire x1="20.35" y1="51.6" x2="20.35" y2="52" width="0.2032" layer="16"/>
 </signal>
 <signal name="N$41">
 <contactref element="JP4" pad="B5"/>
@@ -3333,12 +3898,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="SW1" pad="1"/>
 <contactref element="D17" pad="1"/>
 <wire x1="34.75" y1="4.5" x2="34.75" y2="2.6" width="0.4064" layer="16"/>
-<wire x1="34.75" y1="4.5" x2="43.635" y2="13.385" width="0.2032" layer="1"/>
-<wire x1="43.635" y1="13.385" x2="43.635" y2="16.4" width="0.2032" layer="1"/>
+<wire x1="34.75" y1="4.5" x2="43.635" y2="13.385" width="0.254" layer="1"/>
+<wire x1="43.635" y1="13.385" x2="43.635" y2="16.4" width="0.254" layer="1"/>
 <via x="43.635" y="16.4" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="U7" pad="13"/>
 <wire x1="43.625" y1="15.12" x2="43.635" y2="15.12" width="0.2032" layer="16"/>
-<wire x1="43.635" y1="15.12" x2="43.635" y2="16.4" width="0.2032" layer="16"/>
+<wire x1="43.635" y1="15.12" x2="43.635" y2="16.4" width="0.254" layer="16"/>
 </signal>
 <signal name="N$45">
 <contactref element="R20" pad="1"/>
@@ -3350,10 +3915,45 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="VR2" pad="1"/>
 <wire x1="72" y1="24.1" x2="72" y2="23.25" width="0.4064" layer="16"/>
 <via x="72" y="24.1" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="65.7" y1="20.4" x2="65.7" y2="22.75" width="0.4064" layer="1"/>
-<wire x1="65.7" y1="22.75" x2="66.7" y2="23.85" width="0.4064" layer="1"/>
-<wire x1="66.7" y1="23.85" x2="67.05" y2="24.1" width="0.4064" layer="1"/>
-<wire x1="67.05" y1="24.1" x2="72" y2="24.1" width="0.4064" layer="1"/>
+<wire x1="65.4" y1="24.5" x2="67.6" y2="24.5" width="0.4064" layer="1"/>
+<wire x1="67.6" y1="24.5" x2="68.6" y2="23.5" width="0.4064" layer="1"/>
+<wire x1="68.6" y1="23.5" x2="68.85" y2="23.5" width="0.4064" layer="1"/>
+<wire x1="68.85" y1="23.5" x2="69.45" y2="24.1" width="0.4064" layer="1"/>
+<wire x1="69.45" y1="24.1" x2="72" y2="24.1" width="0.4064" layer="1"/>
+</signal>
+<signal name="N$46">
+<contactref element="R38" pad="2"/>
+<contactref element="LED1" pad="A"/>
+<wire x1="27.1" y1="53.45" x2="27.1" y2="54.7" width="0.4064" layer="1"/>
+<via x="27.1" y="54.7" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="27.1" y1="54.7" x2="27.1" y2="56" width="0.4064" layer="16"/>
+<wire x1="27.1" y1="56" x2="27.45" y2="56" width="0.4064" layer="16"/>
+</signal>
+<signal name="N$47">
+<contactref element="R39" pad="2"/>
+<contactref element="LED2" pad="A"/>
+<wire x1="37.35" y1="48.7" x2="37.35" y2="50" width="0.4064" layer="1"/>
+<wire x1="37.35" y1="50" x2="37.25" y2="50.1" width="0.4064" layer="1"/>
+</signal>
+<signal name="N$48">
+<contactref element="R40" pad="2"/>
+<contactref element="LED3" pad="A"/>
+<wire x1="29.95" y1="7" x2="30.05" y2="7" width="0.4064" layer="1"/>
+<wire x1="30.05" y1="7" x2="31.1" y2="8.05" width="0.4064" layer="1"/>
+</signal>
+<signal name="N$49">
+<contactref element="LED4" pad="A"/>
+<contactref element="R41" pad="2"/>
+<wire x1="69.1" y1="37.05" x2="69.3" y2="37.35" width="0.4064" layer="1"/>
+<wire x1="69.3" y1="37.35" x2="69.3" y2="40.2" width="0.4064" layer="1"/>
+<via x="69.3" y="40.2" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="69.3" y1="40.2" x2="67.95" y2="40.2" width="0.4064" layer="16"/>
+</signal>
+<signal name="N$26">
+<contactref element="U7" pad="1"/>
+<contactref element="SJ2" pad="2"/>
+<wire x1="39.075" y1="20.88" x2="39.075" y2="21.6" width="0.254" layer="16"/>
+<wire x1="39.075" y1="21.6" x2="37.05" y2="21.6" width="0.254" layer="16"/>
 </signal>
 </signals>
 <errors>
