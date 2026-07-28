@@ -2103,7 +2103,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="FAN1" library="hot-wand" package="MOLEX-1X2" value="" x="22.4" y="30.4" smashed="yes" rot="R90"/>
 <element name="HEATSINK3" library="hot-wand" package="HEATSINK-SQ-12MM" value="HEATSINK-SQ-12MM" x="43" y="66"/>
-<element name="HEATSINK4" library="hot-wand" package="HEATSINK-SQ-12MM" value="HEATSINK-SQ-12MM" x="5.1" y="-35"/>
+<element name="C61" library="hot-wand" package="EIA3528" value="10uF" x="25.3" y="31.3" smashed="yes" rot="MR90">
+<attribute name="NAME" x="23.53" y="28.33" size="0.8128" layer="26" rot="MR180"/>
+<attribute name="VALUE" x="23.43" y="27.34" size="0.8128" layer="28" rot="MR180"/>
+</element>
 </elements>
 <signals>
 <signal name="GND">
@@ -2943,6 +2946,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="45.9" y="59.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="50.5" y="56.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="47.9" y="53.8" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="C61" pad="C"/>
 </signal>
 <signal name="RF-OUT">
 <contactref element="T1" pad="P1"/>
@@ -3372,6 +3376,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="25.8" y1="34.0187" x2="24.7213" y2="32.94" width="0.8128" layer="1"/>
 <wire x1="24.7213" y1="32.94" x2="22.4" y2="32.94" width="0.8128" layer="1"/>
 <wire x1="25.8" y1="37.15" x2="25.8" y2="37" width="0.4064" layer="1"/>
+<contactref element="C61" pad="A"/>
+<wire x1="25.3" y1="32.95" x2="22.4" y2="32.95" width="0.8128" layer="16"/>
+<wire x1="22.4" y1="32.95" x2="22.4" y2="32.94" width="0.8128" layer="16"/>
 </signal>
 <signal name="N$17">
 <contactref element="C37" pad="2"/>

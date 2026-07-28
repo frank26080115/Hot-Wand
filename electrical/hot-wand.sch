@@ -22164,7 +22164,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND58" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
 <part name="HEATSINK3" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM"/>
-<part name="HEATSINK4" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM"/>
+<part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
 </parts>
 <sheets>
 <sheet>
@@ -22771,10 +22771,10 @@ thresh 2.1V</text>
 <instance part="THERM1" gate="G$1" x="53.34" y="-317.5" rot="R270"/>
 <instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270"/>
 <instance part="FAN1" gate="G$1" x="114.3" y="-314.96"/>
-<instance part="GND58" gate="1" x="124.46" y="-320.04"/>
-<instance part="P+16" gate="1" x="127" y="-304.8"/>
+<instance part="GND58" gate="1" x="124.46" y="-330.2"/>
+<instance part="P+16" gate="1" x="134.62" y="-304.8"/>
 <instance part="HEATSINK3" gate="A" x="-68.58" y="35.56"/>
-<instance part="HEATSINK4" gate="A" x="-162.56" y="-99.06"/>
+<instance part="C61" gate="G$1" x="134.62" y="-317.5"/>
 </instances>
 <busses>
 </busses>
@@ -23310,7 +23310,12 @@ thresh 2.1V</text>
 <pinref part="FAN1" gate="G$1" pin="1"/>
 <pinref part="GND58" gate="1" pin="GND"/>
 <wire x1="121.92" y1="-314.96" x2="124.46" y2="-314.96" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="-314.96" x2="124.46" y2="-317.5" width="0.1524" layer="91"/>
+<wire x1="124.46" y1="-314.96" x2="124.46" y2="-325.12" width="0.1524" layer="91"/>
+<pinref part="C61" gate="G$1" pin="-"/>
+<wire x1="124.46" y1="-325.12" x2="124.46" y2="-327.66" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-322.58" x2="134.62" y2="-325.12" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-325.12" x2="124.46" y2="-325.12" width="0.1524" layer="91"/>
+<junction x="124.46" y="-325.12"/>
 </segment>
 </net>
 <net name="RF-OUT" class="0">
@@ -23859,9 +23864,12 @@ thresh 2.1V</text>
 </segment>
 <segment>
 <pinref part="FAN1" gate="G$1" pin="2"/>
-<wire x1="121.92" y1="-312.42" x2="127" y2="-312.42" width="0.1524" layer="91"/>
-<wire x1="127" y1="-312.42" x2="127" y2="-307.34" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="-312.42" x2="134.62" y2="-312.42" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-312.42" x2="134.62" y2="-307.34" width="0.1524" layer="91"/>
 <pinref part="P+16" gate="1" pin="+12V"/>
+<pinref part="C61" gate="G$1" pin="+"/>
+<wire x1="134.62" y1="-314.96" x2="134.62" y2="-312.42" width="0.1524" layer="91"/>
+<junction x="134.62" y="-312.42"/>
 </segment>
 <segment>
 <pinref part="R39" gate="G$1" pin="1"/>
