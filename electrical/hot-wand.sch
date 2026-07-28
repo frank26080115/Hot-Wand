@@ -9912,8 +9912,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="-2.45" y1="-1.85" x2="2.65" y2="-1.85" width="0.05" layer="39"/>
 <wire x1="2.65" y1="-1.85" x2="2.65" y2="1.85" width="0.05" layer="39"/>
 <wire x1="2.65" y1="1.85" x2="-2.45" y2="1.85" width="0.05" layer="39"/>
-<circle x="-3" y="1" radius="0.1" width="0.2" layer="21"/>
-<circle x="-3" y="1" radius="0.1" width="0.2" layer="51"/>
 <text x="-2.45" y="2.15" size="1.27" layer="25">&gt;NAME</text>
 <text x="-2.45" y="-2.05" size="1.27" layer="27" align="top-left">&gt;VALUE</text>
 <smd name="1" x="-1.7" y="1" dx="1.4" dy="1.2" layer="1"/>
@@ -9999,6 +9997,15 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="-0.6" y1="0" x2="0.6" y2="1" width="0.3048" layer="21"/>
 <wire x1="0.6" y1="1" x2="0.6" y2="-1" width="0.3048" layer="21"/>
 <wire x1="0.6" y1="-1" x2="-0.6" y2="0" width="0.3048" layer="21"/>
+</package>
+<package name="1X02-2MM">
+<pad name="1" x="-1" y="0" drill="0.8" shape="square"/>
+<pad name="2" x="1" y="0" drill="0.8" shape="octagon"/>
+<text x="-2" y="1.5" size="0.8128" layer="25">&gt;NAME</text>
+<wire x1="-2" y1="1" x2="2" y2="1" width="0.127" layer="25"/>
+<wire x1="2" y1="1" x2="2" y2="-1" width="0.127" layer="25"/>
+<wire x1="2" y1="-1" x2="-2" y2="-1" width="0.127" layer="25"/>
+<wire x1="-2" y1="-1" x2="-2" y2="1" width="0.127" layer="25"/>
 </package>
 </packages>
 <symbols>
@@ -10584,6 +10591,24 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <vertex x="-2.921" y="-2.413"/>
 <vertex x="-2.413" y="-2.921"/>
 </polygon>
+</symbol>
+<symbol name="THERMISTOR-NTC">
+<wire x1="-2.54" y1="0" x2="-2.159" y2="1.016" width="0.1524" layer="94"/>
+<wire x1="-2.159" y1="1.016" x2="-1.524" y2="-1.016" width="0.1524" layer="94"/>
+<wire x1="-1.524" y1="-1.016" x2="-0.889" y2="1.016" width="0.1524" layer="94"/>
+<wire x1="-0.889" y1="1.016" x2="-0.254" y2="-1.016" width="0.1524" layer="94"/>
+<wire x1="-0.254" y1="-1.016" x2="0.381" y2="1.016" width="0.1524" layer="94"/>
+<wire x1="0.381" y1="1.016" x2="1.016" y2="-1.016" width="0.1524" layer="94"/>
+<wire x1="1.016" y1="-1.016" x2="1.651" y2="1.016" width="0.1524" layer="94"/>
+<wire x1="1.651" y1="1.016" x2="2.286" y2="-1.016" width="0.1524" layer="94"/>
+<wire x1="2.286" y1="-1.016" x2="2.54" y2="0" width="0.1524" layer="94"/>
+<text x="-3.81" y="2.5146" size="1.778" layer="95">&gt;NAME</text>
+<text x="-3.81" y="-4.572" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="2" x="5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1" rot="R180"/>
+<pin name="1" x="-5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1"/>
+<wire x1="-2.54" y1="-1.524" x2="-1.27" y2="-1.524" width="0.254" layer="94"/>
+<wire x1="-1.27" y1="-1.524" x2="1.524" y2="1.778" width="0.254" layer="94"/>
+<wire x1="1.524" y1="1.778" x2="2.54" y2="1.778" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -21724,6 +21749,141 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 </device>
 </devices>
 </deviceset>
+<deviceset name="THERMISTOR-NTC" prefix="THERM" uservalue="yes">
+<description>&lt;b&gt;Resistor&lt;/b&gt;
+Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</description>
+<gates>
+<gate name="G$1" symbol="THERMISTOR-NTC" x="0" y="0"/>
+</gates>
+<devices>
+<device name="1206" package="1206">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="AXIAL-0.3" package="AXIAL-0.3">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="2010" package="R2010">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0805-RES" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0603-RES" package="0603-RES">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0402-RES" package="0402-RES">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH-1/6W" package="1/6W-RES">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="2512" package="R2512">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH-1/4W" package="AXIAL-0.4">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH-1/2W" package="AXIAL-0.5">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH-1W" package="AXIAL-0.6">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH-2W" package="AXIAL-0.8">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="KIT" package="AXIAL-0.3-KIT">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-TH-2MM" package="1X02-2MM">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -21969,6 +22129,17 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <part name="LED4" library="hot-wand" deviceset="LED" device="0603"/>
 <part name="R41" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="SJ2" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
+<part name="VR3" library="hot-wand" deviceset="POT" device="35WR1KLFTR_V2" value="4K7"/>
+<part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
+<part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
+<part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
+<part name="P+15" library="hot-wand" deviceset="3.3V" device=""/>
+<part name="C59" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="C60" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="GND56" library="hot-wand" deviceset="GND" device=""/>
+<part name="GND57" library="hot-wand" deviceset="GND" device=""/>
+<part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM"/>
+<part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM"/>
 </parts>
 <sheets>
 <sheet>
@@ -21990,7 +22161,7 @@ x20 RL gain
 <text x="-106.68" y="-12.7" size="5.08" layer="97" align="top-left">Main RF Power Amplifier
 Class E</text>
 <text x="129.54" y="-33.02" size="1.27" layer="97">current transformer</text>
-<text x="170.18" y="-68.58" size="1.27" layer="97" align="top-left">the current flowing into
+<text x="137.16" y="-83.82" size="1.27" layer="97" align="top-left">the current flowing into
 the soldering iron cartridge
 controls the buck converter
 output voltage</text>
@@ -22045,6 +22216,8 @@ Crss 26pF</text>
 <text x="-138.684" y="-504.444" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>
 <text x="71.12" y="-193.04" size="5.08" layer="97">Microcontroller</text>
+<text x="43.18" y="-340.36" size="5.08" layer="97">thermistors</text>
+<text x="43.18" y="-342.9" size="1.778" layer="97">(optional)</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="68.58" y="2.54"/>
@@ -22305,7 +22478,7 @@ thresh 2.1V</text>
 <attribute name="VALUE" x="-4.191" y="80.264" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="GND6" gate="1" x="-7.62" y="48.26"/>
-<instance part="R11" gate="G$1" x="167.64" y="-60.96" rot="R180"/>
+<instance part="R11" gate="G$1" x="180.34" y="-60.96" rot="R180"/>
 <instance part="R4" gate="G$1" x="5.08" y="73.66" rot="R90"/>
 <instance part="VR1" gate="G$1" x="5.08" y="50.8" smashed="yes" rot="MR180">
 <attribute name="NAME" x="10.16" y="50.038" size="1.778" layer="95" rot="MR270"/>
@@ -22558,6 +22731,20 @@ thresh 2.1V</text>
 <attribute name="VALUE" x="5.334" y="-309.372" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="SJ2" gate="1" x="43.18" y="-213.36"/>
+<instance part="VR3" gate="G$1" x="172.72" y="-81.28" smashed="yes">
+<attribute name="NAME" x="175.26" y="-73.66" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="171.196" y="-78.994" size="1.778" layer="95" rot="R90"/>
+</instance>
+<instance part="SJ3" gate="1" x="187.96" y="-73.66" rot="R90"/>
+<instance part="R42" gate="G$1" x="63.5" y="-302.26" rot="R90"/>
+<instance part="R43" gate="G$1" x="88.9" y="-302.26" rot="R90"/>
+<instance part="P+15" gate="G$1" x="63.5" y="-292.1"/>
+<instance part="C59" gate="G$1" x="63.5" y="-320.04"/>
+<instance part="C60" gate="G$1" x="88.9" y="-320.04"/>
+<instance part="GND56" gate="1" x="88.9" y="-330.2"/>
+<instance part="GND57" gate="1" x="63.5" y="-330.2"/>
+<instance part="THERM1" gate="G$1" x="53.34" y="-317.5" rot="R270"/>
+<instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -23042,16 +23229,6 @@ thresh 2.1V</text>
 <wire x1="200.66" y1="-269.24" x2="200.66" y2="-271.78" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U7" gate="G$1" pin="PA1/ADC_IN1"/>
-<wire x1="66.04" y1="-233.68" x2="63.5" y2="-233.68" width="0.1524" layer="91"/>
-<label x="63.5" y="-233.68" size="1.016" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
-<pinref part="U7" gate="G$1" pin="PA2/USART1_TX/ADC_IN2"/>
-<wire x1="66.04" y1="-236.22" x2="63.5" y2="-236.22" width="0.1524" layer="91"/>
-<label x="63.5" y="-236.22" size="1.016" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="GND54" gate="1" pin="GND"/>
 <pinref part="C58" gate="G$1" pin="1"/>
 <wire x1="-17.78" y1="7.62" x2="-17.78" y2="10.16" width="0.1524" layer="91"/>
@@ -23078,6 +23255,26 @@ thresh 2.1V</text>
 <pinref part="SJ2" gate="1" pin="1"/>
 <wire x1="38.1" y1="-213.36" x2="35.56" y2="-213.36" width="0.1524" layer="91"/>
 <label x="35.56" y="-213.36" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="GND56" gate="1" pin="GND"/>
+<pinref part="C60" gate="G$1" pin="2"/>
+<wire x1="88.9" y1="-327.66" x2="88.9" y2="-325.12" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-325.12" x2="88.9" y2="-322.58" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="-325.12" x2="88.9" y2="-325.12" width="0.1524" layer="91"/>
+<pinref part="THERM2" gate="G$1" pin="2"/>
+<wire x1="78.74" y1="-322.58" x2="78.74" y2="-325.12" width="0.1524" layer="91"/>
+<junction x="88.9" y="-325.12"/>
+</segment>
+<segment>
+<pinref part="C59" gate="G$1" pin="2"/>
+<wire x1="63.5" y1="-322.58" x2="63.5" y2="-325.12" width="0.1524" layer="91"/>
+<pinref part="GND57" gate="1" pin="GND"/>
+<wire x1="63.5" y1="-325.12" x2="63.5" y2="-327.66" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="-325.12" x2="63.5" y2="-325.12" width="0.1524" layer="91"/>
+<pinref part="THERM1" gate="G$1" pin="2"/>
+<wire x1="53.34" y1="-322.58" x2="53.34" y2="-325.12" width="0.1524" layer="91"/>
+<junction x="63.5" y="-325.12"/>
 </segment>
 </net>
 <net name="RF-OUT" class="0">
@@ -23160,9 +23357,13 @@ thresh 2.1V</text>
 <pinref part="C34" gate="G$1" pin="1"/>
 <wire x1="157.48" y1="-60.96" x2="160.02" y2="-60.96" width="0.1524" layer="91"/>
 <wire x1="160.02" y1="-60.96" x2="160.02" y2="-63.5" width="0.1524" layer="91"/>
-<wire x1="160.02" y1="-60.96" x2="162.56" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-60.96" x2="172.72" y2="-60.96" width="0.1524" layer="91"/>
 <junction x="160.02" y="-60.96"/>
 <pinref part="R11" gate="G$1" pin="2"/>
+<pinref part="VR3" gate="G$1" pin="E"/>
+<wire x1="172.72" y1="-60.96" x2="175.26" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="-73.66" x2="172.72" y2="-60.96" width="0.1524" layer="91"/>
+<junction x="172.72" y="-60.96"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -23274,6 +23475,16 @@ thresh 2.1V</text>
 <wire x1="-7.62" y1="-302.26" x2="-7.62" y2="-297.18" width="0.1524" layer="91"/>
 <wire x1="-7.62" y1="-297.18" x2="5.08" y2="-297.18" width="0.1524" layer="91"/>
 <label x="5.08" y="-297.18" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="P+15" gate="G$1" pin="3.3V"/>
+<pinref part="R42" gate="G$1" pin="2"/>
+<wire x1="63.5" y1="-292.1" x2="63.5" y2="-294.64" width="0.1524" layer="91"/>
+<pinref part="R43" gate="G$1" pin="2"/>
+<wire x1="63.5" y1="-294.64" x2="63.5" y2="-297.18" width="0.1524" layer="91"/>
+<wire x1="63.5" y1="-294.64" x2="88.9" y2="-294.64" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-294.64" x2="88.9" y2="-297.18" width="0.1524" layer="91"/>
+<junction x="63.5" y="-294.64"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -23794,8 +24005,12 @@ thresh 2.1V</text>
 </segment>
 <segment>
 <pinref part="R11" gate="G$1" pin="1"/>
-<wire x1="172.72" y1="-60.96" x2="175.26" y2="-60.96" width="0.1524" layer="91"/>
-<label x="175.26" y="-60.96" size="1.778" layer="95" xref="yes"/>
+<label x="200.66" y="-60.96" size="1.778" layer="95" xref="yes"/>
+<wire x1="185.42" y1="-60.96" x2="187.96" y2="-60.96" width="0.1524" layer="91"/>
+<pinref part="SJ3" gate="1" pin="2"/>
+<wire x1="187.96" y1="-60.96" x2="200.66" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="187.96" y1="-68.58" x2="187.96" y2="-60.96" width="0.1524" layer="91"/>
+<junction x="187.96" y="-60.96"/>
 </segment>
 </net>
 <net name="CURR-SENS-POSI" class="0">
@@ -24328,6 +24543,60 @@ thresh 2.1V</text>
 <pinref part="U7" gate="G$1" pin="BOOT0"/>
 <pinref part="SJ2" gate="1" pin="2"/>
 <wire x1="66.04" y1="-213.36" x2="48.26" y2="-213.36" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$50" class="0">
+<segment>
+<pinref part="VR3" gate="G$1" pin="S"/>
+<wire x1="177.8" y1="-81.28" x2="180.34" y2="-81.28" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="-91.44" x2="180.34" y2="-81.28" width="0.1524" layer="91"/>
+<pinref part="VR3" gate="G$1" pin="A"/>
+<wire x1="172.72" y1="-88.9" x2="172.72" y2="-91.44" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="-91.44" x2="180.34" y2="-91.44" width="0.1524" layer="91"/>
+<pinref part="SJ3" gate="1" pin="1"/>
+<wire x1="180.34" y1="-81.28" x2="187.96" y2="-81.28" width="0.1524" layer="91"/>
+<wire x1="187.96" y1="-81.28" x2="187.96" y2="-78.74" width="0.1524" layer="91"/>
+<junction x="180.34" y="-81.28"/>
+</segment>
+</net>
+<net name="THERM-1" class="0">
+<segment>
+<pinref part="U7" gate="G$1" pin="PA1/ADC_IN1"/>
+<wire x1="66.04" y1="-233.68" x2="63.5" y2="-233.68" width="0.1524" layer="91"/>
+<label x="63.5" y="-233.68" size="1.016" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="R42" gate="G$1" pin="1"/>
+<wire x1="63.5" y1="-307.34" x2="63.5" y2="-309.88" width="0.1524" layer="91"/>
+<pinref part="C59" gate="G$1" pin="1"/>
+<wire x1="63.5" y1="-309.88" x2="63.5" y2="-314.96" width="0.1524" layer="91"/>
+<wire x1="63.5" y1="-309.88" x2="53.34" y2="-309.88" width="0.1524" layer="91"/>
+<label x="48.26" y="-309.88" size="1.27" layer="95" rot="R180" xref="yes"/>
+<junction x="63.5" y="-309.88"/>
+<pinref part="THERM1" gate="G$1" pin="1"/>
+<wire x1="53.34" y1="-309.88" x2="48.26" y2="-309.88" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="-312.42" x2="53.34" y2="-309.88" width="0.1524" layer="91"/>
+<junction x="53.34" y="-309.88"/>
+</segment>
+</net>
+<net name="THERM-2" class="0">
+<segment>
+<pinref part="U7" gate="G$1" pin="PA2/USART1_TX/ADC_IN2"/>
+<wire x1="66.04" y1="-236.22" x2="63.5" y2="-236.22" width="0.1524" layer="91"/>
+<label x="63.5" y="-236.22" size="1.016" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="R43" gate="G$1" pin="1"/>
+<wire x1="88.9" y1="-307.34" x2="88.9" y2="-309.88" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-309.88" x2="78.74" y2="-309.88" width="0.1524" layer="91"/>
+<pinref part="C60" gate="G$1" pin="1"/>
+<wire x1="78.74" y1="-309.88" x2="76.2" y2="-309.88" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="-309.88" x2="88.9" y2="-314.96" width="0.1524" layer="91"/>
+<label x="76.2" y="-309.88" size="1.27" layer="95" rot="R180" xref="yes"/>
+<junction x="88.9" y="-309.88"/>
+<pinref part="THERM2" gate="G$1" pin="1"/>
+<wire x1="78.74" y1="-312.42" x2="78.74" y2="-309.88" width="0.1524" layer="91"/>
+<junction x="78.74" y="-309.88"/>
 </segment>
 </net>
 </nets>
