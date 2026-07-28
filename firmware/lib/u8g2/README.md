@@ -3,7 +3,7 @@
 ![https://raw.githubusercontent.com/wiki/olikraus/u8g2/ref/u8g2_logo_transparent_orange.png](https://raw.githubusercontent.com/wiki/olikraus/u8g2/ref/u8g2_logo_transparent_orange.png) 
 
 
-U8g2: Library for monochrome displays, version 2
+[U8g2: Library for monochrome displays, version 2.37.1](https://github.com/olikraus/u8g2)
 
 U8g2 is a monochrome graphics library for embedded devices. 
 U8g2 supports monochrome OLEDs and LCDs, which include the following controllers:
@@ -28,5 +28,3 @@ The Arduino library U8g2 can be installed from the library manager of the Arduin
 
 
 [Setup Guide and Reference Manual](https://github.com/olikraus/u8g2/wiki)
-
-
