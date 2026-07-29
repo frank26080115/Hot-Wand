@@ -22353,6 +22353,14 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="MS2006H12D-RSR"/>
 </part>
 <part name="PCB2" library="hot-wand" deviceset="PCB-ART-VERSION" device=""/>
+<part name="Q7" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="G3404">
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A"/>
+</part>
+<part name="SJ4" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
+<part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R45" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω"/>
+<part name="GND59" library="hot-wand" deviceset="GND" device=""/>
+<part name="SJ5" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
 </parts>
 <sheets>
 <sheet>
@@ -22427,7 +22435,7 @@ Crss 26pF</text>
 <text x="-138.684" y="-504.444" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>
 <text x="71.12" y="-193.04" size="5.08" layer="97">Microcontroller</text>
-<text x="43.18" y="-340.36" size="5.08" layer="97">thermistors</text>
+<text x="43.18" y="-340.36" size="5.08" layer="97">Thermistors</text>
 <text x="43.18" y="-342.9" size="1.778" layer="97">(optional)</text>
 <text x="148.59" y="-57.15" size="0.6096" layer="97">LFP with cutoff @ 1.6kHz</text>
 <text x="181.61" y="-82.55" size="0.6096" layer="97" align="top-left">tune for voltage under load
@@ -22446,7 +22454,10 @@ MCU can lower this to about 9V
 when voltage exceeds 22V</text>
 <text x="-49.022" y="67.564" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
 <text x="-8.382" y="87.122" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
-<text x="-134.62" y="-610.616" size="0.8128" layer="97" align="top-left">MS2006H12D-RSR</text>
+<text x="198.12" y="-321.056" size="0.8128" layer="97" align="top-left">MS2006H12D-RSR</text>
+<text x="147.32" y="-353.06" size="5.08" layer="97">Fan CTRL</text>
+<text x="147.32" y="-355.6" size="1.778" layer="97">(optional)</text>
+<text x="167.64" y="-269.24" size="1.778" layer="97">debug port</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="68.58" y="2.54"/>
@@ -22988,15 +22999,31 @@ when voltage exceeds 22V</text>
 <instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270">
 <attribute name="PARTNUM" x="78.74" y="-317.5" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
-<instance part="FAN1" gate="G$1" x="114.3" y="-314.96"/>
-<instance part="GND58" gate="1" x="124.46" y="-330.2"/>
-<instance part="P+16" gate="1" x="134.62" y="-304.8"/>
+<instance part="FAN1" gate="G$1" x="152.4" y="-314.96"/>
+<instance part="GND58" gate="1" x="180.34" y="-342.9"/>
+<instance part="P+16" gate="1" x="180.34" y="-304.8"/>
 <instance part="HEATSINK3" gate="A" x="-68.58" y="35.56"/>
-<instance part="C61" gate="G$1" x="134.62" y="-317.5">
-<attribute name="PARTNUM" x="134.62" y="-317.5" size="1.778" layer="96" display="off"/>
+<instance part="C61" gate="G$1" x="180.34" y="-317.5">
+<attribute name="PARTNUM" x="180.34" y="-317.5" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="FAN2" gate="A" x="-134.62" y="-604.52"/>
+<instance part="FAN2" gate="A" x="198.12" y="-314.96"/>
 <instance part="PCB2" gate="A" x="96.52" y="7.62"/>
+<instance part="Q7" gate="G$1" x="162.56" y="-330.2" smashed="yes">
+<attribute name="NAME" x="161.798" y="-327.152" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="166.624" y="-324.104" size="1.778" layer="96" rot="R270"/>
+<attribute name="PARTNUM" x="162.56" y="-330.2" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SJ4" gate="1" x="175.26" y="-330.2" rot="R90"/>
+<instance part="R44" gate="G$1" x="139.7" y="-337.82" smashed="yes" rot="MR270">
+<attribute name="NAME" x="143.2814" y="-334.01" size="1.778" layer="95" rot="MR270"/>
+<attribute name="VALUE" x="145.542" y="-334.01" size="1.778" layer="96" rot="MR270"/>
+</instance>
+<instance part="R45" gate="G$1" x="147.32" y="-330.2" smashed="yes" rot="MR180">
+<attribute name="NAME" x="143.51" y="-326.6186" size="1.778" layer="95" rot="MR180"/>
+<attribute name="VALUE" x="143.51" y="-324.358" size="1.778" layer="96" rot="MR180"/>
+</instance>
+<instance part="GND59" gate="1" x="139.7" y="-347.98"/>
+<instance part="SJ5" gate="1" x="132.08" y="-330.2" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -23532,15 +23559,23 @@ when voltage exceeds 22V</text>
 <junction x="63.5" y="-325.12"/>
 </segment>
 <segment>
-<pinref part="FAN1" gate="G$1" pin="1"/>
 <pinref part="GND58" gate="1" pin="GND"/>
-<wire x1="121.92" y1="-314.96" x2="124.46" y2="-314.96" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="-314.96" x2="124.46" y2="-325.12" width="0.1524" layer="91"/>
 <pinref part="C61" gate="G$1" pin="-"/>
-<wire x1="124.46" y1="-325.12" x2="124.46" y2="-327.66" width="0.1524" layer="91"/>
-<wire x1="134.62" y1="-322.58" x2="134.62" y2="-325.12" width="0.1524" layer="91"/>
-<wire x1="134.62" y1="-325.12" x2="124.46" y2="-325.12" width="0.1524" layer="91"/>
-<junction x="124.46" y="-325.12"/>
+<wire x1="180.34" y1="-322.58" x2="180.34" y2="-337.82" width="0.1524" layer="91"/>
+<pinref part="Q7" gate="G$1" pin="S"/>
+<wire x1="180.34" y1="-337.82" x2="180.34" y2="-340.36" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-335.28" x2="162.56" y2="-337.82" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-337.82" x2="175.26" y2="-337.82" width="0.1524" layer="91"/>
+<pinref part="SJ4" gate="1" pin="1"/>
+<wire x1="175.26" y1="-337.82" x2="180.34" y2="-337.82" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="-335.28" x2="175.26" y2="-337.82" width="0.1524" layer="91"/>
+<junction x="175.26" y="-337.82"/>
+<junction x="180.34" y="-337.82"/>
+</segment>
+<segment>
+<pinref part="GND59" gate="1" pin="GND"/>
+<pinref part="R44" gate="G$1" pin="2"/>
+<wire x1="139.7" y1="-345.44" x2="139.7" y2="-342.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="RF-OUT" class="0">
@@ -24089,12 +24124,12 @@ when voltage exceeds 22V</text>
 </segment>
 <segment>
 <pinref part="FAN1" gate="G$1" pin="2"/>
-<wire x1="121.92" y1="-312.42" x2="134.62" y2="-312.42" width="0.1524" layer="91"/>
-<wire x1="134.62" y1="-312.42" x2="134.62" y2="-307.34" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-312.42" x2="180.34" y2="-312.42" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="-312.42" x2="180.34" y2="-307.34" width="0.1524" layer="91"/>
 <pinref part="P+16" gate="1" pin="+12V"/>
 <pinref part="C61" gate="G$1" pin="+"/>
-<wire x1="134.62" y1="-314.96" x2="134.62" y2="-312.42" width="0.1524" layer="91"/>
-<junction x="134.62" y="-312.42"/>
+<wire x1="180.34" y1="-314.96" x2="180.34" y2="-312.42" width="0.1524" layer="91"/>
+<junction x="180.34" y="-312.42"/>
 </segment>
 <segment>
 <pinref part="R39" gate="G$1" pin="1"/>
@@ -24690,6 +24725,11 @@ when voltage exceeds 22V</text>
 <wire x1="162.56" y1="-281.94" x2="157.48" y2="-281.94" width="0.1524" layer="91"/>
 <label x="157.48" y="-281.94" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="SJ5" gate="1" pin="2"/>
+<wire x1="127" y1="-330.2" x2="124.46" y2="-330.2" width="0.1524" layer="91"/>
+<label x="124.46" y="-330.2" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
@@ -24872,6 +24912,37 @@ when voltage exceeds 22V</text>
 <pinref part="THERM2" gate="G$1" pin="1"/>
 <wire x1="78.74" y1="-312.42" x2="78.74" y2="-309.88" width="0.1524" layer="91"/>
 <junction x="78.74" y="-309.88"/>
+</segment>
+</net>
+<net name="N$52" class="0">
+<segment>
+<pinref part="Q7" gate="G$1" pin="D"/>
+<wire x1="162.56" y1="-325.12" x2="162.56" y2="-322.58" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-322.58" x2="175.26" y2="-322.58" width="0.1524" layer="91"/>
+<pinref part="SJ4" gate="1" pin="2"/>
+<wire x1="175.26" y1="-322.58" x2="175.26" y2="-325.12" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="-322.58" x2="162.56" y2="-314.96" width="0.1524" layer="91"/>
+<pinref part="FAN1" gate="G$1" pin="1"/>
+<wire x1="162.56" y1="-314.96" x2="160.02" y2="-314.96" width="0.1524" layer="91"/>
+<junction x="162.56" y="-322.58"/>
+</segment>
+</net>
+<net name="N$53" class="0">
+<segment>
+<pinref part="R45" gate="G$1" pin="2"/>
+<pinref part="Q7" gate="G$1" pin="G"/>
+<wire x1="152.4" y1="-330.2" x2="154.94" y2="-330.2" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$51" class="0">
+<segment>
+<pinref part="R44" gate="G$1" pin="1"/>
+<wire x1="139.7" y1="-332.74" x2="139.7" y2="-330.2" width="0.1524" layer="91"/>
+<pinref part="SJ5" gate="1" pin="1"/>
+<wire x1="139.7" y1="-330.2" x2="137.16" y2="-330.2" width="0.1524" layer="91"/>
+<pinref part="R45" gate="G$1" pin="1"/>
+<wire x1="139.7" y1="-330.2" x2="142.24" y2="-330.2" width="0.1524" layer="91"/>
+<junction x="139.7" y="-330.2"/>
 </segment>
 </net>
 </nets>
