@@ -22067,7 +22067,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C34" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
 <part name="GND13" library="hot-wand" deviceset="GND" device=""/>
 <part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22Ω"/>
-<part name="L9" library="hot-wand" deviceset="L-US" device="TFI0410" value="22uH CECL"/>
+<part name="L9" library="hot-wand" deviceset="L-US" device="TFI0410" value="22uH"/>
 <part name="C42" library="hot-wand" deviceset="CAP" device="0805" value="33nF"/>
 <part name="GND22" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q3" library="hot-wand" deviceset="TRANSISTOR_NPN" device="SOT23-3" value="BC846B"/>
@@ -22115,8 +22115,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="Q1" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="STP19NF20"/>
 <part name="GND16" library="hot-wand" deviceset="GND" device=""/>
 <part name="D11" library="hot-wand" deviceset="DIODE-ZENER" device="-BZT52" value="STPS0540Z"/>
-<part name="R13" library="hot-wand" deviceset="R-US_" device="R2512" value="DNP"/>
-<part name="R12" library="hot-wand" deviceset="R-US_" device="R2512" value="150Ω 2W"/>
+<part name="R13" library="hot-wand" deviceset="R-US_" device="R2512" value="DNP">
+<attribute name="PARTNUM" value="CRGP2512F150R"/>
+</part>
+<part name="R12" library="hot-wand" deviceset="R-US_" device="R2512" value="150Ω 2W">
+<attribute name="PARTNUM" value="CRGP2512F150R"/>
+</part>
 <part name="D10" library="hot-wand" deviceset="TVS" device="" value="SMBJ15CA"/>
 <part name="U2" library="hot-wand" deviceset="1EDN8511B" device=""/>
 <part name="R15" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
@@ -22139,8 +22143,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8"/>
 <part name="GND20" library="hot-wand" deviceset="GND" device=""/>
 <part name="U1" library="hot-wand" deviceset="TPS54560DDA" device=""/>
-<part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="3u3">
-<attribute name="PARTNUM" value="TCTAL1V335M8R"/>
+<part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
 <part name="C6" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470uF">
 <attribute name="PARTNUM" value="UHW1H471MPD;EEU-FR1H471;EEU-FR1H471B"/>
@@ -22170,8 +22174,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K"/>
 <part name="C4" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V"/>
 <part name="GND3" library="hot-wand" deviceset="GND" device=""/>
-<part name="R1" library="hot-wand" deviceset="RESISTOR" device="1206" value="0R1"/>
-<part name="R2" library="hot-wand" deviceset="RESISTOR" device="1206" value="0R1"/>
+<part name="R1" library="hot-wand" deviceset="RESISTOR" device="1206" value="0R1">
+<attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U"/>
+</part>
+<part name="R2" library="hot-wand" deviceset="RESISTOR" device="1206" value="0R1">
+<attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U"/>
+</part>
 <part name="R3" library="hot-wand" deviceset="RESISTOR" device="1206" value="0R1">
 <attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U"/>
 </part>
@@ -22202,12 +22210,16 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="P+6" library="hot-wand" deviceset="+12V" device=""/>
 <part name="P+7" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="C43" library="hot-wand" deviceset="CAP_POL" device="3528" value="3u3"/>
+<part name="C43" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
+</part>
 <part name="GND25" library="hot-wand" deviceset="GND" device=""/>
 <part name="C44" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
 </part>
-<part name="C45" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u"/>
+<part name="C45" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
+</part>
 <part name="GND26" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND28" library="hot-wand" deviceset="GND" device=""/>
 <part name="D12" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="_" value="2A">
@@ -22218,7 +22230,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="Keystone 3518P"/>
 </part>
 <part name="R19" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="470Ω"/>
-<part name="L1" library="hot-wand" deviceset="INDUCTOR" device="RADIAL_D12.7_P6.35" value="33u SL1016T">
+<part name="L1" library="hot-wand" deviceset="INDUCTOR" device="RADIAL_D12.7_P6.35" value="33u">
 <attribute name="PARTNUM" value="Wurth 744750460220 (22uH)"/>
 </part>
 <part name="L2" library="hot-wand" deviceset="INDUCTOR" device="IHLP-2525CZ_VIS-M" value="4u7 IHLP2525CZ">
@@ -22327,12 +22339,16 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950">
 <attribute name="PARTNUM" value="BN35-3T103FB-100"/>
 </part>
-<part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950"/>
+<part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950">
+<attribute name="PARTNUM" value="BN35-3T103FB-100"/>
+</part>
 <part name="FAN1" library="hot-wand" deviceset="M02" device="POLAR"/>
 <part name="GND58" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
 <part name="HEATSINK3" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM"/>
-<part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
+<part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF">
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
+</part>
 <part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1">
 <attribute name="PARTNUM" value="MS2006H12D-RSR"/>
 </part>
@@ -22408,7 +22424,6 @@ Crss 26pF</text>
 <text x="-13.97" y="-577.088" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V</text>
 <text x="-111.76" y="-449.58" size="5.08" layer="97">XT-30 DC Input</text>
 <text x="-144.78" y="-546.1" size="5.08" layer="97">USB-PD Input</text>
-<text x="-138.43" y="-89.916" size="1.016" layer="96" rot="R180" align="bottom-right">CRGP2512F150R</text>
 <text x="-138.684" y="-504.444" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>
 <text x="71.12" y="-193.04" size="5.08" layer="97">Microcontroller</text>
@@ -22418,38 +22433,12 @@ thresh 2.1V</text>
 <text x="181.61" y="-82.55" size="0.6096" layer="97" align="top-left">tune for voltage under load
 if temperature unstable
 or excessive power draw</text>
-<text x="-136.906" y="77.47" size="0.6096" layer="97" align="top-left">Keystone 3518P</text>
 <text x="-85.852" y="-217.678" size="0.6096" layer="97" align="top-left">tune for sensitivity</text>
 <text x="-123.19" y="-238.506" size="0.6096" layer="97" rot="R180">LFP with cutoff @ 187kHz</text>
-<text x="-95.25" y="34.29" size="0.6096" layer="97" rot="R90">sw freq 450kHz</text>
-<text x="1.27" y="44.45" size="0.6096" layer="97" rot="R90">tune for unloaded voltage</text>
-<text x="45.72" y="86.36" size="0.6096" layer="97" rot="R180" align="top-left">IHLP2525CZER4R7M11</text>
+<text x="-95.25" y="34.29" size="1.27" layer="97" rot="R90">sw freq 450kHz</text>
+<text x="1.27" y="44.45" size="0.6096" layer="97" rot="R90">tune for unloaded voltage
+10K for maximum voltage</text>
 <text x="-8.382" y="85.852" size="0.6096" layer="97" rot="R180" align="top-left">Wurth 744750460220 (22uH)</text>
-<text x="-1.778" y="65.786" size="0.6096" layer="97" rot="R90" align="top-left">EEU-FR1H101B
-EEU-FR1J101B</text>
-<text x="-91.694" y="72.136" size="0.6096" layer="97" rot="R90" align="top-left">EEU-FR1H471
-EEU-FR1H471B</text>
-<text x="-109.982" y="75.692" size="0.6096" layer="97" rot="R270" align="top-left">TCTAL1V335M8R</text>
-<text x="-50.546" y="-301.244" size="0.6096" layer="97" rot="R90" align="top-left">TAJA106K016TNJ
-T491A106K016AT</text>
-<text x="-120.142" y="-464.566" size="0.6096" layer="97" rot="R270" align="top-left">SMAJ40CA
-</text>
-<text x="-72.136" y="-519.176" size="0.6096" layer="97" rot="R90" align="top-left">SMAJ40CA
-</text>
-<text x="-107.95" y="-521.97" size="0.6096" layer="97" rot="R90" align="top-left">ESD12VD3B-TP
-CDSOD323-T12C</text>
-<text x="201.168" y="-213.614" size="0.6096" layer="97" rot="R270" align="top-left">ESDLC3V3D3B-TP
-CDSOD323-T03SC
-SD03LCC</text>
-<text x="-74.676" y="-295.402" size="0.6096" layer="97" align="top-left">VSSAF5N50
-SL36A</text>
-<text x="48.26" y="-314.96" size="0.6096" layer="97" rot="R270" align="top-left">BN35-3T103FB-100</text>
-<text x="67.818" y="59.436" size="0.6096" layer="97" align="top-left">KDV12DR100ET
-VMK-R033-1.0-U</text>
-<text x="3.302" y="57.912" size="0.6096" layer="97" rot="R270" align="top-left">TC33X-2-103E</text>
-<text x="168.91" y="-74.168" size="0.6096" layer="97" rot="R270" align="top-left">TC33X-1-472E</text>
-<text x="-84.074" y="-209.55" size="0.6096" layer="97">TC33X-1-102E</text>
-<text x="215.9" y="-203.2" size="0.6096" layer="97">TL1105RF250Q</text>
 <text x="-2.54" y="0" size="1.27" layer="97">maximum output is about 20V
 MCU can lower this to about 9V
 (using the 2K2 resistor)</text>
@@ -22637,8 +22626,12 @@ when voltage exceeds 22V</text>
 <attribute name="NAME" x="-122.4026" y="-81.28" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="-118.3386" y="-85.598" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="R13" gate="G$1" x="-129.54" y="-81.28" rot="R90"/>
-<instance part="R12" gate="G$1" x="-137.16" y="-81.28" rot="R90"/>
+<instance part="R13" gate="G$1" x="-129.54" y="-81.28" rot="R90">
+<attribute name="PARTNUM" x="-129.54" y="-81.28" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
+<instance part="R12" gate="G$1" x="-137.16" y="-81.28" rot="R90">
+<attribute name="PARTNUM" x="-137.16" y="-81.28" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="D10" gate="G$1" x="-144.78" y="-83.82" rot="R90"/>
 <instance part="U2" gate="G$1" x="-114.3" y="-147.32"/>
 <instance part="R15" gate="G$1" x="-66.04" y="-154.94"/>
@@ -22734,8 +22727,12 @@ when voltage exceeds 22V</text>
 <attribute name="VALUE" x="47.625" y="64.516" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="GND3" gate="1" x="50.8" y="58.42"/>
-<instance part="R1" gate="G$1" x="66.04" y="81.28"/>
-<instance part="R2" gate="G$1" x="66.04" y="71.12"/>
+<instance part="R1" gate="G$1" x="66.04" y="81.28">
+<attribute name="PARTNUM" x="66.04" y="81.28" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="R2" gate="G$1" x="66.04" y="71.12">
+<attribute name="PARTNUM" x="66.04" y="71.12" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="R3" gate="G$1" x="66.04" y="60.96"/>
 <instance part="P+1" gate="1" x="78.74" y="88.9"/>
 <instance part="U3" gate="A" x="-83.82" y="-391.16"/>
@@ -22782,10 +22779,14 @@ when voltage exceeds 22V</text>
 <instance part="R9" gate="G$1" x="-10.16" y="15.24" rot="R90"/>
 <instance part="P+6" gate="1" x="-58.42" y="-284.48"/>
 <instance part="P+7" gate="G$1" x="-58.42" y="-320.04"/>
-<instance part="C43" gate="G$1" x="-104.14" y="-297.18"/>
+<instance part="C43" gate="G$1" x="-104.14" y="-297.18">
+<attribute name="PARTNUM" x="-104.14" y="-297.18" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND25" gate="1" x="-104.14" y="-307.34"/>
 <instance part="C44" gate="G$1" x="-58.42" y="-297.18"/>
-<instance part="C45" gate="G$1" x="-58.42" y="-330.2"/>
+<instance part="C45" gate="G$1" x="-58.42" y="-330.2">
+<attribute name="PARTNUM" x="-58.42" y="-330.2" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND26" gate="1" x="-58.42" y="-307.34"/>
 <instance part="GND28" gate="1" x="-58.42" y="-340.36"/>
 <instance part="D12" gate="G$1" x="-73.66" y="-292.1"/>
@@ -22984,12 +22985,16 @@ when voltage exceeds 22V</text>
 <instance part="GND56" gate="1" x="88.9" y="-330.2"/>
 <instance part="GND57" gate="1" x="63.5" y="-330.2"/>
 <instance part="THERM1" gate="G$1" x="53.34" y="-317.5" rot="R270"/>
-<instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270"/>
+<instance part="THERM2" gate="G$1" x="78.74" y="-317.5" rot="R270">
+<attribute name="PARTNUM" x="78.74" y="-317.5" size="1.778" layer="96" rot="R270" display="off"/>
+</instance>
 <instance part="FAN1" gate="G$1" x="114.3" y="-314.96"/>
 <instance part="GND58" gate="1" x="124.46" y="-330.2"/>
 <instance part="P+16" gate="1" x="134.62" y="-304.8"/>
 <instance part="HEATSINK3" gate="A" x="-68.58" y="35.56"/>
-<instance part="C61" gate="G$1" x="134.62" y="-317.5"/>
+<instance part="C61" gate="G$1" x="134.62" y="-317.5">
+<attribute name="PARTNUM" x="134.62" y="-317.5" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="FAN2" gate="A" x="-134.62" y="-604.52"/>
 <instance part="PCB2" gate="A" x="96.52" y="7.62"/>
 </instances>

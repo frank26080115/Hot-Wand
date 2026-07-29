@@ -1483,7 +1483,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="70.589" y="17.462" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="70.616" y="18.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
-<element name="L9" library="hot-wand" package="TFI0410" value="22uH CECL" x="72" y="23" smashed="yes" rot="R90">
+<element name="L9" library="hot-wand" package="TFI0410" value="22uH" x="72" y="23" smashed="yes" rot="R90">
 <attribute name="NAME" x="70.6546" y="28.56" size="0.8128" layer="25" font="vector" ratio="10" rot="R90"/>
 <attribute name="VALUE" x="72.4826" y="20.1244" size="0.8128" layer="27" font="vector" ratio="10" rot="R90"/>
 </element>
@@ -1627,10 +1627,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="R13" library="hot-wand" package="R2512" value="DNP" x="72" y="67" smashed="yes" rot="MR270">
 <attribute name="NAME" x="70.16" y="62.795" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="70.16" y="61.775" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<attribute name="PARTNUM" value="CRGP2512F150R" x="72" y="67" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="R12" library="hot-wand" package="R2512" value="150Ω 2W" x="77" y="67" smashed="yes" rot="MR270">
 <attribute name="NAME" x="75.26" y="62.795" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="74.875" y="67.64" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="PARTNUM" value="CRGP2512F150R" x="77" y="67" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="D10" library="hot-wand" package="SMA-DIODE" value="SMBJ15CA" x="68" y="66.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="66.051" y="69.214" size="0.8128" layer="26" font="vector" rot="MR90"/>
@@ -1695,8 +1697,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PACKAGE" value="HSOIC-8 Texas Instruments" x="38.4" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="NAME" x="34.45" y="58.9" size="0.8128" layer="26" font="vector" rot="MR180"/>
 </element>
-<element name="C5" library="hot-wand" package="EIA3528" value="3u3" x="31" y="62" smashed="yes" rot="MR180">
-<attribute name="PARTNUM" value="TCTAL1V335M8R" x="31" y="62" size="1.778" layer="27" rot="MR180" display="off"/>
+<element name="C5" library="hot-wand" package="EIA3528" value="10u" x="31" y="62" smashed="yes" rot="MR180">
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K" x="31" y="62" size="1.778" layer="27" rot="MR180" display="off"/>
 <attribute name="NAME" x="28.03" y="63.17" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="26.94" y="63.47" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
@@ -1763,9 +1765,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="R1" library="hot-wand" package="1206" value="0R1" x="63" y="38.2" smashed="yes" rot="MR180">
 <attribute name="NAME" x="60.457" y="39.07" size="0.8128" layer="26" font="vector" rot="MR270"/>
+<attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U" x="63" y="38.2" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="R2" library="hot-wand" package="1206" value="0R1" x="63" y="40.6" smashed="yes" rot="MR180">
 <attribute name="NAME" x="65.43" y="41.657" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U" x="63" y="40.6" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="R3" library="hot-wand" package="1206" value="0R1" x="63" y="43" smashed="yes" rot="MR180">
 <attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U" x="63" y="43" size="1.778" layer="27" rot="MR180" display="off"/>
@@ -1837,9 +1841,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="45.838" y="53.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="44.843" y="53.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
-<element name="C43" library="hot-wand" package="EIA3528" value="3u3" x="31.8" y="40.7" smashed="yes" rot="MR0">
+<element name="C43" library="hot-wand" package="EIA3528" value="10u" x="31.8" y="40.7" smashed="yes" rot="MR0">
 <attribute name="NAME" x="28.93" y="41.97" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="27.94" y="41.97" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K" x="31.8" y="40.7" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C44" library="hot-wand" package="EIA3528" value="10u" x="40" y="40" smashed="yes" rot="MR180">
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT" x="40" y="40" size="1.778" layer="27" rot="MR180" display="off"/>
@@ -1849,6 +1854,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="C45" library="hot-wand" package="EIA3528" value="10u" x="33.7" y="37" smashed="yes" rot="MR180">
 <attribute name="NAME" x="30.73" y="38.07" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="29.74" y="38.07" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT" x="33.7" y="37" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="D12" library="hot-wand" package="SMA-DIODE" value="2A" x="40" y="44" smashed="yes" rot="MR180">
 <attribute name="PARTNUM" value="VSSAF5N50;SL36A" x="40" y="44" size="1.778" layer="27" rot="MR180" display="off"/>
@@ -1864,7 +1870,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="R19" library="hot-wand" package="0805" value="470Ω" x="72" y="26.6" smashed="yes" rot="MR90">
 <attribute name="NAME" x="75.0255" y="25.538" size="0.8128" layer="26" font="vector" rot="MR90"/>
 </element>
-<element name="L1" library="hot-wand" package="IND_RADIAL_D12.7_P6.35" value="33u SL1016T" x="45" y="47" smashed="yes">
+<element name="L1" library="hot-wand" package="IND_RADIAL_D12.7_P6.35" value="33u" x="45" y="47" smashed="yes">
 <attribute name="PARTNUM" value="Wurth 744750460220 (22uH)" x="45" y="47" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="41.189" y="49.37" size="0.8128" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="41.189" y="48.26" size="0.8128" layer="27" font="vector" ratio="10"/>
@@ -2128,12 +2134,14 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="THERM2" library="hot-wand" package="1X02-2MM" value="10K/~3950" x="56.1" y="24.3" smashed="yes">
 <attribute name="NAME" x="58.4" y="23.9" size="0.8128" layer="25"/>
+<attribute name="PARTNUM" value="BN35-3T103FB-100" x="56.1" y="24.3" size="1.778" layer="27" display="off"/>
 </element>
 <element name="FAN1" library="hot-wand" package="MOLEX-1X2" value="" x="20" y="30.4" smashed="yes" rot="R90"/>
 <element name="HEATSINK3" library="hot-wand" package="HEATSINK-SQ-12MM" value="HEATSINK-SQ-12MM" x="43" y="66"/>
 <element name="C61" library="hot-wand" package="EIA3528" value="10uF" x="22.9" y="31.3" smashed="yes" rot="MR90">
 <attribute name="NAME" x="21.13" y="28.33" size="0.8128" layer="26" rot="MR180"/>
 <attribute name="VALUE" x="21.03" y="27.34" size="0.8128" layer="28" rot="MR180"/>
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K" x="22.9" y="31.3" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="FAN2" library="hot-wand" package="FAN-20MM-TIEDOWN" value="FAN-TIEDOWN-20MM-V1" x="8.3" y="16.8" rot="R22">
 <attribute name="PARTNUM" value="MS2006H12D-RSR" x="8.3" y="16.8" size="1.778" layer="27" rot="R22" display="off"/>
