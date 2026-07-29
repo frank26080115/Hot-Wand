@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.1" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -16320,6 +16320,76 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="6" y1="-6" x2="-6" y2="-6" width="0.127" layer="151"/>
 <wire x1="-6" y1="-6" x2="-6" y2="6" width="0.127" layer="151"/>
 </package>
+<package name="FAN-20MM-TIEDOWN">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
+<pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
+<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V2">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="3.7" y="-6.2" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="3" x="3.7" y="6.2" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5" shape="octagon"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V3">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<hole x="3.7" y="8" drill="3"/>
+<hole x="3.7" y="-8" drill="3"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V4">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="-3.7" y="-8" drill="0.8" shape="offset"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" shape="offset" rot="R180"/>
+<pad name="3" x="-3.7" y="8" drill="0.8" shape="offset"/>
+<pad name="4" x="3.7" y="8" drill="0.8" shape="offset" rot="R180"/>
+<hole x="0" y="10" drill="3"/>
+<hole x="0" y="-10" drill="3"/>
+</package>
+<package name="PCB-ART-VERSION">
+<text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
+<text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
+<wire x1="-10" y1="2" x2="9.5" y2="2" width="0" layer="41"/>
+<wire x1="9.5" y1="2" x2="9.5" y2="-2" width="0" layer="41"/>
+<wire x1="9.5" y1="-2" x2="-10" y2="-2" width="0" layer="41"/>
+<wire x1="-10" y1="-2" x2="-10" y2="2" width="0" layer="41"/>
+<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+</package>
+<package name="TRIM_TC33X-2-103E">
+<description>&lt;b&gt;TC33X-2&lt;/b&gt;&lt;br&gt;
+</description>
+<text x="-2.881209375" y="2.373359375" size="1.270209375" layer="25">&gt;NAME</text>
+<wire x1="1.8" y1="1.8" x2="1.8" y2="-1.8" width="0.127" layer="51"/>
+<wire x1="1.8" y1="-1.8" x2="-2" y2="-1.8" width="0.127" layer="51"/>
+<wire x1="-2" y1="-1.8" x2="-2" y2="1.8" width="0.127" layer="51"/>
+<wire x1="-2" y1="1.8" x2="1.8" y2="1.8" width="0.127" layer="51"/>
+<wire x1="-0.85" y1="1.8" x2="1.8" y2="1.8" width="0.127" layer="21"/>
+<wire x1="1.8" y1="1.8" x2="1.8" y2="1.2" width="0.127" layer="21"/>
+<wire x1="-0.85" y1="-1.8" x2="1.8" y2="-1.8" width="0.127" layer="21"/>
+<wire x1="1.8" y1="-1.8" x2="1.8" y2="-1.2" width="0.127" layer="21"/>
+<text x="-3.2424" y="-3.632690625" size="1.270940625" layer="27">&gt;VALUE</text>
+<wire x1="-2.65" y1="2.05" x2="2.45" y2="2.05" width="0.05" layer="39"/>
+<wire x1="2.45" y1="2.05" x2="2.45" y2="-2.05" width="0.05" layer="39"/>
+<wire x1="2.45" y1="-2.05" x2="-2.65" y2="-2.05" width="0.05" layer="39"/>
+<wire x1="-2.65" y1="-2.05" x2="-2.65" y2="2.05" width="0.05" layer="39"/>
+<smd name="1" x="-1.8" y="1" dx="1.2" dy="1.2" layer="1"/>
+<smd name="3" x="-1.8" y="-1" dx="1.2" dy="1.2" layer="1"/>
+<smd name="2" x="1.45" y="0" dx="1.5" dy="1.6" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -17212,7 +17282,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-5.08306875" y="-7.37045" size="1.77906875" layer="96">&gt;VALUE</text>
 <pin name="1" x="-7.62" y="2.54" visible="pad" length="short" direction="pas"/>
 <pin name="2" x="7.62" y="2.54" visible="pad" length="short" direction="pas" rot="R180"/>
-<pin name="SHIELD" x="7.62" y="-2.54" length="short" direction="pwr" rot="R180"/>
+<pin name="MNT" x="7.62" y="-2.54" length="short" direction="pwr" rot="R180"/>
 </symbol>
 <symbol name="OLED-SSD1306-4PIN">
 <wire x1="0" y1="0" x2="0" y2="15.24" width="0.254" layer="94"/>
@@ -17360,6 +17430,23 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <pin name="1" x="-7.62" y="0" visible="off" length="short" direction="pas"/>
 <pin name="3" x="7.62" y="0" visible="off" length="short" direction="pas" rot="R180"/>
 <pin name="2" x="0" y="-5.08" visible="off" length="short" direction="pas" rot="R90"/>
+</symbol>
+<symbol name="FAN-TIEDOWN">
+<wire x1="0" y1="0" x2="0" y2="10.16" width="0.254" layer="94"/>
+<wire x1="0" y1="10.16" x2="17.78" y2="10.16" width="0.254" layer="94"/>
+<wire x1="17.78" y1="10.16" x2="17.78" y2="0" width="0.254" layer="94"/>
+<wire x1="17.78" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
+<text x="2.54" y="2.54" size="5.08" layer="94">FAN</text>
+<text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
+<text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+</symbol>
+<symbol name="PCB-ART-VERSION">
+<text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND</text>
+<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260727A</text>
+<wire x1="-10.16" y1="2.54" x2="10.16" y2="2.54" width="0.254" layer="94"/>
+<wire x1="10.16" y1="2.54" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-5.08" x2="-10.16" y2="2.54" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -25122,7 +25209,7 @@ Standard 5-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <technology name=""/>
 </technologies>
 </device>
-<device name="35WR1KLFTR" package="TRIM_35WR1KLFTR">
+<device name="-35WR1KLFTR" package="TRIM_35WR1KLFTR">
 <connects>
 <connect gate="G$1" pin="A" pad="3"/>
 <connect gate="G$1" pin="E" pad="1"/>
@@ -25132,7 +25219,17 @@ Standard 5-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <technology name=""/>
 </technologies>
 </device>
-<device name="35WR1KLFTR_V2" package="TRIM_35WR1KLFTR_V2">
+<device name="-35WR1KLFTR_V2" package="TRIM_35WR1KLFTR_V2">
+<connects>
+<connect gate="G$1" pin="A" pad="3"/>
+<connect gate="G$1" pin="E" pad="1"/>
+<connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-TX33X-2" package="TRIM_TC33X-2-103E">
 <connects>
 <connect gate="G$1" pin="A" pad="3"/>
 <connect gate="G$1" pin="E" pad="1"/>
@@ -29323,7 +29420,7 @@ EiceDRIVER, Fast Single Channel 4A/8A Low-Side Gate Driver, UVLO - 8V&lt;p&gt;</
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
-<connect gate="G$1" pin="SHIELD" pad="S1 S2"/>
+<connect gate="G$1" pin="MNT" pad="S1 S2"/>
 </connects>
 <technologies>
 <technology name="">
@@ -29829,6 +29926,45 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <connect gate="G$1" pin="2" pad="2"/>
 <connect gate="G$1" pin="3" pad="3"/>
 </connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="FAN-TIEDOWN" prefix="FAN">
+<gates>
+<gate name="A" symbol="FAN-TIEDOWN" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-20MM-V1" package="FAN-20MM-TIEDOWN">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V2" package="FAN-20MM-TIEDOWN-V2">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V3" package="FAN-20MM-TIEDOWN-V3">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V4" package="FAN-20MM-TIEDOWN-V4">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PCB-ART-VERSION" prefix="PCB">
+<gates>
+<gate name="A" symbol="PCB-ART-VERSION" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="PCB-ART-VERSION">
 <technologies>
 <technology name=""/>
 </technologies>

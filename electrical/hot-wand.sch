@@ -10017,6 +10017,76 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="6" y1="-6" x2="-6" y2="-6" width="0.127" layer="151"/>
 <wire x1="-6" y1="-6" x2="-6" y2="6" width="0.127" layer="151"/>
 </package>
+<package name="FAN-20MM-TIEDOWN">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
+<pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
+<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V2">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="3.7" y="-6.2" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="3" x="3.7" y="6.2" drill="0.8" diameter="1.5" shape="octagon"/>
+<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5" shape="octagon"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V3">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<hole x="3.7" y="8" drill="3"/>
+<hole x="3.7" y="-8" drill="3"/>
+</package>
+<package name="PCB-ART-VERSION">
+<text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
+<text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
+<wire x1="-10" y1="2" x2="9.5" y2="2" width="0" layer="41"/>
+<wire x1="9.5" y1="2" x2="9.5" y2="-2" width="0" layer="41"/>
+<wire x1="9.5" y1="-2" x2="-10" y2="-2" width="0" layer="41"/>
+<wire x1="-10" y1="-2" x2="-10" y2="2" width="0" layer="41"/>
+<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+</package>
+<package name="TRIM_TC33X-2-103E">
+<description>&lt;b&gt;TC33X-2&lt;/b&gt;&lt;br&gt;
+</description>
+<text x="-2.881209375" y="2.373359375" size="1.270209375" layer="25">&gt;NAME</text>
+<wire x1="1.8" y1="1.8" x2="1.8" y2="-1.8" width="0.127" layer="51"/>
+<wire x1="1.8" y1="-1.8" x2="-2" y2="-1.8" width="0.127" layer="51"/>
+<wire x1="-2" y1="-1.8" x2="-2" y2="1.8" width="0.127" layer="51"/>
+<wire x1="-2" y1="1.8" x2="1.8" y2="1.8" width="0.127" layer="51"/>
+<wire x1="-0.85" y1="1.8" x2="1.8" y2="1.8" width="0.127" layer="21"/>
+<wire x1="1.8" y1="1.8" x2="1.8" y2="1.2" width="0.127" layer="21"/>
+<wire x1="-0.85" y1="-1.8" x2="1.8" y2="-1.8" width="0.127" layer="21"/>
+<wire x1="1.8" y1="-1.8" x2="1.8" y2="-1.2" width="0.127" layer="21"/>
+<text x="-3.2424" y="-3.632690625" size="1.270940625" layer="27">&gt;VALUE</text>
+<wire x1="-2.65" y1="2.05" x2="2.45" y2="2.05" width="0.05" layer="39"/>
+<wire x1="2.45" y1="2.05" x2="2.45" y2="-2.05" width="0.05" layer="39"/>
+<wire x1="2.45" y1="-2.05" x2="-2.65" y2="-2.05" width="0.05" layer="39"/>
+<wire x1="-2.65" y1="-2.05" x2="-2.65" y2="2.05" width="0.05" layer="39"/>
+<smd name="1" x="-1.8" y="1" dx="1.2" dy="1.2" layer="1"/>
+<smd name="3" x="-1.8" y="-1" dx="1.2" dy="1.2" layer="1"/>
+<smd name="2" x="1.45" y="0" dx="1.5" dy="1.6" layer="1"/>
+</package>
+<package name="FAN-20MM-TIEDOWN-V4">
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<pad name="1" x="-3.7" y="-8" drill="0.8" shape="offset"/>
+<pad name="2" x="3.7" y="-8" drill="0.8" shape="offset" rot="R180"/>
+<pad name="3" x="-3.7" y="8" drill="0.8" shape="offset"/>
+<pad name="4" x="3.7" y="8" drill="0.8" shape="offset" rot="R180"/>
+<hole x="0" y="10" drill="3"/>
+<hole x="0" y="-10" drill="3"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -10485,7 +10555,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="-5.08306875" y="-7.37045" size="1.77906875" layer="96">&gt;VALUE</text>
 <pin name="1" x="-7.62" y="2.54" visible="pad" length="short" direction="pas"/>
 <pin name="2" x="7.62" y="2.54" visible="pad" length="short" direction="pas" rot="R180"/>
-<pin name="SHIELD" x="7.62" y="-2.54" length="short" direction="pwr" rot="R180"/>
+<pin name="MNT" x="7.62" y="-2.54" length="short" direction="pwr" rot="R180"/>
 </symbol>
 <symbol name="OLED-SSD1306-4PIN">
 <wire x1="0" y1="0" x2="0" y2="15.24" width="0.254" layer="94"/>
@@ -10619,6 +10689,23 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="-2.54" y1="-1.524" x2="-1.27" y2="-1.524" width="0.254" layer="94"/>
 <wire x1="-1.27" y1="-1.524" x2="1.524" y2="1.778" width="0.254" layer="94"/>
 <wire x1="1.524" y1="1.778" x2="2.54" y2="1.778" width="0.254" layer="94"/>
+</symbol>
+<symbol name="FAN-TIEDOWN">
+<wire x1="0" y1="0" x2="0" y2="10.16" width="0.254" layer="94"/>
+<wire x1="0" y1="10.16" x2="17.78" y2="10.16" width="0.254" layer="94"/>
+<wire x1="17.78" y1="10.16" x2="17.78" y2="0" width="0.254" layer="94"/>
+<wire x1="17.78" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
+<text x="2.54" y="2.54" size="5.08" layer="94">FAN</text>
+<text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
+<text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+</symbol>
+<symbol name="PCB-ART-VERSION">
+<text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND</text>
+<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260727A</text>
+<wire x1="-10.16" y1="2.54" x2="10.16" y2="2.54" width="0.254" layer="94"/>
+<wire x1="10.16" y1="2.54" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-5.08" x2="-10.16" y2="2.54" width="0.254" layer="94"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -17843,7 +17930,7 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <technology name=""/>
 </technologies>
 </device>
-<device name="35WR1KLFTR" package="TRIM_35WR1KLFTR">
+<device name="-35WR1KLFTR" package="TRIM_35WR1KLFTR">
 <connects>
 <connect gate="G$1" pin="A" pad="3"/>
 <connect gate="G$1" pin="E" pad="1"/>
@@ -17853,7 +17940,17 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <technology name=""/>
 </technologies>
 </device>
-<device name="35WR1KLFTR_V2" package="TRIM_35WR1KLFTR_V2">
+<device name="-35WR1KLFTR_V2" package="TRIM_35WR1KLFTR_V2">
+<connects>
+<connect gate="G$1" pin="A" pad="3"/>
+<connect gate="G$1" pin="E" pad="1"/>
+<connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-TX33X-2" package="TRIM_TC33X-2-103E">
 <connects>
 <connect gate="G$1" pin="A" pad="3"/>
 <connect gate="G$1" pin="E" pad="1"/>
@@ -19763,7 +19860,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
-<connect gate="G$1" pin="SHIELD" pad="S1 S2"/>
+<connect gate="G$1" pin="MNT" pad="S1 S2"/>
 </connects>
 <technologies>
 <technology name="">
@@ -21904,6 +22001,45 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </device>
 </devices>
 </deviceset>
+<deviceset name="FAN-TIEDOWN" prefix="FAN">
+<gates>
+<gate name="A" symbol="FAN-TIEDOWN" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-20MM-V1" package="FAN-20MM-TIEDOWN">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V2" package="FAN-20MM-TIEDOWN-V2">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V3" package="FAN-20MM-TIEDOWN-V3">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-20MM-V4" package="FAN-20MM-TIEDOWN-V4">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="PCB-ART-VERSION" prefix="PCB">
+<gates>
+<gate name="A" symbol="PCB-ART-VERSION" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="PCB-ART-VERSION">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -21939,7 +22075,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C41" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3"/>
 <part name="R18" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="P+5" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="R20" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="1K"/>
+<part name="R20" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="DNP"/>
 <part name="R22" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="C27" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V"/>
 <part name="C28" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V"/>
@@ -22003,7 +22139,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8"/>
 <part name="GND20" library="hot-wand" deviceset="GND" device=""/>
 <part name="U1" library="hot-wand" deviceset="TPS54560DDA" device=""/>
-<part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
+<part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="3u3"/>
 <part name="C6" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470uF">
 <attribute name="PARTNUM" value="UHW1H471MPD"/>
 </part>
@@ -22023,7 +22159,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND6" library="hot-wand" deviceset="GND" device=""/>
 <part name="R11" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="R4" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8"/>
-<part name="VR1" library="hot-wand" deviceset="POT" device="35WR1KLFTR_V2" value="10K"/>
+<part name="VR1" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="10K"/>
 <part name="C3" library="hot-wand" deviceset="CAP" device="0805" value="15nF (DNP)"/>
 <part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K"/>
 <part name="C4" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V"/>
@@ -22055,21 +22191,21 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND27" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND24" library="hot-wand" deviceset="GND" device=""/>
 <part name="D3" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD-323" value="BZX55C22"/>
-<part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K"/>
+<part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="P+6" library="hot-wand" deviceset="+12V" device=""/>
 <part name="P+7" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="C43" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
+<part name="C43" library="hot-wand" deviceset="CAP_POL" device="3528" value="3u3"/>
 <part name="GND25" library="hot-wand" deviceset="GND" device=""/>
-<part name="C44" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
-<part name="C45" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
+<part name="C44" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u"/>
+<part name="C45" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u"/>
 <part name="GND26" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND28" library="hot-wand" deviceset="GND" device=""/>
 <part name="D12" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="_" value="2A"/>
 <part name="D13" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="_" value=""/>
-<part name="F1" library="hot-wand" deviceset="FUSE" device="X20MM" value="8A">
+<part name="F1" library="hot-wand" deviceset="FUSE" device="X20MM" value="8A 20x5mm">
 <attribute name="PARTNUM" value="952001100010000"/>
 </part>
-<part name="R19" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="1K"/>
+<part name="R19" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="470Ω"/>
 <part name="L1" library="hot-wand" deviceset="INDUCTOR" device="RADIAL_D12.7_P6.35" value="33u SL1016T"/>
 <part name="L2" library="hot-wand" deviceset="INDUCTOR" device="IHLP-2525CZ_VIS-M" value="4u7 IHLP2525CZ"/>
 <part name="D2" library="hot-wand" deviceset="DIODE-ZENER" device="SOD123FL" value="MMSZ22T1G"/>
@@ -22105,7 +22241,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="HEATSINK1" library="hot-wand" deviceset="HEATSINK" device="-5042" value="HEATSINK-5042"/>
 <part name="HEATSINK2" library="hot-wand" deviceset="HEATSINK" device="-5042" value="HEATSINK-5042"/>
 <part name="JP2" library="hot-wand" deviceset="COAX-FTYPE-PCB-MNT" device="" value="COAX-FTYPE-PCB-MNT"/>
-<part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value="TACT-SIDE"/>
+<part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value=""/>
 <part name="GND44" library="hot-wand" deviceset="GND" device=""/>
 <part name="U6" library="hot-wand" deviceset="OLED-SSD1306-4PIN" device="-0.91N-VERT" value="SSD1306-4PIN-0.91N-VERT"/>
 <part name="U7" library="hot-wand" deviceset="STM32F030F4P6" device=""/>
@@ -22135,7 +22271,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R36" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="P+14" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="R37" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="DNP"/>
-<part name="VR2" library="hot-wand" deviceset="POT" device="35WR1KLFTR_V2" value="1K"/>
+<part name="VR2" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="1K"/>
 <part name="SJ1" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
 <part name="C58" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3"/>
 <part name="GND54" library="hot-wand" deviceset="GND" device=""/>
@@ -22149,7 +22285,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="LED4" library="hot-wand" deviceset="LED" device="0603"/>
 <part name="R41" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="SJ2" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
-<part name="VR3" library="hot-wand" deviceset="POT" device="35WR1KLFTR_V2" value="4K7"/>
+<part name="VR3" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="4K7"/>
 <part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
 <part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
@@ -22165,6 +22301,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
 <part name="HEATSINK3" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM"/>
 <part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF"/>
+<part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1"/>
+<part name="PCB2" library="hot-wand" deviceset="PCB-ART-VERSION" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -22227,7 +22365,6 @@ even if DC input is too low</text>
 10mm long x 6mm dia
 22 AWG/0.6mm</text>
 <text x="61.214" y="75.692" size="1.27" layer="97">1/2W each</text>
-<text x="-111.76" y="-220.98" size="0.6096" layer="97" align="center-left">originally 1x 470Ω</text>
 <text x="-113.284" y="-65.024" size="1.016" layer="97" align="bottom-right">Ciss 800pF
 Coss 165pF
 Crss 26pF</text>
@@ -22243,6 +22380,50 @@ thresh 2.1V</text>
 <text x="71.12" y="-193.04" size="5.08" layer="97">Microcontroller</text>
 <text x="43.18" y="-340.36" size="5.08" layer="97">thermistors</text>
 <text x="43.18" y="-342.9" size="1.778" layer="97">(optional)</text>
+<text x="148.59" y="-57.15" size="0.6096" layer="97">LFP with cutoff @ 1.6kHz</text>
+<text x="181.61" y="-82.55" size="0.6096" layer="97" align="top-left">tune for voltage under load
+if temperature unstable
+or excessive power draw</text>
+<text x="-136.906" y="77.47" size="0.6096" layer="97" align="top-left">Keystone 3518P</text>
+<text x="-85.852" y="-217.678" size="0.6096" layer="97" align="top-left">tune for sensitivity</text>
+<text x="-123.19" y="-238.506" size="0.6096" layer="97" rot="R180">LFP with cutoff @ 187kHz</text>
+<text x="-95.25" y="34.29" size="0.6096" layer="97" rot="R90">sw freq 450kHz</text>
+<text x="1.27" y="44.45" size="0.6096" layer="97" rot="R90">tune for unloaded voltage</text>
+<text x="45.72" y="86.36" size="0.6096" layer="97" rot="R180" align="top-left">IHLP2525CZER4R7M11</text>
+<text x="-8.382" y="85.852" size="0.6096" layer="97" rot="R180" align="top-left">Wurth 744750460220 (22uH)</text>
+<text x="-1.778" y="65.786" size="0.6096" layer="97" rot="R90" align="top-left">EEU-FR1H101B
+EEU-FR1J101B</text>
+<text x="-91.694" y="72.136" size="0.6096" layer="97" rot="R90" align="top-left">EEU-FR1H471
+EEU-FR1H471B</text>
+<text x="-109.982" y="75.692" size="0.6096" layer="97" rot="R270" align="top-left">TCTAL1V335M8R</text>
+<text x="-50.546" y="-301.244" size="0.6096" layer="97" rot="R90" align="top-left">TAJA106K016TNJ
+T491A106K016AT</text>
+<text x="-120.142" y="-464.566" size="0.6096" layer="97" rot="R270" align="top-left">SMAJ40CA
+</text>
+<text x="-72.136" y="-519.176" size="0.6096" layer="97" rot="R90" align="top-left">SMAJ40CA
+</text>
+<text x="-107.95" y="-521.97" size="0.6096" layer="97" rot="R90" align="top-left">ESD12VD3B-TP
+CDSOD323-T12C</text>
+<text x="201.168" y="-213.614" size="0.6096" layer="97" rot="R270" align="top-left">ESDLC3V3D3B-TP
+CDSOD323-T03SC
+SD03LCC</text>
+<text x="-74.676" y="-295.402" size="0.6096" layer="97" align="top-left">VSSAF5N50
+SL36A</text>
+<text x="48.26" y="-314.96" size="0.6096" layer="97" rot="R270" align="top-left">BN35-3T103FB-100</text>
+<text x="67.818" y="59.436" size="0.6096" layer="97" align="top-left">KDV12DR100ET
+VMK-R033-1.0-U</text>
+<text x="3.302" y="57.912" size="0.6096" layer="97" rot="R270" align="top-left">TC33X-2-103E</text>
+<text x="168.91" y="-74.168" size="0.6096" layer="97" rot="R270" align="top-left">TC33X-1-472E</text>
+<text x="-84.074" y="-209.55" size="0.6096" layer="97">TC33X-1-102E</text>
+<text x="215.9" y="-203.2" size="0.6096" layer="97">TL1105RF250Q</text>
+<text x="-2.54" y="0" size="1.27" layer="97">maximum output is about 20V
+MCU can lower this to about 9V
+(using the 2K2 resistor)</text>
+<text x="33.528" y="75.438" size="0.8128" layer="97" rot="R270">cause instant voltage cut
+when voltage exceeds 22V</text>
+<text x="-49.022" y="67.564" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
+<text x="-8.382" y="87.122" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
+<text x="-134.62" y="-610.616" size="0.8128" layer="97" align="top-left">MS2006H12D-RSR</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="68.58" y="2.54"/>
@@ -22582,7 +22763,7 @@ thresh 2.1V</text>
 </instance>
 <instance part="R19" gate="G$1" x="-106.68" y="-218.44" smashed="yes" rot="R180">
 <attribute name="NAME" x="-111.506" y="-216.9414" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-104.14" y="-217.678" size="1.778" layer="96"/>
+<attribute name="VALUE" x="-111.506" y="-214.63" size="1.778" layer="96"/>
 </instance>
 <instance part="L1" gate="G$1" x="-17.78" y="81.28" smashed="yes" rot="R90">
 <attribute name="NAME" x="-20.574" y="80.518" size="1.778" layer="95" rot="R180"/>
@@ -22775,6 +22956,8 @@ thresh 2.1V</text>
 <instance part="P+16" gate="1" x="134.62" y="-304.8"/>
 <instance part="HEATSINK3" gate="A" x="-68.58" y="35.56"/>
 <instance part="C61" gate="G$1" x="134.62" y="-317.5"/>
+<instance part="FAN2" gate="A" x="-134.62" y="-604.52"/>
+<instance part="PCB2" gate="A" x="96.52" y="7.62"/>
 </instances>
 <busses>
 </busses>
@@ -22800,6 +22983,9 @@ thresh 2.1V</text>
 <wire x1="190.5" y1="-45.72" x2="185.42" y2="-45.72" width="0.1524" layer="91"/>
 <pinref part="JP2" gate="A" pin="GND_2"/>
 <wire x1="190.5" y1="-38.1" x2="185.42" y2="-38.1" width="0.1524" layer="91"/>
+<junction x="185.42" y="-45.72"/>
+<junction x="185.42" y="-43.18"/>
+<junction x="185.42" y="-40.64"/>
 </segment>
 <segment>
 <pinref part="D8" gate="G$1" pin="A"/>
@@ -23195,7 +23381,7 @@ thresh 2.1V</text>
 <wire x1="-76.2" y1="-523.24" x2="-76.2" y2="-520.7" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="SW1" gate="G$1" pin="SHIELD"/>
+<pinref part="SW1" gate="G$1" pin="MNT"/>
 <pinref part="GND44" gate="1" pin="GND"/>
 <wire x1="223.52" y1="-213.36" x2="226.06" y2="-213.36" width="0.1524" layer="91"/>
 <wire x1="226.06" y1="-213.36" x2="226.06" y2="-215.9" width="0.1524" layer="91"/>
