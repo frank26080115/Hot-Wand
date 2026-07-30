@@ -25,19 +25,17 @@ If we are in a power limited mode, then the bottom area is split in two halves, 
 
 # Power Levels
 
+The assumption is that this is a 100W system because the buck converter is theoretically tuned for 20V and is capable of 5A.
+
 The available levels are
 
- * Full Power
- * 75% Power
- * 50% Power (must never fail when used with a 65W USB power supply)
+ * 100% Power (100W)
+ * 75% Power (75W)
+ * 50% Power (50W, must never fail when used with a 65W USB power supply)
 
 To actually modulate the power, there is a PWM pin allocated to send a bias signal to the buck converter's feedback input through a resistor and diode.
 
-For full power mode, this is pin is off. If the current power consumption is under 80% of the power limit, then also, this pin is off. Otherwise, each of the modes have a baseline PWM duty cycle, and a PID loop controls how much more or less duty is added on top of that baseline duty.
-
-The PID loop will be experimentally tuned in firmware, and be compiled into the firmware.
-
-The duty cycle setpoint is slewed slowly regardless of what the PID controller outputs. It should take 500ms to go from 0% duty cycle to 100% duty cycle.
+If the currently utilized power is above the set limit, the attenuation is raised at a steady pace, otherwise, it is lowered.
 
 # Firmware Code Modules
 
@@ -49,3 +47,4 @@ The duty cycle setpoint is slewed slowly regardless of what the PID controller o
  * User button state machine
  * Power output limiter
  * RF clock generator
+ * Fan state machine

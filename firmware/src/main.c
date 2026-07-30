@@ -99,11 +99,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef *handle)
     HAL_GPIO_Init(GPIOA, &gpio);
 }
 
-void SysTick_Handler(void)
-{
-    HAL_IncTick();
-}
-
 static void I2C1_Init(void)
 {
     __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);

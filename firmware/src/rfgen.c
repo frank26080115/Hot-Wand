@@ -1,0 +1,247 @@
+#include "rfgen.h"
+
+#include "pins.h"
+#include "stm32f0xx_hal.h"
+#include "tipdetect.h"
+
+#define RFGEN_CLOCK_HZ    27120000UL
+#define RFGEN_PWM_PERIOD         1U
+#define RFGEN_PWM_PULSE          1U
+
+/*
+ * TIM1 runs directly from the 27.12 MHz crystal.  With PSC = 0 and ARR = 1,
+ * one PWM period is two timer ticks: 27.12 MHz / 2 = 13.56 MHz.
+ */
+_Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ,
+               "RF generator requires a 27.12 MHz external crystal");
+
+static TIM_HandleTypeDef rfgen_timer;
+
+static void rfgen_clock_init(void);
+static bool rfgen_tip_allows_start(void);
+static void rfgen_pin_low(void);
+static void rfgen_fault(void);
+
+void rfgen_start(void)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+    TIM_MasterConfigTypeDef master_cfg = {0};
+    TIM_OC_InitTypeDef pwm_cfg = {0};
+    TIM_BreakDeadTimeConfigTypeDef break_cfg = {0};
+    uint32_t interrupt_state;
+
+    /*
+     * The tip detector powers up fail-closed.  This also means tipdetect_init()
+     * must confirm a connected tip before the RF generator can be started.
+     */
+    if (!rfgen_tip_allows_start()) {
+        rfgen_stop();
+        return;
+    }
+
+    /*
+     * A restart is deliberately a full reconfiguration.  Keep the external
+     * circuit disabled while the clock and timer are being rebuilt.
+     */
+    rfgen_stop();
+    rfgen_clock_init();
+
+    __HAL_RCC_TIM1_CLK_ENABLE();
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
+    __HAL_RCC_TIM1_FORCE_RESET();
+    __HAL_RCC_TIM1_RELEASE_RESET();
+
+    rfgen_timer = (TIM_HandleTypeDef){0};
+    rfgen_timer.Instance = TIM1;
+    rfgen_timer.Init.Prescaler = 0U;
+    rfgen_timer.Init.CounterMode = TIM_COUNTERMODE_UP;
+    rfgen_timer.Init.Period = RFGEN_PWM_PERIOD;
+    rfgen_timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    rfgen_timer.Init.RepetitionCounter = 0U;
+    rfgen_timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    if (HAL_TIM_PWM_Init(&rfgen_timer) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    master_cfg.MasterOutputTrigger = TIM_TRGO_RESET;
+    master_cfg.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&rfgen_timer,
+                                              &master_cfg) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    /*
+     * PB1 is TIM1_CH3N on this MCU.  PWM1 makes the complementary output
+     * begin low at CNT = 0; CCR = 1 still gives an exact 50 percent duty cycle.
+     */
+    pwm_cfg.OCMode = TIM_OCMODE_PWM1;
+    pwm_cfg.Pulse = RFGEN_PWM_PULSE;
+    pwm_cfg.OCPolarity = TIM_OCPOLARITY_HIGH;
+    pwm_cfg.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+    pwm_cfg.OCFastMode = TIM_OCFAST_DISABLE;
+    pwm_cfg.OCIdleState = TIM_OCIDLESTATE_RESET;
+    pwm_cfg.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+
+    if (HAL_TIM_PWM_ConfigChannel(&rfgen_timer,
+                                  &pwm_cfg,
+                                  TIM_CHANNEL_3) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    /*
+     * Internal lockup and SRAM-parity faults are routed to TIM1's break input.
+     * Both run and idle off-states hold the RF output inactive (low).
+     */
+    break_cfg.OffStateRunMode = TIM_OSSR_ENABLE;
+    break_cfg.OffStateIDLEMode = TIM_OSSI_ENABLE;
+    break_cfg.LockLevel = TIM_LOCKLEVEL_3;
+    break_cfg.DeadTime = 0U;
+    break_cfg.BreakState = TIM_BREAK_ENABLE;
+    break_cfg.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+    break_cfg.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+
+    if (HAL_TIMEx_ConfigBreakDeadTime(&rfgen_timer, &break_cfg) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    __HAL_SYSCFG_BREAK_LOCKUP_LOCK();
+    __HAL_SYSCFG_BREAK_SRAMPARITY_LOCK();
+
+    __HAL_TIM_SET_COUNTER(&rfgen_timer, 0U);
+    TIM1->EGR = TIM_EGR_UG;
+    __HAL_TIM_CLEAR_FLAG(&rfgen_timer, TIM_FLAG_UPDATE | TIM_FLAG_BREAK);
+
+    /*
+     * Enable CH3N while MOE is clear so TIM1's configured idle state drives
+     * low as soon as the pin is changed from GPIO to its alternate function.
+     */
+    SET_BIT(TIM1->CCER, TIM_CCER_CC3NE);
+
+    gpio_cfg.Pin = RFGEN_PINn;
+    gpio_cfg.Mode = GPIO_MODE_AF_PP;
+    gpio_cfg.Pull = GPIO_NOPULL;
+    gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
+    gpio_cfg.Alternate = GPIO_AF2_TIM1;
+    HAL_GPIO_Init(RFGEN_GPIOx, &gpio_cfg);
+
+    /*
+     * Close the race where a tip-disconnect ISR stops TIM1 while this function
+     * is still configuring it, after which an interrupted start would
+     * otherwise resume and re-enable RF.
+     */
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+    if (!rfgen_tip_allows_start()) {
+        rfgen_stop();
+        if (interrupt_state == 0U) {
+            __enable_irq();
+        }
+        return;
+    }
+
+    if (HAL_TIMEx_PWMN_Start(&rfgen_timer, TIM_CHANNEL_3) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    if (interrupt_state == 0U) {
+        __enable_irq();
+    }
+}
+
+void rfgen_stop(void)
+{
+    /*
+     * Preload the GPIO latch low, then take ownership away from TIM1.  This
+     * avoids the high-impedance stopped state produced by HAL_TIMEx_PWMN_Stop.
+     */
+    rfgen_pin_low();
+
+    if (__HAL_RCC_TIM1_IS_CLK_ENABLED()) {
+        CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+        CLEAR_BIT(TIM1->CCER, TIM_CCER_CC3E | TIM_CCER_CC3NE);
+        CLEAR_BIT(TIM1->CR1, TIM_CR1_CEN);
+    }
+}
+
+static void rfgen_clock_init(void)
+{
+    RCC_OscInitTypeDef oscillator_cfg = {0};
+    RCC_ClkInitTypeDef clock_cfg = {0};
+
+    oscillator_cfg.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    oscillator_cfg.HSEState = RCC_HSE_ON;
+    oscillator_cfg.PLL.PLLState = RCC_PLL_NONE;
+
+    if (HAL_RCC_OscConfig(&oscillator_cfg) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    clock_cfg.ClockType = RCC_CLOCKTYPE_SYSCLK |
+                          RCC_CLOCKTYPE_HCLK |
+                          RCC_CLOCKTYPE_PCLK1;
+    clock_cfg.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+    clock_cfg.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    clock_cfg.APB1CLKDivider = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&clock_cfg, FLASH_LATENCY_1) != HAL_OK) {
+        rfgen_fault();
+    }
+
+    /*
+     * If the crystal fails, CSS invokes NMI_Handler below.  That immediately
+     * removes TIM1 from the pin before resetting instead of emitting 4 MHz
+     * after the hardware's automatic fallback to HSI.
+     */
+    HAL_RCC_EnableCSS();
+}
+
+static bool rfgen_tip_allows_start(void)
+{
+    /*
+     * A running TIM17 update interrupt means that a TIP_DET edge is still in
+     * its debounce window.  Waiting also prevents the system-clock change in
+     * rfgen_clock_init() from shortening an active timer interval.
+     */
+    if (tipdetect_has_triggered() ||
+        ((TIM17->DIER & TIM_DIER_UIE) != 0U)) {
+        return false;
+    }
+
+    return HAL_GPIO_ReadPin(TIP_DET_GPIOx,
+                            TIP_DET_PINn) == GPIO_PIN_SET;
+}
+
+static void rfgen_pin_low(void)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    HAL_GPIO_WritePin(RFGEN_GPIOx, RFGEN_PINn, GPIO_PIN_RESET);
+
+    gpio_cfg.Pin = RFGEN_PINn;
+    gpio_cfg.Mode = GPIO_MODE_OUTPUT_PP;
+    gpio_cfg.Pull = GPIO_NOPULL;
+    gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(RFGEN_GPIOx, &gpio_cfg);
+}
+
+static void rfgen_fault(void)
+{
+    __disable_irq();
+    rfgen_stop();
+
+    for (;;) {
+    }
+}
+
+/*
+ * This vector symbol is intentionally private to the module's CSS handling;
+ * it is not part of the public rfgen interface.
+ */
+void NMI_Handler(void)
+{
+    CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+    rfgen_pin_low();
+    NVIC_SystemReset();
+}
