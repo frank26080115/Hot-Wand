@@ -22206,7 +22206,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="IC2" library="hot-wand" deviceset="V_REG_78XX" device="-BUCK" value="3V3 R-78K3.3"/>
 <part name="GND27" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND24" library="hot-wand" deviceset="GND" device=""/>
-<part name="D3" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD-323" value="BZX55C22"/>
+<part name="D3" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD-323" value="SD103A"/>
 <part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
 <part name="P+6" library="hot-wand" deviceset="+12V" device=""/>
 <part name="P+7" library="hot-wand" deviceset="3.3V" device=""/>
@@ -24427,7 +24427,7 @@ when voltage exceeds 22V</text>
 <label x="63.5" y="-231.14" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="MCU-GATE" class="0">
+<net name="RF-GEN" class="0">
 <segment>
 <pinref part="R14" gate="G$1" pin="1"/>
 <wire x1="-152.4" y1="-154.94" x2="-157.48" y2="-154.94" width="0.1524" layer="91"/>
