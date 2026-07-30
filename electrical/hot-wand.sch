@@ -10496,8 +10496,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <pin name="VCC2" x="-5.08" y="30.48" length="middle"/>
 <pin name="ISNP" x="38.1" y="2.54" length="middle" rot="R180"/>
 <pin name="PDOSEL" x="38.1" y="10.16" length="middle" rot="R180"/>
-<pin name="ISEL" x="38.1" y="15.24" length="middle" rot="R180"/>
-<pin name="VSEL" x="38.1" y="20.32" length="middle" rot="R180"/>
+<pin name="ISEL" x="38.1" y="20.32" length="middle" rot="R180"/>
+<pin name="VSEL" x="38.1" y="15.24" length="middle" rot="R180"/>
 <pin name="VFB" x="38.1" y="25.4" length="middle" rot="R180"/>
 <pin name="VOUT" x="38.1" y="30.48" length="middle" rot="R180"/>
 <pin name="VG_A" x="15.24" y="38.1" length="middle" rot="R270"/>
@@ -22122,7 +22122,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="CRGP2512F150R"/>
 </part>
 <part name="D10" library="hot-wand" deviceset="TVS" device="" value="SMBJ15CA"/>
-<part name="U2" library="hot-wand" deviceset="1EDN8511B" device=""/>
+<part name="U2" library="hot-wand" deviceset="1EDN8511B" device="" value="1EDN8511BXUSA1"/>
 <part name="R15" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
 <part name="R17" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
 <part name="Q2" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="IRF510"/>
@@ -22140,7 +22140,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C36" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
 <part name="GND17" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND19" library="hot-wand" deviceset="GND" device=""/>
-<part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8"/>
+<part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="GND20" library="hot-wand" deviceset="GND" device=""/>
 <part name="U1" library="hot-wand" deviceset="TPS54560DDA" device=""/>
 <part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
@@ -22193,12 +22193,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND29" library="hot-wand" deviceset="GND" device=""/>
 <part name="C49" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="P+8" library="hot-wand" deviceset="+24V" device=""/>
-<part name="R24" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3K"/>
-<part name="R23" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
+<part name="R24" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R23" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K"/>
 <part name="C47" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND32" library="hot-wand" deviceset="GND" device=""/>
-<part name="R27" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3K"/>
-<part name="R26" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="27K"/>
+<part name="R27" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R26" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K"/>
 <part name="C48" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND33" library="hot-wand" deviceset="GND" device=""/>
 <part name="R14" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω"/>
@@ -22250,12 +22250,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C50" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="C51" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND38" library="hot-wand" deviceset="GND" device=""/>
-<part name="U5" library="hot-wand" deviceset="AP53781" device="-QFN16"/>
+<part name="U5" library="hot-wand" deviceset="AP53781" device="-QFN16" value="AP53781"/>
 <part name="JP4" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL"/>
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="SSM3K388R,LF"/>
 <part name="GND39" library="hot-wand" deviceset="GND" device=""/>
-<part name="R28" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R28" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="GND40" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND41" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q6" library="hot-wand" deviceset="MOSFET-NCHAN-X2" device="-PPSO8X2" value="DMTH64M2LPDWQ-13"/>
@@ -22264,9 +22264,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C52" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND42" library="hot-wand" deviceset="GND" device=""/>
 <part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="26K"/>
-<part name="R34" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
-<part name="D15" library="hot-wand" deviceset="TVS" device="SOD-323" value="12V">
-<attribute name="PARTNUM" value="ESD12VD3B-TP;CDSOD323-T12C"/>
+<part name="R34" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="D15" library="hot-wand" deviceset="TVS" device="SOD-323" value="15">
+<attribute name="PARTNUM" value="SD15C-01FTG;CDSOD323-T15SC;TSD15CDYFR"/>
 </part>
 <part name="D16" library="hot-wand" deviceset="TVS" device="SMA" value="40V">
 <attribute name="PARTNUM" value="SMAJ40CA"/>
@@ -22282,7 +22282,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="U6" library="hot-wand" deviceset="OLED-SSD1306-4PIN" device="-0.91N-VERT" value="SSD1306-4PIN-0.91N-VERT"/>
 <part name="U7" library="hot-wand" deviceset="STM32F030F4P6" device=""/>
 <part name="GND45" library="hot-wand" deviceset="GND" device=""/>
-<part name="R33" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R33" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="P+10" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="P+11" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="C53" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
@@ -22357,18 +22357,20 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A"/>
 </part>
 <part name="SJ4" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
-<part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="R45" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω"/>
 <part name="GND59" library="hot-wand" deviceset="GND" device=""/>
 <part name="SJ5" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
+<part name="R46" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="DNP"/>
+<part name="SJ6" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value=""/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 <text x="12.7" y="-381" size="1.778" layer="97">this measures up to
-33V &gt; 3.3V</text>
+36V &gt; 3.3V</text>
 <text x="73.66" y="-381" size="1.778" layer="97">this measures up to
-33V &gt; 3.3V</text>
+36V &gt; 3.3V</text>
 <text x="-88.9" y="-378.46" size="1.778" layer="97">rated 36V max</text>
 <text x="-40.132" y="-402.59" size="1.778" layer="97">16.4X gain</text>
 <text x="-96.52" y="-406.4" size="1.778" layer="97" align="top-left">0.0333 ohm shunt
@@ -22458,6 +22460,17 @@ when voltage exceeds 22V</text>
 <text x="147.32" y="-353.06" size="5.08" layer="97">Fan CTRL</text>
 <text x="147.32" y="-355.6" size="1.778" layer="97">(optional)</text>
 <text x="167.64" y="-269.24" size="1.778" layer="97">debug port</text>
+<text x="-91.948" y="-291.338" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max</text>
+<text x="-93.98" y="-325.628" size="0.8128" layer="97" rot="R180">rated 36V max</text>
+<text x="-139.7" y="97.028" size="1.016" layer="97">lowest voltage rating
+on this bus is 36V</text>
+<text x="-34.036" y="-455.676" size="0.8128" layer="97" rot="R180" align="top-left">rated 80V max</text>
+<text x="-56.388" y="-471.424" size="0.8128" layer="97" rot="R180" align="top-left">rated 65V max</text>
+<text x="-31.496" y="-503.936" size="0.8128" layer="97" rot="R180" align="top-left">rated 60V max</text>
+<text x="-142.24" y="-454.406" size="1.016" layer="97">theoretically handles 8S
+practically should keep it 6S</text>
+<text x="-29.21" y="-549.402" size="1.27" layer="97">open = auto
+short = 5A</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="68.58" y="2.54"/>
@@ -22614,15 +22627,15 @@ when voltage exceeds 22V</text>
 <attribute name="NAME" x="-86.36" y="-60.833" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-82.804" y="-53.721" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="D4" gate="G$1" x="-93.98" y="-63.5" smashed="yes" rot="R270">
-<attribute name="NAME" x="-91.9734" y="-61.976" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="-95.9866" y="-66.548" size="1.778" layer="96" rot="R90"/>
+<instance part="D4" gate="G$1" x="-93.98" y="-68.58" smashed="yes" rot="R270">
+<attribute name="NAME" x="-91.9734" y="-67.056" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-95.9866" y="-71.628" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="D7" gate="G$1" x="-93.98" y="-76.2" smashed="yes" rot="R90">
-<attribute name="NAME" x="-94.615" y="-80.772" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="-92.075" y="-71.882" size="1.778" layer="96" rot="R270"/>
+<instance part="D7" gate="G$1" x="-93.98" y="-81.28" smashed="yes" rot="R90">
+<attribute name="NAME" x="-94.615" y="-85.852" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-92.075" y="-76.962" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="GND15" gate="1" x="-93.98" y="-88.9"/>
+<instance part="GND15" gate="1" x="-93.98" y="-93.98"/>
 <instance part="L3" gate="G$1" x="-111.76" y="-20.32" smashed="yes" rot="R180">
 <attribute name="NAME" x="-114.3" y="-25.654" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-111.252" y="-24.13" size="1.778" layer="96" rot="R270"/>
@@ -22717,9 +22730,9 @@ when voltage exceeds 22V</text>
 <attribute name="NAME" x="-25.019" y="34.036" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-17.399" y="34.036" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="C2" gate="G$1" x="-7.62" y="76.2" smashed="yes">
-<attribute name="NAME" x="-10.795" y="72.136" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="-4.191" y="80.264" size="1.778" layer="96" rot="R270"/>
+<instance part="C2" gate="G$1" x="-7.62" y="73.66" smashed="yes">
+<attribute name="NAME" x="-10.795" y="69.596" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-4.191" y="77.724" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="GND6" gate="1" x="-7.62" y="48.26"/>
 <instance part="R11" gate="G$1" x="180.34" y="-60.96" rot="R180"/>
@@ -22728,14 +22741,14 @@ when voltage exceeds 22V</text>
 <attribute name="NAME" x="10.16" y="50.038" size="1.778" layer="95" rot="MR270"/>
 <attribute name="VALUE" x="3.556" y="48.514" size="1.778" layer="95" rot="MR270"/>
 </instance>
-<instance part="C3" gate="G$1" x="22.86" y="76.2" smashed="yes" rot="R180">
-<attribute name="NAME" x="18.923" y="73.152" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="20.447" y="71.374" size="1.016" layer="96" rot="R90"/>
+<instance part="C3" gate="G$1" x="22.86" y="73.66" smashed="yes" rot="R180">
+<attribute name="NAME" x="18.923" y="70.612" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="20.447" y="68.834" size="1.016" layer="96" rot="R90"/>
 </instance>
 <instance part="R5" gate="G$1" x="30.48" y="48.26" rot="R90"/>
-<instance part="C4" gate="G$1" x="50.8" y="76.2" smashed="yes">
-<attribute name="NAME" x="49.911" y="68.834" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="47.625" y="64.516" size="1.778" layer="96" rot="R90"/>
+<instance part="C4" gate="G$1" x="50.8" y="73.66" smashed="yes">
+<attribute name="NAME" x="49.911" y="66.294" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="47.625" y="61.976" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="GND3" gate="1" x="50.8" y="58.42"/>
 <instance part="R1" gate="G$1" x="66.04" y="81.28">
@@ -23024,6 +23037,11 @@ when voltage exceeds 22V</text>
 </instance>
 <instance part="GND59" gate="1" x="139.7" y="-347.98"/>
 <instance part="SJ5" gate="1" x="132.08" y="-330.2" rot="R180"/>
+<instance part="R46" gate="G$1" x="-25.4" y="-553.72" smashed="yes">
+<attribute name="NAME" x="-29.21" y="-557.3014" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-29.21" y="-552.196" size="1.778" layer="96"/>
+</instance>
+<instance part="SJ6" gate="1" x="-12.7" y="-553.72"/>
 </instances>
 <busses>
 </busses>
@@ -23172,7 +23190,7 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="D7" gate="G$1" pin="1"/>
 <pinref part="GND15" gate="1" pin="GND"/>
-<wire x1="-93.98" y1="-78.74" x2="-93.98" y2="-86.36" width="0.1524" layer="91"/>
+<wire x1="-93.98" y1="-83.82" x2="-93.98" y2="-91.44" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="Q1" gate="G$1" pin="S"/>
@@ -23284,12 +23302,12 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="C2" gate="G$1" pin="-"/>
 <pinref part="GND6" gate="1" pin="GND"/>
-<wire x1="-7.62" y1="71.12" x2="-7.62" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="-7.62" y1="68.58" x2="-7.62" y2="50.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C4" gate="G$1" pin="-"/>
 <pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="50.8" y1="71.12" x2="50.8" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="68.58" x2="50.8" y2="60.96" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U3" gate="A" pin="GND"/>
@@ -23436,10 +23454,16 @@ when voltage exceeds 22V</text>
 <wire x1="-25.4" y1="-563.88" x2="-38.1" y2="-563.88" width="0.1524" layer="91"/>
 <pinref part="R32" gate="G$1" pin="2"/>
 <wire x1="-25.4" y1="-584.2" x2="-17.78" y2="-584.2" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="-584.2" x2="-17.78" y2="-576.58" width="0.1524" layer="91"/>
+<wire x1="-17.78" y1="-584.2" x2="-17.78" y2="-581.66" width="0.1524" layer="91"/>
 <junction x="-25.4" y="-584.2"/>
 <junction x="-30.48" y="-586.74"/>
 <junction x="-30.48" y="-589.28"/>
+<wire x1="-17.78" y1="-581.66" x2="-17.78" y2="-576.58" width="0.1524" layer="91"/>
+<wire x1="-17.78" y1="-581.66" x2="-5.08" y2="-581.66" width="0.1524" layer="91"/>
+<wire x1="-5.08" y1="-581.66" x2="-5.08" y2="-553.72" width="0.1524" layer="91"/>
+<pinref part="SJ6" gate="1" pin="2"/>
+<wire x1="-5.08" y1="-553.72" x2="-7.62" y2="-553.72" width="0.1524" layer="91"/>
+<junction x="-17.78" y="-581.66"/>
 </segment>
 <segment>
 <pinref part="GND43" gate="1" pin="GND"/>
@@ -23774,8 +23798,8 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="R40" gate="G$1" pin="1"/>
 <wire x1="-7.62" y1="-302.26" x2="-7.62" y2="-297.18" width="0.1524" layer="91"/>
-<wire x1="-7.62" y1="-297.18" x2="5.08" y2="-297.18" width="0.1524" layer="91"/>
-<label x="5.08" y="-297.18" size="1.27" layer="95" xref="yes"/>
+<wire x1="-7.62" y1="-297.18" x2="12.7" y2="-297.18" width="0.1524" layer="91"/>
+<label x="12.7" y="-297.18" size="1.27" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="P+15" gate="G$1" pin="3.3V"/>
@@ -23953,7 +23977,7 @@ when voltage exceeds 22V</text>
 <pinref part="L3" gate="G$1" pin="1"/>
 <wire x1="-111.76" y1="-27.94" x2="-111.76" y2="-35.56" width="0.1524" layer="91"/>
 <pinref part="D4" gate="G$1" pin="A"/>
-<wire x1="-93.98" y1="-60.96" x2="-93.98" y2="-58.42" width="0.1524" layer="91"/>
+<wire x1="-93.98" y1="-66.04" x2="-93.98" y2="-58.42" width="0.1524" layer="91"/>
 <pinref part="Q1" gate="G$1" pin="D"/>
 <wire x1="-111.76" y1="-63.5" x2="-111.76" y2="-58.42" width="0.1524" layer="91"/>
 <junction x="-111.76" y="-58.42"/>
@@ -23967,7 +23991,7 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="D4" gate="G$1" pin="C"/>
 <pinref part="D7" gate="G$1" pin="2"/>
-<wire x1="-93.98" y1="-66.04" x2="-93.98" y2="-71.12" width="0.1524" layer="91"/>
+<wire x1="-93.98" y1="-71.12" x2="-93.98" y2="-76.2" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+24V" class="0">
@@ -24007,8 +24031,8 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="R41" gate="G$1" pin="1"/>
 <wire x1="2.54" y1="-302.26" x2="2.54" y2="-299.72" width="0.1524" layer="91"/>
-<wire x1="2.54" y1="-299.72" x2="5.08" y2="-299.72" width="0.1524" layer="91"/>
-<label x="5.08" y="-299.72" size="1.27" layer="95" xref="yes"/>
+<wire x1="2.54" y1="-299.72" x2="12.7" y2="-299.72" width="0.1524" layer="91"/>
+<label x="12.7" y="-299.72" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-GATE" class="0">
@@ -24134,8 +24158,8 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="R39" gate="G$1" pin="1"/>
 <wire x1="-17.78" y1="-302.26" x2="-17.78" y2="-294.64" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="-294.64" x2="5.08" y2="-294.64" width="0.1524" layer="91"/>
-<label x="5.08" y="-294.64" size="1.27" layer="95" xref="yes"/>
+<wire x1="-17.78" y1="-294.64" x2="12.7" y2="-294.64" width="0.1524" layer="91"/>
+<label x="12.7" y="-294.64" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -24207,8 +24231,8 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="R38" gate="G$1" pin="1"/>
 <wire x1="-27.94" y1="-302.26" x2="-27.94" y2="-292.1" width="0.1524" layer="91"/>
-<wire x1="-27.94" y1="-292.1" x2="5.08" y2="-292.1" width="0.1524" layer="91"/>
-<label x="5.08" y="-292.1" size="1.27" layer="95" xref="yes"/>
+<wire x1="-27.94" y1="-292.1" x2="12.7" y2="-292.1" width="0.1524" layer="91"/>
+<label x="12.7" y="-292.1" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="N$19" class="0">
@@ -24265,11 +24289,11 @@ when voltage exceeds 22V</text>
 <wire x1="5.08" y1="81.28" x2="22.86" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="22.86" y1="81.28" x2="30.48" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="30.48" y1="81.28" x2="33.02" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="-7.62" y1="78.74" x2="-7.62" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="-7.62" y1="76.2" x2="-7.62" y2="81.28" width="0.1524" layer="91"/>
 <pinref part="R4" gate="G$1" pin="2"/>
 <wire x1="5.08" y1="78.74" x2="5.08" y2="81.28" width="0.1524" layer="91"/>
 <pinref part="C3" gate="G$1" pin="2"/>
-<wire x1="22.86" y1="78.74" x2="22.86" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="76.2" x2="22.86" y2="81.28" width="0.1524" layer="91"/>
 <junction x="22.86" y="81.28"/>
 <junction x="5.08" y="81.28"/>
 <junction x="-7.62" y="81.28"/>
@@ -24300,7 +24324,7 @@ when voltage exceeds 22V</text>
 <wire x1="22.86" y1="40.64" x2="30.48" y2="40.64" width="0.1524" layer="91"/>
 <wire x1="30.48" y1="40.64" x2="40.64" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="C3" gate="G$1" pin="1"/>
-<wire x1="22.86" y1="71.12" x2="22.86" y2="40.64" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="68.58" x2="22.86" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="R5" gate="G$1" pin="1"/>
 <wire x1="30.48" y1="43.18" x2="30.48" y2="40.64" width="0.1524" layer="91"/>
 <junction x="22.86" y="40.64"/>
@@ -24333,7 +24357,7 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="C4" gate="G$1" pin="+"/>
 <wire x1="48.26" y1="81.28" x2="50.8" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="81.28" x2="50.8" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="81.28" x2="50.8" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="50.8" y1="81.28" x2="58.42" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="81.28" x2="60.96" y2="81.28" width="0.1524" layer="91"/>
@@ -24655,21 +24679,21 @@ when voltage exceeds 22V</text>
 <segment>
 <pinref part="U5" gate="A" pin="VSEL"/>
 <pinref part="R32" gate="G$1" pin="1"/>
-<wire x1="-38.1" y1="-553.72" x2="-17.78" y2="-553.72" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="-553.72" x2="-17.78" y2="-566.42" width="0.1524" layer="91"/>
+<wire x1="-38.1" y1="-558.8" x2="-17.78" y2="-558.8" width="0.1524" layer="91"/>
+<wire x1="-17.78" y1="-558.8" x2="-17.78" y2="-566.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$43" class="0">
 <segment>
 <pinref part="Q5" gate="G$1" pin="D"/>
 <wire x1="-132.08" y1="-505.46" x2="-132.08" y2="-500.38" width="0.1524" layer="91"/>
-<wire x1="-132.08" y1="-500.38" x2="-86.36" y2="-500.38" width="0.1524" layer="91"/>
+<wire x1="-132.08" y1="-500.38" x2="-83.82" y2="-500.38" width="0.1524" layer="91"/>
 <pinref part="U4" gate="G$1" pin="EN"/>
 <pinref part="R34" gate="G$1" pin="2"/>
-<wire x1="-78.74" y1="-485.14" x2="-86.36" y2="-485.14" width="0.1524" layer="91"/>
-<wire x1="-86.36" y1="-485.14" x2="-88.9" y2="-485.14" width="0.1524" layer="91"/>
-<wire x1="-86.36" y1="-500.38" x2="-86.36" y2="-485.14" width="0.1524" layer="91"/>
-<junction x="-86.36" y="-485.14"/>
+<wire x1="-78.74" y1="-485.14" x2="-83.82" y2="-485.14" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="-485.14" x2="-88.9" y2="-485.14" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="-500.38" x2="-83.82" y2="-485.14" width="0.1524" layer="91"/>
+<junction x="-83.82" y="-485.14"/>
 </segment>
 </net>
 <net name="N$41" class="0">
@@ -24943,6 +24967,20 @@ when voltage exceeds 22V</text>
 <pinref part="R45" gate="G$1" pin="1"/>
 <wire x1="139.7" y1="-330.2" x2="142.24" y2="-330.2" width="0.1524" layer="91"/>
 <junction x="139.7" y="-330.2"/>
+</segment>
+</net>
+<net name="N$54" class="0">
+<segment>
+<pinref part="U5" gate="A" pin="ISEL"/>
+<pinref part="R46" gate="G$1" pin="1"/>
+<wire x1="-38.1" y1="-553.72" x2="-30.48" y2="-553.72" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$55" class="0">
+<segment>
+<pinref part="R46" gate="G$1" pin="2"/>
+<pinref part="SJ6" gate="1" pin="1"/>
+<wire x1="-20.32" y1="-553.72" x2="-17.78" y2="-553.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
