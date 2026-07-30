@@ -3,7 +3,7 @@
  * check all ADC inputs, maybe apply digital LPF filtering
  * if the iron tip is disconnected, the iron goes into a safe state until button press
  * button press toggles power modes, action performed on release
- * long buttom press forces iron to sleep, short press returns to low power mode
+ * long buttom press forces iron to sleep, short press cycles through power modes
  * GUI is updated at 15 FPS
  * UART debug messages are sent at 2 Hz
 
@@ -19,9 +19,9 @@ The third line always says "POWER:" but only when not sleeping and not in an err
 
 Below that is the power meter. There is a solid horizontal line indicating the 100% boundary (this is just below "POWER:").
 
-If we are in full power mode, then the whole area below this is a solid rectangle growing from the bottom upwards according to power consumption.
+If we are in full power mode (and full power is available), then the whole area below this is a solid rectangle growing from the bottom upwards according to power consumption.
 
-If we are in a power limited mode, then the bottom area is split in two halves, the left half is blank except for a dotted horizontal line indicating the targeted power level. The right side of this area grows as a solid rectangle from the bottom upwards according to power consumption.
+If we are in a power limited mode (or input voltage is too low to support full power), then the bottom area is split in two halves, the left half is blank except for a dotted horizontal line indicating the targeted power level. The right side of this area grows as a solid rectangle from the bottom upwards according to power consumption.
 
 # Power Levels
 
@@ -36,6 +36,24 @@ The available levels are
 To actually modulate the power, there is a PWM pin allocated to send a bias signal to the buck converter's feedback input through a resistor and diode.
 
 If the currently utilized power is above the set limit, the attenuation is raised at a steady pace, otherwise, it is lowered.
+
+Pressing the button will cycle through the power modes, in the lowering direction. It is forbidden to change from low power to high power while current draw is above 30W.
+
+# Cooling Fan Control
+
+The cooling fan hardware is optional, but the control for it will always exist.
+
+The fan is always off for at least 5 seconds after power up. After the 5 seconds, the fan will activate if any temperatures exceeds a threshold, and deactivate with a 5C hysteresis.
+
+The fan is off during sleep mode.
+
+# Boot Mode
+
+When the microcontroller boots, it will wait 1 second for power to stabilize, and then sample the input DC power.
+
+If the input power is below 8.5V, then all soldering iron functionality is disabled and the microcontroller will await debug instructions from SWD. Button presses in this state will cause a reboot.
+
+If during boot, the user button is held down, then UART message debugging will become enabled.
 
 # Firmware Code Modules
 
