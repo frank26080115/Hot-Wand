@@ -1897,7 +1897,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PACKAGE" value="SOT-23-5 Texas Instruments" x="63" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="NAME" x="60.2" y="35.6" size="0.8128" layer="26" font="vector" rot="MR270"/>
 </element>
-<element name="R25" library="hot-wand" package="0603-RES" value="100K" x="62.6" y="30.6" smashed="yes" rot="MR0">
+<element name="R25" library="hot-wand" package="0603-RES" value="82K" x="62.6" y="30.6" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.411" y="29.738" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="60.984" y="28.743" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>

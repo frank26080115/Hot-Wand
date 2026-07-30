@@ -22187,7 +22187,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="U3" library="hot-wand" deviceset="INA138NA/3K" device="" value="INA138"/>
 <part name="P+9" library="hot-wand" deviceset="+24V" device=""/>
 <part name="GND30" library="hot-wand" deviceset="GND" device=""/>
-<part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100K"/>
+<part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="82K"/>
 <part name="GND31" library="hot-wand" deviceset="GND" device=""/>
 <part name="C46" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
 <part name="GND29" library="hot-wand" deviceset="GND" device=""/>
@@ -22370,12 +22370,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <text x="73.66" y="-381" size="1.778" layer="97">this measures up to
 33V &gt; 3.3V</text>
 <text x="-88.9" y="-378.46" size="1.778" layer="97">rated 36V max</text>
-<text x="-40.132" y="-402.59" size="1.778" layer="97">20X gain</text>
+<text x="-40.132" y="-402.59" size="1.778" layer="97">16.4X gain</text>
 <text x="-96.52" y="-406.4" size="1.778" layer="97" align="top-left">0.0333 ohm shunt
 33.3mV per A
-x20 RL gain
-0.666V/A
-4.95A max</text>
+x16.4 RL gain
+0.547V/A
+6.04A max</text>
 <text x="-101.6" y="91.44" size="5.08" layer="97">Main Power Buck Converter</text>
 <text x="-68.58" y="-373.38" size="5.08" layer="97">Power Sensing</text>
 <text x="-129.54" y="-177.8" size="5.08" layer="97">RF Amp Gate Driver</text>
