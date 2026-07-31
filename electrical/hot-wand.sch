@@ -22081,25 +22081,37 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="GND14" library="hot-wand" deviceset="GND" device=""/>
 <part name="R10" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω"/>
-<part name="C34" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
+<part name="C34" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF">
+<attribute name="JLCPARTNUM" value="C15849"/>
+</part>
 <part name="GND13" library="hot-wand" deviceset="GND" device=""/>
-<part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22Ω"/>
+<part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22Ω">
+<attribute name="JLCPARTNUM" value="C23345"/>
+</part>
 <part name="L9" library="hot-wand" deviceset="L-US" device="TFI0410" value="22uH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C42" library="hot-wand" deviceset="CAP" device="0805" value="33nF"/>
+<part name="C42" library="hot-wand" deviceset="CAP" device="0805" value="33nF">
+<attribute name="JLCPARTNUM" value="C21117"/>
+</part>
 <part name="GND22" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q3" library="hot-wand" deviceset="TRANSISTOR_NPN" device="SOT23-3" value="BC846B">
 <attribute name="JLCPARTNUM" value="C70921"/>
 </part>
 <part name="GND23" library="hot-wand" deviceset="GND" device=""/>
-<part name="C41" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3"/>
-<part name="R18" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="C41" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3">
+<attribute name="JLCPARTNUM" value="C1613"/>
+</part>
+<part name="R18" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
 <part name="P+5" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="R20" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="DNP">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R22" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="2K2"/>
+<part name="R22" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="C27" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
@@ -22222,8 +22234,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="U2" library="hot-wand" deviceset="1EDN8511B" device="" value="1EDN8511BXUSA1">
 <attribute name="JLCPARTNUM" value="C3655509"/>
 </part>
-<part name="R15" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
-<part name="R17" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4Ω"/>
+<part name="R15" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3R6">
+<attribute name="JLCPARTNUM" value="C54921041"/>
+</part>
+<part name="R17" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3R6">
+<attribute name="JLCPARTNUM" value="C54921041"/>
+</part>
 <part name="Q2" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="IRF510">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -22254,15 +22270,20 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C35" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
-<part name="C36" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
+<part name="C36" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF">
+<attribute name="JLCPARTNUM" value="C15849"/>
+</part>
 <part name="GND17" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND19" library="hot-wand" deviceset="GND" device=""/>
-<part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
 <part name="GND20" library="hot-wand" deviceset="GND" device=""/>
 <part name="U1" library="hot-wand" deviceset="TPS54560DDA" device="">
 <attribute name="JLCPARTNUM" value="C31966"/>
 </part>
 <part name="C5" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
 <part name="C6" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470uF">
@@ -22270,10 +22291,14 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="UHW1H471MPD;EEU-FR1H471;EEU-FR1H471B"/>
 </part>
 <part name="C7" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100nF"/>
-<part name="R7" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K"/>
+<part name="R7" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
+<attribute name="JLCPARTNUM" value="C31850"/>
+</part>
 <part name="GND2" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND7" library="hot-wand" deviceset="GND" device=""/>
-<part name="R6" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="270K"/>
+<part name="R6" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="270K">
+<attribute name="JLCPARTNUM" value="C137755"/>
+</part>
 <part name="C1" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100nF">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="JLCPARTNUM" value="C14663"/>
@@ -22283,16 +22308,24 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="GND4" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND5" library="hot-wand" deviceset="GND" device=""/>
-<part name="R8" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K"/>
+<part name="R8" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
+<attribute name="JLCPARTNUM" value="C21190"/>
+</part>
 <part name="GND8" library="hot-wand" deviceset="GND" device=""/>
-<part name="C8" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3"/>
+<part name="C8" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3">
+<attribute name="JLCPARTNUM" value="C1613"/>
+</part>
 <part name="C2" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="EEU-FR1H101B;EEU-FR1J101B"/>
 </part>
 <part name="GND6" library="hot-wand" deviceset="GND" device=""/>
-<part name="R11" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
-<part name="R4" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8"/>
+<part name="R11" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
+<part name="R4" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="6K8">
+<attribute name="JLCPARTNUM" value="C23212"/>
+</part>
 <part name="VR1" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="10K">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="TC33X-2-103E"/>
@@ -22301,7 +22334,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="DNP" value="1"/>
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K"/>
+<part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
+<attribute name="JLCPARTNUM" value="C21190"/>
+</part>
 <part name="C4" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -22324,23 +22359,35 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="P+9" library="hot-wand" deviceset="+24V" device=""/>
 <part name="GND30" library="hot-wand" deviceset="GND" device=""/>
-<part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="82K"/>
+<part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="82K">
+<attribute name="JLCPARTNUM" value="C23254"/>
+</part>
 <part name="GND31" library="hot-wand" deviceset="GND" device=""/>
-<part name="C46" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF"/>
+<part name="C46" library="hot-wand" deviceset="CAP" device="0603-CAP" value="1uF">
+<attribute name="JLCPARTNUM" value="C15849"/>
+</part>
 <part name="GND29" library="hot-wand" deviceset="GND" device=""/>
 <part name="C49" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="P+8" library="hot-wand" deviceset="+24V" device=""/>
-<part name="R24" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R24" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="R23" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K"/>
 <part name="C47" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
 <part name="GND32" library="hot-wand" deviceset="GND" device=""/>
-<part name="R27" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R27" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="R26" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K"/>
-<part name="C48" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="C48" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
 <part name="GND33" library="hot-wand" deviceset="GND" device=""/>
-<part name="R14" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω"/>
+<part name="R14" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
+<attribute name="JLCPARTNUM" value="C22775"/>
+</part>
 <part name="IC1" library="hot-wand" deviceset="V_REG_78XX" device="-BUCK" value="12V R-78K12-2.0">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -22352,17 +22399,22 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="D3" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD-323" value="SD103A">
 <attribute name="JLCPARTNUM" value="C7420360"/>
 </part>
-<part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="P+6" library="hot-wand" deviceset="+12V" device=""/>
 <part name="P+7" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="C43" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
 <part name="GND25" library="hot-wand" deviceset="GND" device=""/>
 <part name="C44" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
 </part>
 <part name="C45" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
 </part>
 <part name="GND26" library="hot-wand" deviceset="GND" device=""/>
@@ -22378,7 +22430,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="Keystone 3518P"/>
 </part>
-<part name="R19" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="470Ω"/>
+<part name="R19" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="470Ω">
+<attribute name="JLCPARTNUM" value="C23179"/>
+</part>
 <part name="L1" library="hot-wand" deviceset="INDUCTOR" device="RADIAL_D12.7_P6.35" value="33u">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="Wurth 744750460220 (22uH)"/>
@@ -22407,8 +22461,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND37" library="hot-wand" deviceset="GND" device=""/>
-<part name="C50" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
-<part name="C51" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="C50" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
+<part name="C51" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
 <part name="GND38" library="hot-wand" deviceset="GND" device=""/>
 <part name="U5" library="hot-wand" deviceset="AP53781" device="-QFN16" value="AP53781">
 <attribute name="JLCPARTNUM" value="C52730979"/>
@@ -22421,20 +22479,34 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="SSM3K388R,LF;2N7002K"/>
 </part>
 <part name="GND39" library="hot-wand" deviceset="GND" device=""/>
-<part name="R28" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
-<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="R28" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
+<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
 <part name="GND40" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND41" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q6" library="hot-wand" deviceset="MOSFET-NCHAN-X2" device="-PPSO8X2" value="DMTH64M2LPDWQ-13">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3"/>
-<part name="R31" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="200Ω"/>
-<part name="C52" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3">
+<attribute name="JLCPARTNUM" value="C2933230"/>
+</part>
+<part name="R31" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
+<attribute name="JLCPARTNUM" value="C22775"/>
+</part>
+<part name="C52" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
 <part name="GND42" library="hot-wand" deviceset="GND" device=""/>
-<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="26K"/>
-<part name="R34" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
-<part name="D15" library="hot-wand" deviceset="TVS" device="SOD-323" value="15">
+<part name="R47" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="26K">
+<attribute name="JLCPARTNUM" value="C23356"/>
+</part>
+<part name="R34" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
+<part name="D15" library="hot-wand" deviceset="TVS" device="SOD-323" value="15V">
 <attribute name="JLCPARTNUM" value="C2987151"/>
 <attribute name="PARTNUM" value="SD15C-01FTG;CDSOD323-T15SC;TSD15CDYFR"/>
 </part>
@@ -22464,18 +22536,28 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C89040"/>
 </part>
 <part name="GND45" library="hot-wand" deviceset="GND" device=""/>
-<part name="R33" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="R33" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
 <part name="P+10" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="P+11" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="C53" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
-<part name="C54" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="C53" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
+<part name="C54" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
 <part name="GND47" library="hot-wand" deviceset="GND" device=""/>
 <part name="Y1" library="hot-wand" deviceset="XTAL-4SMD" device="-3.2X2.5-V2" value="27.12 MHz 10pF">
 <attribute name="JLCPARTNUM" value="C1986817"/>
 </part>
 <part name="GND46" library="hot-wand" deviceset="GND" device=""/>
-<part name="C55" library="hot-wand" deviceset="CAP" device="0603-CAP" value="10p"/>
-<part name="C56" library="hot-wand" deviceset="CAP" device="0603-CAP" value="10p"/>
+<part name="C55" library="hot-wand" deviceset="CAP" device="0603-CAP" value="10p">
+<attribute name="JLCPARTNUM" value="C1634"/>
+</part>
+<part name="C56" library="hot-wand" deviceset="CAP" device="0603-CAP" value="10p">
+<attribute name="JLCPARTNUM" value="C1634"/>
+</part>
 <part name="GND48" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND49" library="hot-wand" deviceset="GND" device=""/>
 <part name="JP5" library="hot-wand" deviceset="M06" device="LOCK">
@@ -22490,10 +22572,16 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND51" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND52" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+13" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="C57" library="hot-wand" deviceset="CAP" device="1206" value="1uF"/>
+<part name="C57" library="hot-wand" deviceset="CAP" device="1206" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
+</part>
 <part name="GND53" library="hot-wand" deviceset="GND" device=""/>
-<part name="R35" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
-<part name="R36" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
+<part name="R35" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
+<part name="R36" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
 <part name="P+14" library="hot-wand" deviceset="3.3V" device=""/>
 <part name="R37" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="DNP">
 <attribute name="JLC-DNP" value="1"/>
@@ -22502,7 +22590,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="TC33X-1-102E"/>
 </part>
-<part name="C58" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3"/>
+<part name="C58" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3">
+<attribute name="JLCPARTNUM" value="C1613"/>
+</part>
 <part name="GND54" library="hot-wand" deviceset="GND" device=""/>
 <part name="LED1" library="hot-wand" deviceset="LED" device="0603" value="LED">
 <attribute name="JLC-DNP" value="1"/>
@@ -22513,18 +22603,24 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="LED3" library="hot-wand" deviceset="LED" device="0603" value="LED">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R38" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R38" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="R39" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="JLCPARTNUM" value="C4190"/>
 </part>
 <part name="R40" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="JLCPARTNUM" value="C21190"/>
 </part>
 <part name="GND55" library="hot-wand" deviceset="GND" device=""/>
 <part name="LED4" library="hot-wand" deviceset="LED" device="0603" value="LED">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R41" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R41" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="SJ1" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -22535,11 +22631,19 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
-<part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2"/>
+<part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
+<part name="R43" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
+<attribute name="JLCPARTNUM" value="C4190"/>
+</part>
 <part name="P+15" library="hot-wand" deviceset="3.3V" device=""/>
-<part name="C59" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
-<part name="C60" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n"/>
+<part name="C59" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
+<part name="C60" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
+<attribute name="JLCPARTNUM" value="C14663"/>
+</part>
 <part name="GND56" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND57" library="hot-wand" deviceset="GND" device=""/>
 <part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950">
@@ -22558,7 +22662,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="HEATSINK3" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10uF">
+<part name="C61" library="hot-wand" deviceset="CAP_POL" device="3528" value="10u">
+<attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
 <part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1">
@@ -22575,8 +22680,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="SJ4" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
-<part name="R45" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω"/>
+<part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<attribute name="JLCPARTNUM" value="C23162"/>
+</part>
+<part name="R45" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
+<attribute name="JLCPARTNUM" value="C23179"/>
+</part>
 <part name="GND59" library="hot-wand" deviceset="GND" device=""/>
 <part name="SJ5" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
@@ -22590,6 +22699,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="VR3" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="1K">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="TC33X-1-102E"/>
+</part>
+<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
+<attribute name="JLCPARTNUM" value="C22775"/>
 </part>
 </parts>
 <sheets>
@@ -22727,14 +22839,20 @@ short = 5A</text>
 </instance>
 <instance part="GND14" gate="1" x="129.54" y="-86.36"/>
 <instance part="R10" gate="G$1" x="152.4" y="-60.96"/>
-<instance part="C34" gate="G$1" x="160.02" y="-68.58"/>
+<instance part="C34" gate="G$1" x="160.02" y="-68.58">
+<attribute name="JLCPARTNUM" x="160.02" y="-68.58" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND13" gate="1" x="160.02" y="-76.2"/>
-<instance part="R21" gate="G$1" x="-147.32" y="-233.68"/>
+<instance part="R21" gate="G$1" x="-147.32" y="-233.68">
+<attribute name="JLCPARTNUM" x="-147.32" y="-233.68" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="L9" gate="G$1" x="-132.08" y="-233.68" smashed="yes" rot="R90">
 <attribute name="NAME" x="-127" y="-234.95" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-127" y="-229.87" size="1.27" layer="96" rot="R180"/>
 </instance>
-<instance part="C42" gate="G$1" x="-119.38" y="-243.84"/>
+<instance part="C42" gate="G$1" x="-119.38" y="-243.84">
+<attribute name="JLCPARTNUM" x="-119.38" y="-243.84" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND22" gate="1" x="-119.38" y="-251.46"/>
 <instance part="Q3" gate="G$1" x="-73.66" y="-233.68" smashed="yes">
 <attribute name="NAME" x="-71.882" y="-230.124" size="1.778" layer="95" rot="R90"/>
@@ -22907,8 +23025,12 @@ short = 5A</text>
 <instance part="U2" gate="G$1" x="-114.3" y="-147.32">
 <attribute name="JLCPARTNUM" x="-114.3" y="-147.32" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="R15" gate="G$1" x="-66.04" y="-154.94"/>
-<instance part="R17" gate="G$1" x="-66.04" y="-165.1"/>
+<instance part="R15" gate="G$1" x="-66.04" y="-154.94">
+<attribute name="JLCPARTNUM" x="-66.04" y="-154.94" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="R17" gate="G$1" x="-66.04" y="-165.1">
+<attribute name="JLCPARTNUM" x="-66.04" y="-165.1" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="Q2" gate="G$1" x="-43.18" y="-154.94" smashed="yes">
 <attribute name="NAME" x="-46.736" y="-151.638" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-43.688" y="-158.242" size="1.778" layer="96" rot="R180"/>
@@ -22946,15 +23068,20 @@ short = 5A</text>
 <instance part="C36" gate="G$1" x="-116.84" y="-127" smashed="yes" rot="R180">
 <attribute name="NAME" x="-114.173" y="-125.73" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-111.887" y="-125.73" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-116.84" y="-127" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="GND17" gate="1" x="-111.76" y="-139.7"/>
 <instance part="GND19" gate="1" x="-121.92" y="-165.1"/>
-<instance part="R16" gate="G$1" x="-137.16" y="-162.56" rot="R90"/>
+<instance part="R16" gate="G$1" x="-137.16" y="-162.56" rot="R90">
+<attribute name="JLCPARTNUM" x="-137.16" y="-162.56" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="GND20" gate="1" x="-137.16" y="-172.72"/>
 <instance part="U1" gate="G$1" x="-60.96" y="68.58">
 <attribute name="JLCPARTNUM" x="-60.96" y="68.58" size="0.8128" layer="96" display="off"/>
 </instance>
-<instance part="C5" gate="G$1" x="-106.68" y="73.66"/>
+<instance part="C5" gate="G$1" x="-106.68" y="73.66">
+<attribute name="JLCPARTNUM" x="-106.68" y="73.66" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="C6" gate="G$1" x="-96.52" y="73.66">
 <attribute name="PARTNUM" x="-96.52" y="73.66" size="1.016" layer="96" align="bottom-right" display="off"/>
 </instance>
@@ -22962,10 +23089,14 @@ short = 5A</text>
 <attribute name="NAME" x="-85.979" y="54.356" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-78.359" y="54.356" size="1.778" layer="96" rot="R270"/>
 </instance>
-<instance part="R7" gate="G$1" x="-81.28" y="40.64" rot="R90"/>
+<instance part="R7" gate="G$1" x="-81.28" y="40.64" rot="R90">
+<attribute name="JLCPARTNUM" x="-81.28" y="40.64" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="GND2" gate="1" x="-106.68" y="60.96"/>
 <instance part="GND7" gate="1" x="-81.28" y="27.94"/>
-<instance part="R6" gate="G$1" x="-91.44" y="40.64" rot="R90"/>
+<instance part="R6" gate="G$1" x="-91.44" y="40.64" rot="R90">
+<attribute name="JLCPARTNUM" x="-91.44" y="40.64" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="C1" gate="G$1" x="-35.56" y="81.28" smashed="yes" rot="R90">
 <attribute name="NAME" x="-32.004" y="88.519" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-32.004" y="85.979" size="1.778" layer="96" rot="R180"/>
@@ -22978,11 +23109,14 @@ short = 5A</text>
 </instance>
 <instance part="GND4" gate="1" x="-40.64" y="53.34"/>
 <instance part="GND5" gate="1" x="-22.86" y="48.26"/>
-<instance part="R8" gate="G$1" x="-30.48" y="33.02" rot="R90"/>
+<instance part="R8" gate="G$1" x="-30.48" y="33.02" rot="R90">
+<attribute name="JLCPARTNUM" x="-30.48" y="33.02" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="GND8" gate="1" x="-30.48" y="20.32"/>
 <instance part="C8" gate="G$1" x="-20.32" y="33.02" smashed="yes" rot="R180">
 <attribute name="NAME" x="-25.019" y="34.036" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-17.399" y="34.036" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-20.32" y="33.02" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="C2" gate="G$1" x="-7.62" y="73.66" smashed="yes">
 <attribute name="NAME" x="-10.795" y="69.596" size="1.778" layer="95" rot="R90"/>
@@ -22990,7 +23124,9 @@ short = 5A</text>
 </instance>
 <instance part="GND6" gate="1" x="-7.62" y="48.26"/>
 <instance part="R11" gate="G$1" x="180.34" y="-60.96" rot="R180"/>
-<instance part="R4" gate="G$1" x="5.08" y="73.66" rot="R90"/>
+<instance part="R4" gate="G$1" x="5.08" y="73.66" rot="R90">
+<attribute name="JLCPARTNUM" x="5.08" y="73.66" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="VR1" gate="G$1" x="5.08" y="50.8" smashed="yes" rot="MR180">
 <attribute name="NAME" x="10.16" y="50.038" size="1.778" layer="95" rot="MR270"/>
 <attribute name="VALUE" x="3.556" y="48.514" size="1.778" layer="95" rot="MR270"/>
@@ -23001,7 +23137,9 @@ short = 5A</text>
 <attribute name="DNP" x="22.86" y="73.66" size="1.778" layer="96" rot="R180" display="off"/>
 <attribute name="JLC-DNP" x="22.86" y="73.66" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
-<instance part="R5" gate="G$1" x="30.48" y="48.26" rot="R90"/>
+<instance part="R5" gate="G$1" x="30.48" y="48.26" rot="R90">
+<attribute name="JLCPARTNUM" x="30.48" y="48.26" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="C4" gate="G$1" x="50.8" y="73.66" smashed="yes">
 <attribute name="NAME" x="49.911" y="66.294" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="47.625" y="61.976" size="1.778" layer="96" rot="R90"/>
@@ -23024,11 +23162,13 @@ short = 5A</text>
 <instance part="R25" gate="G$1" x="-48.26" y="-398.78" smashed="yes" rot="R90">
 <attribute name="NAME" x="-44.6786" y="-402.59" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="-42.418" y="-402.59" size="1.778" layer="96" rot="R90"/>
+<attribute name="JLCPARTNUM" x="-48.26" y="-398.78" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND31" gate="1" x="-48.26" y="-411.48"/>
 <instance part="C46" gate="G$1" x="-121.92" y="-388.62" smashed="yes" rot="R180">
 <attribute name="NAME" x="-124.079" y="-392.684" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-126.619" y="-385.064" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-121.92" y="-388.62" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="GND29" gate="1" x="-121.92" y="-401.32"/>
 <instance part="C49" gate="G$1" x="-55.88" y="-401.32" smashed="yes">
@@ -23045,7 +23185,9 @@ short = 5A</text>
 <instance part="R26" gate="G$1" x="63.5" y="-381" rot="R90"/>
 <instance part="C48" gate="G$1" x="73.66" y="-398.78"/>
 <instance part="GND33" gate="1" x="63.5" y="-411.48"/>
-<instance part="R14" gate="G$1" x="-147.32" y="-154.94"/>
+<instance part="R14" gate="G$1" x="-147.32" y="-154.94">
+<attribute name="JLCPARTNUM" x="-147.32" y="-154.94" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="IC1" gate="G$1" x="-86.36" y="-292.1" smashed="yes">
 <attribute name="NAME" x="-83.82" y="-299.72" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-97.536" y="-287.782" size="1.778" layer="96"/>
@@ -23061,16 +23203,22 @@ short = 5A</text>
 <attribute name="VALUE" x="-8.1534" y="39.624" size="1.778" layer="96" rot="R270"/>
 <attribute name="JLCPARTNUM" x="-10.16" y="33.02" size="0.8128" layer="96" rot="R90" display="off"/>
 </instance>
-<instance part="R9" gate="G$1" x="-10.16" y="15.24" rot="R90"/>
+<instance part="R9" gate="G$1" x="-10.16" y="15.24" rot="R90">
+<attribute name="JLCPARTNUM" x="-10.16" y="15.24" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
 <instance part="P+6" gate="1" x="-58.42" y="-284.48"/>
 <instance part="P+7" gate="G$1" x="-58.42" y="-320.04"/>
 <instance part="C43" gate="G$1" x="-104.14" y="-297.18">
 <attribute name="PARTNUM" x="-104.14" y="-297.18" size="1.778" layer="96" display="off"/>
+<attribute name="JLCPARTNUM" x="-104.14" y="-297.18" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="GND25" gate="1" x="-104.14" y="-307.34"/>
-<instance part="C44" gate="G$1" x="-58.42" y="-297.18"/>
+<instance part="C44" gate="G$1" x="-58.42" y="-297.18">
+<attribute name="JLCPARTNUM" x="-58.42" y="-297.18" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="C45" gate="G$1" x="-58.42" y="-330.2">
 <attribute name="PARTNUM" x="-58.42" y="-330.2" size="1.778" layer="96" display="off"/>
+<attribute name="JLCPARTNUM" x="-58.42" y="-330.2" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="GND26" gate="1" x="-58.42" y="-307.34"/>
 <instance part="GND28" gate="1" x="-58.42" y="-340.36"/>
@@ -23088,6 +23236,7 @@ short = 5A</text>
 <instance part="R19" gate="G$1" x="-106.68" y="-218.44" smashed="yes" rot="R180">
 <attribute name="NAME" x="-111.506" y="-216.9414" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-111.506" y="-214.63" size="1.778" layer="96"/>
+<attribute name="JLCPARTNUM" x="-106.68" y="-218.44" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="L1" gate="G$1" x="-17.78" y="81.28" smashed="yes" rot="R90">
 <attribute name="NAME" x="-20.574" y="80.518" size="1.778" layer="95" rot="R180"/>
@@ -23156,19 +23305,22 @@ short = 5A</text>
 <instance part="R30" gate="G$1" x="-53.34" y="-525.78" smashed="yes" rot="R180">
 <attribute name="NAME" x="-49.53" y="-522.1986" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-49.53" y="-527.304" size="1.778" layer="96" rot="R180"/>
+<attribute name="JLCPARTNUM" x="-53.34" y="-525.78" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
-<instance part="R31" gate="G$1" x="-20.32" y="-525.78" smashed="yes" rot="R270">
-<attribute name="NAME" x="-23.9014" y="-521.97" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="-18.796" y="-521.97" size="1.778" layer="96" rot="R270"/>
+<instance part="R31" gate="G$1" x="-20.32" y="-535.94" smashed="yes" rot="R270">
+<attribute name="NAME" x="-23.9014" y="-532.13" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-18.796" y="-532.13" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-20.32" y="-535.94" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="C52" gate="G$1" x="-30.48" y="-576.58" smashed="yes" rot="R180">
 <attribute name="NAME" x="-29.845" y="-579.12" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-32.893" y="-579.374" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="GND42" gate="1" x="-30.48" y="-594.36"/>
-<instance part="R32" gate="G$1" x="-17.78" y="-571.5" smashed="yes" rot="R270">
+<instance part="R47" gate="G$1" x="-17.78" y="-571.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="-21.3614" y="-567.69" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-16.256" y="-567.69" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-17.78" y="-571.5" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="R34" gate="G$1" x="-93.98" y="-485.14" smashed="yes">
 <attribute name="NAME" x="-97.79" y="-488.7214" size="1.778" layer="95"/>
@@ -23215,10 +23367,12 @@ short = 5A</text>
 <instance part="C55" gate="G$1" x="43.18" y="-238.76" smashed="yes">
 <attribute name="NAME" x="42.545" y="-236.22" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="45.593" y="-235.966" size="1.778" layer="96" rot="R90"/>
+<attribute name="JLCPARTNUM" x="43.18" y="-238.76" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="C56" gate="G$1" x="15.24" y="-228.6" smashed="yes">
 <attribute name="NAME" x="14.605" y="-226.06" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="17.653" y="-225.806" size="1.778" layer="96" rot="R90"/>
+<attribute name="JLCPARTNUM" x="15.24" y="-228.6" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="GND48" gate="1" x="43.18" y="-246.38"/>
 <instance part="GND49" gate="1" x="15.24" y="-236.22"/>
@@ -23236,6 +23390,7 @@ short = 5A</text>
 <instance part="C57" gate="G$1" x="200.66" y="-264.16" smashed="yes" rot="R180">
 <attribute name="NAME" x="203.327" y="-262.89" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="205.613" y="-262.89" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="200.66" y="-264.16" size="1.778" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="GND53" gate="1" x="200.66" y="-274.32"/>
 <instance part="R35" gate="G$1" x="223.52" y="-243.84" smashed="yes" rot="MR90">
@@ -23273,10 +23428,12 @@ short = 5A</text>
 <instance part="R39" gate="G$1" x="-17.78" y="-307.34" smashed="yes" rot="R270">
 <attribute name="NAME" x="-17.2974" y="-309.372" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-14.986" y="-309.372" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-17.78" y="-307.34" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="R40" gate="G$1" x="-7.62" y="-307.34" smashed="yes" rot="R270">
 <attribute name="NAME" x="-7.1374" y="-309.372" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="-4.826" y="-309.372" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-7.62" y="-307.34" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="GND55" gate="1" x="-27.94" y="-330.2"/>
 <instance part="LED4" gate="G$1" x="2.54" y="-317.5" smashed="yes">
@@ -23309,6 +23466,7 @@ short = 5A</text>
 <instance part="HEATSINK3" gate="A" x="-68.58" y="35.56"/>
 <instance part="C61" gate="G$1" x="180.34" y="-317.5">
 <attribute name="PARTNUM" x="180.34" y="-317.5" size="1.778" layer="96" display="off"/>
+<attribute name="JLCPARTNUM" x="180.34" y="-317.5" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="FAN2" gate="A" x="198.12" y="-314.96"/>
 <instance part="PCB2" gate="A" x="96.52" y="7.62"/>
@@ -23326,6 +23484,7 @@ short = 5A</text>
 <instance part="R45" gate="G$1" x="147.32" y="-330.2" smashed="yes" rot="MR180">
 <attribute name="NAME" x="143.51" y="-326.6186" size="1.778" layer="95" rot="MR180"/>
 <attribute name="VALUE" x="143.51" y="-324.358" size="1.778" layer="96" rot="MR180"/>
+<attribute name="JLCPARTNUM" x="147.32" y="-330.2" size="1.778" layer="96" rot="MR180" display="off"/>
 </instance>
 <instance part="GND59" gate="1" x="139.7" y="-347.98"/>
 <instance part="SJ5" gate="1" x="132.08" y="-330.2" rot="R180"/>
@@ -23337,6 +23496,11 @@ short = 5A</text>
 <instance part="VR3" gate="G$1" x="-88.9" y="-241.3" smashed="yes" rot="R90">
 <attribute name="NAME" x="-89.662" y="-236.22" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-86.614" y="-237.236" size="1.778" layer="95"/>
+</instance>
+<instance part="R32" gate="G$1" x="-20.32" y="-523.24" smashed="yes" rot="R270">
+<attribute name="NAME" x="-23.9014" y="-519.43" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-18.796" y="-519.43" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="-20.32" y="-523.24" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 </instances>
 <busses>
@@ -23748,7 +23912,7 @@ short = 5A</text>
 <pinref part="U5" gate="A" pin="PDOSEL"/>
 <wire x1="-25.4" y1="-584.2" x2="-25.4" y2="-563.88" width="0.1524" layer="91"/>
 <wire x1="-25.4" y1="-563.88" x2="-38.1" y2="-563.88" width="0.1524" layer="91"/>
-<pinref part="R32" gate="G$1" pin="2"/>
+<pinref part="R47" gate="G$1" pin="2"/>
 <wire x1="-25.4" y1="-584.2" x2="-17.78" y2="-584.2" width="0.1524" layer="91"/>
 <wire x1="-17.78" y1="-584.2" x2="-17.78" y2="-581.66" width="0.1524" layer="91"/>
 <junction x="-25.4" y="-584.2"/>
@@ -24804,11 +24968,10 @@ short = 5A</text>
 <segment>
 <pinref part="Q6" gate="A" pin="S"/>
 <wire x1="-22.86" y1="-510.54" x2="-20.32" y2="-510.54" width="0.1524" layer="91"/>
-<pinref part="R31" gate="G$1" pin="1"/>
-<wire x1="-20.32" y1="-510.54" x2="-15.24" y2="-510.54" width="0.1524" layer="91"/>
-<wire x1="-20.32" y1="-520.7" x2="-20.32" y2="-510.54" width="0.1524" layer="91"/>
 <label x="-15.24" y="-510.54" size="1.778" layer="95" xref="yes"/>
-<junction x="-20.32" y="-510.54"/>
+<pinref part="R32" gate="G$1" pin="1"/>
+<wire x1="-20.32" y1="-510.54" x2="-15.24" y2="-510.54" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="-518.16" x2="-20.32" y2="-510.54" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$27" class="0">
@@ -24949,7 +25112,7 @@ short = 5A</text>
 <pinref part="U5" gate="A" pin="VOUT"/>
 <wire x1="-38.1" y1="-543.56" x2="-20.32" y2="-543.56" width="0.1524" layer="91"/>
 <pinref part="R31" gate="G$1" pin="2"/>
-<wire x1="-20.32" y1="-530.86" x2="-20.32" y2="-543.56" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="-541.02" x2="-20.32" y2="-543.56" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$38" class="0">
@@ -24963,7 +25126,7 @@ short = 5A</text>
 <net name="N$42" class="0">
 <segment>
 <pinref part="U5" gate="A" pin="VSEL"/>
-<pinref part="R32" gate="G$1" pin="1"/>
+<pinref part="R47" gate="G$1" pin="1"/>
 <wire x1="-38.1" y1="-558.8" x2="-17.78" y2="-558.8" width="0.1524" layer="91"/>
 <wire x1="-17.78" y1="-558.8" x2="-17.78" y2="-566.42" width="0.1524" layer="91"/>
 </segment>
@@ -25284,6 +25447,13 @@ short = 5A</text>
 <wire x1="-88.9" y1="-236.22" x2="-88.9" y2="-233.68" width="0.1524" layer="91"/>
 <wire x1="-88.9" y1="-233.68" x2="-78.74" y2="-233.68" width="0.1524" layer="91"/>
 <junction x="-78.74" y="-233.68"/>
+</segment>
+</net>
+<net name="N$57" class="0">
+<segment>
+<pinref part="R32" gate="G$1" pin="2"/>
+<pinref part="R31" gate="G$1" pin="1"/>
+<wire x1="-20.32" y1="-528.32" x2="-20.32" y2="-530.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

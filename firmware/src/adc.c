@@ -13,7 +13,7 @@
                                   BUCK_SENS_PINn | CURR_SENS_PINn)
 #define ADC_REFERENCE_MV         3300U
 #define ADC_FULL_SCALE           1023U
-#define VOLTAGE_DIVIDER_SCALE    10U
+#define VOLTAGE_DIVIDER_SCALE    11U
 #define CURRENT_FULL_SCALE_MA    6037U
 
 #define NTC_TABLE_STEP_C         10U

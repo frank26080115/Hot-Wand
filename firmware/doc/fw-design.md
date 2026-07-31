@@ -51,7 +51,7 @@ The fan is off during sleep mode.
 
 When the microcontroller boots, it will wait 1 second for power to stabilize, and then sample the input DC power.
 
-If the input power is below 8.5V, then all soldering iron functionality is disabled and the microcontroller will await debug instructions from SWD. Button presses in this state will cause a reboot.
+If the input power is below 14V, then all soldering iron functionality is disabled and the microcontroller will await debug instructions from SWD. Button presses in this state will cause a reboot.
 
 If during boot, the user button is held down, then UART message debugging will become enabled.
 
