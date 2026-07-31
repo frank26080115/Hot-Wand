@@ -11,17 +11,17 @@ if not exist "%GERBER_DIR%" (
     if errorlevel 1 goto :error
 )
 
-echo Copying CAM processor artifacts...
-set "COPIED_ANY=0"
+echo Moving CAM processor artifacts...
+set "MOVED_ANY=0"
 for %%F in ("%SOURCE_DIR%\%PROJECT_NAME%-*.*") do (
     if exist "%%~fF" (
-        copy /Y "%%~fF" "%GERBER_DIR%\" >nul
+        move /Y "%%~fF" "%GERBER_DIR%\" >nul
         if errorlevel 1 goto :error
-        set "COPIED_ANY=1"
+        set "MOVED_ANY=1"
     )
 )
 
-if "%COPIED_ANY%"=="0" (
+if "%MOVED_ANY%"=="0" (
     echo Warning: no CAM processor artifacts were found.
 )
 
