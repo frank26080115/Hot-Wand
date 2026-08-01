@@ -16,6 +16,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+PNG_SUPERSAMPLE_FACTOR = 4
+
+
 DEFAULT_GERBV_EXE = Path(
     r"C:\ProgramFiles\gerbv_2023-10-11_ccf6a3_(Windows amd64)\gerbv.exe"
 )
@@ -140,7 +143,10 @@ def parse_args() -> argparse.Namespace:
         "--png-dpi",
         type=float,
         default=500.0,
-        help="resolution for top and bottom PNG previews (default: 500 DPI)",
+        help=(
+            "final resolution for top and bottom PNG previews; rendering uses "
+            "4x supersampling (default: 500 DPI)"
+        ),
     )
     parser.add_argument(
         "--origin",
@@ -655,9 +661,15 @@ def render_side_pngs(svg_path: Path, dpi: float) -> list[Path]:
 
     source_root = load_svg(svg_path)
     generated_paths: list[Path] = []
+    render_dpi = dpi * PNG_SUPERSAMPLE_FACTOR
 
     for side in ("top", "bottom"):
         side_root = copy.deepcopy(source_root)
+        # Cairo anti-aliases adjacent SVG polygons independently, which can
+        # leave subpixel hairline seams between shapes that share an edge.
+        # Rasterize hard edges at the supersampled resolution, then apply
+        # anti-aliasing once when the completed image is downsampled.
+        side_root.set("shape-rendering", "crispEdges")
         root_groups = {
             child.get("id"): child
             for child in list(side_root)
@@ -699,13 +711,26 @@ def render_side_pngs(svg_path: Path, dpi: float) -> list[Path]:
                         xml_declaration=True,
                     ),
                     write_to=temporary_file,
-                    dpi=dpi,
+                    dpi=render_dpi,
                 )
                 temporary_file.flush()
 
             with Image.open(temporary_path) as rendered_png:
                 rendered_png.load()
-                png_with_dpi = rendered_png.copy()
+                final_size = (
+                    max(
+                        1,
+                        round(rendered_png.width / PNG_SUPERSAMPLE_FACTOR),
+                    ),
+                    max(
+                        1,
+                        round(rendered_png.height / PNG_SUPERSAMPLE_FACTOR),
+                    ),
+                )
+                png_with_dpi = rendered_png.resize(
+                    final_size,
+                    resample=Image.Resampling.LANCZOS,
+                )
             try:
                 png_with_dpi.save(
                     temporary_path,
