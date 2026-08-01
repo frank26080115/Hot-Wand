@@ -35,7 +35,7 @@ DARK_RED = (139, 0, 0)
 
 POINTS_PER_INCH = 72.0
 LETTER_PORTRAIT = (8.5 * POINTS_PER_INCH, 11.0 * POINTS_PER_INCH)
-LETTER_LANDSCAPE = (LETTER_PORTRAIT[1], LETTER_PORTRAIT[0])
+LETTER_ASPECT_RATIO = LETTER_PORTRAIT[1] / LETTER_PORTRAIT[0]
 PDF_MARGIN_POINTS = 0.5 * POINTS_PER_INCH
 
 
@@ -60,8 +60,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Export an EAGLE schematic to a color PNG, split it at sufficiently "
-            "thick white horizontal dividers, frame the non-empty chunks, and "
-            "write them as JPEG-compressed US Letter pages in a PDF."
+            "thick white horizontal dividers, frame the non-empty chunks, stack "
+            "adjacent chunks to fill portrait pages, and write them as "
+            "JPEG-compressed US Letter pages in a PDF."
         )
     )
     parser.add_argument(
@@ -248,19 +249,17 @@ def page_label_font() -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
         return ImageFont.load_default(size=PAGE_LABEL_FONT_SIZE_PX)
     except TypeError as exc:  # Pillow older than 10.1
         raise RuntimeError(
-            "Pillow 10.1 or newer is required for the 16-pixel page label font"
+            "Pillow 10.1 or newer is required for the configured page label font"
         ) from exc
 
 
-def make_jpeg_pages(
+def make_framed_images(
     image: Image.Image,
     chunks: list[tuple[int, int]],
-    output_directory: Path,
-    dpi: int,
-) -> list[JpegPage]:
+) -> list[Image.Image]:
     font = page_label_font()
     page_count = len(chunks)
-    jpeg_pages: list[JpegPage] = []
+    framed_images: list[Image.Image] = []
 
     for page_number, (top, bottom) in enumerate(chunks, start=1):
         vertical_chunk = image.crop((0, top, image.width, bottom))
@@ -294,26 +293,85 @@ def make_jpeg_pages(
             fill=DARK_RED,
             font=font,
         )
+        framed_images.append(framed)
 
+    return framed_images
+
+
+def group_images_for_portrait_pages(
+    images: list[Image.Image],
+) -> list[list[Image.Image]]:
+    """Greedily group adjacent images without exceeding Letter's aspect ratio."""
+    if not images:
+        return []
+
+    groups: list[list[Image.Image]] = []
+    current_group = [images[0]]
+    current_width = images[0].width
+    current_height = images[0].height
+
+    for image in images[1:]:
+        combined_width = max(current_width, image.width)
+        combined_height = current_height + image.height
+        combined_aspect_ratio = combined_height / combined_width
+
+        if combined_aspect_ratio <= LETTER_ASPECT_RATIO:
+            current_group.append(image)
+            current_width = combined_width
+            current_height = combined_height
+        else:
+            groups.append(current_group)
+            current_group = [image]
+            current_width = image.width
+            current_height = image.height
+
+    groups.append(current_group)
+    return groups
+
+
+def stitch_images_vertically(images: list[Image.Image]) -> Image.Image:
+    width = max(image.width for image in images)
+    height = sum(image.height for image in images)
+    stitched = Image.new("RGB", (width, height), "white")
+    y = 0
+    for image in images:
+        x = (width - image.width) // 2
+        stitched.paste(image, (x, y))
+        y += image.height
+    return stitched
+
+
+def make_jpeg_pages(
+    framed_images: list[Image.Image],
+    output_directory: Path,
+    dpi: int,
+) -> list[JpegPage]:
+    groups = group_images_for_portrait_pages(framed_images)
+    jpeg_pages: list[JpegPage] = []
+
+    for page_number, group in enumerate(groups, start=1):
+        stitched = stitch_images_vertically(group)
         jpeg_path = output_directory / f"page-{page_number:04d}.jpg"
-        framed.save(
-            jpeg_path,
-            format="JPEG",
-            quality=JPEG_QUALITY,
-            subsampling=0,
-            optimize=True,
-            dpi=(dpi, dpi),
-        )
-        jpeg_pages.append(JpegPage(jpeg_path, framed.width, framed.height))
-        framed.close()
+        try:
+            stitched.save(
+                jpeg_path,
+                format="JPEG",
+                quality=JPEG_QUALITY,
+                subsampling=0,
+                optimize=True,
+                dpi=(dpi, dpi),
+            )
+            jpeg_pages.append(
+                JpegPage(jpeg_path, stitched.width, stitched.height)
+            )
+        finally:
+            stitched.close()
 
     return jpeg_pages
 
 
 def page_geometry(page: JpegPage) -> tuple[float, float, float, float, float, float]:
-    page_width, page_height = (
-        LETTER_LANDSCAPE if page.width > page.height else LETTER_PORTRAIT
-    )
+    page_width, page_height = LETTER_PORTRAIT
     available_width = page_width - 2 * PDF_MARGIN_POINTS
     available_height = page_height - 2 * PDF_MARGIN_POINTS
 
@@ -450,6 +508,7 @@ def write_pdf_atomic(pages: list[JpegPage], output: Path) -> None:
 
 def main() -> int:
     args = parse_args()
+    framed_images: list[Image.Image] = []
     try:
         schematic, output, eaglecon = resolve_paths(args)
         if schematic == output:
@@ -468,9 +527,9 @@ def main() -> int:
                 chunks = find_content_chunks(image, args.divider_thickness)
                 if not chunks:
                     raise RuntimeError("The exported schematic PNG contains no content")
+                framed_images = make_framed_images(image, chunks)
                 jpeg_pages = make_jpeg_pages(
-                    image,
-                    chunks,
+                    framed_images,
                     temp_path,
                     args.dpi,
                 )
@@ -487,6 +546,9 @@ def main() -> int:
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
+    finally:
+        for framed_image in framed_images:
+            framed_image.close()
 
 
 if __name__ == "__main__":
