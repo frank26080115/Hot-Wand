@@ -22542,7 +22542,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value="">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="TL1105RF250Q"/>
+<attribute name="PARTNUM" value="MJTP1236D;TL1105JAF160R1RBLK"/>
 </part>
 <part name="GND44" library="hot-wand" deviceset="GND" device=""/>
 <part name="U6" library="hot-wand" deviceset="OLED-SSD1306-4PIN" device="-0.91N-VERT" value="SSD1306-4PIN-0.91N-VERT">
