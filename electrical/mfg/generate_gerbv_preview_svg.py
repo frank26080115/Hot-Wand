@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Render each Gerber layer to SVG, then combine them into one preview."""
+"""Build combined SVG/SVGZ and side-specific PNG previews from Gerber layers."""
 
 from __future__ import annotations
 
 import argparse
+import copy
+import gzip
 import os
 import re
+import shutil
 import subprocess
+import tempfile
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
@@ -65,6 +69,29 @@ LAYER_OPACITIES: dict[tuple[str, str | None], str] = {
     for classification in LAYER_COLORS
 }
 
+INHERITED_PAINT_PROPERTIES = {
+    "color",
+    "fill-opacity",
+    "stroke-opacity",
+}
+
+SVG_GRAPHICAL_ELEMENTS = {
+    "circle",
+    "ellipse",
+    "foreignObject",
+    "image",
+    "line",
+    "mesh",
+    "path",
+    "polygon",
+    "polyline",
+    "rect",
+    "text",
+    "textPath",
+    "tspan",
+    "use",
+}
+
 
 @dataclass(frozen=True)
 class LayerFile:
@@ -82,8 +109,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Render every recognized manufacturing layer with gerbv and combine "
-            "the results into a structured SVG preview. Relative paths are "
-            "resolved from this script's directory."
+            "the results into structured SVG, SVGZ, and side-specific PNG "
+            "previews. Relative paths are resolved from this script's directory."
         )
     )
     parser.add_argument(
@@ -103,6 +130,17 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("gerbers") / "preview.svg",
         help="combined SVG output path (default: gerbers/preview.svg)",
+    )
+    parser.add_argument(
+        "--svgz-output",
+        type=Path,
+        help="compressed output path (default: --output with an .svgz suffix)",
+    )
+    parser.add_argument(
+        "--png-dpi",
+        type=float,
+        default=500.0,
+        help="resolution for top and bottom PNG previews (default: 500 DPI)",
     )
     parser.add_argument(
         "--origin",
@@ -293,6 +331,135 @@ def svg_id(text: str) -> str:
     return f"file-{normalized or 'layer'}"
 
 
+def layer_css_class(root_group: str, side_layer: str | None) -> str:
+    if side_layer is None:
+        return root_group
+    return f"{root_group}-{side_layer}"
+
+
+def merged_svg_stylesheet() -> str:
+    rules: dict[tuple[str, str], list[str]] = {}
+    for classification, color in LAYER_COLORS.items():
+        opacity = LAYER_OPACITIES[classification]
+        rules.setdefault((color, opacity), []).append(
+            f".{layer_css_class(*classification)}"
+        )
+
+    blocks: list[str] = []
+    for (color, opacity), selectors in rules.items():
+        blocks.append(
+            ",\n".join(selectors)
+            + " {\n"
+            + f"  fill: {color};\n"
+            + f"  stroke: {color};\n"
+            + f"  opacity: {opacity};\n"
+            + "}"
+        )
+    return "\n\n".join(blocks)
+
+
+def remove_inline_layer_paint(element: ET.Element) -> None:
+    """Let the layer group's embedded CSS provide color and opacity."""
+    for child in element.iter():
+        for attribute in INHERITED_PAINT_PROPERTIES:
+            child.attrib.pop(attribute, None)
+
+        for attribute in ("fill", "stroke"):
+            value = child.get(attribute)
+            if value is not None and value.strip().casefold() != "none":
+                child.attrib.pop(attribute)
+
+        style = child.get("style")
+        if style is None:
+            continue
+
+        retained: list[str] = []
+        for declaration in style.split(";"):
+            declaration = declaration.strip()
+            if not declaration:
+                continue
+            if ":" not in declaration:
+                retained.append(declaration)
+                continue
+
+            property_name, value = declaration.split(":", 1)
+            property_name = property_name.strip().casefold()
+            if property_name in INHERITED_PAINT_PROPERTIES:
+                continue
+            if (
+                property_name in {"fill", "stroke"}
+                and value.strip().casefold() != "none"
+            ):
+                continue
+            retained.append(declaration)
+
+        if retained:
+            child.set("style", ";".join(retained) + ";")
+        else:
+            child.attrib.pop("style", None)
+
+
+def local_tag_name(element: ET.Element) -> str:
+    if not isinstance(element.tag, str):
+        return ""
+    return element.tag.rsplit("}", 1)[-1]
+
+
+def replace_graphical_styles_with_classes(
+    root: ET.Element,
+    style_element: ET.Element,
+) -> dict[str, str]:
+    """Move duplicate inline graphical styles into numbered CSS classes."""
+    used_class_names = {
+        class_name
+        for element in root.iter()
+        for class_name in element.get("class", "").split()
+    }
+    unique_styles: list[str] = []
+    seen_styles: set[str] = set()
+
+    for element in root.iter():
+        if local_tag_name(element) not in SVG_GRAPHICAL_ELEMENTS:
+            continue
+        style = element.get("style")
+        if style is not None and style not in seen_styles:
+            seen_styles.add(style)
+            unique_styles.append(style)
+
+    style_to_class: dict[str, str] = {}
+    next_class_number = 1
+    for style in unique_styles:
+        while f"class{next_class_number}" in used_class_names:
+            next_class_number += 1
+        class_name = f"class{next_class_number}"
+        next_class_number += 1
+        used_class_names.add(class_name)
+        style_to_class[style] = class_name
+
+    for element in root.iter():
+        if local_tag_name(element) not in SVG_GRAPHICAL_ELEMENTS:
+            continue
+        style = element.attrib.pop("style", None)
+        if style is None:
+            continue
+        class_name = style_to_class[style]
+        existing_classes = element.get("class", "").split()
+        existing_classes.append(class_name)
+        element.set("class", " ".join(existing_classes))
+
+    if style_to_class:
+        numbered_rules = "\n".join(
+            f".{class_name}{{{style}}}"
+            for style, class_name in style_to_class.items()
+        )
+        existing_stylesheet = (style_element.text or "").strip()
+        style_element.text = (
+            f"\n{existing_stylesheet}\n\n{numbered_rules}\n"
+        )
+
+    return style_to_class
+
+
 def create_layer_group(parent: ET.Element, group_id: str, label: str) -> ET.Element:
     return ET.SubElement(
         parent,
@@ -308,9 +475,8 @@ def create_layer_group(parent: ET.Element, group_id: str, label: str) -> ET.Elem
 def append_file_svg(parent: ET.Element, layer: LayerFile, source_root: ET.Element) -> None:
     file_group_id = svg_id(layer.source_path.name)
     prefix_svg_ids(source_root, file_group_id)
+    remove_inline_layer_paint(source_root)
     file_group = create_layer_group(parent, file_group_id, layer.source_path.name)
-    if layer.opacity != "1":
-        file_group.set("opacity", layer.opacity)
     for child in list(source_root):
         if child.tag == f"{{{SODIPODI_NAMESPACE}}}namedview":
             continue
@@ -344,6 +510,12 @@ def merge_svgs(layers: list[LayerFile], output_path: Path) -> None:
         f"{{{SODIPODI_NAMESPACE}}}namedview",
         {f"{{{INKSCAPE_NAMESPACE}}}document-units": "mm"},
     )
+    style = ET.SubElement(
+        merged_root,
+        f"{{{SVG_NAMESPACE}}}style",
+        {"type": "text/css"},
+    )
+    style.text = "\n" + merged_svg_stylesheet() + "\n"
 
     for root_group_name in ROOT_GROUP_ORDER:
         root_group = create_layer_group(
@@ -359,6 +531,10 @@ def merge_svgs(layers: list[LayerFile], output_path: Path) -> None:
                     f"{root_group_name}-{side_layer_name}",
                     side_layer_name.capitalize(),
                 )
+                side_group.set(
+                    "class",
+                    layer_css_class(root_group_name, side_layer_name),
+                )
                 for layer, source_root in loaded_layers:
                     if (
                         layer.root_group == root_group_name
@@ -366,9 +542,12 @@ def merge_svgs(layers: list[LayerFile], output_path: Path) -> None:
                     ):
                         append_file_svg(side_group, layer, source_root)
         else:
+            root_group.set("class", layer_css_class(root_group_name, None))
             for layer, source_root in loaded_layers:
                 if layer.root_group == root_group_name:
                     append_file_svg(root_group, layer, source_root)
+
+    replace_graphical_styles_with_classes(merged_root, style)
 
     if hasattr(ET, "indent"):
         ET.indent(merged_root, space="  ")
@@ -381,18 +560,198 @@ def merge_svgs(layers: list[LayerFile], output_path: Path) -> None:
     )
 
 
+def compress_svg(svg_path: Path, svgz_path: Path) -> None:
+    if svg_path.resolve() == svgz_path.resolve():
+        raise ValueError("The SVG and SVGZ output paths must be different")
+
+    svgz_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w+b",
+            dir=svgz_path.parent,
+            prefix=f".{svgz_path.name}-",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary_file:
+            temporary_path = Path(temporary_file.name)
+            with svg_path.open("rb") as source:
+                with gzip.GzipFile(
+                    filename="",
+                    mode="wb",
+                    compresslevel=9,
+                    fileobj=temporary_file,
+                    mtime=0,
+                ) as compressed:
+                    shutil.copyfileobj(source, compressed)
+
+        os.replace(temporary_path, svgz_path)
+        temporary_path = None
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
+def side_png_path(svg_path: Path, side: str) -> Path:
+    return svg_path.with_name(f"{svg_path.stem}-{side}.png")
+
+
+def create_mirrored_png(source_path: Path, output_path: Path, dpi: float) -> None:
+    try:
+        from PIL import Image, ImageOps
+    except ImportError as exc:
+        raise RuntimeError(
+            "Pillow is required for mirrored PNG previews; install it with "
+            "'python -m pip install Pillow'"
+        ) from exc
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    mirrored_image = None
+    try:
+        with Image.open(source_path) as source_image:
+            source_image.load()
+            mirrored_image = ImageOps.mirror(source_image)
+
+        with tempfile.NamedTemporaryFile(
+            mode="w+b",
+            dir=output_path.parent,
+            prefix=f".{output_path.name}-",
+            suffix=".tmp.png",
+            delete=False,
+        ) as temporary_file:
+            temporary_path = Path(temporary_file.name)
+
+        mirrored_image.save(
+            temporary_path,
+            format="PNG",
+            dpi=(dpi, dpi),
+            compress_level=9,
+        )
+        if temporary_path.stat().st_size == 0:
+            raise RuntimeError("Pillow created an empty mirrored bottom PNG preview")
+
+        os.replace(temporary_path, output_path)
+        temporary_path = None
+    finally:
+        if mirrored_image is not None:
+            mirrored_image.close()
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
+def render_side_pngs(svg_path: Path, dpi: float) -> list[Path]:
+    if dpi <= 0:
+        raise ValueError(f"PNG DPI must be greater than zero, got {dpi}")
+
+    try:
+        import cairosvg
+        from PIL import Image
+    except ImportError as exc:
+        raise RuntimeError(
+            "CairoSVG and Pillow are required for PNG previews; install them with "
+            "'python -m pip install CairoSVG'"
+        ) from exc
+
+    source_root = load_svg(svg_path)
+    generated_paths: list[Path] = []
+
+    for side in ("top", "bottom"):
+        side_root = copy.deepcopy(source_root)
+        root_groups = {
+            child.get("id"): child
+            for child in list(side_root)
+            if local_tag_name(child) == "g"
+            and child.get("id") in {"top", "bottom", "drills", "dimensional"}
+        }
+        missing_groups = {
+            side,
+            "drills",
+            "dimensional",
+        } - root_groups.keys()
+        if missing_groups:
+            raise RuntimeError(
+                "Cannot render side preview; missing SVG layer groups: "
+                + ", ".join(sorted(missing_groups))
+            )
+
+        opposite_side = "bottom" if side == "top" else "top"
+        opposite_group = root_groups.get(opposite_side)
+        if opposite_group is not None:
+            side_root.remove(opposite_group)
+
+        output_path = side_png_path(svg_path, side)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w+b",
+                dir=output_path.parent,
+                prefix=f".{output_path.name}-",
+                suffix=".tmp.png",
+                delete=False,
+            ) as temporary_file:
+                temporary_path = Path(temporary_file.name)
+                cairosvg.svg2png(
+                    bytestring=ET.tostring(
+                        side_root,
+                        encoding="utf-8",
+                        xml_declaration=True,
+                    ),
+                    write_to=temporary_file,
+                    dpi=dpi,
+                )
+                temporary_file.flush()
+
+            with Image.open(temporary_path) as rendered_png:
+                rendered_png.load()
+                png_with_dpi = rendered_png.copy()
+            try:
+                png_with_dpi.save(
+                    temporary_path,
+                    format="PNG",
+                    dpi=(dpi, dpi),
+                    compress_level=9,
+                )
+            finally:
+                png_with_dpi.close()
+
+            if temporary_path.stat().st_size == 0:
+                raise RuntimeError(f"CairoSVG created an empty {side} PNG preview")
+            os.replace(temporary_path, output_path)
+            temporary_path = None
+        finally:
+            if temporary_path is not None:
+                temporary_path.unlink(missing_ok=True)
+
+        generated_paths.append(output_path)
+        if side == "bottom":
+            mirrored_path = side_png_path(svg_path, "bottom-mirrored")
+            create_mirrored_png(output_path, mirrored_path, dpi)
+            generated_paths.append(mirrored_path)
+
+    return generated_paths
+
+
 def main() -> int:
     args = parse_args()
     script_dir = Path(__file__).resolve().parent
     gerbv_exe = resolve_script_relative(args.gerbv, script_dir)
     input_dir = resolve_script_relative(args.input_dir, script_dir)
     output_path = resolve_script_relative(args.output, script_dir)
+    svgz_path = (
+        resolve_script_relative(args.svgz_output, script_dir)
+        if args.svgz_output is not None
+        else output_path.with_suffix(".svgz")
+    )
     svg_preview_dir = input_dir / "svg_preview"
 
     if not gerbv_exe.is_file():
         raise FileNotFoundError(f"gerbv executable not found: {gerbv_exe}")
     if not input_dir.is_dir():
         raise FileNotFoundError(f"Gerber input directory not found: {input_dir}")
+    if args.png_dpi <= 0:
+        raise ValueError(f"PNG DPI must be greater than zero, got {args.png_dpi}")
 
     svg_preview_dir.mkdir(parents=True, exist_ok=True)
     layers = discover_layers(input_dir, svg_preview_dir, args.ignore_do)
@@ -411,6 +770,10 @@ def main() -> int:
 
     merge_svgs(layers, output_path)
     print(f"Created {output_path}")
+    compress_svg(output_path, svgz_path)
+    print(f"Created {svgz_path}")
+    for png_path in render_side_pngs(output_path, args.png_dpi):
+        print(f"Created {png_path} at {args.png_dpi:g} DPI")
     return 0
 
 
