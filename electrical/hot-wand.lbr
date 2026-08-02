@@ -6090,10 +6090,10 @@ metal electrode face (MELF)</description>
 <package name="XFORMER-K16X8X6-1:14:14">
 <pad name="P1" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
 <pad name="P2" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="3" x="-5" y="4.3" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="4" x="-5" y="-4.3" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="1" x="-7.6" y="4.3" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="2" x="-7.6" y="-4.3" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="3" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="4" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="1" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="2" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
 <wire x1="-9" y1="3" x2="-9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="3" x2="9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="-3" x2="7" y2="-3" width="0.127" layer="21"/>
