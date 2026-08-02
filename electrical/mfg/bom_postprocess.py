@@ -26,14 +26,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("hot-wand-bom.csv"),
-        help="source BOM (default: hot-wand-bom.csv)",
+        default=Path("hot-wand-bom-jlc.csv"),
+        help="source BOM (default: hot-wand-bom-jlc.csv)",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("hot-wand-bom-postprocessed.csv"),
-        help="processed BOM (default: hot-wand-bom-postprocessed.csv)",
+        default=Path("hot-wand-bom-jlc-pp.csv"),
+        help="processed BOM (default: hot-wand-bom-jlc-pp.csv)",
     )
     footprint_options = parser.add_mutually_exclusive_group()
     footprint_options.add_argument(

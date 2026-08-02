@@ -163,7 +163,7 @@ if (board) board(B) {
         strsub(filename(B.name), 0, strlen(filename(B.name)) - 4));
 
     string cpl_filename = base_path + "-cpl.csv";
-    string bom_filename = base_path + "-bom.csv";
+    string bom_filename = base_path + "-bom-jlc.csv";
 
     output(cpl_filename) {
         printf("Designator,Mid X,Mid Y,Layer,Rotation\n");
