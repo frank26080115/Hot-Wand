@@ -22307,7 +22307,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C137755"/>
 </part>
 <part name="C1" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100nF">
-<attribute name="JLC-DNP" value="1"/>
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="D1" library="hot-wand" deviceset="DIODE-ZENER" device="SMC" value="STPS3L60S">
