@@ -181,8 +181,8 @@
 <wire x1="0" y1="-2.54" x2="0" y2="-1.27" width="0.127" layer="21"/>
 <wire x1="0" y1="-1.27" x2="2.54" y2="-1.27" width="0.127" layer="21"/>
 <wire x1="2.54" y1="-1.27" x2="2.54" y2="-2.54" width="0.127" layer="21"/>
-<pad name="1" x="0" y="0" drill="1.016" diameter="1.8796" shape="square"/>
-<pad name="2" x="2.54" y="0" drill="1.016" diameter="1.8796"/>
+<pad name="1" x="0" y="0" drill="1" diameter="1.8796" shape="square"/>
+<pad name="2" x="2.54" y="0" drill="1" diameter="1.8796"/>
 </package>
 <package name="SCREWTERMINAL-3.5MM-2">
 <wire x1="-1.75" y1="3.4" x2="5.25" y2="3.4" width="0.2032" layer="21"/>
@@ -399,8 +399,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="-5.08" y1="-2.54" x2="5.08" y2="-2.54" width="0.127" layer="21"/>
 <wire x1="5.08" y1="-2.54" x2="5.08" y2="2.54" width="0.127" layer="21"/>
 <wire x1="5.08" y1="2.54" x2="-5.08" y2="2.54" width="0.127" layer="21"/>
-<pad name="1" x="-2.54" y="0" drill="2.0574" diameter="3.556"/>
-<pad name="2" x="2.54" y="0" drill="2.0574" diameter="3.556"/>
+<pad name="1" x="-2.54" y="0" drill="2" diameter="3.556"/>
+<pad name="2" x="2.54" y="0" drill="2" diameter="3.556"/>
 </package>
 <package name="1X02_PP_HOLES_ONLY">
 <circle x="0" y="0" radius="0.635" width="0.127" layer="51"/>
@@ -2653,9 +2653,9 @@ chip</description>
 <wire x1="5.08" y1="-0.381" x2="4.191" y2="-1.27" width="0.2032" layer="21" curve="-92.798868"/>
 <wire x1="-4.191" y1="-1.27" x2="-3.81" y2="-1.27" width="0.2032" layer="21"/>
 <wire x1="4.191" y1="-1.27" x2="3.81" y2="-1.27" width="0.2032" layer="21"/>
-<pad name="1" x="-2.54" y="0" drill="1.016" shape="long" rot="R90"/>
-<pad name="2" x="0" y="0" drill="1.016" shape="long" rot="R90"/>
-<pad name="3" x="2.54" y="0" drill="1.016" shape="long" rot="R90"/>
+<pad name="1" x="-2.54" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1" shape="long" rot="R90"/>
 <text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 <rectangle x1="-5.08" y1="2.032" x2="5.08" y2="3.048" layer="21"/>
@@ -4351,8 +4351,8 @@ Max Component Height - 1.45mm</description>
 <package name="CPOL-RADIAL-1000UF-25V">
 <wire x1="-1.905" y1="1.27" x2="-3.175" y2="1.27" width="0.2032" layer="21"/>
 <circle x="0" y="0" radius="5.461" width="0.2032" layer="21"/>
-<pad name="2" x="-2.54" y="0" drill="0.7" diameter="1.651"/>
-<pad name="1" x="2.54" y="0" drill="0.7" diameter="1.651" shape="square"/>
+<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651"/>
+<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
 <text x="-1.905" y="-4.318" size="0.8128" layer="27">&gt;Value</text>
 <text x="-0.762" y="2.921" size="0.4064" layer="25">&gt;Name</text>
 </package>
@@ -4639,18 +4639,6 @@ Max Component Height - 1.45mm</description>
 <rectangle x1="-3.175" y1="-3.81" x2="-1.905" y2="-2.159" layer="51"/>
 <hole x="0" y="11.176" drill="3.302"/>
 </package>
-<package name="TO220-BUCK">
-<description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
-<pad name="1" x="-2.54" y="0" drill="1.016" shape="long" rot="R90"/>
-<pad name="2" x="0" y="0" drill="1.016" shape="long" rot="R90"/>
-<pad name="3" x="2.54" y="0" drill="1.016" shape="long" rot="R90"/>
-<text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-<wire x1="-5.7" y1="1.2" x2="5.7" y2="1.2" width="0.127" layer="21"/>
-<wire x1="5.7" y1="1.2" x2="5.7" y2="-7.3" width="0.127" layer="21"/>
-<wire x1="5.7" y1="-7.3" x2="-5.7" y2="-7.3" width="0.127" layer="21"/>
-<wire x1="-5.7" y1="-7.3" x2="-5.7" y2="1.2" width="0.127" layer="21"/>
-</package>
 <package name="FUSE_5MM">
 <wire x1="-3.2258" y1="-10.127" x2="-3.2258" y2="-4.1072" width="0.2032" layer="21"/>
 <wire x1="-3.2258" y1="-10.127" x2="3.2258" y2="-10.127" width="0.2032" layer="21"/>
@@ -4666,10 +4654,10 @@ Max Component Height - 1.45mm</description>
 <wire x1="2.794" y1="-9.619" x2="2.794" y2="9.177" width="0.2032" layer="51"/>
 <wire x1="2.794" y1="9.177" x2="2.794" y2="9.812" width="0.2032" layer="51"/>
 <wire x1="2.794" y1="9.812" x2="-2.921" y2="9.812" width="0.2032" layer="51"/>
-<pad name="1" x="0" y="-10" drill="2.54" diameter="3.556"/>
-<pad name="2" x="0" y="-4.158" drill="2.54" diameter="3.556"/>
-<pad name="4" x="0" y="10" drill="2.54" diameter="3.556" rot="R180"/>
-<pad name="3" x="0" y="4.158" drill="2.54" diameter="3.556" rot="R180"/>
+<pad name="1" x="0" y="-10" drill="2.5" diameter="3.556"/>
+<pad name="2" x="0" y="-4.158" drill="2.5" diameter="3.556"/>
+<pad name="4" x="0" y="10" drill="2.5" diameter="3.556" rot="R180"/>
+<pad name="3" x="0" y="4.158" drill="2.5" diameter="3.556" rot="R180"/>
 </package>
 <package name="AG">
 <description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
@@ -8460,8 +8448,8 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <description>&lt;b&gt;RADIAL INDUCTOR&lt;/b&gt;&lt;p&gt;
 12.7 mm body diameter, 6.35 mm pin spacing</description>
 <circle x="0" y="0" radius="6.35" width="0.1524" layer="21"/>
-<pad name="1" x="-3.175" y="0" drill="1.016" shape="octagon"/>
-<pad name="2" x="3.175" y="0" drill="1.016" shape="octagon"/>
+<pad name="1" x="-3.175" y="0" drill="1" shape="octagon"/>
+<pad name="2" x="3.175" y="0" drill="1" shape="octagon"/>
 <text x="0.889" y="1.27" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="0.889" y="-2.54" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 </package>
@@ -8658,10 +8646,10 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <text x="-1.7272" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Value</text>
 </package>
 <package name="XT30PW">
-<pad name="M1" x="-5.5" y="0" drill="1.1" diameter="2.54" shape="octagon"/>
-<pad name="M2" x="5.5" y="0" drill="1.1" diameter="2.54" shape="octagon"/>
-<pad name="P" x="-2.5" y="-10" drill="1.8" diameter="4" shape="octagon"/>
-<pad name="N" x="2.5" y="-10" drill="1.8" diameter="4" shape="octagon"/>
+<pad name="M1" x="-5.5" y="0" drill="1.2" diameter="2.54" shape="octagon"/>
+<pad name="M2" x="5.5" y="0" drill="1.2" diameter="2.54" shape="octagon"/>
+<pad name="P" x="-2.5" y="-10" drill="2" diameter="4" shape="octagon"/>
+<pad name="N" x="2.5" y="-10" drill="2" diameter="4" shape="octagon"/>
 <wire x1="-5" y1="3" x2="5" y2="3" width="0.127" layer="21"/>
 <wire x1="-5" y1="-2" x2="-5" y2="-8" width="0.127" layer="21"/>
 <wire x1="5" y1="-8" x2="5" y2="-2" width="0.127" layer="21"/>
@@ -9014,11 +9002,11 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <wire x1="-4.7498" y1="4.7498" x2="-4.7498" y2="-4.7498" width="0.1524" layer="51"/>
 <text x="-3.2766" y="-0.635" size="1.27" layer="25" ratio="6" rot="SR0">&gt;NAME</text>
 <text x="-1.7272" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;VALUE</text>
-<pad name="1" x="0" y="0" drill="1.2446" diameter="1.7526"/>
-<pad name="2" x="-4.318" y="4.318" drill="2.54" diameter="3.048"/>
-<pad name="3" x="-4.318" y="-4.318" drill="2.54" diameter="3.048"/>
-<pad name="4" x="4.318" y="-4.318" drill="2.54" diameter="3.048"/>
-<pad name="5" x="4.318" y="4.318" drill="2.54" diameter="3.048"/>
+<pad name="1" x="0" y="0" drill="1.5" diameter="1.7526"/>
+<pad name="2" x="-4.318" y="4.318" drill="2.5" diameter="3.048"/>
+<pad name="3" x="-4.318" y="-4.318" drill="2.5" diameter="3.048"/>
+<pad name="4" x="4.318" y="-4.318" drill="2.5" diameter="3.048"/>
+<pad name="5" x="4.318" y="4.318" drill="2.5" diameter="3.048"/>
 </package>
 <package name="HEATSINK-5042">
 <wire x1="-9.4" y1="-20.5" x2="-9.4" y2="0.5" width="1" layer="151"/>
@@ -9056,16 +9044,16 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <wire x1="-3.555" y1="-4.495" x2="-3.555" y2="0.485" width="0.127" layer="21"/>
 <text x="-3.50593125" y="4.753040625" size="1.27215" layer="25">&gt;NAME</text>
 <text x="-3.7545" y="-10.5176" size="1.27151875" layer="27">&gt;VALUE</text>
-<pad name="1" x="-2.25" y="0" drill="0.99"/>
-<pad name="2" x="2.25" y="0" drill="0.99"/>
-<pad name="S1" x="-3.505" y="2.49" drill="1.3"/>
-<pad name="S2" x="3.505" y="2.49" drill="1.3"/>
+<pad name="1" x="-2.25" y="0" drill="1"/>
+<pad name="2" x="2.25" y="0" drill="1"/>
+<pad name="S1" x="-3.505" y="2.49" drill="1.5"/>
+<pad name="S2" x="3.505" y="2.49" drill="1.5"/>
 </package>
 <package name="OLED-0.91IN-VERT">
-<pad name="1" x="3.81" y="0" drill="0.9" diameter="1.778" shape="square"/>
-<pad name="2" x="1.27" y="0" drill="0.9" diameter="1.778" shape="octagon"/>
-<pad name="3" x="-1.27" y="0" drill="0.9" diameter="1.778" shape="octagon"/>
-<pad name="4" x="-3.81" y="0" drill="0.9" diameter="1.778" shape="octagon"/>
+<pad name="1" x="3.81" y="0" drill="1" diameter="1.778" shape="square"/>
+<pad name="2" x="1.27" y="0" drill="1" diameter="1.778" shape="octagon"/>
+<pad name="3" x="-1.27" y="0" drill="1" diameter="1.778" shape="octagon"/>
+<pad name="4" x="-3.81" y="0" drill="1" diameter="1.778" shape="octagon"/>
 <wire x1="-6.35" y1="-3.81" x2="6.35" y2="-3.81" width="0.127" layer="21"/>
 <wire x1="-6.35" y1="-4.81" x2="6.35" y2="-4.81" width="0.127" layer="21"/>
 <wire x1="-6.35" y1="-5.31" x2="6.35" y2="-5.31" width="0.127" layer="21"/>
@@ -9324,12 +9312,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="6.35" y1="0.508" x2="6.35" y2="-0.762" width="0.2032" layer="21"/>
 <wire x1="8.89" y1="0.508" x2="8.89" y2="-0.762" width="0.2032" layer="21"/>
 <wire x1="11.43" y1="0.508" x2="11.43" y2="-0.762" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0" drill="1.016" diameter="1.8796"/>
-<pad name="2" x="2.54" y="-0.254" drill="1.016" diameter="1.8796"/>
-<pad name="3" x="5.08" y="0" drill="1.016" diameter="1.8796"/>
-<pad name="4" x="7.62" y="-0.254" drill="1.016" diameter="1.8796"/>
-<pad name="5" x="10.16" y="0" drill="1.016" diameter="1.8796"/>
-<pad name="6" x="12.7" y="-0.254" drill="1.016" diameter="1.8796"/>
+<pad name="1" x="0" y="0" drill="1" diameter="1.8796" shape="square"/>
+<pad name="2" x="2.54" y="-0.354" drill="1" diameter="1.8796"/>
+<pad name="3" x="5.08" y="0.1" drill="1" diameter="1.8796"/>
+<pad name="4" x="7.62" y="-0.354" drill="1" diameter="1.8796"/>
+<pad name="5" x="10.16" y="0.1" drill="1" diameter="1.8796"/>
+<pad name="6" x="12.7" y="-0.354" drill="1" diameter="1.8796" shape="octagon"/>
 <text x="-1.27" y="1.778" size="1.27" layer="25" font="vector">&gt;NAME</text>
 <text x="-1.27" y="-3.302" size="1.27" layer="27" font="vector">&gt;VALUE</text>
 <rectangle x1="-0.2921" y1="-0.4191" x2="0.2921" y2="0.1651" layer="51"/>
@@ -10086,6 +10074,18 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <pad name="4" x="3.7" y="8" drill="0.8" shape="offset" rot="R180"/>
 <hole x="0" y="10" drill="3"/>
 <hole x="0" y="-10" drill="3"/>
+</package>
+<package name="TO220-BUCK">
+<description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
+<pad name="1" x="-2.54" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="2" x="0" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="0" drill="1" shape="long" rot="R90"/>
+<text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<wire x1="-5.7" y1="1.2" x2="5.7" y2="1.2" width="0.127" layer="21"/>
+<wire x1="5.7" y1="1.2" x2="5.7" y2="-7.3" width="0.127" layer="21"/>
+<wire x1="5.7" y1="-7.3" x2="-5.7" y2="-7.3" width="0.127" layer="21"/>
+<wire x1="-5.7" y1="-7.3" x2="-5.7" y2="1.2" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -13670,7 +13670,7 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 </device>
 </devices>
 </deviceset>
-<deviceset name="TVS" prefix="TVS">
+<deviceset name="TVS" prefix="D">
 <gates>
 <gate name="G$1" symbol="SCHOTTKY_BRIDGE" x="0" y="0"/>
 </gates>
@@ -22538,7 +22538,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="JP2" library="hot-wand" deviceset="COAX-FTYPE-PCB-MNT" device="" value="COAX-FTYPE-PCB-MNT">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value="">
+<part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value="SW-TACT-SIDE">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="MJTP1236D;TL1105JAF160R1RBLK"/>
 </part>
