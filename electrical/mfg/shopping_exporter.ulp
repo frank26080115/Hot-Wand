@@ -24,7 +24,8 @@
  */
 
 #usage "<b>Shopping BOM CSV exporter</b>\n"
-       "<p>Exports a single BOM containing manufacturer and LCSC part numbers."
+       "<p>Exports a single BOM containing assembly classification, "
+       "manufacturer part numbers, and LCSC part numbers."
        "<p>Run the ULP from the board editor."
        "<p>An optional first argument selects the output directory."
 
@@ -108,26 +109,65 @@ string get_lcsc_part(UL_ELEMENT E)
 }
 
 
-int is_actual_dnp(UL_ELEMENT E)
+int is_dnp(UL_ELEMENT E)
 {
+    if (!E.populate) {
+        return 1;
+    }
+
     if (strupr(strip(E.value)) == "DNP") {
         return 1;
     }
 
     E.attributes(A) {
-        if (A.name == "DNP") {
+        if (A.name == "DNP" || A.name == "JLC-DNP") {
             return 1;
         }
     }
 
-    // Solder jumpers are PCB features, not items to purchase.
+    // Keep solder jumpers in the shopping BOM, but mark them as DNP.
     if (strstr(E.name, "SJ") == 0) {
         return 1;
     }
 
-    // Deliberately ignore JLC-DNP here. It means hand assembly rather than
-    // "do not buy" and is only relevant to pick-and-place exports.
     return 0;
+}
+
+
+string get_assembly(UL_ELEMENT E)
+{
+    int has_smd = 0;
+    int has_th = 0;
+
+    E.package.contacts(C) {
+        if (C.smd) {
+            has_smd = 1;
+        }
+        if (C.pad) {
+            has_th = 1;
+        }
+    }
+
+    string mount_type;
+    if (has_smd && has_th) {
+        mount_type = "MIX";
+    } else if (has_smd) {
+        mount_type = "SMD";
+    } else if (has_th) {
+        mount_type = "TH";
+    } else {
+        // Mechanical/cosmetic packages can have holes or artwork but no pads.
+        mount_type = "MECH";
+    }
+
+    string assembly = E.mirror ? "BOTTOM-" : "TOP-";
+    assembly += mount_type;
+
+    if (is_dnp(E)) {
+        assembly = "DNP-" + assembly;
+    }
+
+    return assembly;
 }
 
 
@@ -156,7 +196,7 @@ if (board) board(B) {
     }
 
     int element_count = 0;
-    B.elements(E) if (E.populate && !is_actual_dnp(E)) {
+    B.elements(E) {
         selected_elements[element_count++] = E;
     }
 
@@ -169,6 +209,7 @@ if (board) board(B) {
         int indexes[];
         numeric string values[];
         numeric string footprints[];
+        numeric string assemblies[];
         numeric string manufacturer_parts[];
         numeric string lcsc_parts[];
 
@@ -176,19 +217,21 @@ if (board) board(B) {
             indexes[i] = i;
             values[i] = selected_elements[i].value;
             footprints[i] = selected_elements[i].package.name;
+            assemblies[i] = get_assembly(selected_elements[i]);
             manufacturer_parts[i] = get_attribute(selected_elements[i], "PARTNUM");
             lcsc_parts[i] = get_lcsc_part(selected_elements[i]);
         }
 
         sort(element_count, indexes, values, footprints,
-             manufacturer_parts, lcsc_parts);
+             assemblies, manufacturer_parts, lcsc_parts);
 
-        printf("Comment,Designator,Footprint,Mfg Part #,LCSC Part #\n");
+        printf("Comment,Designator,Footprint,Asm,Mfg Part #,LCSC Part #\n");
 
         string designators;
         for (i = 0; i < element_count; ++i) {
             int element_index = indexes[i];
             UL_ELEMENT E = selected_elements[element_index];
+            string assembly = assemblies[element_index];
             string mfg_part = manufacturer_parts[element_index];
             string lcsc_part = lcsc_parts[element_index];
             int aggregate_with_next = 0;
@@ -198,16 +241,18 @@ if (board) board(B) {
                 aggregate_with_next = (
                     E.value == selected_elements[next_index].value &&
                     E.package.name == selected_elements[next_index].package.name &&
+                    assembly == assemblies[next_index] &&
                     mfg_part == manufacturer_parts[next_index] &&
                     lcsc_part == lcsc_parts[next_index]
                 );
             }
 
             if (strip(E.value) == "") {
-                printf("%s,%s,%s,%s,%s\n",
+                printf("%s,%s,%s,%s,%s,%s\n",
                     csv_field(""),
                     csv_field(E.name),
                     csv_field(E.package.name),
+                    csv_field(assembly),
                     csv_field(mfg_part),
                     csv_field(lcsc_part));
                 designators = "";
@@ -215,10 +260,11 @@ if (board) board(B) {
                 designators = append_designator(designators, E.name);
             } else {
                 designators = append_designator(designators, E.name);
-                printf("%s,%s,%s,%s,%s\n",
+                printf("%s,%s,%s,%s,%s,%s\n",
                     csv_field(E.value),
                     csv_field(designators),
                     csv_field(E.package.name),
+                    csv_field(assembly),
                     csv_field(mfg_part),
                     csv_field(lcsc_part));
                 designators = "";
