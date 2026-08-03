@@ -136,18 +136,14 @@
 <wire x1="112" y1="5" x2="111" y2="5" width="0.1" layer="20"/>
 <wire x1="111" y1="5" x2="107" y2="1" width="0.1" layer="20" curve="90"/>
 <wire x1="107" y1="1" x2="107" y2="0" width="0.1" layer="20"/>
-<hole x="8" y="3" drill="3"/>
-<hole x="8" y="69" drill="3"/>
-<hole x="104" y="69" drill="3"/>
-<hole x="104" y="3" drill="3"/>
-<circle x="8" y="69" radius="3" width="0" layer="41"/>
-<circle x="8" y="3" radius="3" width="0" layer="41"/>
-<circle x="104" y="3" radius="3" width="0" layer="41"/>
-<circle x="104" y="69" radius="3" width="0" layer="41"/>
-<circle x="104" y="69" radius="3" width="0" layer="42"/>
-<circle x="104" y="3" radius="3" width="0" layer="42"/>
-<circle x="8" y="3" radius="3" width="0" layer="42"/>
-<circle x="8" y="69" radius="3" width="0" layer="42"/>
+<pad name="1" x="8" y="67.4" drill="2.5" diameter="5.2" thermals="no"/>
+<pad name="2" x="8" y="4.6" drill="2.5" diameter="5.2" thermals="no"/>
+<pad name="3" x="104" y="67.4" drill="2.5" diameter="5.2" thermals="no"/>
+<pad name="4" x="104" y="4.6" drill="2.5" diameter="5.2" thermals="no"/>
+<circle x="8" y="4.6" radius="3" width="0.1" layer="39"/>
+<circle x="104" y="4.6" radius="3" width="0.1" layer="39"/>
+<circle x="104" y="67.4" radius="3" width="0.1" layer="39"/>
+<circle x="8" y="67.4" radius="3" width="0.1" layer="39"/>
 </package>
 <package name="1X02">
 <wire x1="-0.635" y1="1.27" x2="0.635" y2="1.27" width="0.2032" layer="21"/>
@@ -10087,6 +10083,10 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="5.7" y1="-7.3" x2="-5.7" y2="-7.3" width="0.127" layer="21"/>
 <wire x1="-5.7" y1="-7.3" x2="-5.7" y2="1.2" width="0.127" layer="21"/>
 </package>
+<package name="STANDOFF-M2.5-4.5MMHEX">
+<pad name="1" x="0" y="0" drill="2.5" diameter="5.2" thermals="no"/>
+<circle x="0" y="0" radius="3" width="0.127" layer="21"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -10095,6 +10095,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="12.7" y1="7.62" x2="12.7" y2="0" width="0.254" layer="94"/>
 <wire x1="12.7" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
 <text x="2.54" y="2.54" size="2.54" layer="94">PCB</text>
+<pin name="1" x="15.24" y="5.08" visible="off" length="short" rot="R180"/>
 </symbol>
 <symbol name="GND">
 <wire x1="-1.905" y1="0" x2="1.905" y2="0" width="0.254" layer="94"/>
@@ -10698,6 +10699,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="2.54" y="2.54" size="5.08" layer="94">FAN</text>
 <text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
 <text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="1" x="20.32" y="7.62" visible="off" length="short" rot="R180"/>
 </symbol>
 <symbol name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND</text>
@@ -10707,6 +10709,17 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="-10.16" y1="-5.08" x2="-10.16" y2="2.54" width="0.254" layer="94"/>
 </symbol>
+<symbol name="STANDOFF">
+<wire x1="0" y1="2.54" x2="0" y2="1.27" width="0.254" layer="94"/>
+<wire x1="0" y1="1.27" x2="0" y2="-1.27" width="0.254" layer="94"/>
+<wire x1="0" y1="-1.27" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="0" y2="-2.54" width="0.254" layer="94" curve="180"/>
+<wire x1="0" y1="1.27" x2="5.08" y2="1.27" width="0.254" layer="94"/>
+<wire x1="5.08" y1="1.27" x2="5.08" y2="-1.27" width="0.254" layer="94"/>
+<wire x1="5.08" y1="-1.27" x2="0" y2="-1.27" width="0.254" layer="94"/>
+<text x="0.762" y="0" size="0.4064" layer="94" align="center-left">STANDOFF</text>
+<pin name="1" x="7.62" y="0" visible="off" length="short" rot="R180"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="PCB-OUTLINE" prefix="PCB">
@@ -10715,6 +10728,9 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </gates>
 <devices>
 <device name="" package="PCB-OUTLINE">
+<connects>
+<connect gate="G$1" pin="1" pad="1 2 3 4"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
@@ -22007,11 +22023,17 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </gates>
 <devices>
 <device name="-20MM-V1" package="FAN-20MM-TIEDOWN">
+<connects>
+<connect gate="A" pin="1" pad="1 2 3 4"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
 </device>
 <device name="-20MM-V2" package="FAN-20MM-TIEDOWN-V2">
+<connects>
+<connect gate="A" pin="1" pad="1 2 3 4"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
@@ -22022,6 +22044,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </technologies>
 </device>
 <device name="-20MM-V4" package="FAN-20MM-TIEDOWN-V4">
+<connects>
+<connect gate="A" pin="1" pad="1 2 3 4"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
@@ -22034,6 +22059,21 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </gates>
 <devices>
 <device name="" package="PCB-ART-VERSION">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="STANDOFF" prefix="STANDOFF">
+<gates>
+<gate name="A" symbol="STANDOFF" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-M2.5-4.5MMHEX" package="STANDOFF-M2.5-4.5MMHEX">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
@@ -22053,10 +22093,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </classes>
 <parts>
 <part name="PCB1" library="hot-wand" deviceset="PCB-OUTLINE" device="">
-<attribute name="JLC-DNP" value="1"/>
-</part>
-<part name="GND1" library="hot-wand" deviceset="GND" device=""/>
-<part name="JP1" library="hot-wand" deviceset="M02" device="PTH4">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND9" library="hot-wand" deviceset="GND" device=""/>
@@ -22485,7 +22521,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C52730979"/>
 <attribute name="JLC_ROTATION" value="180"/>
 </part>
-<part name="JP4" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
+<part name="JP2" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="2N7002K">
@@ -22535,7 +22571,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="HEATSINK2" library="hot-wand" deviceset="HEATSINK" device="-5042" value="HEATSINK-5042">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="JP2" library="hot-wand" deviceset="COAX-FTYPE-PCB-MNT" device="" value="COAX-FTYPE-PCB-MNT">
+<part name="JP1" library="hot-wand" deviceset="COAX-FTYPE-PCB-MNT" device="" value="COAX-FTYPE-PCB-MNT">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="SW1" library="hot-wand" deviceset="SW-TACT-SIDE" device="" value="">
@@ -22576,7 +22612,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="GND48" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND49" library="hot-wand" deviceset="GND" device=""/>
-<part name="JP5" library="hot-wand" deviceset="M06" device="LOCK">
+<part name="JP4" library="hot-wand" deviceset="M06" device="LOCK">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="P+12" library="hot-wand" deviceset="3.3V" device=""/>
@@ -22680,7 +22716,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
-<part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="">
+<part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="MS2006H12D-RSR"/>
 </part>
@@ -22728,6 +22764,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="PCS1206DR0100ET;WSLP1206R0100DEA;PE1206DRM7W0R01L;MCS1632R010DER;PE1206DRM470R01L"/>
 </part>
+<part name="STANDOFF1" library="hot-wand" deviceset="STANDOFF" device="-M2.5-4.5MMHEX"/>
+<part name="GND60" library="hot-wand" deviceset="GND" device=""/>
+<part name="STANDOFF2" library="hot-wand" deviceset="STANDOFF" device="-M2.5-4.5MMHEX"/>
+<part name="GND61" library="hot-wand" deviceset="GND" device=""/>
+<part name="GND1" library="hot-wand" deviceset="GND" device=""/>
+<part name="GND62" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -22828,7 +22870,7 @@ when voltage exceeds 22V</text>
 <text x="78.232" y="-420.37" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max
 14V UVLO</text>
 <text x="76.2" y="-455.168" size="0.8128" layer="97" rot="R180">rated 36V max</text>
-<text x="30.48" y="-4.572" size="1.016" layer="97">lowest voltage rating
+<text x="20.32" y="-27.432" size="1.016" layer="97">lowest voltage rating
 on this bus is 36V</text>
 <text x="136.144" y="-585.216" size="0.8128" layer="97" rot="R180" align="top-left">rated 80V max</text>
 <text x="113.792" y="-600.964" size="0.8128" layer="97" rot="R180" align="top-left">rated 65V max</text>
@@ -22844,9 +22886,7 @@ short = 5A</text>
 curr meas</text>
 </plain>
 <instances>
-<instance part="PCB1" gate="G$1" x="304.8" y="-30.48"/>
-<instance part="GND1" gate="1" x="17.78" y="-27.94"/>
-<instance part="JP1" gate="G$1" x="7.62" y="-22.86"/>
+<instance part="PCB1" gate="G$1" x="289.56" y="-30.48"/>
 <instance part="GND9" gate="1" x="355.6" y="-157.48"/>
 <instance part="T1" gate="G$1" x="302.26" y="-147.32"/>
 <instance part="C33" gate="G$1" x="330.2" y="-147.32">
@@ -23327,7 +23367,7 @@ curr meas</text>
 <attribute name="JLCPARTNUM" x="93.98" y="-703.58" size="0.8128" layer="96" display="off"/>
 <attribute name="JLC_ROTATION" x="93.98" y="-703.58" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="JP4" gate="G$1" x="43.18" y="-693.42"/>
+<instance part="JP2" gate="G$1" x="43.18" y="-693.42"/>
 <instance part="Q5" gate="G$1" x="38.1" y="-640.08" smashed="yes" rot="MR0">
 <attribute name="NAME" x="38.862" y="-637.032" size="1.778" layer="95" rot="MR90"/>
 <attribute name="VALUE" x="34.036" y="-633.984" size="1.778" layer="96" rot="MR270"/>
@@ -23385,7 +23425,7 @@ curr meas</text>
 <instance part="GND43" gate="1" x="93.98" y="-655.32" rot="MR0"/>
 <instance part="HEATSINK1" gate="A" x="88.9" y="-187.96"/>
 <instance part="HEATSINK2" gate="A" x="142.24" y="-226.06"/>
-<instance part="JP2" gate="A" x="360.68" y="-139.7"/>
+<instance part="JP1" gate="A" x="360.68" y="-139.7"/>
 <instance part="SW1" gate="G$1" x="226.06" y="-322.58"/>
 <instance part="GND44" gate="1" x="236.22" y="-330.2"/>
 <instance part="U6" gate="A" x="241.3" y="-375.92"/>
@@ -23428,7 +23468,7 @@ curr meas</text>
 </instance>
 <instance part="GND48" gate="1" x="53.34" y="-358.14"/>
 <instance part="GND49" gate="1" x="25.4" y="-347.98"/>
-<instance part="JP5" gate="G$1" x="284.48" y="-330.2" rot="R180"/>
+<instance part="JP4" gate="G$1" x="284.48" y="-330.2" rot="R180"/>
 <instance part="P+12" gate="G$1" x="276.86" y="-322.58"/>
 <instance part="GND50" gate="1" x="256.54" y="-335.28"/>
 <instance part="D12" gate="G$1" x="215.9" y="-327.66" smashed="yes" rot="R90">
@@ -23519,13 +23559,13 @@ curr meas</text>
 <instance part="FAN1" gate="G$1" x="317.5" y="-429.26"/>
 <instance part="GND58" gate="1" x="345.44" y="-457.2"/>
 <instance part="P+16" gate="1" x="345.44" y="-419.1"/>
-<instance part="HEATSINK3" gate="A" x="101.6" y="-66.04"/>
+<instance part="HEATSINK3" gate="A" x="101.6" y="-63.5"/>
 <instance part="C61" gate="G$1" x="345.44" y="-431.8">
 <attribute name="PARTNUM" x="345.44" y="-431.8" size="1.778" layer="96" display="off"/>
 <attribute name="JLCPARTNUM" x="345.44" y="-431.8" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="FAN2" gate="A" x="279.4" y="-426.72"/>
-<instance part="PCB2" gate="A" x="332.74" y="-25.4"/>
+<instance part="PCB2" gate="A" x="322.58" y="-25.4"/>
 <instance part="Q7" gate="G$1" x="327.66" y="-444.5" smashed="yes">
 <attribute name="NAME" x="326.898" y="-441.452" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="331.724" y="-438.404" size="1.778" layer="96" rot="R270"/>
@@ -23569,30 +23609,32 @@ curr meas</text>
 <attribute name="DNP" x="58.42" y="-185.42" size="1.778" layer="96" rot="R90" display="off"/>
 <attribute name="JLC-DNP" x="58.42" y="-185.42" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
+<instance part="STANDOFF1" gate="A" x="104.14" y="-73.66"/>
+<instance part="GND60" gate="1" x="111.76" y="-76.2"/>
+<instance part="STANDOFF2" gate="A" x="368.3" y="-157.48"/>
+<instance part="GND61" gate="1" x="375.92" y="-160.02"/>
+<instance part="GND1" gate="1" x="304.8" y="-27.94" smashed="yes">
+<attribute name="VALUE" x="307.34" y="-27.94" size="1.778" layer="96"/>
+</instance>
+<instance part="GND62" gate="1" x="299.72" y="-421.64"/>
 </instances>
 <busses>
 </busses>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="JP1" gate="G$1" pin="1"/>
-<pinref part="GND1" gate="1" pin="GND"/>
-<wire x1="15.24" y1="-22.86" x2="17.78" y2="-22.86" width="0.1524" layer="91"/>
-<wire x1="17.78" y1="-22.86" x2="17.78" y2="-25.4" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="GND9" gate="1" pin="GND"/>
 <wire x1="355.6" y1="-142.24" x2="355.6" y2="-144.78" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="A" pin="GND_3"/>
+<pinref part="JP1" gate="A" pin="GND_3"/>
 <wire x1="355.6" y1="-144.78" x2="355.6" y2="-147.32" width="0.1524" layer="91"/>
 <wire x1="355.6" y1="-147.32" x2="355.6" y2="-149.86" width="0.1524" layer="91"/>
 <wire x1="355.6" y1="-149.86" x2="355.6" y2="-154.94" width="0.1524" layer="91"/>
 <wire x1="360.68" y1="-144.78" x2="355.6" y2="-144.78" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="A" pin="GND_4"/>
+<pinref part="JP1" gate="A" pin="GND_4"/>
 <wire x1="360.68" y1="-147.32" x2="355.6" y2="-147.32" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="A" pin="GND"/>
+<pinref part="JP1" gate="A" pin="GND"/>
 <wire x1="360.68" y1="-149.86" x2="355.6" y2="-149.86" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="A" pin="GND_2"/>
+<pinref part="JP1" gate="A" pin="GND_2"/>
 <wire x1="360.68" y1="-142.24" x2="355.6" y2="-142.24" width="0.1524" layer="91"/>
 <junction x="355.6" y="-149.86"/>
 <junction x="355.6" y="-147.32"/>
@@ -23949,11 +23991,11 @@ curr meas</text>
 <junction x="48.26" y="-655.32"/>
 </segment>
 <segment>
-<pinref part="JP4" gate="G$1" pin="SHIELD"/>
+<pinref part="JP2" gate="G$1" pin="SHIELD"/>
 <pinref part="GND40" gate="1" pin="GND"/>
 <wire x1="55.88" y1="-703.58" x2="60.96" y2="-703.58" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="-703.58" x2="60.96" y2="-711.2" width="0.1524" layer="91"/>
-<pinref part="JP4" gate="G$1" pin="GND"/>
+<pinref part="JP2" gate="G$1" pin="GND"/>
 <wire x1="55.88" y1="-698.5" x2="60.96" y2="-698.5" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="-698.5" x2="60.96" y2="-703.58" width="0.1524" layer="91"/>
 <junction x="60.96" y="-703.58"/>
@@ -24040,7 +24082,7 @@ curr meas</text>
 <wire x1="25.4" y1="-345.44" x2="25.4" y2="-342.9" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="3"/>
+<pinref part="JP4" gate="G$1" pin="3"/>
 <pinref part="GND50" gate="1" pin="GND"/>
 <wire x1="279.4" y1="-330.2" x2="256.54" y2="-330.2" width="0.1524" layer="91"/>
 <wire x1="256.54" y1="-330.2" x2="256.54" y2="-332.74" width="0.1524" layer="91"/>
@@ -24128,6 +24170,22 @@ curr meas</text>
 <pinref part="R44" gate="G$1" pin="2"/>
 <wire x1="304.8" y1="-459.74" x2="304.8" y2="-457.2" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="STANDOFF1" gate="A" pin="1"/>
+<pinref part="GND60" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="STANDOFF2" gate="A" pin="1"/>
+<pinref part="GND61" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="PCB1" gate="G$1" pin="1"/>
+<pinref part="GND1" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="FAN2" gate="A" pin="1"/>
+<pinref part="GND62" gate="1" pin="GND"/>
+</segment>
 </net>
 <net name="RF-OUT" class="0">
 <segment>
@@ -24142,7 +24200,7 @@ curr meas</text>
 <label x="340.36" y="-134.62" size="1.778" layer="95" xref="yes"/>
 <junction x="330.2" y="-139.7"/>
 <junction x="335.28" y="-139.7"/>
-<pinref part="JP2" gate="A" pin="SIGNAL"/>
+<pinref part="JP1" gate="A" pin="SIGNAL"/>
 </segment>
 <segment>
 <wire x1="231.14" y1="-256.54" x2="233.68" y2="-256.54" width="0.1524" layer="91"/>
@@ -24294,7 +24352,7 @@ curr meas</text>
 <wire x1="71.12" y1="-307.34" x2="71.12" y2="-304.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="1"/>
+<pinref part="JP4" gate="G$1" pin="1"/>
 <pinref part="P+12" gate="G$1" pin="3.3V"/>
 <wire x1="279.4" y1="-325.12" x2="276.86" y2="-325.12" width="0.1524" layer="91"/>
 <wire x1="276.86" y1="-325.12" x2="276.86" y2="-322.58" width="0.1524" layer="91"/>
@@ -24999,13 +25057,8 @@ curr meas</text>
 <net name="DC-SRC" class="0">
 <segment>
 <pinref part="F1" gate="G$1" pin="1"/>
-<pinref part="JP1" gate="G$1" pin="2"/>
-<wire x1="33.02" y1="-20.32" x2="17.78" y2="-20.32" width="0.1524" layer="91"/>
-<wire x1="17.78" y1="-20.32" x2="15.24" y2="-20.32" width="0.1524" layer="91"/>
-<wire x1="17.78" y1="-20.32" x2="17.78" y2="-7.62" width="0.1524" layer="91"/>
-<wire x1="17.78" y1="-7.62" x2="35.56" y2="-7.62" width="0.1524" layer="91"/>
-<label x="35.56" y="-7.62" size="1.778" layer="95" xref="yes"/>
-<junction x="17.78" y="-20.32"/>
+<wire x1="33.02" y1="-20.32" x2="30.48" y2="-20.32" width="0.1524" layer="91"/>
+<label x="30.48" y="-20.32" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U4" gate="G$1" pin="CATHODE"/>
@@ -25128,7 +25181,7 @@ curr meas</text>
 </net>
 <net name="N$39" class="0">
 <segment>
-<pinref part="JP4" gate="G$1" pin="VBUS"/>
+<pinref part="JP2" gate="G$1" pin="VBUS"/>
 <wire x1="55.88" y1="-683.26" x2="83.82" y2="-683.26" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="-683.26" x2="83.82" y2="-673.1" width="0.1524" layer="91"/>
 <pinref part="Q6" gate="B" pin="S"/>
@@ -25198,14 +25251,14 @@ curr meas</text>
 </net>
 <net name="N$41" class="0">
 <segment>
-<pinref part="JP4" gate="G$1" pin="CC2"/>
+<pinref part="JP2" gate="G$1" pin="CC2"/>
 <pinref part="U5" gate="A" pin="CC2"/>
 <wire x1="55.88" y1="-693.42" x2="88.9" y2="-693.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$44" class="0">
 <segment>
-<pinref part="JP4" gate="G$1" pin="CC1"/>
+<pinref part="JP2" gate="G$1" pin="CC1"/>
 <pinref part="U5" gate="A" pin="CC1"/>
 <wire x1="55.88" y1="-688.34" x2="88.9" y2="-688.34" width="0.1524" layer="91"/>
 </segment>
@@ -25221,7 +25274,7 @@ curr meas</text>
 <label x="66.04" y="-320.04" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="5"/>
+<pinref part="JP4" gate="G$1" pin="5"/>
 <wire x1="279.4" y1="-335.28" x2="274.32" y2="-335.28" width="0.1524" layer="91"/>
 <label x="274.32" y="-335.28" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -25233,7 +25286,7 @@ curr meas</text>
 <label x="177.8" y="-353.06" size="1.016" layer="95" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="2"/>
+<pinref part="JP4" gate="G$1" pin="2"/>
 <wire x1="279.4" y1="-327.66" x2="274.32" y2="-327.66" width="0.1524" layer="91"/>
 <label x="274.32" y="-327.66" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -25245,7 +25298,7 @@ curr meas</text>
 <label x="177.8" y="-347.98" size="1.016" layer="95" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="4"/>
+<pinref part="JP4" gate="G$1" pin="4"/>
 <wire x1="279.4" y1="-332.74" x2="274.32" y2="-332.74" width="0.1524" layer="91"/>
 <label x="274.32" y="-332.74" size="1.016" layer="95" rot="R180" xref="yes"/>
 </segment>
