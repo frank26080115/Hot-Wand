@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Report component designators grouped by package drill size in an EAGLE board."""
+"""Report components, vias, and bare holes grouped by EAGLE drill size."""
 
 from __future__ import annotations
 
@@ -22,7 +22,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Read an EAGLE .brd file and print component designators grouped "
-            "by the drill diameters used in their packages."
+            "by the drill diameters used in their packages, including via "
+            "and bare mechanical-hole counts."
         )
     )
     parser.add_argument(
@@ -140,6 +141,52 @@ def group_parts_by_drill_size(
     return dict(parts_by_drill_size)
 
 
+def add_vias_by_drill_size(
+    root: ET.Element,
+    parts_by_drill_size: dict[Decimal, set[str]],
+) -> None:
+    via_counts: dict[Decimal, int] = defaultdict(int)
+    signals = root.find("./drawing/board/signals")
+    if signals is None:
+        raise ValueError("Board does not contain a signals section")
+
+    for signal in signals.findall("signal"):
+        signal_name = signal.get("name", "<unnamed>")
+        for via in signal.findall("via"):
+            drill_value = via.get("drill")
+            if drill_value is None:
+                raise ValueError(
+                    f"Encountered a via without a drill size in signal "
+                    f"{signal_name!r}"
+                )
+            context = f"via in signal {signal_name!r}"
+            drill_size = parse_drill_size(drill_value, context)
+            via_counts[drill_size] += 1
+
+    for drill_size, count in via_counts.items():
+        parts_by_drill_size.setdefault(drill_size, set()).add(f"VIA[{count}]")
+
+
+def add_bare_holes_by_drill_size(
+    root: ET.Element,
+    parts_by_drill_size: dict[Decimal, set[str]],
+) -> None:
+    hole_counts: dict[Decimal, int] = defaultdict(int)
+    plain = root.find("./drawing/board/plain")
+    if plain is None:
+        raise ValueError("Board does not contain a plain section")
+
+    for hole in plain.findall("hole"):
+        drill_value = hole.get("drill")
+        if drill_value is None:
+            raise ValueError("Encountered a bare mechanical hole without a drill size")
+        drill_size = parse_drill_size(drill_value, "bare mechanical hole")
+        hole_counts[drill_size] += 1
+
+    for drill_size, count in hole_counts.items():
+        parts_by_drill_size.setdefault(drill_size, set()).add(f"HOLE[{count}]")
+
+
 def natural_name_key(name: str) -> tuple[tuple[int, int | str], ...]:
     return tuple(
         (0, int(part)) if part.isdigit() else (1, part.casefold())
@@ -184,6 +231,8 @@ def main() -> int:
             drilled_packages,
             known_packages,
         )
+        add_vias_by_drill_size(root, parts_by_drill_size)
+        add_bare_holes_by_drill_size(root, parts_by_drill_size)
         print_report(parts_by_drill_size)
         return 0
     except (OSError, ValueError) as exc:
