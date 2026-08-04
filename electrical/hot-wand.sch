@@ -144,6 +144,10 @@
 <circle x="104" y="4.6" radius="3" width="0.1" layer="39"/>
 <circle x="104" y="67.4" radius="3" width="0.1" layer="39"/>
 <circle x="8" y="67.4" radius="3" width="0.1" layer="39"/>
+<circle x="8" y="67.4" radius="3" width="0" layer="29"/>
+<circle x="8" y="4.6" radius="3" width="0" layer="29"/>
+<circle x="104" y="4.6" radius="3" width="0" layer="29"/>
+<circle x="104" y="67.4" radius="3" width="0" layer="29"/>
 </package>
 <package name="1X02">
 <wire x1="-0.635" y1="1.27" x2="0.635" y2="1.27" width="0.2032" layer="21"/>
@@ -506,9 +510,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <package name="XFORMER-K16X8X6-1:14:14">
 <pad name="P1" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
 <pad name="P2" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="3" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="3" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
 <pad name="4" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="1" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="1" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
 <pad name="2" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
 <wire x1="-9" y1="3" x2="-9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="3" x2="9" y2="-3" width="0.127" layer="21"/>
@@ -10086,6 +10090,24 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <package name="STANDOFF-M2.5-4.5MMHEX">
 <pad name="1" x="0" y="0" drill="2.5" diameter="5.2" thermals="no"/>
 <circle x="0" y="0" radius="3" width="0.127" layer="21"/>
+<circle x="0" y="0" radius="3" width="0" layer="29"/>
+<smd name="2" x="0" y="0" dx="6" dy="6" layer="1" roundness="100" thermals="no" cream="no"/>
+</package>
+<package name="SJ_2S-NO-NS">
+<smd name="1" x="-0.45" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0.45" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
+<package name="1206-SJ">
+<smd name="1" x="-1.2" y="0" dx="2" dy="1.8" layer="1"/>
+<smd name="2" x="1.2" y="0" dx="2" dy="1.8" layer="1"/>
+<wire x1="-2.3" y1="1" x2="2.3" y2="1" width="0.127" layer="39"/>
+<wire x1="2.3" y1="1" x2="2.3" y2="-1" width="0.127" layer="39"/>
+<wire x1="2.3" y1="-1" x2="-2.3" y2="-1" width="0.127" layer="39"/>
+<wire x1="-2.3" y1="-1" x2="-2.3" y2="1" width="0.127" layer="39"/>
+<text x="-2" y="-2" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
+<text x="-2" y="-3" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
 </packages>
 <symbols>
@@ -10131,8 +10153,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="-2.54" y1="0" x2="-2.54" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="0" y1="0" x2="0" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="-7.62" y1="0" x2="-7.62" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="1" x="-7.62" y="-2.54" visible="off" length="point"/>
-<pin name="2" x="10.16" y="-2.54" visible="off" length="point"/>
+<pin name="1" x="-7.62" y="-2.54" visible="pad" length="point"/>
+<pin name="2" x="10.16" y="-2.54" visible="pad" length="point"/>
 <wire x1="2.54" y1="0" x2="5.08" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="5.08" y1="0" x2="7.62" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="7.62" y1="0" x2="10.16" y2="0" width="0.1778" layer="94" curve="-180"/>
@@ -10140,8 +10162,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="7.62" y1="0" x2="7.62" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="10.16" y1="0" x2="10.16" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="2.54" y1="0" x2="2.54" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="3" x="2.54" y="-2.54" visible="off" length="point"/>
-<pin name="4" x="0" y="-2.54" visible="off" length="point"/>
+<pin name="3" x="2.54" y="-2.54" visible="pad" length="point"/>
+<pin name="4" x="0" y="-2.54" visible="pad" length="point"/>
 <text x="-7.62" y="10.16" size="1.778" layer="95" font="fixed">&gt;NAME</text>
 <text x="-7.62" y="12.7" size="1.778" layer="96" font="fixed">&gt;VALUE</text>
 </symbol>
@@ -10719,6 +10741,23 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="5.08" y1="-1.27" x2="0" y2="-1.27" width="0.254" layer="94"/>
 <text x="0.762" y="0" size="0.4064" layer="94" align="center-left">STANDOFF</text>
 <pin name="1" x="7.62" y="0" visible="off" length="short" rot="R180"/>
+</symbol>
+<symbol name="SJ-SMALL">
+<pin name="1" x="-2.54" y="0" visible="off" length="point"/>
+<pin name="2" x="2.54" y="0" visible="off" length="point"/>
+<wire x1="-2.54" y1="0" x2="-1.27" y2="0" width="0.127" layer="94"/>
+<wire x1="2.54" y1="0" x2="1.27" y2="0" width="0.127" layer="94"/>
+<polygon width="0.127" layer="94">
+<vertex x="0.254" y="1.016" curve="-90"/>
+<vertex x="1.27" y="0" curve="-90"/>
+<vertex x="0.254" y="-1.016"/>
+</polygon>
+<polygon width="0.127" layer="94">
+<vertex x="-0.254" y="-1.016" curve="-90"/>
+<vertex x="-1.27" y="0" curve="-90"/>
+<vertex x="-0.254" y="1.016"/>
+</polygon>
+<text x="-2.54" y="-2.54" size="1.27" layer="95">&gt;NAME</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -22072,7 +22111,50 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <devices>
 <device name="-M2.5-4.5MMHEX" package="STANDOFF-M2.5-4.5MMHEX">
 <connects>
+<connect gate="A" pin="1" pad="1 2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="SJ-SMALL" prefix="SJ">
+<gates>
+<gate name="A" symbol="SJ-SMALL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="-2S" package="SJ_2S">
+<connects>
 <connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-2S-NO" package="SJ_2S-NO">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-2S-NO-NS" package="SJ_2S-NO-NS">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-1206-SJ" package="1206-SJ">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -22753,23 +22835,14 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C22775"/>
 </part>
-<part name="R48" library="hot-wand" deviceset="RESISTOR" device="1206">
-<attribute name="DNP" value="1"/>
-<attribute name="JLC-DNP" value="1"/>
-<attribute name="JLCPARTNUM" value="C188071"/>
-<attribute name="PARTNUM" value="KDV12DR100ET;VMK-R033-1.0-U"/>
-</part>
-<part name="R49" library="hot-wand" deviceset="RESISTOR" device="1206">
-<attribute name="DNP" value="1"/>
-<attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="PCS1206DR0100ET;WSLP1206R0100DEA;PE1206DRM7W0R01L;MCS1632R010DER;PE1206DRM470R01L"/>
-</part>
 <part name="STANDOFF1" library="hot-wand" deviceset="STANDOFF" device="-M2.5-4.5MMHEX"/>
 <part name="GND60" library="hot-wand" deviceset="GND" device=""/>
 <part name="STANDOFF2" library="hot-wand" deviceset="STANDOFF" device="-M2.5-4.5MMHEX"/>
 <part name="GND61" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND1" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND62" library="hot-wand" deviceset="GND" device=""/>
+<part name="SJ6" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
+<part name="SJ7" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 </parts>
 <sheets>
 <sheet>
@@ -22795,15 +22868,10 @@ Class E</text>
 the soldering iron cartridge
 controls the buck converter
 output voltage</text>
-<text x="254" y="-20.32" size="1.27" layer="97" align="top-left">the current flowing into
-the soldering iron cartridge
-controls the buck converter
-output voltage
-it is not a fixed voltage</text>
 <text x="254" y="-226.06" size="5.08" layer="97">Tip Detection</text>
 <text x="35.56" y="-414.02" size="5.08" layer="97">Secondary Power
 Buck Converters</text>
-<text x="170.18" y="-127" size="5.08" layer="97">Matching Network</text>
+<text x="175.26" y="-127" size="5.08" layer="97">Matching Network</text>
 <text x="203.2" y="-76.2" size="1.778" layer="97">PWM signal from MCU
 used to lower output voltage</text>
 <text x="76.2" y="-459.74" size="1.778" layer="97" rot="R180">3.3V always available
@@ -22846,12 +22914,12 @@ thresh 2.1V</text>
 <text x="81.28" y="-304.8" size="5.08" layer="97">Microcontroller</text>
 <text x="213.36" y="-469.9" size="5.08" layer="97">Thermistors</text>
 <text x="213.36" y="-472.44" size="1.778" layer="97">(optional)</text>
-<text x="318.77" y="-161.29" size="0.6096" layer="97">LFP with cutoff @ 1.6kHz</text>
-<text x="351.79" y="-186.69" size="0.6096" layer="97" align="top-left">tune for voltage under load
+<text x="318.77" y="-161.29" size="1.016" layer="97">LFP @ 1.6kHz</text>
+<text x="351.79" y="-186.69" size="1.016" layer="97" align="top-left">tune for voltage under load
 if temperature unstable
 or excessive power draw</text>
 <text x="287.528" y="-250.698" size="1.27" layer="97" align="center-left">tune for sensitivity</text>
-<text x="262.89" y="-261.366" size="0.6096" layer="97" rot="R180">LFP with cutoff @ 187kHz</text>
+<text x="262.89" y="-261.366" size="1.016" layer="97" rot="R180">LFP @ 187kHz</text>
 <text x="74.93" y="-67.31" size="1.27" layer="97" rot="R90">sw freq 450kHz</text>
 <text x="171.45" y="-57.15" size="0.6096" layer="97" rot="R90">tune for unloaded voltage
 10K for maximum voltage</text>
@@ -22872,9 +22940,9 @@ when voltage exceeds 22V</text>
 <text x="76.2" y="-455.168" size="0.8128" layer="97" rot="R180">rated 36V max</text>
 <text x="20.32" y="-27.432" size="1.016" layer="97">lowest voltage rating
 on this bus is 36V</text>
-<text x="136.144" y="-585.216" size="0.8128" layer="97" rot="R180" align="top-left">rated 80V max</text>
+<text x="136.144" y="-585.216" size="1.27" layer="97" rot="R180" align="top-left">rated 80V max</text>
 <text x="113.792" y="-600.964" size="0.8128" layer="97" rot="R180" align="top-left">rated 65V max</text>
-<text x="138.684" y="-633.476" size="0.8128" layer="97" rot="R180" align="top-left">rated 60V max</text>
+<text x="138.684" y="-633.476" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>
 <text x="27.94" y="-583.946" size="1.016" layer="97">theoretically handles 8S
 practically should keep it 6S</text>
 <text x="140.97" y="-678.942" size="1.27" layer="97">open = auto
@@ -22882,8 +22950,9 @@ short = 5A</text>
 <text x="79.502" y="-138.43" size="1.778" layer="97">250V</text>
 <text x="32.258" y="-219.71" size="1.27" layer="96">curr meas
 (optional, short)</text>
-<text x="59.182" y="-181.61" size="1.27" layer="97" rot="R270">0R01
+<text x="61.722" y="-193.04" size="1.27" layer="97" rot="R270" align="bottom-right">0R01
 curr meas</text>
+<text x="251.46" y="-15.24" size="1.27" layer="97" align="top-left">actually about 20V</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="289.56" y="-30.48"/>
@@ -23598,17 +23667,6 @@ curr meas</text>
 <attribute name="VALUE" x="151.384" y="-648.97" size="1.778" layer="96" rot="R270"/>
 <attribute name="JLCPARTNUM" x="149.86" y="-652.78" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
-<instance part="R48" gate="G$1" x="33.02" y="-223.52">
-<attribute name="PARTNUM" x="33.02" y="-223.52" size="1.778" layer="96" display="off"/>
-<attribute name="JLCPARTNUM" x="33.02" y="-223.52" size="0.8128" layer="96" display="off"/>
-<attribute name="DNP" x="33.02" y="-223.52" size="1.778" layer="96" display="off"/>
-<attribute name="JLC-DNP" x="33.02" y="-223.52" size="1.778" layer="96" display="off"/>
-</instance>
-<instance part="R49" gate="G$1" x="58.42" y="-185.42" rot="R90">
-<attribute name="PARTNUM" x="58.42" y="-185.42" size="1.778" layer="96" rot="R90" display="off"/>
-<attribute name="DNP" x="58.42" y="-185.42" size="1.778" layer="96" rot="R90" display="off"/>
-<attribute name="JLC-DNP" x="58.42" y="-185.42" size="1.778" layer="96" rot="R90" display="off"/>
-</instance>
 <instance part="STANDOFF1" gate="A" x="104.14" y="-73.66"/>
 <instance part="GND60" gate="1" x="111.76" y="-76.2"/>
 <instance part="STANDOFF2" gate="A" x="368.3" y="-157.48"/>
@@ -23617,6 +23675,8 @@ curr meas</text>
 <attribute name="VALUE" x="307.34" y="-27.94" size="1.778" layer="96"/>
 </instance>
 <instance part="GND62" gate="1" x="299.72" y="-421.64"/>
+<instance part="SJ6" gate="A" x="35.56" y="-223.52"/>
+<instance part="SJ7" gate="A" x="58.42" y="-182.88" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -23779,9 +23839,9 @@ curr meas</text>
 <junction x="48.26" y="-193.04"/>
 <junction x="40.64" y="-193.04"/>
 <junction x="33.02" y="-193.04"/>
-<pinref part="R49" gate="G$1" pin="1"/>
-<wire x1="58.42" y1="-190.5" x2="58.42" y2="-193.04" width="0.1524" layer="91"/>
 <junction x="58.42" y="-193.04"/>
+<pinref part="SJ7" gate="A" pin="1"/>
+<wire x1="58.42" y1="-185.42" x2="58.42" y2="-193.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="Q2" gate="G$1" pin="S"/>
@@ -24716,10 +24776,10 @@ curr meas</text>
 <label x="182.88" y="-424.18" size="1.27" layer="95" xref="yes"/>
 </segment>
 <segment>
-<pinref part="R48" gate="G$1" pin="1"/>
 <pinref part="P+3" gate="1" pin="+12V"/>
-<wire x1="27.94" y1="-223.52" x2="25.4" y2="-223.52" width="0.1524" layer="91"/>
 <wire x1="25.4" y1="-223.52" x2="25.4" y2="-220.98" width="0.1524" layer="91"/>
+<pinref part="SJ6" gate="A" pin="1"/>
+<wire x1="33.02" y1="-223.52" x2="25.4" y2="-223.52" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -25576,17 +25636,17 @@ curr meas</text>
 <pinref part="L7" gate="G$1" pin="2"/>
 <wire x1="55.88" y1="-223.52" x2="129.54" y2="-223.52" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="-223.52" x2="129.54" y2="-228.6" width="0.1524" layer="91"/>
-<pinref part="R48" gate="G$1" pin="2"/>
 <wire x1="38.1" y1="-223.52" x2="40.64" y2="-223.52" width="0.1524" layer="91"/>
 <junction x="40.64" y="-223.52"/>
 <junction x="55.88" y="-223.52"/>
+<pinref part="SJ6" gate="A" pin="2"/>
 </segment>
 </net>
 <net name="N$59" class="0">
 <segment>
-<pinref part="R49" gate="G$1" pin="2"/>
 <pinref part="Q1" gate="G$1" pin="S"/>
 <wire x1="58.42" y1="-180.34" x2="58.42" y2="-177.8" width="0.1524" layer="91"/>
+<pinref part="SJ7" gate="A" pin="2"/>
 </segment>
 </net>
 </nets>
