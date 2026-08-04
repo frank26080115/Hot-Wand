@@ -1,5 +1,4 @@
-#ifndef HOT_WAND_PINS_H
-#define HOT_WAND_PINS_H
+#pragma once
 
 #include "stm32f0xx_hal.h"
 
@@ -66,5 +65,3 @@
 
 #define OSC_OUT_GPIOx GPIOF
 #define OSC_OUT_PINn  GPIO_PIN_1
-
-#endif

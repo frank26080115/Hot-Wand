@@ -1,6 +1,6 @@
-#ifndef HOT_WAND_BUTTON_H
-#define HOT_WAND_BUTTON_H
+#pragma once
 
+#include "hotwand.h"
 #include <stdbool.h>
 
 #ifndef BTN_DEBOUNCE_MS
@@ -37,6 +37,4 @@ void btn_task(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

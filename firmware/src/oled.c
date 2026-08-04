@@ -2,6 +2,12 @@
 
 #include <string.h>
 
+/* 100 kHz standard-mode I2C with the reset-default 8 MHz HSI clock. */
+#define I2C_TIMING_100KHZ_AT_8MHZ 0x2000090EU
+
+I2C_HandleTypeDef i2c1;
+OLED_Handle oled;
+
 static uint8_t OLED_I2CByteCallback(u8x8_t *u8x8,
                                     uint8_t message,
                                     uint8_t argument,
@@ -12,6 +18,51 @@ static uint8_t OLED_GPIOAndDelayCallback(u8x8_t *u8x8,
                                          void *data);
 static OLED_Handle *OLED_FromU8x8(u8x8_t *u8x8);
 static void OLED_SetTransportError(OLED_Handle *oled);
+static void OLED_ErrorHandler(void);
+
+void HAL_I2C_MspInit(I2C_HandleTypeDef *handle)
+{
+    GPIO_InitTypeDef gpio = {0};
+
+    if (handle->Instance != I2C1) {
+        return;
+    }
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_I2C1_CLK_ENABLE();
+
+    /*
+     * STM32F030F4P6 / STM32F042F6P6 TSSOP-20:
+     *   PA9  (pin 17) -> I2C1_SCL
+     *   PA10 (pin 18) -> I2C1_SDA
+     * External or OLED-module pull-up resistors are required.
+     */
+    gpio.Pin = GPIO_PIN_9 | GPIO_PIN_10;
+    gpio.Mode = GPIO_MODE_AF_OD;
+    gpio.Pull = GPIO_NOPULL;
+    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+    gpio.Alternate = GPIO_AF4_I2C1;
+    HAL_GPIO_Init(GPIOA, &gpio);
+}
+
+void I2C1_Init(void)
+{
+    __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
+
+    i2c1.Instance = I2C1;
+    i2c1.Init.Timing = I2C_TIMING_100KHZ_AT_8MHZ;
+    i2c1.Init.OwnAddress1 = 0U;
+    i2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    i2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    i2c1.Init.OwnAddress2 = 0U;
+    i2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+    i2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    i2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+
+    if (HAL_I2C_Init(&i2c1) != HAL_OK) {
+        OLED_ErrorHandler();
+    }
+}
 
 bool OLED_Init(OLED_Handle *oled, I2C_HandleTypeDef *i2c)
 {
@@ -184,4 +235,12 @@ static void OLED_SetTransportError(OLED_Handle *oled)
     oled->transport_ok = 0U;
     oled->transfer_active = 0U;
     oled->transfer_length = 0U;
+}
+
+static void OLED_ErrorHandler(void)
+{
+    __disable_irq();
+
+    for (;;) {
+    }
 }

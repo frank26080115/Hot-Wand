@@ -1,8 +1,24 @@
 #include "miscutils.h"
 
+static uint32_t hotwand_rand_state = 1U;
+
 static char *milliunits_to_str(uint32_t value,
                                char *str,
                                uint8_t decimal_places);
+
+void hotwand_srand(uint32_t seed)
+{
+    hotwand_rand_state = seed;
+}
+
+uint16_t hotwand_rand(void)
+{
+    hotwand_rand_state =
+        (hotwand_rand_state * 1103515245UL) + 12345UL;
+
+    return (uint16_t)((hotwand_rand_state >> 16U) &
+                      HOTWAND_RAND_MAX);
+}
 
 char *int_to_str(int value, char *str, int base)
 {
@@ -79,6 +95,32 @@ char *milliwatts_to_str(uint32_t milliwatts,
 char *celcius_to_str(int celcius, char *str)
 {
     return int_to_str(celcius, str, 10);
+}
+
+uint16_t fletcher16(const uint8_t *data, size_t length)
+{
+    uint16_t sum1 = 0U;
+    uint16_t sum2 = 0U;
+
+    if ((data == NULL) && (length != 0U)) {
+        return 0U;
+    }
+
+    while (length != 0U) {
+        sum1 = (uint16_t)(sum1 + *data++);
+        if (sum1 >= 255U) {
+            sum1 = (uint16_t)(sum1 - 255U);
+        }
+
+        sum2 = (uint16_t)(sum2 + sum1);
+        if (sum2 >= 255U) {
+            sum2 = (uint16_t)(sum2 - 255U);
+        }
+
+        --length;
+    }
+
+    return (uint16_t)((sum2 << 8U) | sum1);
 }
 
 static char *milliunits_to_str(uint32_t value,

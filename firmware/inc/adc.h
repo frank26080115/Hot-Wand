@@ -1,5 +1,4 @@
-#ifndef HOT_WAND_ADC_H
-#define HOT_WAND_ADC_H
+#pragma once
 
 #include <stdint.h>
 
@@ -18,6 +17,4 @@ uint32_t adc_get_milliwatts(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

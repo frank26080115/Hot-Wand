@@ -1,6 +1,6 @@
-#ifndef HOT_WAND_OLED_H
-#define HOT_WAND_OLED_H
+#pragma once
 
+#include "hotwand.h"
 #include "stm32f0xx_hal.h"
 #include "u8g2.h"
 
@@ -21,8 +21,11 @@ typedef struct {
     uint8_t initialized;
 } OLED_Handle;
 
+extern I2C_HandleTypeDef i2c1;
+extern OLED_Handle oled;
+
+void I2C1_Init(void);
+void HAL_I2C_MspInit(I2C_HandleTypeDef *handle);
 bool OLED_Init(OLED_Handle *oled, I2C_HandleTypeDef *i2c);
 u8g2_t *OLED_GetGraphics(OLED_Handle *oled);
 bool OLED_SendBuffer(OLED_Handle *oled);
-
-#endif

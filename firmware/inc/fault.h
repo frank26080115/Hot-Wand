@@ -1,13 +1,10 @@
 #pragma once
 
-#include "hotwand.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void rfgen_start(void);
-void rfgen_stop(void);
+void show_fault(const char *text);
 
 #ifdef __cplusplus
 }

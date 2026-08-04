@@ -1,5 +1,6 @@
-#ifndef HOT_WAND_PWRLVL_H
-#define HOT_WAND_PWRLVL_H
+#pragma once
+
+#include "hotwand.h"
 
 /* Ramp-down update period; ramp-up uses a fixed 2 ms period. */
 #ifndef PWRLVL_UPDATE_PERIOD_MS
@@ -24,9 +25,8 @@ extern "C" {
 void pwrlvl_init(void);
 void pwrlvl_task(void);
 void pwrlvl_set_mode(pwrlvl_mode_t mode);
+void pwrlvl_force_minimum(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

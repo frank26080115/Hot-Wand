@@ -1,11 +1,17 @@
-#ifndef HOT_WAND_MISCUTILS_H
-#define HOT_WAND_MISCUTILS_H
+#pragma once
 
+#include "hotwand.h"
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define HOTWAND_RAND_MAX 32767U
+
+void hotwand_srand(uint32_t seed);
+uint16_t hotwand_rand(void);
 
 /*
  * Converts value to a null-terminated string using base 2 through 36.
@@ -31,8 +37,9 @@ char *milliwatts_to_str(uint32_t milliwatts,
 
 char *celcius_to_str(int celcius, char *str);
 
+/* Returns zero if data is NULL while length is nonzero. */
+uint16_t fletcher16(const uint8_t *data, size_t length);
+
 #ifdef __cplusplus
 }
-#endif
-
 #endif

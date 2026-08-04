@@ -1,4 +1,5 @@
-#ifndef HOT_WAND_DEFS_H
-#define HOT_WAND_DEFS_H
+#pragma once
 
-#endif
+/*
+use this file to define unchanging constants
+*/

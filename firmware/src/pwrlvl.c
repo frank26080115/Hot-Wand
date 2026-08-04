@@ -13,6 +13,7 @@
 #define PWRLVL_LIMIT_50_PERCENT_MW   50000UL
 
 #define PWRLVL_PWM_MAX               31U
+#define PWRLVL_PWM_FULL_DUTY          (PWRLVL_PWM_MAX + 1U)
 #define PWRLVL_PWM_JUMP_LEVEL        16U
 #define PWRLVL_RAMP_UP_PERIOD_MS      2U
 
@@ -38,6 +39,7 @@ static uint16_t pwrlvl_previous_current_ma;
 #endif
 static uint8_t pwrlvl_pwm_value;
 static bool pwrlvl_initialized;
+static bool pwrlvl_forced_minimum;
 
 static uint32_t pwrlvl_get_limit_mw(void);
 static void pwrlvl_set_pwm(uint8_t value);
@@ -47,6 +49,7 @@ void pwrlvl_init(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
     TIM_OC_InitTypeDef pwm_cfg = {0};
+    uint8_t initial_pwm_value;
 
     if (pwrlvl_initialized) {
         return;
@@ -56,10 +59,17 @@ void pwrlvl_init(void)
     __HAL_RCC_TIM3_CLK_ENABLE();
 
     /*
-     * Hold the attenuation signal low until TIM3 is configured and running
-     * with a compare value of zero.
+     * Keep the GPIO at the state that matches the initial timer output while
+     * TIM3 is configured.  Normally this is low/zero attenuation.  A caller
+     * that requested minimum output before initialization instead gets a
+     * continuously high attenuation signal with no low-going interval.
      */
-    HAL_GPIO_WritePin(PWR_ATTENU_GPIOx, PWR_ATTENU_PINn, GPIO_PIN_RESET);
+    initial_pwm_value = pwrlvl_forced_minimum
+                            ? PWRLVL_PWM_FULL_DUTY
+                            : 0U;
+    HAL_GPIO_WritePin(PWR_ATTENU_GPIOx,
+                      PWR_ATTENU_PINn,
+                      pwrlvl_forced_minimum ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
     gpio_cfg.Pin = PWR_ATTENU_PINn;
     gpio_cfg.Mode = GPIO_MODE_OUTPUT_PP;
@@ -80,7 +90,7 @@ void pwrlvl_init(void)
     }
 
     pwm_cfg.OCMode = TIM_OCMODE_PWM1;
-    pwm_cfg.Pulse = 0U;
+    pwm_cfg.Pulse = initial_pwm_value;
     pwm_cfg.OCPolarity = TIM_OCPOLARITY_HIGH;
     pwm_cfg.OCFastMode = TIM_OCFAST_DISABLE;
 
@@ -98,7 +108,7 @@ void pwrlvl_init(void)
     gpio_cfg.Alternate = GPIO_AF1_TIM3;
     HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
 
-    pwrlvl_pwm_value = 0U;
+    pwrlvl_pwm_value = initial_pwm_value;
     pwrlvl_previous_power_mw = 0U;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
     pwrlvl_previous_current_ma = 0U;
@@ -119,7 +129,7 @@ void pwrlvl_task(void)
     uint16_t current_ma;
 #endif
 
-    if (!pwrlvl_initialized) {
+    if (!pwrlvl_initialized || pwrlvl_forced_minimum) {
         return;
     }
 
@@ -184,6 +194,36 @@ void pwrlvl_set_mode(pwrlvl_mode_t mode)
     default:
         break;
     }
+}
+
+void pwrlvl_force_minimum(void)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+
+    /*
+     * A static high is electrically identical to 100 percent PWM and avoids
+     * briefly requesting maximum buck output merely to initialize TIM3.  If
+     * PWM was already running, first move its compare above ARR so both sides
+     * of the alternate-function-to-GPIO handoff are high.
+     */
+    pwrlvl_forced_minimum = true;
+
+    if (pwrlvl_initialized) {
+        __HAL_TIM_SET_COMPARE(&pwrlvl_timer,
+                              TIM_CHANNEL_1,
+                              PWRLVL_PWM_FULL_DUTY);
+    }
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    HAL_GPIO_WritePin(PWR_ATTENU_GPIOx, PWR_ATTENU_PINn, GPIO_PIN_SET);
+
+    gpio_cfg.Pin = PWR_ATTENU_PINn;
+    gpio_cfg.Mode = GPIO_MODE_OUTPUT_PP;
+    gpio_cfg.Pull = GPIO_NOPULL;
+    gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
+
+    pwrlvl_pwm_value = PWRLVL_PWM_FULL_DUTY;
 }
 
 static uint32_t pwrlvl_get_limit_mw(void)

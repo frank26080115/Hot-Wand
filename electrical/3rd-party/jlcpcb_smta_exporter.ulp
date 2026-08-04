@@ -24,6 +24,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
        "<p>"
        "Run the ULP from the board editor"
        "<p>"
+       "An optional first argument selects the output directory"
+       "<p>"
        "<author>Author: OXullo Intersecans x@brainrapers.org</author>"
 
 
@@ -141,7 +143,14 @@ int is_dnp(UL_ELEMENT E)
 
 if (board) board(B) {
 
-    string output_dir = dlgDirectory("Export files to", filedir(B.name));
+    int interactive = argc < 2;
+    string output_dir;
+
+    if (interactive) {
+        output_dir = dlgDirectory("Export files to", filedir(B.name));
+    } else {
+        output_dir = argv[1];
+    }
 
     if (output_dir == "") {
         exit(0);
@@ -229,7 +238,9 @@ if (board) board(B) {
         }
     }
 
-    dlgMessageBox("BOM and CPL files have been exported to: " + output_dir, "OK");
+    if (interactive) {
+        dlgMessageBox("BOM and CPL files have been exported to: " + output_dir, "OK");
+    }
 
 } else {
     dlgMessageBox("Run this ULP from a Board", "OK");

@@ -1,5 +1,6 @@
-#ifndef HOT_WAND_FAN_H
-#define HOT_WAND_FAN_H
+#pragma once
+
+#include "hotwand.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,4 @@ void fan_on_wake(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

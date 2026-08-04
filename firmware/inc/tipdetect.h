@@ -1,6 +1,6 @@
-#ifndef HOT_WAND_TIPDETECT_H
-#define HOT_WAND_TIPDETECT_H
+#pragma once
 
+#include "hotwand.h"
 #include <stdbool.h>
 
 /*
@@ -32,6 +32,4 @@ void tipdetect_reset(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

@@ -1,6 +1,6 @@
-#ifndef HOT_WAND_TYPEDEFS_H
-#define HOT_WAND_TYPEDEFS_H
+#pragma once
 
+#include <stddef.h>
 #include <stdint.h>
 
 enum
@@ -41,81 +41,51 @@ enum
     IDLE_DETECT_THRESH_5W   = 2,
     IDLE_DETECT_THRESH_10W  = 3,
     IDLE_DETECT_THRESH_20W  = 4,
-    IDLE_DETECT_THRESH_40W  = 5,
+    IDLE_DETECT_THRESH_30W  = 5,
+    IDLE_DETECT_THRESH_40W  = 6,
 };
 
-typedef struct
+enum
 {
+    BATT_MODE_NONE      = 0,
+    BATT_MODE_LIPO      = 1,
+    BATT_MODE_LIPO_SAFE = 2,
+    BATT_MODE_LIHV      = 3,
+    BATT_MODE_LIHV_SAFE = 4,
+    BATT_MODE_LIFE      = 5,
+    BATT_MODE_LIFE_SAFE = 6,
+};
+
+typedef struct __attribute__((packed, aligned(2)))
+{
+    uint8_t magic; // 0xFF or 0x00 is invalid
+
     uint8_t startup_power_level : 2;
     uint8_t fan_mode            : 2;
     uint8_t auto_sleep          : 2;
     uint8_t auto_dim            : 2;
     uint8_t idle_detect_thresh  : 3;
+    uint8_t batt_mode           : 3;
+    uint8_t rsvd_1              : 2;
 
+    /* Keeps the checksum naturally aligned and makes the flash format even. */
+    uint8_t rsvd_2;
     uint16_t checksum;
 }
 hotwand_setup_nvm_t;
 
-enum
-{
-    SETUP_ITEM_STARTUP_POWER_LEVEL = 0,
-    SETUP_ITEM_FAN_MODE            = 1,
-    SETUP_ITEM_AUTO_SLEEP          = 2,
-    SETUP_ITEM_AUTO_DIM            = 3,
-    SETUP_ITEM_IDLE_DETECT_THRESH  = 4,
-    SETUP_ITEM_SAVE_AND_EXIT       = 5,
-    SETUP_ITEM_EXIT_NO_SAVE        = 6,
-};
-
-enum
-{
-    SETUP_MENU_CHARS_PER_LINE     = 5,
-    SETUP_MENU_TITLE_MAX_LINES    = 3,
-    SETUP_MENU_MAX_OPTION_COUNT   = 6,
-    SETUP_MENU_TITLE_CAPACITY     =
-        (SETUP_MENU_CHARS_PER_LINE * SETUP_MENU_TITLE_MAX_LINES) +
-        (SETUP_MENU_TITLE_MAX_LINES - 1) + 1,
-    SETUP_MENU_OPTIONS_CAPACITY   =
-        (SETUP_MENU_CHARS_PER_LINE * SETUP_MENU_MAX_OPTION_COUNT) +
-        (SETUP_MENU_MAX_OPTION_COUNT - 1) + 1,
-};
-
-typedef struct
-{
-    char title[SETUP_MENU_TITLE_CAPACITY];
-    char items[SETUP_MENU_OPTIONS_CAPACITY];
-}
-setup_menu_item_t;
-
-setup_menu_item_t setup_menu_items[] = {
-    [SETUP_ITEM_STARTUP_POWER_LEVEL] = {
-        .title = "START\nPOWER\nLEVEL",
-        .items = "MAX|75W|50W",
-    },
-    [SETUP_ITEM_FAN_MODE] = {
-        .title = "FAN\nMODE",
-        .items = "OFF|ON|AUTOL|AUTOH",
-    },
-    [SETUP_ITEM_AUTO_SLEEP] = {
-        .title = "AUTO\nSLEEP",
-        .items = "OFF|5 MIN|15MIN|30MIN",
-    },
-    [SETUP_ITEM_AUTO_DIM] = {
-        .title = "AUTO\nDIM",
-        .items = "OFF|15SEC|30SEC|60SEC",
-    },
-    [SETUP_ITEM_IDLE_DETECT_THRESH] = {
-        .title = "ACTIV\nMIN W",
-        .items = "1W|2W|5W|10W|20W|40W",
-    },
-    [SETUP_ITEM_SAVE_AND_EXIT] = {
-        .title = "SAVE\nAND\nEXIT",
-        .items = "",
-    },
-    [SETUP_ITEM_EXIT_NO_SAVE] = {
-        .title = "EXIT\nNO\nSAVE",
-        .items = "",
-    },
-};
-
+#if defined(__cplusplus)
+static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U,
+              "Unexpected setup NVM checksum offset");
+static_assert(sizeof(hotwand_setup_nvm_t) == 6U,
+              "Unexpected setup NVM record size");
+static_assert(alignof(hotwand_setup_nvm_t) == 2U,
+              "Setup NVM records must be halfword aligned");
+#else
+_Static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U,
+               "Unexpected setup NVM checksum offset");
+_Static_assert(sizeof(hotwand_setup_nvm_t) == 6U,
+               "Unexpected setup NVM record size");
+_Static_assert(_Alignof(hotwand_setup_nvm_t) == 2U,
+               "Setup NVM records must be halfword aligned");
 #endif

@@ -1,8 +1,6 @@
-#ifndef HOT_WAND_NVM_H
-#define HOT_WAND_NVM_H
+#pragma once
 
-#include "pwrlvl.h"
-
+#include "typedefs.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -12,22 +10,19 @@ extern "C" {
 void nvm_init(void);
 
 /*
- * Returns true and writes the last valid saved mode to *mode.
- * Returns false, without modifying *mode, when no valid mode has been saved.
+ * Returns true and writes the latest complete, valid journal entry to
+ * *settings.  Returns false without modifying *settings when no valid entry
+ * has been saved.
  */
-bool nvm_read(pwrlvl_mode_t *mode);
+bool nvm_read(hotwand_setup_nvm_t *settings);
 
 /*
- * Queues a valid mode for saving.  The five-second delay is restarted when
- * the queued mode changes, allowing rapid mode changes to be coalesced.
+ * Immediately appends settings to the flash journal.  The magic, reserved,
+ * and checksum fields are owned by this module and need not be initialized by
+ * the caller.  Returns false for invalid settings or a flash operation error.
  */
-void nvm_save(pwrlvl_mode_t mode);
-
-/* Call once per main-loop iteration to service a pending delayed save. */
-void nvm_task(void);
+bool nvm_save(const hotwand_setup_nvm_t *settings);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
