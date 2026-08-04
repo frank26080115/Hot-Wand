@@ -16,11 +16,66 @@ _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ,
                "RF generator requires a 27.12 MHz external crystal");
 
 static TIM_HandleTypeDef rfgen_timer;
+static volatile bool rfgen_fault_logged;
 
-static void rfgen_clock_init(void);
 static bool rfgen_tip_allows_start(void);
 static void rfgen_pin_low(void);
 static void rfgen_fault(void);
+
+bool rfgen_clock_init(void)
+{
+    RCC_OscInitTypeDef oscillator_cfg = {0};
+    RCC_ClkInitTypeDef clock_cfg = {0};
+
+    /* Clock initialization must never make the RF output active. */
+    rfgen_stop();
+
+    if (rfgen_has_fault()) {
+        return false;
+    }
+
+    /* Permit callers such as rfgen_start() to verify an initialized clock. */
+    if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) != RESET) &&
+        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE)) {
+        HAL_RCC_EnableCSS();
+        return true;
+    }
+
+    oscillator_cfg.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    oscillator_cfg.HSEState = RCC_HSE_ON;
+    oscillator_cfg.PLL.PLLState = RCC_PLL_NONE;
+
+    if (HAL_RCC_OscConfig(&oscillator_cfg) != HAL_OK) {
+        rfgen_fault();
+        return false;
+    }
+
+    clock_cfg.ClockType = RCC_CLOCKTYPE_SYSCLK |
+                          RCC_CLOCKTYPE_HCLK |
+                          RCC_CLOCKTYPE_PCLK1;
+    clock_cfg.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+    clock_cfg.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    clock_cfg.APB1CLKDivider = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&clock_cfg, FLASH_LATENCY_1) != HAL_OK) {
+        rfgen_fault();
+        return false;
+    }
+
+    if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) == RESET) ||
+        (__HAL_RCC_GET_SYSCLK_SOURCE() != RCC_SYSCLKSOURCE_STATUS_HSE)) {
+        rfgen_fault();
+        return false;
+    }
+
+    HAL_RCC_EnableCSS();
+    return true;
+}
+
+bool rfgen_has_fault(void)
+{
+    return rfgen_fault_logged;
+}
 
 void rfgen_start(void)
 {
@@ -29,6 +84,11 @@ void rfgen_start(void)
     TIM_OC_InitTypeDef pwm_cfg = {0};
     TIM_BreakDeadTimeConfigTypeDef break_cfg = {0};
     uint32_t interrupt_state;
+
+    if (rfgen_has_fault()) {
+        rfgen_stop();
+        return;
+    }
 
     /*
      * The tip detector powers up fail-closed.  This also means tipdetect_init()
@@ -44,7 +104,9 @@ void rfgen_start(void)
      * circuit disabled while the clock and timer are being rebuilt.
      */
     rfgen_stop();
-    rfgen_clock_init();
+    if (!rfgen_clock_init()) {
+        return;
+    }
 
     __HAL_RCC_TIM1_CLK_ENABLE();
     __HAL_RCC_SYSCFG_CLK_ENABLE();
@@ -62,6 +124,7 @@ void rfgen_start(void)
 
     if (HAL_TIM_PWM_Init(&rfgen_timer) != HAL_OK) {
         rfgen_fault();
+        return;
     }
 
     master_cfg.MasterOutputTrigger = TIM_TRGO_RESET;
@@ -69,6 +132,7 @@ void rfgen_start(void)
     if (HAL_TIMEx_MasterConfigSynchronization(&rfgen_timer,
                                               &master_cfg) != HAL_OK) {
         rfgen_fault();
+        return;
     }
 
     /*
@@ -87,6 +151,7 @@ void rfgen_start(void)
                                   &pwm_cfg,
                                   TIM_CHANNEL_3) != HAL_OK) {
         rfgen_fault();
+        return;
     }
 
     /*
@@ -103,6 +168,7 @@ void rfgen_start(void)
 
     if (HAL_TIMEx_ConfigBreakDeadTime(&rfgen_timer, &break_cfg) != HAL_OK) {
         rfgen_fault();
+        return;
     }
 
     __HAL_SYSCFG_BREAK_LOCKUP_LOCK();
@@ -142,6 +208,10 @@ void rfgen_start(void)
 
     if (HAL_TIMEx_PWMN_Start(&rfgen_timer, TIM_CHANNEL_3) != HAL_OK) {
         rfgen_fault();
+        if (interrupt_state == 0U) {
+            __enable_irq();
+        }
+        return;
     }
 
     if (interrupt_state == 0U) {
@@ -162,38 +232,6 @@ void rfgen_stop(void)
         CLEAR_BIT(TIM1->CCER, TIM_CCER_CC3E | TIM_CCER_CC3NE);
         CLEAR_BIT(TIM1->CR1, TIM_CR1_CEN);
     }
-}
-
-static void rfgen_clock_init(void)
-{
-    RCC_OscInitTypeDef oscillator_cfg = {0};
-    RCC_ClkInitTypeDef clock_cfg = {0};
-
-    oscillator_cfg.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    oscillator_cfg.HSEState = RCC_HSE_ON;
-    oscillator_cfg.PLL.PLLState = RCC_PLL_NONE;
-
-    if (HAL_RCC_OscConfig(&oscillator_cfg) != HAL_OK) {
-        rfgen_fault();
-    }
-
-    clock_cfg.ClockType = RCC_CLOCKTYPE_SYSCLK |
-                          RCC_CLOCKTYPE_HCLK |
-                          RCC_CLOCKTYPE_PCLK1;
-    clock_cfg.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
-    clock_cfg.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    clock_cfg.APB1CLKDivider = RCC_HCLK_DIV1;
-
-    if (HAL_RCC_ClockConfig(&clock_cfg, FLASH_LATENCY_1) != HAL_OK) {
-        rfgen_fault();
-    }
-
-    /*
-     * If the crystal fails, CSS invokes NMI_Handler below.  That immediately
-     * removes TIM1 from the pin before resetting instead of emitting 4 MHz
-     * after the hardware's automatic fallback to HSI.
-     */
-    HAL_RCC_EnableCSS();
 }
 
 static bool rfgen_tip_allows_start(void)
@@ -228,11 +266,8 @@ static void rfgen_pin_low(void)
 
 static void rfgen_fault(void)
 {
-    __disable_irq();
+    rfgen_fault_logged = true;
     rfgen_stop();
-
-    for (;;) {
-    }
 }
 
 /*
@@ -241,7 +276,18 @@ static void rfgen_fault(void)
  */
 void NMI_Handler(void)
 {
-    CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
-    rfgen_pin_low();
-    NVIC_SystemReset();
+    bool css_fault = __HAL_RCC_GET_IT(RCC_IT_CSS) != RESET;
+
+    HAL_RCC_NMI_IRQHandler();
+
+    if (css_fault) {
+        /* CSS has already changed SYSCLK to HSI; restore the 1 ms HAL tick. */
+        SystemCoreClockUpdate();
+        (void)HAL_InitTick(TICK_INT_PRIORITY);
+    }
+}
+
+void HAL_RCC_CSSCallback(void)
+{
+    rfgen_fault();
 }

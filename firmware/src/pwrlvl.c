@@ -40,6 +40,7 @@ static uint16_t pwrlvl_previous_current_ma;
 static uint8_t pwrlvl_pwm_value;
 static bool pwrlvl_initialized;
 static bool pwrlvl_forced_minimum;
+static bool pwrlvl_current_limiting;
 
 static uint32_t pwrlvl_get_limit_mw(void);
 static void pwrlvl_set_pwm(uint8_t value);
@@ -130,6 +131,7 @@ void pwrlvl_task(void)
 #endif
 
     if (!pwrlvl_initialized || pwrlvl_forced_minimum) {
+        pwrlvl_current_limiting = false;
         return;
     }
 
@@ -150,10 +152,13 @@ void pwrlvl_task(void)
      * and ensuring an over-current sample gets at least one fast ramp step.
      */
     current_ma = adc_to_milliamps(CURR_SENS_IDX);
-    ramp_up = ramp_up ||
-              (current_ma >= PWRLVL_CURRENT_LIMIT_MA) ||
-              (pwrlvl_previous_current_ma >= PWRLVL_CURRENT_LIMIT_MA);
+    pwrlvl_current_limiting =
+        (current_ma >= PWRLVL_CURRENT_LIMIT_MA) ||
+        (pwrlvl_previous_current_ma >= PWRLVL_CURRENT_LIMIT_MA);
+    ramp_up = ramp_up || pwrlvl_current_limiting;
     pwrlvl_previous_current_ma = current_ma;
+#else
+    pwrlvl_current_limiting = false;
 #endif
 
     update_period_ms = ramp_up ? PWRLVL_RAMP_UP_PERIOD_MS
@@ -196,6 +201,11 @@ void pwrlvl_set_mode(pwrlvl_mode_t mode)
     }
 }
 
+bool pwrlvl_is_current_limiting(void)
+{
+    return pwrlvl_current_limiting;
+}
+
 void pwrlvl_force_minimum(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
@@ -207,6 +217,7 @@ void pwrlvl_force_minimum(void)
      * of the alternate-function-to-GPIO handoff are high.
      */
     pwrlvl_forced_minimum = true;
+    pwrlvl_current_limiting = false;
 
     if (pwrlvl_initialized) {
         __HAL_TIM_SET_COMPARE(&pwrlvl_timer,
@@ -224,6 +235,37 @@ void pwrlvl_force_minimum(void)
     HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
 
     pwrlvl_pwm_value = PWRLVL_PWM_FULL_DUTY;
+}
+
+void pwrlvl_release_minimum(void)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+
+    if (!pwrlvl_forced_minimum) {
+        return;
+    }
+
+    if (!pwrlvl_initialized) {
+        pwrlvl_forced_minimum = false;
+        return;
+    }
+
+    /* Resume at almost full attenuation, then let pwrlvl_task() ramp toward
+     * the power limit selected before the forced-minimum request. */
+    __HAL_TIM_SET_COMPARE(&pwrlvl_timer,
+                          TIM_CHANNEL_1,
+                          PWRLVL_PWM_MAX);
+
+    gpio_cfg.Pin = PWR_ATTENU_PINn;
+    gpio_cfg.Mode = GPIO_MODE_AF_PP;
+    gpio_cfg.Pull = GPIO_NOPULL;
+    gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
+    gpio_cfg.Alternate = GPIO_AF1_TIM3;
+    HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
+
+    pwrlvl_pwm_value = PWRLVL_PWM_MAX;
+    pwrlvl_last_update_ms = systick_get_ms();
+    pwrlvl_forced_minimum = false;
 }
 
 static uint32_t pwrlvl_get_limit_mw(void)

@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+bool rfgen_clock_init(void);
+bool rfgen_has_fault(void);
 void rfgen_start(void);
 void rfgen_stop(void);
 

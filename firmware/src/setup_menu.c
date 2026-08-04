@@ -14,7 +14,6 @@
 #include <stdint.h>
 
 #define SETUP_MENU_CHARS_PER_LINE    6U
-#define SETUP_MENU_FIRST_VALUE_ITEM  SETUP_ITEM_STARTUP_POWER_LEVEL
 #define SETUP_MENU_LAST_VALUE_ITEM   SETUP_ITEM_BATTERY_MODE
 #define SETUP_MENU_LINE_HEIGHT       10U
 #define SETUP_MENU_FIRST_BASELINE    9U
@@ -36,40 +35,49 @@ typedef struct
 {
     const char *title;
     const char *items;
+    uint8_t items_cnt;
 } setup_menu_item_t;
 
 static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_STARTUP_POWER_LEVEL] = {
         .title = "START\nPOWER\nLEVEL",
         .items = "SPORT|NORM|ECO",
+        .items_cnt = 3,
     },
     [SETUP_ITEM_FAN_MODE] = {
         .title = "FAN\nMODE",
         .items = "OFF|ON|AUTO\nLOW|AUTO\nHIGH",
+        .items_cnt = 4,
     },
     [SETUP_ITEM_AUTO_SLEEP] = {
         .title = "AUTO\nSLEEP",
         .items = "OFF|5 MIN|15MIN|30MIN",
+        .items_cnt = 4,
     },
     [SETUP_ITEM_AUTO_DIM] = {
         .title = "AUTO\nDIM",
         .items = "OFF|15 S|30 S|60 S",
+        .items_cnt = 4,
     },
     [SETUP_ITEM_IDLE_DETECT_THRESH] = {
         .title = "ACTIV\nMIN W",
         .items = "1 W|2 W|5 W|10 W|20 W|30 W|40 W",
+        .items_cnt = 7,
     },
     [SETUP_ITEM_BATTERY_MODE] = {
         .title = "BATT\nMODE",
         .items = "NONE|LIPO|LIPO\nSAFER|LIHV|LIHV\nSAFER|LIFE|LIFE\nSAFER",
+        .items_cnt = 7,
     },
     [SETUP_ITEM_SAVE_AND_EXIT] = {
         .title = "SAVE\nAND\nEXIT",
         .items = "",
+        .items_cnt = 0,
     },
     [SETUP_ITEM_EXIT_NO_SAVE] = {
         .title = "EXIT\nNO\nSAVE",
         .items = "",
+        .items_cnt = 0,
     },
 };
 
@@ -98,8 +106,8 @@ void setup_menu(void)
 {
     hotwand_setup_nvm_t settings;
     u8g2_t *graphics;
-    uint32_t initial_release_ms = 0U;
-    uint32_t pending_release_ms = 0U;
+    uint32_t initial_release_ms = 0;
+    uint32_t pending_release_ms = 0;
     uint32_t last_activity_ms;
     uint8_t selected_item = SETUP_ITEM_STARTUP_POWER_LEVEL;
     bool initial_release_timing = false;
@@ -241,14 +249,11 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t *settings,
 
 static uint8_t setup_menu_get_option_count(uint8_t item)
 {
-    static const uint8_t counts[] = {3U, 4U, 4U, 4U, 7U, 7U};
-
-    if ((item < SETUP_MENU_FIRST_VALUE_ITEM) ||
-        (item > SETUP_MENU_LAST_VALUE_ITEM)) {
+    if (item >= SETUP_MENU_ITEM_COUNT) {
         return 0U;
     }
 
-    return counts[item - SETUP_MENU_FIRST_VALUE_ITEM];
+    return setup_menu_items[item].items_cnt;
 }
 
 static void setup_menu_cycle_value(hotwand_setup_nvm_t *settings,

@@ -365,17 +365,20 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
         *(const uint16_t *)MCU_TEMP_CAL1_ADDRESS;
     int32_t delta;
     int32_t temperature;
+    uint32_t rounded_delta;
 
     delta = (int32_t)calibration - ((int32_t)sample << 2);
     delta *= (int32_t)(ADC_REFERENCE_MV * 10U);
 
     if (delta >= 0L) {
-        delta += MCU_TEMP_SCALE / 2L;
+        rounded_delta = (uint32_t)delta + (MCU_TEMP_SCALE / 2UL);
+        temperature = MCU_TEMP_CAL1_C +
+                      (int32_t)(rounded_delta / MCU_TEMP_SCALE);
     } else {
-        delta -= MCU_TEMP_SCALE / 2L;
+        rounded_delta = (uint32_t)(-delta) + (MCU_TEMP_SCALE / 2UL);
+        temperature = MCU_TEMP_CAL1_C -
+                      (int32_t)(rounded_delta / MCU_TEMP_SCALE);
     }
-
-    temperature = MCU_TEMP_CAL1_C + (delta / MCU_TEMP_SCALE);
 
     if (temperature <= 0L) {
         return 0U;
@@ -386,6 +389,11 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
     }
 
     return (uint16_t)temperature;
+}
+
+uint32_t adc_get_rand_seed(void)
+{
+    return (int32_t)system_rand_seed;
 }
 
 static void adc_fault(void)

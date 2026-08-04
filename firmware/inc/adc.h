@@ -15,6 +15,8 @@ uint16_t adc_to_milliamps(uint8_t idx);
 uint16_t adc_to_celcius(uint8_t idx);
 uint32_t adc_get_milliwatts(void);
 
+uint32_t adc_get_rand_seed(void);
+
 #ifdef __cplusplus
 }
 #endif

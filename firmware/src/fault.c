@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #define OLED_HEIGHT 32
+#define FAULT_REFRESH_INTERVAL_MS 200UL
 #define FAULT_SHIFT_INTERVAL_MS 5000UL
 #define FAULT_LINE_BUFFER_SIZE 32U
 #define FAULT_VOLTAGE_BUFFER_SIZE 8U
@@ -39,11 +40,12 @@ static void Fault_Render(u8g2_t *graphics,
 static uint8_t Fault_RandomX(void);
 static void Fault_ResetIfButtonPressed(void);
 
-void show_fault(const char *text)
+void show_fault(const char *text, bool allow_button_reset)
 {
     u8g2_t *graphics;
     uint16_t message_line_count;
     uint16_t total_line_count;
+    uint32_t last_refresh_ms;
     uint32_t last_shift_ms;
     int16_t ascent;
     int16_t descent;
@@ -55,13 +57,18 @@ void show_fault(const char *text)
     int8_t direction;
     uint8_t x_offset = 0U;
 
-    btn_init();
-    (void)btn_has_short_press(true);
+    if (allow_button_reset) {
+        btn_init();
+        (void)btn_has_short_press(true);
+    }
 
     graphics = OLED_GetGraphics(&oled);
     if (graphics == NULL) {
         for (;;) {
-            Fault_ResetIfButtonPressed();
+            if (allow_button_reset) {
+                Fault_ResetIfButtonPressed();
+            }
+            HAL_Delay(1U);
         }
     }
 
@@ -99,11 +106,14 @@ void show_fault(const char *text)
                  line_height);
     (void)OLED_SendBuffer(&oled);
     last_shift_ms = systick_get_ms();
+    last_refresh_ms = last_shift_ms;
 
     for (;;) {
         uint32_t now;
 
-        Fault_ResetIfButtonPressed();
+        if (allow_button_reset) {
+            Fault_ResetIfButtonPressed();
+        }
         now = systick_get_ms();
 
         if ((uint32_t)(now - last_shift_ms) >=
@@ -129,7 +139,11 @@ void show_fault(const char *text)
                     x_offset = Fault_RandomX();
                 }
             }
+        }
 
+        if ((uint32_t)(now - last_refresh_ms) >=
+            FAULT_REFRESH_INTERVAL_MS) {
+            last_refresh_ms = now;
             Fault_Render(graphics,
                          text,
                          message_line_count,

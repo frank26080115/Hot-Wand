@@ -16,6 +16,16 @@ typedef struct
     uint16_t pessimistic_millivolts_per_cell;
 } battery_guess_t;
 
+typedef struct
+{
+    uint16_t minimum_millivolts_per_cell;
+    uint16_t maximum_millivolts_per_cell;
+} battery_cell_voltage_range_t;
+
+/* Indexed by BATT_MODE_*.  BATT_MODE_NONE contains a zeroed range. */
+extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[
+    BATT_MODE_LIFE_SAFE + 1U];
+
 /*
  * Determines the range of whole-number cell counts consistent with the
  * supplied pack voltage and permissible per-cell voltage range.
@@ -46,6 +56,13 @@ bool battery_set_params(uint16_t cell_count,
  * is at least cell_count * minimum_millivolts_per_cell.
  */
 bool battery_check(void);
+
+/*
+ * Blocks on the low-battery warning.  When allow_override is true, holding
+ * the button long enough disables battery checking for the powered session
+ * and returns; otherwise this function does not return.
+ */
+void battery_show_fault(bool allow_override);
 
 #ifdef __cplusplus
 }

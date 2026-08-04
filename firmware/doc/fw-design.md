@@ -61,7 +61,7 @@ The fan is off during sleep mode.
 
 # Boot Mode
 
-When the microcontroller boots, it will wait 500 milliseconds for power to stabilize, and then sample the input DC power.
+When the microcontroller boots, it will wait 300 milliseconds for power to stabilize, and then sample the input DC power.
 
 If during boot, the user button is held down, then UART message debugging will become enabled. While the buttons is held, the screen shows "HOLD TO ENTER SETUP" with a progress bar. The progress bar will grow for 3 seconds and then enter the setup menu if the user continues to hold the button.
 
