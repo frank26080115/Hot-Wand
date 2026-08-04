@@ -84,8 +84,10 @@ static const uint16_t ntc_adc_by_10c[] = {
 static ADC_HandleTypeDef adc_handle;
 static uint32_t lpf_state[ADC_INPUT_COUNT];
 static volatile uint16_t result[ADC_INPUT_COUNT];
+static volatile uint16_t raw[ADC_INPUT_COUNT];
 static volatile uint8_t initialized_channels;
-static uint8_t current_idx;
+static volatile uint8_t current_idx;
+static volatile uint32_t system_rand_seed = 0;
 
 static void adc_filter_sample(uint8_t idx, uint16_t sample);
 static void adc_select_and_start(uint8_t idx);
@@ -258,6 +260,7 @@ void ADC1_IRQHandler(void)
 
     completed_idx = current_idx;
     sample = (uint16_t)HAL_ADC_GetValue(&adc_handle);
+    raw[completed_idx] = sample;
 
     next_idx = (uint8_t)(completed_idx + 1U);
     if (next_idx >= ADC_INPUT_COUNT) {
@@ -274,6 +277,17 @@ void ADC1_IRQHandler(void)
 
     /* Filter while the ADC is already sampling the next channel. */
     adc_filter_sample(completed_idx, sample);
+
+    /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
+    if (next_idx == 0) {
+        system_rand_seed = (HAL_GetTick() & 0x3)
+            | (((uint32_t)raw[0] & 0x03) << 2)
+            | (((uint32_t)raw[1] & 0x03) << 4)
+            | (((uint32_t)raw[2] & 0x03) << 6)
+            | (((uint32_t)raw[3] & 0x03) << 8)
+            | (((uint32_t)raw[4] & 0x03) << 10)
+        ;
+    }
 }
 
 static void adc_filter_sample(uint8_t idx, uint16_t sample)

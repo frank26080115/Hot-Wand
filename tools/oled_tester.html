@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OLED Text Tester</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #090c0f;
+      --panel: #11161b;
+      --panel-edge: #273039;
+      --muted: #8b98a3;
+      --text: #edf6f8;
+      --accent: #45d9ff;
+      --screen: #02070a;
+      --pixel: #68e7ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 75% 12%, rgba(49, 172, 202, 0.12), transparent 30rem),
+        linear-gradient(145deg, #0d1216 0%, var(--page) 56%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1040px, calc(100% - 32px));
+      margin: 32px auto;
+    }
+
+    header {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font: 700 0.72rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3.1rem);
+      font-weight: 650;
+      letter-spacing: -0.045em;
+    }
+
+    header p:last-child {
+      max-width: 620px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.45fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--panel-edge);
+      border-radius: 16px;
+      background: rgba(17, 22, 27, 0.92);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+
+    .panel-heading {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--panel-edge);
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .dimensions,
+    .status {
+      color: var(--muted);
+      font: 0.72rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .preview-controls,
+    .orientation-control {
+      display: flex;
+      align-items: center;
+    }
+
+    .preview-controls {
+      gap: 14px;
+    }
+
+    .orientation-control {
+      gap: 8px;
+      margin: 0;
+      color: #c7d0d5;
+      cursor: pointer;
+      font: 600 0.72rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .orientation-control input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .switch {
+      position: relative;
+      width: 34px;
+      height: 19px;
+      border: 1px solid #3c4a54;
+      border-radius: 999px;
+      background: #080c0f;
+      transition: border-color 140ms ease, background 140ms ease;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #84939d;
+      transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+    }
+
+    .orientation-control input:checked + .switch {
+      border-color: #2da9c9;
+      background: rgba(69, 217, 255, 0.16);
+    }
+
+    .orientation-control input:checked + .switch::after {
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(69, 217, 255, 0.55);
+      transform: translateX(15px);
+    }
+
+    .orientation-control input:focus-visible + .switch {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .editor-body {
+      display: flex;
+      min-height: 306px;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    label {
+      margin-bottom: 8px;
+      color: #c7d0d5;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 206px;
+      flex: 1;
+      resize: vertical;
+      padding: 14px;
+      border: 1px solid #323d46;
+      border-radius: 10px;
+      outline: none;
+      background: #090d10;
+      color: var(--text);
+      caret-color: var(--accent);
+      font: 0.95rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    textarea:focus {
+      border-color: #3ea9c4;
+      box-shadow: 0 0 0 3px rgba(69, 217, 255, 0.11);
+    }
+
+    .editor-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .status[data-overflow="true"] {
+      color: #ffbb65;
+    }
+
+    button {
+      padding: 7px 11px;
+      border: 1px solid #34414a;
+      border-radius: 7px;
+      background: #171e23;
+      color: #cbd5da;
+      cursor: pointer;
+      font: 600 0.72rem/1 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    button:hover {
+      border-color: #53636f;
+      background: #1d262c;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .preview-body {
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+      padding: clamp(24px, 5vw, 52px) clamp(18px, 5vw, 48px);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        #0c1114;
+      background-size: 20px 20px;
+    }
+
+    .module {
+      position: relative;
+      width: min(100%, 620px);
+      padding: clamp(24px, 5.2vw, 42px) clamp(24px, 6vw, 52px);
+      border: 1px solid #255f78;
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 36%),
+        #0a5271;
+      box-shadow:
+        inset 0 0 0 2px rgba(0, 0, 0, 0.18),
+        0 18px 35px rgba(0, 0, 0, 0.42);
+    }
+
+    .module[data-orientation="portrait"] {
+      width: min(100%, 165px);
+      padding: 36px 28px 44px;
+    }
+
+    .module::before,
+    .module::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 9px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #071116;
+      box-shadow: inset 0 0 0 2px #39809b, 0 1px 2px rgba(0, 0, 0, 0.8);
+      transform: translateY(-50%);
+    }
+
+    .module::before {
+      left: 10px;
+    }
+
+    .module::after {
+      right: 10px;
+    }
+
+    .display {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 1;
+      border: 5px solid #071014;
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--screen);
+      box-shadow:
+        inset 0 0 14px rgba(0, 0, 0, 0.95),
+        0 0 20px rgba(53, 209, 247, 0.13);
+    }
+
+    .module[data-orientation="portrait"] .display {
+      aspect-ratio: 1 / 4;
+    }
+
+    .display::before {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      border: 1px solid rgba(104, 231, 255, 0.42);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease;
+    }
+
+    .display:hover::before,
+    .display:focus-within::before {
+      opacity: 1;
+    }
+
+    .display::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0) 45%),
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.14) 3px 4px);
+      mix-blend-mode: screen;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--screen);
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .hardware-label {
+      position: absolute;
+      right: 15px;
+      bottom: 6px;
+      color: rgba(215, 247, 255, 0.55);
+      font: 600 0.52rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 790px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-body {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 470px) {
+      main {
+        width: min(100% - 20px, 1040px);
+        margin: 20px auto;
+      }
+
+      .module {
+        padding: 22px 25px;
+      }
+
+      .panel-heading {
+        align-items: flex-start;
+      }
+
+      .preview-controls {
+        align-items: flex-end;
+        flex-direction: column-reverse;
+        gap: 7px;
+      }
+
+      .hardware-label {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Display utility</p>
+      <h1>OLED text tester</h1>
+      <p>Type text below to see it rendered live on a monochrome OLED, with a 32-wide by 128-high portrait display by default.</p>
+    </header>
+
+    <section class="workspace" aria-label="OLED text tester">
+      <div class="panel">
+        <div class="panel-heading">
+          <h2>Input</h2>
+          <span class="dimensions" id="capacity">5 cols × 16 rows</span>
+        </div>
+        <div class="editor-body">
+          <label for="oled-text">Display text</label>
+          <textarea id="oled-text" autofocus spellcheck="false" aria-describedby="fit-status">HOT
+WAND
+OLED
+TEXT</textarea>
+          <div class="editor-footer">
+            <span class="status" id="fit-status" aria-live="polite">Fits on display</span>
+            <button type="button" id="clear-button">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <h2>Preview</h2>
+          <div class="preview-controls">
+            <span class="dimensions" id="display-dimensions">32 × 128 pixels</span>
+            <label class="orientation-control" for="orientation-toggle">
+              <span id="orientation-name">Portrait</span>
+              <input id="orientation-toggle" type="checkbox" role="switch" aria-label="Use portrait orientation" checked>
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <div class="preview-body">
+          <div class="module" id="oled-module" data-orientation="portrait" aria-label="OLED module">
+            <div class="display">
+              <canvas id="oled" width="32" height="128" role="img" tabindex="0" title="Active pixel area: 32 × 128" aria-label="Live OLED text preview"></canvas>
+            </div>
+            <span class="hardware-label" id="hardware-label">32 × 128 mono OLED</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const FONT = {
+      " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+      "!": ["00100", "00100", "00100", "00100", "00100", "00000", "00100"],
+      "\"": ["01010", "01010", "01010", "00000", "00000", "00000", "00000"],
+      "#": ["01010", "01010", "11111", "01010", "11111", "01010", "01010"],
+      "$": ["00100", "01111", "10100", "01110", "00101", "11110", "00100"],
+      "%": ["11001", "11010", "00100", "01000", "10110", "00110", "00000"],
+      "&": ["01100", "10010", "10100", "01000", "10101", "10010", "01101"],
+      "'": ["00100", "00100", "01000", "00000", "00000", "00000", "00000"],
+      "(": ["00010", "00100", "01000", "01000", "01000", "00100", "00010"],
+      ")": ["01000", "00100", "00010", "00010", "00010", "00100", "01000"],
+      "*": ["00000", "10101", "01110", "11111", "01110", "10101", "00000"],
+      "+": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"],
+      ",": ["00000", "00000", "00000", "00000", "00100", "00100", "01000"],
+      "-": ["00000", "00000", "00000", "11111", "00000", "00000", "00000"],
+      ".": ["00000", "00000", "00000", "00000", "00000", "00110", "00110"],
+      "/": ["00001", "00010", "00100", "01000", "10000", "00000", "00000"],
+      "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+      "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+      "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+      "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+      "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+      "5": ["11111", "10000", "10000", "11110", "00001", "00001", "11110"],
+      "6": ["01110", "10000", "10000", "11110", "10001", "10001", "01110"],
+      "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+      "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+      "9": ["01110", "10001", "10001", "01111", "00001", "00001", "01110"],
+      ":": ["00000", "00110", "00110", "00000", "00110", "00110", "00000"],
+      ";": ["00000", "00110", "00110", "00000", "00110", "00100", "01000"],
+      "<": ["00010", "00100", "01000", "10000", "01000", "00100", "00010"],
+      "=": ["00000", "00000", "11111", "00000", "11111", "00000", "00000"],
+      ">": ["01000", "00100", "00010", "00001", "00010", "00100", "01000"],
+      "?": ["01110", "10001", "00001", "00010", "00100", "00000", "00100"],
+      "@": ["01110", "10001", "10111", "10101", "10111", "10000", "01110"],
+      "A": ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+      "B": ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+      "C": ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+      "D": ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
+      "E": ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+      "F": ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+      "G": ["01111", "10000", "10000", "10111", "10001", "10001", "01111"],
+      "H": ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+      "I": ["01110", "00100", "00100", "00100", "00100", "00100", "01110"],
+      "J": ["00001", "00001", "00001", "00001", "10001", "10001", "01110"],
+      "K": ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+      "L": ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+      "M": ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+      "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+      "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+      "P": ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+      "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+      "R": ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+      "S": ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+      "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+      "U": ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+      "V": ["10001", "10001", "10001", "10001", "10001", "01010", "00100"],
+      "W": ["10001", "10001", "10001", "10101", "10101", "10101", "01010"],
+      "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+      "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+      "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"],
+      "[": ["01110", "01000", "01000", "01000", "01000", "01000", "01110"],
+      "\\": ["10000", "01000", "00100", "00010", "00001", "00000", "00000"],
+      "]": ["01110", "00010", "00010", "00010", "00010", "00010", "01110"],
+      "^": ["00100", "01010", "10001", "00000", "00000", "00000", "00000"],
+      "_": ["00000", "00000", "00000", "00000", "00000", "00000", "11111"],
+      "`": ["01000", "00100", "00010", "00000", "00000", "00000", "00000"],
+      "a": ["00000", "00000", "01110", "00001", "01111", "10001", "01111"],
+      "b": ["10000", "10000", "10110", "11001", "10001", "10001", "11110"],
+      "c": ["00000", "00000", "01111", "10000", "10000", "10000", "01111"],
+      "d": ["00001", "00001", "01101", "10011", "10001", "10001", "01111"],
+      "e": ["00000", "00000", "01110", "10001", "11111", "10000", "01111"],
+      "f": ["00110", "01001", "01000", "11100", "01000", "01000", "01000"],
+      "g": ["00000", "01111", "10001", "01111", "00001", "10001", "01110"],
+      "h": ["10000", "10000", "10110", "11001", "10001", "10001", "10001"],
+      "i": ["00100", "00000", "01100", "00100", "00100", "00100", "01110"],
+      "j": ["00010", "00000", "00110", "00010", "00010", "10010", "01100"],
+      "k": ["10000", "10000", "10010", "10100", "11000", "10100", "10010"],
+      "l": ["01100", "00100", "00100", "00100", "00100", "00100", "01110"],
+      "m": ["00000", "00000", "11010", "10101", "10101", "10101", "10101"],
+      "n": ["00000", "00000", "10110", "11001", "10001", "10001", "10001"],
+      "o": ["00000", "00000", "01110", "10001", "10001", "10001", "01110"],
+      "p": ["00000", "11110", "10001", "11110", "10000", "10000", "10000"],
+      "q": ["00000", "01101", "10011", "01111", "00001", "00001", "00001"],
+      "r": ["00000", "00000", "10110", "11001", "10000", "10000", "10000"],
+      "s": ["00000", "00000", "01111", "10000", "01110", "00001", "11110"],
+      "t": ["01000", "01000", "11100", "01000", "01000", "01001", "00110"],
+      "u": ["00000", "00000", "10001", "10001", "10001", "10011", "01101"],
+      "v": ["00000", "00000", "10001", "10001", "10001", "01010", "00100"],
+      "w": ["00000", "00000", "10001", "10001", "10101", "10101", "01010"],
+      "x": ["00000", "00000", "10001", "01010", "00100", "01010", "10001"],
+      "y": ["00000", "10001", "10001", "01111", "00001", "10001", "01110"],
+      "z": ["00000", "00000", "11111", "00010", "00100", "01000", "11111"],
+      "{": ["00010", "00100", "00100", "01000", "00100", "00100", "00010"],
+      "|": ["00100", "00100", "00100", "00100", "00100", "00100", "00100"],
+      "}": ["01000", "00100", "00100", "00010", "00100", "00100", "01000"],
+      "~": ["00000", "00000", "01001", "10110", "00000", "00000", "00000"]
+    };
+
+    const FALLBACK_GLYPH = ["11111", "10001", "00110", "00100", "00000", "00100", "00100"];
+    const GLYPH_WIDTH = 5;
+    const GLYPH_HEIGHT = 7;
+    const CELL_WIDTH = 6;
+    const CELL_HEIGHT = 8;
+    const ORIENTATIONS = {
+      portrait: { width: 32, height: 128 },
+      landscape: { width: 128, height: 32 }
+    };
+
+    const canvas = document.querySelector("#oled");
+    const context = canvas.getContext("2d");
+    const input = document.querySelector("#oled-text");
+    const status = document.querySelector("#fit-status");
+    const clearButton = document.querySelector("#clear-button");
+    const capacity = document.querySelector("#capacity");
+    const displayDimensions = document.querySelector("#display-dimensions");
+    const hardwareLabel = document.querySelector("#hardware-label");
+    const module = document.querySelector("#oled-module");
+    const orientationToggle = document.querySelector("#orientation-toggle");
+    const orientationName = document.querySelector("#orientation-name");
+
+    function drawGlyph(character, x, y) {
+      const glyph = FONT[character] || FALLBACK_GLYPH;
+
+      for (let row = 0; row < GLYPH_HEIGHT; row += 1) {
+        for (let column = 0; column < GLYPH_WIDTH; column += 1) {
+          if (glyph[row][column] === "1") {
+            context.fillRect(x + column, y + row, 1, 1);
+          }
+        }
+      }
+    }
+
+    function render() {
+      const lines = input.value.replace(/\r/g, "").split("\n");
+      const maxColumns = Math.floor(canvas.width / CELL_WIDTH);
+      const maxRows = Math.floor(canvas.height / CELL_HEIGHT);
+      const overflows = lines.length > maxRows || lines.some((line) => Array.from(line).length > maxColumns);
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--pixel").trim();
+
+      lines.slice(0, maxRows).forEach((line, row) => {
+        Array.from(line).slice(0, maxColumns).forEach((character, column) => {
+          drawGlyph(character, column * CELL_WIDTH, row * CELL_HEIGHT);
+        });
+      });
+
+      status.textContent = overflows ? `Content clipped past ${maxColumns} × ${maxRows}` : "Fits on display";
+      status.dataset.overflow = String(overflows);
+      canvas.setAttribute("aria-label", `${canvas.width} by ${canvas.height} OLED preview: ${input.value || "blank display"}`);
+    }
+
+    function setOrientation() {
+      const orientation = orientationToggle.checked ? "portrait" : "landscape";
+      const { width, height } = ORIENTATIONS[orientation];
+      const maxColumns = Math.floor(width / CELL_WIDTH);
+      const maxRows = Math.floor(height / CELL_HEIGHT);
+      const label = `${width} × ${height}`;
+
+      canvas.width = width;
+      canvas.height = height;
+      module.dataset.orientation = orientation;
+      capacity.textContent = `${maxColumns} cols × ${maxRows} rows`;
+      displayDimensions.textContent = `${label} pixels`;
+      hardwareLabel.textContent = `${label} mono OLED`;
+      orientationName.textContent = orientation === "portrait" ? "Portrait" : "Landscape";
+      canvas.title = `Active pixel area: ${label}`;
+      render();
+    }
+
+    input.addEventListener("input", render);
+    orientationToggle.addEventListener("change", setOrientation);
+    clearButton.addEventListener("click", () => {
+      input.value = "";
+      input.focus();
+      render();
+    });
+
+    setOrientation();
+  </script>
+</body>
+</html>

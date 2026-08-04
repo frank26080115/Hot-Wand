@@ -1,11 +1,15 @@
 # Main Loop Tasks
 
- * check all ADC inputs, maybe apply digital LPF filtering
- * if the iron tip is disconnected, the iron goes into a safe state until button press
- * button press toggles power modes, action performed on release
- * long buttom press forces iron to sleep, short press cycles through power modes
+ * long button press forces iron to sleep, short press cycles through power modes
  * GUI is updated at 15 FPS
  * UART debug messages are sent at 2 Hz
+
+# Important Policies
+
+ * Faults are never automatically recovered, always have the user press a button
+ * The screen is only 32 pixels wide, supporting 5 characters, choose short words
+ * Only use capital letters on the GUI as the pixel font may be hard to read
+ * Action for button short press must be performed immediately on the first edge to appear responsive
 
 # GUI design
 
@@ -13,25 +17,27 @@ The screen is 128x32 but oriented in a portrait fashion, so it is 32 pixels wide
 
 The top line is always the DC input voltage (for battery monitoring)
 
-The second line shows either "TIP ERR" or "SLEEP" depending on situation, otherwise blank when normal.
+The second line shows either "FAULT" or "SLEEP" or "POWER" or "IDLE" depending on situation.
 
-The third line always says "POWER:" but only when not sleeping and not in an error state.
+If a temperature limit is reached, the first line will also blink "!HOT!" every other second.
 
-Below that is the power meter. There is a solid horizontal line indicating the 100% boundary (this is just below "POWER:").
+Below that is the power meter. There is a solid horizontal line indicating the 100% boundary
 
 If we are in full power mode (and full power is available), then the whole area below this is a solid rectangle growing from the bottom upwards according to power consumption.
 
 If we are in a power limited mode (or input voltage is too low to support full power), then the bottom area is split in two halves, the left half is blank except for a dotted horizontal line indicating the targeted power level. The right side of this area grows as a solid rectangle from the bottom upwards according to power consumption.
 
+If we are in "FAULT" or "SLEEP" display state, the whole display (meaning the voltage will too) will very slowly scroll downward as a measure to even out OLED burn-in.
+
 # Power Levels
 
-The assumption is that this is a 100W system because the buck converter is theoretically tuned for 20V and is capable of 5A.
+The assumption is that this is an electrically 100W-ish system because the buck converter is theoretically tuned for 20V and is capable of 5A. Actual heat power is unknown. Total input power will also be slightly higher due to inefficienceis and  miscellaneous power usage elsewhere.
 
-The available levels are
+The user can choose between power level modes. Available levels are:
 
- * 100% Power (100W)
- * 75% Power (75W)
- * 50% Power (50W, must never fail when used with a 65W USB power supply)
+ * "SPORT" (100W)
+ * "NORM" (75W)
+ * "ECO" (50W, must never fail when used with a 65W USB power supply)
 
 To actually modulate the power, there is a PWM pin allocated to send a bias signal to the buck converter's feedback input through a resistor and diode.
 
@@ -39,26 +45,51 @@ If the currently utilized power is above the set limit, the attenuation is raise
 
 Pressing the button will cycle through the power modes, in the lowering direction. It is forbidden to change from low power to high power while current draw is above 30W.
 
+# Power Management
+
+If the input power is below 14V (undervoltage lockout threshold of the secondary buck converter), then all soldering iron functionality is disabled. The GUI will show "LOW POWER FAULT". Button presses in this state will cause a reboot. The microcontroller shall be in a state that can accept SWD connections.
+
 # Cooling Fan Control
 
 The cooling fan hardware is optional, but the control for it will always exist.
 
-The fan is always off for at least 5 seconds after power up. After the 5 seconds, the fan will activate if any temperatures exceeds a threshold, and deactivate with a 5C hysteresis.
+The fan is always off for at least 5 seconds after power up. After the 5 seconds, the fan will respect the configured operation mode. If the mode is always-on, then it will turn on.
+
+If the fan mode is automatic, it will be on when temperatures exceed a threshold, with a 5 degree hystersis.
 
 The fan is off during sleep mode.
 
 # Boot Mode
 
-When the microcontroller boots, it will wait 1 second for power to stabilize, and then sample the input DC power.
+When the microcontroller boots, it will wait 500 milliseconds for power to stabilize, and then sample the input DC power.
 
-If the input power is below 14V, then all soldering iron functionality is disabled and the microcontroller will await debug instructions from SWD. Button presses in this state will cause a reboot.
+If during boot, the user button is held down, then UART message debugging will become enabled. While the buttons is held, the screen shows "HOLD TO ENTER SETUP" with a progress bar. The progress bar will grow for 3 seconds and then enter the setup menu if the user continues to hold the button.
 
-If during boot, the user button is held down, then UART message debugging will become enabled.
+If the crystal clock fails to initialize properly, the GUI will display an error "CLOCK FAULT"
+
+# Setup Menu
+
+When in the setup menu, the RF generator will be off and the buck converter will be put in minimum output state.
+
+The first line will always say "SETUP", the second line will always be a blank space.
+
+From the third line and onwards, the subject title of the item will be displayed, followed by a "  =  " line, then the value of the item.
+
+Long hold press cycles the value.
+
+Short press cycles the subject.
+
+The two "SAVE AND EXIT" and "EXIT NO SAVE" are the last subjects and will perform the actions indicated
+
+A 5 minute inactivity timeout will cause the device to enter sleep mode (without saving) to prevent OLED burn-in.
 
 # Firmware Code Modules
 
  * U8g2 and U8x8
  * OLED interface layer, connects HAL to U8g2
+ * GUI main mode display
+ * GUI setup menu display
+ * NVM saving and loading
  * Systick 1ms time keeper, doesn't have to be precise
  * Round robin ADC sampling state machine that also handles digital low pass filtering
  * Tip detection state machine
