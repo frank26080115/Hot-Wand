@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hotwand.h"
 #include <stdbool.h>
 
 /* UART output is disabled after reset until explicitly allowed. */

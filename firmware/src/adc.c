@@ -6,26 +6,24 @@
 
 #include <stdint.h>
 
-#define ADC_INPUT_COUNT          6U
-#define ADC_LPF_SCALE            1024U
-#define ADC_LPF_ROUNDING         (ADC_LPF_SCALE / 2U)
-#define ADC_DEFAULT_LPF_ALPHA    900U
-#define ADC_ANALOG_PINS          (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | \
-                                  BUCK_SENS_PINn | CURR_SENS_PINn)
-#define ADC_REFERENCE_MV         3300U
-#define ADC_FULL_SCALE           1023U
-#define VOLTAGE_DIVIDER_SCALE    11U
-#define CURRENT_FULL_SCALE_MA    6037U
-#define INPUT_V_CALIB_SCALE      1024U
-#define INPUT_V_CALIB_ROUNDING   (INPUT_V_CALIB_SCALE / 2U)
+#define ADC_INPUT_COUNT          6
+#define ADC_LPF_SCALE            1024
+#define ADC_LPF_ROUNDING         (ADC_LPF_SCALE / 2)
+#define ADC_DEFAULT_LPF_ALPHA    900
+#define ADC_ANALOG_PINS          (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | BUCK_SENS_PINn | CURR_SENS_PINn)
+#define ADC_REFERENCE_MV         3300
+#define ADC_FULL_SCALE           1023
+#define VOLTAGE_DIVIDER_SCALE    11
+#define CURRENT_FULL_SCALE_MA    6037
+#define INPUT_V_CALIB_SCALE      1024
+#define INPUT_V_CALIB_ROUNDING   (INPUT_V_CALIB_SCALE / 2)
 
-#define NTC_TABLE_STEP_C         10U
-#define MCU_TEMP_CAL1_ADDRESS    0x1FFFF7B8UL
-#define MCU_TEMP_CAL1_C          30L
-#define MCU_TEMP_ADC_FULL_SCALE  4095L
-#define MCU_TEMP_SLOPE_TENTHS_MV 43L
-#define MCU_TEMP_SCALE           (MCU_TEMP_ADC_FULL_SCALE * \
-                                  MCU_TEMP_SLOPE_TENTHS_MV)
+#define NTC_TABLE_STEP_C         10
+#define MCU_TEMP_CAL1_ADDRESS    0x1FFFF7B8
+#define MCU_TEMP_CAL1_C          30
+#define MCU_TEMP_ADC_FULL_SCALE  4095
+#define MCU_TEMP_SLOPE_TENTHS_MV 43
+#define MCU_TEMP_SCALE           (MCU_TEMP_ADC_FULL_SCALE * MCU_TEMP_SLOPE_TENTHS_MV)
 
 typedef struct
 {
@@ -86,45 +84,45 @@ static const adc_cfg_t lpf_cfg_table[ADC_INPUT_COUNT] = {
  * their 2.2K pull-ups, in 10 C steps from 0 C through 150 C.
  */
 static const uint16_t ntc_adc_by_10c[] = {
-    960U, 922U, 870U, 803U, 723U, 634U, 543U, 455U,
-    374U, 305U, 246U, 198U, 160U, 129U, 105U, 85U,
+    960, 922, 870, 803, 723, 634, 543, 455,
+    374, 305, 246, 198, 160, 129, 105, 85,
 };
 
 /* Q10 slopes are the nearest integers to the requested multipliers. */
 static const input_voltage_calib_t input_voltage_calib_table[] = {
-    [INPUT_VOLTAGE_CALIB_NONE] = {1024U,   0},
-    [INPUT_VOLTAGE_CALIB_P1]   = {1029U,   5},
-    [INPUT_VOLTAGE_CALIB_P2]   = {1034U,  10},
-    [INPUT_VOLTAGE_CALIB_P3]   = {1039U,  15},
-    [INPUT_VOLTAGE_CALIB_P4]   = {1044U,  20},
-    [INPUT_VOLTAGE_CALIB_P5]   = {1050U,  25},
-    [INPUT_VOLTAGE_CALIB_N1]   = {1019U,  -5},
-    [INPUT_VOLTAGE_CALIB_N2]   = {1014U, -10},
-    [INPUT_VOLTAGE_CALIB_N3]   = {1009U, -15},
-    [INPUT_VOLTAGE_CALIB_N4]   = {1004U, -20},
-    [INPUT_VOLTAGE_CALIB_N5]   = { 998U, -25},
+    [INPUT_VOLTAGE_CALIB_NONE] = {1024,   0},
+    [INPUT_VOLTAGE_CALIB_P1]   = {1029,   5},
+    [INPUT_VOLTAGE_CALIB_P2]   = {1034,  10},
+    [INPUT_VOLTAGE_CALIB_P3]   = {1039,  15},
+    [INPUT_VOLTAGE_CALIB_P4]   = {1044,  20},
+    [INPUT_VOLTAGE_CALIB_P5]   = {1050,  25},
+    [INPUT_VOLTAGE_CALIB_N1]   = {1019,  -5},
+    [INPUT_VOLTAGE_CALIB_N2]   = {1014, -10},
+    [INPUT_VOLTAGE_CALIB_N3]   = {1009, -15},
+    [INPUT_VOLTAGE_CALIB_N4]   = {1004, -20},
+    [INPUT_VOLTAGE_CALIB_N5]   = { 998, -25},
 };
 
 _Static_assert((sizeof(input_voltage_calib_table) /
                 sizeof(input_voltage_calib_table[0])) ==
-                   (INPUT_VOLTAGE_CALIB_N5 + 1U),
+                   (INPUT_VOLTAGE_CALIB_N5 + 1),
                "Input-voltage calibration table is incomplete");
 
 static ADC_HandleTypeDef adc_handle;
-static uint32_t lpf_state[ADC_INPUT_COUNT];
+static          uint32_t lpf_state[ADC_INPUT_COUNT];
 static volatile uint16_t result[ADC_INPUT_COUNT];
 static volatile uint16_t raw[ADC_INPUT_COUNT];
-static volatile uint8_t initialized_channels;
-static volatile uint8_t current_idx;
+static volatile uint8_t  initialized_channels;
+static volatile uint8_t  current_idx;
 static volatile uint32_t system_rand_seed = 0;
-static uint8_t input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
+static          uint8_t  input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
 
-static void adc_filter_sample(uint8_t idx, uint16_t sample);
-static void adc_select_and_start(uint8_t idx);
+static void     adc_filter_sample(uint8_t idx, uint16_t sample);
+static void     adc_select_and_start(uint8_t idx);
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
-static void adc_fault(void);
+static void     adc_fault(void);
 
 void adc_init(void)
 {
@@ -142,12 +140,12 @@ void adc_init(void)
     gpio_cfg.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &gpio_cfg);
 
-    for (idx = 0U; idx < ADC_INPUT_COUNT; ++idx) {
-        lpf_state[idx] = 0U;
-        result[idx] = 0U;
+    for (idx = 0; idx < ADC_INPUT_COUNT; ++idx) {
+        lpf_state[idx] = 0;
+        result[idx] = 0;
     }
 
-    initialized_channels = 0U;
+    initialized_channels = 0;
     /*
      * Configuring the temperature channel through HAL enables its internal
      * path and waits for the required startup time. The ISR wraps to input 0
@@ -199,7 +197,7 @@ void adc_init(void)
 uint16_t adc_get(uint8_t idx)
 {
     if (idx >= ADC_INPUT_COUNT) {
-        return 0U;
+        return 0;
     }
 
     return result[idx];
@@ -219,12 +217,12 @@ uint16_t adc_to_millivolts(uint8_t idx)
     uint32_t millivolts;
 
     if ((idx != DC_SENS_IDX) && (idx != BUCK_SENS_IDX)) {
-        return 0U;
+        return 0;
     }
 
     millivolts = (uint32_t)adc_get(idx) * ADC_REFERENCE_MV *
                  VOLTAGE_DIVIDER_SCALE;
-    millivolts += ADC_FULL_SCALE / 2U;
+    millivolts += ADC_FULL_SCALE / 2;
 
     millivolts /= ADC_FULL_SCALE;
 
@@ -240,11 +238,11 @@ uint16_t adc_to_milliamps(uint8_t idx)
     uint32_t milliamps;
 
     if (idx != CURR_SENS_IDX) {
-        return 0U;
+        return 0;
     }
 
     milliamps = (uint32_t)adc_get(idx) * CURRENT_FULL_SCALE_MA;
-    milliamps += ADC_FULL_SCALE / 2U;
+    milliamps += ADC_FULL_SCALE / 2;
 
     return (uint16_t)(milliamps / ADC_FULL_SCALE);
 }
@@ -260,12 +258,12 @@ uint16_t adc_to_celcius(uint8_t idx)
         break;
 
     default:
-        return 0U;
+        return 0;
     }
 
     initialized_mask = (uint8_t)(1U << idx);
-    if ((initialized_channels & initialized_mask) == 0U) {
-        return 0U;
+    if ((initialized_channels & initialized_mask) == 0) {
+        return 0;
     }
 
     if (idx == MCU_TEMP_IDX) {
@@ -280,7 +278,7 @@ uint32_t adc_get_milliwatts(void)
     uint32_t millivolts = adc_to_millivolts(BUCK_SENS_IDX);
     uint32_t milliamps = adc_to_milliamps(CURR_SENS_IDX);
 
-    return ((millivolts * milliamps) + 500U) / 1000U;
+    return ((millivolts * milliamps) + 500) / 1000;
 }
 
 /*
@@ -294,10 +292,10 @@ void ADC1_IRQHandler_Impl(void)
     uint8_t completed_idx;
     uint8_t next_idx;
 
-    if ((flags & (ADC_ISR_EOC | ADC_ISR_EOS)) == 0U) {
+    if ((flags & (ADC_ISR_EOC | ADC_ISR_EOS)) == 0) {
         adc_handle.Instance->ISR = flags & ADC_ISR_OVR;
 
-        if ((adc_handle.Instance->CR & ADC_CR_ADSTART) == 0U) {
+        if ((adc_handle.Instance->CR & ADC_CR_ADSTART) == 0) {
             adc_select_and_start(current_idx);
         }
 
@@ -308,9 +306,9 @@ void ADC1_IRQHandler_Impl(void)
     sample = (uint16_t)HAL_ADC_GetValue(&adc_handle);
     raw[completed_idx] = sample;
 
-    next_idx = (uint8_t)(completed_idx + 1U);
+    next_idx = (uint8_t)(completed_idx + 1);
     if (next_idx >= ADC_INPUT_COUNT) {
-        next_idx = 0U;
+        next_idx = 0;
     }
     current_idx = next_idx;
 
@@ -348,11 +346,11 @@ static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
 
     calibration = &input_voltage_calib_table[input_voltage_calibration];
     scaled_mv = (uint32_t)calibration->slope_q10 * millivolts;
-    calibrated_mv = (int32_t)((scaled_mv + INPUT_V_CALIB_ROUNDING) >> 10U) +
+    calibrated_mv = (int32_t)((scaled_mv + INPUT_V_CALIB_ROUNDING) >> 10) +
                     calibration->offset_mv;
 
-    if (calibrated_mv <= 0L) {
-        return 0U;
+    if (calibrated_mv <= 0) {
+        return 0;
     }
     if (calibrated_mv > (int32_t)UINT16_MAX) {
         return UINT16_MAX;
@@ -364,7 +362,7 @@ static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
 static void adc_filter_sample(uint8_t idx, uint16_t sample)
 {
     const adc_cfg_t *cfg = &lpf_cfg_table[idx];
-    const uint8_t initialized_mask = (uint8_t)(1U << idx);
+    const uint8_t initialized_mask = (uint8_t)(1 << idx);
     const uint32_t target = (uint32_t)sample * ADC_LPF_SCALE;
     uint32_t alpha;
     uint32_t new_weight;
@@ -372,7 +370,7 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     uint32_t weighted_sum;
     uint16_t new_value;
 
-    if ((initialized_channels & initialized_mask) == 0U) {
+    if ((initialized_channels & initialized_mask) == 0) {
         lpf_state[idx] = target;
         result[idx] = sample;
         initialized_channels |= initialized_mask;
@@ -400,7 +398,7 @@ static void adc_select_and_start(uint8_t idx)
      * HAL_ADC_ConfigChannel() ORs into CHSELR on STM32F0. Assigning the
      * register keeps exactly one channel selected for this conversion.
      */
-    adc_handle.Instance->CHSELR = 1UL << lpf_cfg_table[idx].channel;
+    adc_handle.Instance->CHSELR = 1 << lpf_cfg_table[idx].channel;
     adc_handle.Instance->CR |= ADC_CR_ADSTART;
 }
 
@@ -409,27 +407,27 @@ static uint16_t adc_ntc_to_celcius(uint16_t sample)
     uint8_t table_idx;
 
     if (sample >= ntc_adc_by_10c[0]) {
-        return 0U;
+        return 0;
     }
 
-    for (table_idx = 1U;
+    for (table_idx = 1;
          table_idx < (uint8_t)(sizeof(ntc_adc_by_10c) /
                                sizeof(ntc_adc_by_10c[0]));
          ++table_idx) {
         if (sample >= ntc_adc_by_10c[table_idx]) {
-            uint16_t span = ntc_adc_by_10c[table_idx - 1U] -
+            uint16_t span = ntc_adc_by_10c[table_idx - 1] -
                             ntc_adc_by_10c[table_idx];
-            uint16_t offset = ntc_adc_by_10c[table_idx - 1U] - sample;
+            uint16_t offset = ntc_adc_by_10c[table_idx - 1] - sample;
             uint16_t fraction = (uint16_t)
-                (((uint32_t)offset * NTC_TABLE_STEP_C + (span / 2U)) / span);
+                (((uint32_t)offset * NTC_TABLE_STEP_C + (span / 2)) / span);
 
-            return (uint16_t)(((uint16_t)table_idx - 1U) *
+            return (uint16_t)(((uint16_t)table_idx - 1) *
                               NTC_TABLE_STEP_C + fraction);
         }
     }
 
     return (uint16_t)((sizeof(ntc_adc_by_10c) /
-                       sizeof(ntc_adc_by_10c[0]) - 1U) * NTC_TABLE_STEP_C);
+                       sizeof(ntc_adc_by_10c[0]) - 1) * NTC_TABLE_STEP_C);
 }
 
 static uint16_t adc_mcu_to_celcius(uint16_t sample)
@@ -441,20 +439,20 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
     uint32_t rounded_delta;
 
     delta = (int32_t)calibration - ((int32_t)sample << 2);
-    delta *= (int32_t)(ADC_REFERENCE_MV * 10U);
+    delta *= (int32_t)(ADC_REFERENCE_MV * 10);
 
-    if (delta >= 0L) {
-        rounded_delta = (uint32_t)delta + (MCU_TEMP_SCALE / 2UL);
+    if (delta >= 0) {
+        rounded_delta = (uint32_t)delta + (MCU_TEMP_SCALE / 2);
         temperature = MCU_TEMP_CAL1_C +
                       (int32_t)(rounded_delta / MCU_TEMP_SCALE);
     } else {
-        rounded_delta = (uint32_t)(-delta) + (MCU_TEMP_SCALE / 2UL);
+        rounded_delta = (uint32_t)(-delta) + (MCU_TEMP_SCALE / 2);
         temperature = MCU_TEMP_CAL1_C -
                       (int32_t)(rounded_delta / MCU_TEMP_SCALE);
     }
 
-    if (temperature <= 0L) {
-        return 0U;
+    if (temperature <= 0) {
+        return 0;
     }
 
     if (temperature > (int32_t)UINT16_MAX) {

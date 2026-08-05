@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hotwand.h"
+
 #include <stdint.h>
 
 #ifdef __cplusplus

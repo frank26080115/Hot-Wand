@@ -25,7 +25,7 @@ especially if subsequent definitions of types depend on them
 #define OLED_MAX_PIXEL_SHIFT_X 3
 #define OLED_MAX_PIXEL_SHIFT_Y 3
 
-#define OLED_DIM_CONTRAST 123 // I don't actually know what the range is
+#define OLED_DIM_CONTRAST 32U
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot.
  * Each 100 ms column captures the peak power observed during its interval,
@@ -71,6 +71,10 @@ especially if subsequent definitions of types depend on them
 
 #if (BOOT_DC_READY_MV == 0U) || (BOOT_DC_READY_MV > 65535U)
 #error "BOOT_DC_READY_MV must be between 1 and 65535 millivolts"
+#endif
+
+#ifndef SETUP_MENU_TIMEOUT_MS
+#define SETUP_MENU_TIMEOUT_MS 300000
 #endif
 
 #define BATTERY_MINIMUM_CELL_CNT_LIPO    4

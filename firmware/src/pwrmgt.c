@@ -12,30 +12,25 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-_Static_assert((THERM_2_IDX == (THERM_1_IDX + 1U)) &&
-                   (MCU_TEMP_IDX == (THERM_2_IDX + 1U)),
-               "temperature ADC indices must remain contiguous");
+_Static_assert((THERM_2_IDX == (THERM_1_IDX + 1)) && (MCU_TEMP_IDX == (THERM_2_IDX + 1)),
+               "temperature ADC indices must remain contiguous, a loop in `pwrmgt_task` depends on this");
 
-#define PWRMGT_GRAPH_WIDTH_PX          32U
-#define PWRMGT_GRAPH_SCREEN_HEIGHT_PX 128U
-#define PWRMGT_GRAPH_HEIGHT_PX \
-    (PWRMGT_GRAPH_SCREEN_HEIGHT_PX - PWRMGT_GRAPH_TEXT_HEIGHT_PX)
+#define PWRMGT_GRAPH_WIDTH_PX             32
+#define PWRMGT_GRAPH_SCREEN_HEIGHT_PX    128
+#define PWRMGT_GRAPH_HEIGHT_PX           (PWRMGT_GRAPH_SCREEN_HEIGHT_PX - PWRMGT_GRAPH_TEXT_HEIGHT_PX)
 
-#define PWRMGT_POWER_50W_MW  50000UL
-#define PWRMGT_POWER_75W_MW  75000UL
-#define PWRMGT_POWER_100W_MW 100000UL
+#define PWRMGT_POWER_50W_MW     50000
+#define PWRMGT_POWER_75W_MW     75000
+#define PWRMGT_POWER_100W_MW    100000
 
-#define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS 300UL
+#define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS    300
 
-static const char pwrmgt_low_voltage_message[] = "CAN'T\nLOW\nVOLT";
-static const char pwrmgt_too_hot_message[] = "CAN'T\nTOO\nHOT";
-static const char pwrmgt_repeated_attempt_message[] =
-    "NOT\nNOW\nDUMB-\nASS";
+static const char pwrmgt_low_voltage_message[]      = "CAN'T\nLOW\nVOLT";
+static const char pwrmgt_too_hot_message[]          = "CAN'T\nTOO\nHOT";
+static const char pwrmgt_repeated_attempt_message[] = "NOT\nNOW\nDUMB-\nASS";
 
-static pwrlvl_mode_t pwrmgt_desired_power_level =
-    PWRLVL_MODE_100_PERCENT;
-static pwrlvl_mode_t pwrmgt_applied_power_level =
-    PWRLVL_MODE_100_PERCENT;
+static pwrlvl_mode_t pwrmgt_desired_power_level = PWRLVL_MODE_100_PERCENT;
+static pwrlvl_mode_t pwrmgt_applied_power_level = PWRLVL_MODE_100_PERCENT;
 static uint8_t pwrmgt_attenuation_reasons;
 static bool pwrmgt_temperature_limited;
 static bool pwrmgt_low_dc_limited;
@@ -49,6 +44,10 @@ static uint8_t pwrmgt_history_push_idx;
 static uint32_t pwrmgt_history_maximum_mw;
 static uint8_t pwrmgt_graph_dotted_phase;
 static uint32_t pwrmgt_history_last_update_ms;
+static uint32_t pwrmgt_idle_started_ms;
+static uint32_t pwrmgt_last_active_ms;
+static uint32_t pwrmgt_idle_power_threshold_mw = 10000U;
+static bool pwrmgt_is_idle;
 
 static uint8_t pwrmgt_history_peek(uint8_t position);
 static void pwrmgt_history_push(uint32_t power_milliwatts,
@@ -65,8 +64,33 @@ void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode)
     }
 }
 
+void pwrmgt_set_idle_power_threshold(uint8_t threshold)
+{
+    static const uint32_t thresholds_mw[] = {
+        1000U, 2000U, 5000U, 10000U, 20000U, 30000U, 40000U
+    };
+
+    if (threshold < (sizeof(thresholds_mw) / sizeof(thresholds_mw[0]))) {
+        pwrmgt_idle_power_threshold_mw = thresholds_mw[threshold];
+    }
+}
+
+uint32_t pwrmgt_get_idle_duration_ms(void)
+{
+    return pwrmgt_is_idle
+               ? (uint32_t)(systick_get_ms() - pwrmgt_idle_started_ms)
+               : 0U;
+}
+
+uint32_t pwrmgt_get_time_since_last_activity_ms(void)
+{
+    return (uint32_t)(systick_get_ms() - pwrmgt_last_active_ms);
+}
+
 void pwrmgt_change_pwr_lvl(void)
 {
+    pwrmgt_last_active_ms = systick_get_ms();
+
     if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited) {
         if (pwrmgt_pending_blocked_message == NULL) {
             pwrmgt_pending_blocked_message =
@@ -108,6 +132,8 @@ void pwrmgt_task(void)
     uint16_t dc_limit;
     uint8_t adc_idx;
     uint8_t reasons = PWRMGT_ATTENUATION_NONE;
+    uint32_t now;
+    uint32_t power_milliwatts;
 
     pwrmgt_blocked_change_task();
 
@@ -119,7 +145,7 @@ void pwrmgt_task(void)
         return;
     }
 
-    highest_temperature = 0U;
+    highest_temperature = 0;
     for (adc_idx = THERM_1_IDX; adc_idx <= MCU_TEMP_IDX; ++adc_idx) {
         temperature = adc_to_celcius(adc_idx);
         if (temperature > highest_temperature) {
@@ -141,7 +167,7 @@ void pwrmgt_task(void)
     pwrmgt_low_dc_limited = dc_input_millivolts < dc_limit;
 
     if (!pwrmgt_temperature_limited && !pwrmgt_low_dc_limited) {
-        pwrmgt_blocked_change_count = 0U;
+        pwrmgt_blocked_change_count = 0;
     }
 
     if (pwrmgt_temperature_limited) {
@@ -170,20 +196,31 @@ void pwrmgt_task(void)
 
     pwrmgt_attenuation_reasons = reasons;
 
+    power_milliwatts = adc_get_milliwatts();
+    now = systick_get_ms();
+    if (power_milliwatts < pwrmgt_idle_power_threshold_mw) {
+        if (!pwrmgt_is_idle) {
+            pwrmgt_idle_started_ms = now;
+            pwrmgt_is_idle = true;
+        }
+    } else {
+        pwrmgt_is_idle = false;
+        pwrmgt_last_active_ms = now;
+    }
+
     {
-        uint32_t now = systick_get_ms();
         bool increment_pointer = false;
 
         if ((uint32_t)(now - pwrmgt_history_last_update_ms) >=
             PWRMGT_GRAPH_UPDATE_INTERVAL_MS) {
             pwrmgt_history_last_update_ms = now;
             increment_pointer = true;
-            pwrmgt_graph_dotted_phase ^= 1U;
+            pwrmgt_graph_dotted_phase ^= 1;
         }
 
         /* Capture the peak between graph updates, not merely one sample at
          * the graph-update boundary. */
-        pwrmgt_history_push(adc_get_milliwatts(), increment_pointer);
+        pwrmgt_history_push(power_milliwatts, increment_pointer);
     }
 }
 
@@ -199,17 +236,17 @@ void pwrmgt_render_graph(u8g2_t *graphics)
     }
 
     /* Preserve the text area and replace only the graph below it. */
-    u8g2_SetDrawColor(graphics, 0U);
+    u8g2_SetDrawColor(graphics, U8G2_DRAW_CLEAR);
     u8g2_DrawBox(graphics,
-                 0U,
+                 0,
                  PWRMGT_GRAPH_TEXT_HEIGHT_PX,
                  PWRMGT_GRAPH_WIDTH_PX,
                  PWRMGT_GRAPH_HEIGHT_PX);
-    u8g2_SetDrawColor(graphics, 1U);
+    u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
 
-    for (x = 0U; x < PWRMGT_GRAPH_WIDTH_PX; ++x) {
+    for (x = 0; x < PWRMGT_GRAPH_WIDTH_PX; ++x) {
         pixels = pwrmgt_history_peek(x);
-        if (pixels != 0U) {
+        if (pixels != 0) {
             u8g2_DrawVLine(graphics,
                            x,
                            PWRMGT_GRAPH_SCREEN_HEIGHT_PX - pixels,
@@ -223,17 +260,17 @@ void pwrmgt_render_graph(u8g2_t *graphics)
     if (pwrmgt_applied_power_level != PWRLVL_MODE_100_PERCENT) {
         limit_milliwatts = pwrmgt_get_applied_limit_mw();
         limit_pixels = pwrmgt_power_to_pixels(limit_milliwatts);
-        if (limit_pixels != 0U) {
-            u8g2_SetDrawColor(graphics, 2U);
+        if (limit_pixels != 0) {
+            u8g2_SetDrawColor(graphics, U8G2_DRAW_XOR);
             for (x = pwrmgt_graph_dotted_phase;
                  x < PWRMGT_GRAPH_WIDTH_PX;
-                 x = (uint8_t)(x + 2U)) {
+                 x = (uint8_t)(x + 2)) {
                 u8g2_DrawPixel(
                     graphics,
                     x,
                     PWRMGT_GRAPH_SCREEN_HEIGHT_PX - limit_pixels);
             }
-            u8g2_SetDrawColor(graphics, 1U);
+            u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
         }
     }
 }
@@ -252,7 +289,7 @@ static uint8_t pwrmgt_history_peek(uint8_t position)
 {
     /* The slot after the current write slot is the oldest. Position zero is
      * therefore the left edge, while position 31 is the current/right edge. */
-    uint8_t index = (uint8_t)(pwrmgt_history_push_idx + position + 1U);
+    uint8_t index = (uint8_t)(pwrmgt_history_push_idx + position + 1);
 
     if (index >= PWRMGT_GRAPH_WIDTH_PX) {
         index = (uint8_t)(index - PWRMGT_GRAPH_WIDTH_PX);
@@ -267,13 +304,13 @@ static void pwrmgt_history_push(uint32_t power_milliwatts,
     if (increment_pointer) {
         ++pwrmgt_history_push_idx;
         if (pwrmgt_history_push_idx >= PWRMGT_GRAPH_WIDTH_PX) {
-            pwrmgt_history_push_idx = 0U;
+            pwrmgt_history_push_idx = 0;
         }
 
         /* The recycled slot must represent zero until this interval observes
          * a nonzero maximum. */
-        pwrmgt_power_history[pwrmgt_history_push_idx] = 0U;
-        pwrmgt_history_maximum_mw = 0UL;
+        pwrmgt_power_history[pwrmgt_history_push_idx] = 0;
+        pwrmgt_history_maximum_mw = 0;
     }
 
     if (power_milliwatts > pwrmgt_history_maximum_mw) {
@@ -346,7 +383,7 @@ static void pwrmgt_blocked_change_task(void)
         ++pwrmgt_blocked_change_count;
     }
 
-    message = pwrmgt_blocked_change_count >= 5U
+    message = pwrmgt_blocked_change_count >= 5
                   ? pwrmgt_repeated_attempt_message
                   : pwrmgt_pending_blocked_message;
     show_short_msg(message, PWRMGT_BLOCKED_CHANGE_MESSAGE_MS);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hotwand.h"
+
 #include "u8g2.h"
 
 #include <stdbool.h>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hotwand.h"
 #include "typedefs.h"
 #include <stdbool.h>
 

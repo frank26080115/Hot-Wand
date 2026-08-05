@@ -126,6 +126,29 @@ bool OLED_SendBuffer(OLED_Handle *oled)
     return oled->transport_ok != 0U;
 }
 
+bool OLED_SetDimMode(OLED_Handle *oled, bool dimmed)
+{
+    uint8_t requested = dimmed ? 1U : 0U;
+
+    if ((oled == NULL) || (oled->initialized == 0U)) {
+        return false;
+    }
+
+    if (oled->dimmed == requested) {
+        return true;
+    }
+
+    oled->transport_ok = 1U;
+    u8g2_SetContrast(&oled->graphics,
+                     dimmed ? OLED_DIM_CONTRAST : UINT8_MAX);
+    if (oled->transport_ok == 0U) {
+        return false;
+    }
+
+    oled->dimmed = requested;
+    return true;
+}
+
 static uint8_t OLED_I2CByteCallback(u8x8_t *u8x8,
                                     uint8_t message,
                                     uint8_t argument,

@@ -19,6 +19,7 @@ typedef struct {
     uint8_t transfer_active;
     uint8_t transport_ok;
     uint8_t initialized;
+    uint8_t dimmed;
 } OLED_Handle;
 
 extern I2C_HandleTypeDef i2c1;
@@ -29,3 +30,4 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *handle);
 bool OLED_Init(OLED_Handle *oled, I2C_HandleTypeDef *i2c);
 u8g2_t *OLED_GetGraphics(OLED_Handle *oled);
 bool OLED_SendBuffer(OLED_Handle *oled);
+bool OLED_SetDimMode(OLED_Handle *oled, bool dimmed);

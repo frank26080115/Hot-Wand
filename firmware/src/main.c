@@ -26,12 +26,20 @@
 #error "This source supports only the STM32F030 and STM32F042 targets."
 #endif
 
-#define SETUP_HOLD_BAR_WIDTH      32U
-#define SETUP_HOLD_BAR_HEIGHT      3U
-#define SETUP_HOLD_BAR_Y          45U
-#define MAIN_DISPLAY_FRAME_INTERVAL_MS 67UL
-#define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8U
-#define MAIN_DISPLAY_VOLTAGE_BASELINE    9U
+#define SETUP_HOLD_BAR_WIDTH      32
+#define SETUP_HOLD_BAR_HEIGHT      3
+#define SETUP_HOLD_BAR_Y          45
+#define MAIN_DISPLAY_FRAME_INTERVAL_MS      67
+#define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE    8
+#define MAIN_DISPLAY_VOLTAGE_BASELINE       9
+
+static const uint32_t auto_sleep_delay_ms[] = {
+    0, 5 * 60 * 1000, 15 * 60 * 1000,
+    30 * 60 * 1000
+};
+static const uint32_t auto_dim_delay_ms[] = {
+    0, 15 * 1000, 30 * 1000, 60 * 1000
+};
 
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width);
@@ -41,8 +49,8 @@ static void Error_Handler(void);
 
 void enter_sleep_mode(void);
 
-uint8_t pixshift_x = 0U;
-uint8_t pixshift_y = 0U;
+uint8_t pixshift_x = 0;
+uint8_t pixshift_y = 0;
 
 int main(void)
 {
@@ -58,7 +66,7 @@ int main(void)
      * afterward. */
     HAL_Init();
 
-    (void)rfgen_clock_init();
+    rfgen_clock_init();
     systick_init();
     adc_init();
     btn_init();
@@ -76,7 +84,7 @@ int main(void)
 
     do {
         random_seed = adc_get_rand_seed();
-    } while (random_seed == 0U);
+    } while (random_seed == 0);
     hotwand_srand(random_seed);
     pixshift_x = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_X;
     pixshift_y = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_Y;
@@ -96,12 +104,12 @@ int main(void)
         if (battery_guess(input_millivolts,
                           settings.batt_mode,
                           &battery_guess_result)) {
-            (void)battery_set_params(
+            battery_set_params(
                 battery_guess_result.optimistic_cell_count,
                 settings.batt_mode);
         }
     } else {
-        (void)battery_set_params(0U, BATT_MODE_NONE);
+        battery_set_params(0, BATT_MODE_NONE);
     }
 
     /* perform all other initialization here */
@@ -109,6 +117,7 @@ int main(void)
     pwrlvl_init();
     pwrmgt_set_desired_power_level(
         (pwrlvl_mode_t)settings.startup_power_level);
+    pwrmgt_set_idle_power_threshold(settings.idle_detect_thresh);
     fan_init();
     display_last_frame_ms =
         systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
@@ -142,6 +151,21 @@ int main(void)
         if (btn_has_short_press(true)) pwrmgt_change_pwr_lvl();
         if (btn_has_long_press(true)) enter_sleep_mode();
 
+        {
+            uint32_t inactive_ms =
+                pwrmgt_get_time_since_last_activity_ms();
+
+            if ((settings.auto_sleep != AUTO_SLEEP_OFF) &&
+                (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep])) {
+                enter_sleep_mode();
+            }
+
+            OLED_SetDimMode(
+                &oled,
+                (settings.auto_dim != AUTO_DIM_OFF) &&
+                (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
+        }
+
         /* Transient messages own the display while active.  Otherwise draw
          * the live voltage and graph at no more than 15 frames per second. */
         if (!short_msg_task() &&
@@ -157,8 +181,8 @@ static void boot_check_for_setup(void)
 {
     u8g2_t *graphics = OLED_GetGraphics(&oled);
     uint32_t hold_start_ms;
-    uint32_t release_start_ms = 0U;
-    uint8_t drawn_width = 0U;
+    uint32_t release_start_ms = 0;
+    uint8_t drawn_width = 0;
     bool release_pending = false;
 
     if (graphics == NULL) {
@@ -167,7 +191,7 @@ static void boot_check_for_setup(void)
 
     u8g2_SetDisplayRotation(graphics, U8G2_R1);
     u8g2_SetFont(graphics, u8g2_font_5x7_tr);
-    boot_draw_setup_hold(graphics, 0U);
+    boot_draw_setup_hold(graphics, 0);
     hold_start_ms = systick_get_ms();
 
     for (;;) {
@@ -185,13 +209,13 @@ static void boot_check_for_setup(void)
             } else if ((uint32_t)(now - release_start_ms) >=
                        BTN_DEBOUNCE_MS) {
                 u8g2_ClearBuffer(graphics);
-                (void)OLED_SendBuffer(&oled);
-                (void)btn_has_short_press(true);
-                (void)btn_has_long_press(true);
+                OLED_SendBuffer(&oled);
+                btn_has_short_press(true);
+                btn_has_long_press(true);
                 return;
             }
 
-            HAL_Delay(1U);
+            HAL_Delay(1);
             continue;
         }
 
@@ -214,23 +238,23 @@ static void boot_check_for_setup(void)
             return;
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
 static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width)
 {
     u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, 1U,  9U, "HOLD");
-    u8g2_DrawStr(graphics, 1U, 19U, "TO");
-    u8g2_DrawStr(graphics, 1U, 29U, "ENTER");
-    u8g2_DrawStr(graphics, 1U, 39U, "SETUP");
+    u8g2_DrawStr(graphics, 1,  9, "HOLD");
+    u8g2_DrawStr(graphics, 1, 19, "TO");
+    u8g2_DrawStr(graphics, 1, 29, "ENTER");
+    u8g2_DrawStr(graphics, 1, 39, "SETUP");
     u8g2_DrawBox(graphics,
-                 0U,
+                 0,
                  SETUP_HOLD_BAR_Y,
                  bar_width,
                  SETUP_HOLD_BAR_HEIGHT);
-    (void)OLED_SendBuffer(&oled);
+    OLED_SendBuffer(&oled);
 }
 
 static void boot_wait_for_power_stable(void)
@@ -267,14 +291,14 @@ static void boot_wait_for_power_stable(void)
                 u8g2_SetDisplayRotation(graphics, U8G2_R1);
                 u8g2_SetFont(graphics, u8g2_font_5x7_tr);
                 u8g2_ClearBuffer(graphics);
-                u8g2_DrawStr(graphics, 1U, 9U, ".....");
-                (void)OLED_SendBuffer(&oled);
+                u8g2_DrawStr(graphics, 1, 9, ".....");
+                OLED_SendBuffer(&oled);
             }
 
             wait_message_drawn = true;
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -288,7 +312,7 @@ static void main_render_display(void)
         return;
     }
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1U);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1);
     end = voltage;
     while (*end != '\0') {
         ++end;
@@ -304,7 +328,7 @@ static void main_render_display(void)
                  (u8g2_uint_t)(MAIN_DISPLAY_VOLTAGE_BASELINE + pixshift_y),
                  voltage);
     pwrmgt_render_graph(graphics);
-    (void)OLED_SendBuffer(&oled);
+    OLED_SendBuffer(&oled);
 }
 
 static void Error_Handler(void)

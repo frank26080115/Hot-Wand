@@ -1,10 +1,8 @@
 #pragma once
 
-#ifndef SETUP_MENU_TIMEOUT_MS
-#define SETUP_MENU_TIMEOUT_MS 300000UL
-#endif
+#include "hotwand.h"
 
-#if SETUP_MENU_TIMEOUT_MS == 0UL
+#if SETUP_MENU_TIMEOUT_MS == 0
 #error "SETUP_MENU_TIMEOUT_MS must be greater than zero"
 #endif
 
