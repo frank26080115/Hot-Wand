@@ -30,8 +30,10 @@
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
 #define TEMPERATURE_HYSTERYSIS_C         5
 
-#if TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C
-#error "Temperature hysteresis exceeds the hot-warning threshold"
+#if (TEMPERATURE_FAN_THRESHOLD_LOW_C > TEMPERATURE_FAN_THRESHOLD_HIGH_C) ||                                            \
+    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_FAN_THRESHOLD_LOW_C) ||                                                    \
+    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C)
+#error "Invalid fan thresholds or temperature hysteresis"
 #endif
 
 #define DC_HIGH_POWER_MINIMUM_MV    19000

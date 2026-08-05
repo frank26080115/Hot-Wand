@@ -5,6 +5,7 @@
 #include "fan.h"
 
 #include "adc.h"
+#include "conf.h"
 #include "pins.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
@@ -16,16 +17,17 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAN_START_DELAY_MS    5000
-#define FAN_RUN_TEMPERATURE_C 50
+#define FAN_START_DELAY_MS 5000
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
 static bool     fan_enabled;
+static bool     fan_running;
 static bool     fan_pin_initialized;
 static uint32_t fan_last_wake_ms;
+static uint8_t  fan_mode;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -33,14 +35,17 @@ static uint32_t fan_last_wake_ms;
 
 static void fan_pin_init(void);
 static bool fan_should_run(void);
+static bool fan_any_temperature_exceeds(uint16_t temperature_c);
 
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void fan_init(void)
+void fan_init(uint8_t mode)
 {
     fan_enabled = true;
+    fan_running = false;
+    fan_mode    = mode;
     fan_on_wake();
 }
 
@@ -75,6 +80,7 @@ void fan_task(void)
     }
 
     HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, should_run ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    fan_running = should_run;
 }
 
 void fan_on_wake(void)
@@ -85,6 +91,7 @@ void fan_on_wake(void)
 void fan_stop(void)
 {
     fan_enabled = false;
+    fan_running = false;
 
     /* An uninitialized PA13 still belongs to SWD and the fan has never been
      * started, so do not take ownership of the pin merely to stop it. */
@@ -121,7 +128,36 @@ static void fan_pin_init(void)
 
 static bool fan_should_run(void)
 {
-    return (adc_to_celcius(THERM_1_IDX) > FAN_RUN_TEMPERATURE_C) ||
-           (adc_to_celcius(THERM_2_IDX) > FAN_RUN_TEMPERATURE_C) ||
-           (adc_to_celcius(MCU_TEMP_IDX) > FAN_RUN_TEMPERATURE_C);
+    uint16_t turn_on_temperature_c;
+    uint16_t temperature_limit_c;
+
+    switch (fan_mode)
+    {
+    case FAN_MODE_ON:
+        return true;
+
+    case FAN_MODE_AUTO_LOW:
+        turn_on_temperature_c = TEMPERATURE_FAN_THRESHOLD_LOW_C;
+        break;
+
+    case FAN_MODE_AUTO_HIGH:
+        turn_on_temperature_c = TEMPERATURE_FAN_THRESHOLD_HIGH_C;
+        break;
+
+    case FAN_MODE_OFF:
+    default:
+        return false;
+    }
+
+    /* Automatic modes turn on above their selected threshold, then remain on
+     * until every monitored temperature
+     * falls by the configured hysteresis. */
+    temperature_limit_c = fan_running ? (turn_on_temperature_c - TEMPERATURE_HYSTERYSIS_C) : turn_on_temperature_c;
+    return fan_any_temperature_exceeds(temperature_limit_c);
+}
+
+static bool fan_any_temperature_exceeds(uint16_t temperature_c)
+{
+    return (adc_to_celcius(THERM_1_IDX) > temperature_c) || (adc_to_celcius(THERM_2_IDX) > temperature_c) ||
+           (adc_to_celcius(MCU_TEMP_IDX) > temperature_c);
 }

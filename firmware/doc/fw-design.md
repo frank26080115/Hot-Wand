@@ -47,7 +47,7 @@ The cooling fan hardware is optional, but the control for it will always exist.
 
 The fan is always off for at least 5 seconds after power up. After the 5 seconds, the fan will respect the configured operation mode. If the mode is always-on, then it will turn on.
 
-If the fan mode is automatic, it will be on when temperatures exceed a threshold, with a 5 degree hystersis.
+In either automatic mode, the fan turns on when any monitored temperature exceeds that mode's configured low or high threshold. It turns off only after every monitored temperature falls to or below the selected threshold minus the configured temperature hysteresis.
 
 The fan is off during sleep mode.
 
