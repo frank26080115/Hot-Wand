@@ -14,3 +14,4 @@ void test_rfgen(void);
 void test_rfgen_burst(void);
 void test_nvm_simple(void);
 void test_nvm_full_page(void);
+void test_battery_guess(void);

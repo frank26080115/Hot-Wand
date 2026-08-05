@@ -4,6 +4,7 @@
 
 #include "tests.h"
 
+#include "battery.h"
 #include "button.h"
 #include "fan.h"
 #include "fault.h"
@@ -29,6 +30,9 @@
 #define TEST_RFGEN_BURST_DURATION_MS 1000
 #define TEST_PWRLVL_75_PERCENT_CCR 24
 #define TEST_NVM_VERBOSE_SAVE_COUNT 4
+#define TEST_BATTERY_GUESS_MINIMUM_MILLIVOLTS 14000
+#define TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS 36000
+#define TEST_BATTERY_GUESS_STEP_MILLIVOLTS 250
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -58,6 +62,10 @@ static void      test_uart_write_number(uint32_t value);
 static void      test_uart_write_address(uintptr_t address);
 static void      test_nvm_report_settings(const hotwand_setup_nvm_t* settings);
 static bool      test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number);
+static void      test_battery_guess_write_row(uint8_t                battery_mode,
+                                              uint16_t               battery_millivolts,
+                                              bool                   valid,
+                                              const battery_guess_t* guess);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -79,12 +87,9 @@ void test_run(void)
     // test_bringup_oled();
     // test_rfgen();
     // test_rfgen_burst();
-    // test_nvm_simple(); // do nothing until button press, enable UART, write NVM data and validate a full read back
-    // with each button press test_nvm_full_page(); // do nothing until button press, enable UART, nearly fill the NVM
-    // page with writes, with 2 left over spaces, don't bother outputting too much to UART during this filling, then
-    // call the NVM save function 4 times (with UART verbose trace, validating read back data) such that when we are
-    // done, there are two entries in the page after a page erase has happened, the UART messages should be very verbose
-    // about what address is used and when the erase happened
+    // test_nvm_simple();
+    // test_nvm_full_page();
+    // test_battery_guess();
 }
 
 void test_bringup_systick(void)
@@ -439,6 +444,49 @@ void test_nvm_full_page(void)
     }
 }
 
+void test_battery_guess(void)
+{
+    battery_guess_t guess;
+    uint16_t        battery_millivolts;
+    uint8_t         battery_mode;
+    bool            valid;
+
+    UART_SetAllowed(false);
+    btn_has_short_press(true);
+
+    /* PA14 remains available for SWD until a deliberate press starts the
+     * test and opts in to UART output. */
+    for (;;)
+    {
+        btn_task();
+        if (btn_has_short_press(true))
+        {
+            UART_SetAllowed(true);
+            break;
+        }
+        HAL_Delay(1);
+    }
+
+    UART_Write("battery_mode,battery_millivolts,valid,optimistic_cell_count,pessimistic_cell_count,");
+    UART_Write("optimistic_millivolts_per_cell,pessimistic_millivolts_per_cell\r\n");
+
+    for (battery_mode = BATT_MODE_NONE; battery_mode <= BATT_MODE_LIFE_SAFE; ++battery_mode)
+    {
+        for (battery_millivolts = TEST_BATTERY_GUESS_MINIMUM_MILLIVOLTS;
+             battery_millivolts <= TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS;
+             battery_millivolts = (uint16_t)(battery_millivolts + TEST_BATTERY_GUESS_STEP_MILLIVOLTS))
+        {
+            valid = battery_guess(battery_millivolts, battery_mode, &guess);
+            test_battery_guess_write_row(battery_mode, battery_millivolts, valid, &guess);
+        }
+    }
+
+    for (;;)
+    {
+        HAL_Delay(1);
+    }
+}
+
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
@@ -703,4 +751,25 @@ static bool test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number)
     UART_Write(physical_read_ok ? " PASS\r\n" : " FAIL\r\n");
 
     return save_ok && api_read_ok && physical_read_ok && (!erase_expected || erase_confirmed);
+}
+
+static void test_battery_guess_write_row(uint8_t                battery_mode,
+                                         uint16_t               battery_millivolts,
+                                         bool                   valid,
+                                         const battery_guess_t* guess)
+{
+    test_uart_write_number(battery_mode);
+    UART_Write(",");
+    test_uart_write_number(battery_millivolts);
+    UART_Write(",");
+    test_uart_write_number(valid ? 1 : 0);
+    UART_Write(",");
+    test_uart_write_number(guess->optimistic_cell_count);
+    UART_Write(",");
+    test_uart_write_number(guess->pessimistic_cell_count);
+    UART_Write(",");
+    test_uart_write_number(guess->optimistic_millivolts_per_cell);
+    UART_Write(",");
+    test_uart_write_number(guess->pessimistic_millivolts_per_cell);
+    UART_Write("\r\n");
 }
