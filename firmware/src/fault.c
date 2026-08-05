@@ -28,7 +28,8 @@
 #define FAULT_FONT_ASCENT           8
 #define FAULT_REFRESH_INTERVAL_MS   200
 #define FAULT_SHIFT_INTERVAL_MS     5000
-#define FAULT_LINE_BUFFER_SIZE      6
+#define FAULT_BIG_FONT_MAX_CHARS    5
+#define FAULT_LINE_BUFFER_SIZE      7
 #define FAULT_VOLTAGE_BUFFER_SIZE   8
 #define SHORT_MSG_BUFFER_SIZE       72
 #define SHORT_MSG_FRAME_INTERVAL_MS 100
@@ -50,9 +51,11 @@ static bool     fault_button_release_pending;
 // -----------------------------------------------------------------------------
 
 static uint8_t  fault_count_message_lines(const char* text);
+static size_t   fault_get_max_line_length(const char* text);
+static bool     fault_uses_big_font(const char* text);
 static void     fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
 static void     fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
-static uint8_t  fault_random_x(void);
+static uint8_t  fault_random_x(const char* text);
 static void     fault_reset_if_button_pressed(void);
 static uint32_t fault_get_auto_dim_delay_ms(void);
 
@@ -155,13 +158,13 @@ void show_fault(const char* text, bool allow_button_reset)
             {
                 y_offset  = upper_offset;
                 direction = -1;
-                x_offset  = fault_random_x();
+                x_offset  = fault_random_x(text);
             }
             else if (y_offset <= lower_offset)
             {
                 y_offset  = lower_offset;
                 direction = 1;
-                x_offset  = fault_random_x();
+                x_offset  = fault_random_x(text);
             }
         }
 
@@ -229,6 +232,7 @@ bool short_msg_task(void)
     {
         short_msg_last_frame_ms = now;
         u8g2_ClearBuffer(graphics);
+        u8g2_SetFont(graphics, fault_uses_big_font(short_msg_text) ? u8g2_font_6x10_tr : u8g2_font_5x7_tr);
         fault_draw_text(graphics, short_msg_text, 1, FAULT_FONT_ASCENT);
         OLED_SendBuffer(&oled);
     }
@@ -252,6 +256,7 @@ void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t 
     voltage[voltage_length]   = '\0';
 
     u8g2_ClearBuffer(graphics);
+    u8g2_SetFont(graphics, fault_uses_big_font(text) ? u8g2_font_6x10_tr : u8g2_font_5x7_tr);
     baseline = (int16_t)(y_offset + FAULT_FONT_ASCENT);
     fault_draw_line(graphics, voltage, x_offset, baseline);
     fault_draw_text(graphics, text, x_offset, (int16_t)(baseline + OLED_TEXT_LINE_HEIGHT));
@@ -278,6 +283,47 @@ static uint8_t fault_count_message_lines(const char* text)
     }
 
     return count;
+}
+
+static size_t fault_get_max_line_length(const char* text)
+{
+    size_t current_length = 0;
+    size_t maximum_length = 0;
+
+    while ((text != NULL) && (*text != '\0'))
+    {
+        if (*text++ == '\n')
+        {
+            if (current_length > maximum_length)
+            {
+                maximum_length = current_length;
+            }
+            current_length = 0;
+        }
+        else
+        {
+            ++current_length;
+        }
+    }
+
+    return current_length > maximum_length ? current_length : maximum_length;
+}
+
+static bool fault_uses_big_font(const char* text)
+{
+    char   voltage[FAULT_VOLTAGE_BUFFER_SIZE];
+    size_t maximum_length = fault_get_max_line_length(text);
+    size_t voltage_length;
+
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    ++voltage_length; /* The rendered line also includes the trailing 'V'. */
+
+    if (voltage_length > maximum_length)
+    {
+        maximum_length = voltage_length;
+    }
+
+    return maximum_length <= FAULT_BIG_FONT_MAX_CHARS;
 }
 
 static void fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline)
@@ -316,9 +362,12 @@ static void fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset
     }
 }
 
-static uint8_t fault_random_x(void)
+static uint8_t fault_random_x(const char* text)
 {
-    return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)OLED_MAX_PIXEL_SHIFT_X + 1));
+    uint8_t maximum_shift =
+        fault_uses_big_font(text) ? OLED_MAX_PIXEL_SHIFT_X_BIGFONT : OLED_MAX_PIXEL_SHIFT_X_SMALLFONT;
+
+    return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)maximum_shift + 1));
 }
 
 static uint32_t fault_get_auto_dim_delay_ms(void)

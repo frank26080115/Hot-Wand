@@ -107,7 +107,7 @@ int main(void)
         random_seed = adc_get_rand_seed();
     } while (random_seed == 0);
     hotwand_srand(random_seed);
-    pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X + 1);
+    pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X_BIGFONT + 1);
     pixshift_y = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_Y + 1);
 
     boot_button_down = btn_is_down();
@@ -340,7 +340,7 @@ static void boot_wait_for_power_stable(void)
             if (graphics != NULL)
             {
                 u8g2_ClearBuffer(graphics);
-                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "......");
+                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, ".....");
                 OLED_SendBuffer(&oled);
             }
 
@@ -367,6 +367,7 @@ static void main_render_display(void)
     voltage[voltage_length]   = '\0';
 
     u8g2_ClearBuffer(graphics);
+    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
     u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y), voltage);
     pwrmgt_render_graph(graphics);
     OLED_SendBuffer(&oled);

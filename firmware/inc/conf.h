@@ -105,10 +105,9 @@
 
 #define OLED_DIM_CONTRAST 32
 
-/* Five 5-pixel text cells occupy 25 of the 32 portrait columns. Offsets 0
- * through 7 let shifted text reach both
- * physical edges without clipping. */
-#define OLED_MAX_PIXEL_SHIFT_X 7
+/* Horizontal burn-in shifts for the two fixed-width OLED fonts. */
+#define OLED_MAX_PIXEL_SHIFT_X_SMALLFONT 7
+#define OLED_MAX_PIXEL_SHIFT_X_BIGFONT   3
 #define OLED_MAX_PIXEL_SHIFT_Y 3
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot. */

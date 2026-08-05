@@ -23,8 +23,7 @@
 
 #define SETUP_MENU_CHARS_PER_LINE   6
 #define SETUP_MENU_FIVE_CHAR_COUNT  5
-#define SETUP_MENU_FIVE_CHAR_MARGIN 3
-#define SETUP_MENU_SIX_CHAR_MARGIN  1
+#define SETUP_MENU_CENTERED_MARGIN  1
 #define SETUP_MENU_LAST_VALUE_ITEM  SETUP_ITEM_INPUT_V_CALIB
 
 // -----------------------------------------------------------------------------
@@ -122,7 +121,7 @@ static uint8_t     setup_menu_get_option_count(uint8_t item);
 static void        setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item);
 static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
-static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t margin, uint8_t baseline);
+static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
 static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
 static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
 
@@ -307,7 +306,6 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
     {
         const char* end = line;
         size_t      length;
-        uint8_t     margin;
 
         while ((*end != '\0') && (*end != '\n') && (*end != terminator))
         {
@@ -315,8 +313,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
         }
 
         length = (size_t)(end - line);
-        margin = length <= SETUP_MENU_FIVE_CHAR_COUNT ? SETUP_MENU_FIVE_CHAR_MARGIN : SETUP_MENU_SIX_CHAR_MARGIN;
-        setup_menu_draw_line(graphics, line, length, margin, baseline);
+        setup_menu_draw_line(graphics, line, length, baseline);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
 
         if (*end != '\n')
@@ -329,7 +326,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
     return baseline;
 }
 
-static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t margin, uint8_t baseline)
+static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline)
 {
     char   line[SETUP_MENU_CHARS_PER_LINE + 1];
     size_t index;
@@ -350,7 +347,8 @@ static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t leng
     }
     line[length] = '\0';
 
-    u8g2_DrawStr(graphics, margin, baseline, line);
+    u8g2_SetFont(graphics, length <= SETUP_MENU_FIVE_CHAR_COUNT ? u8g2_font_6x10_tr : u8g2_font_5x7_tr);
+    u8g2_DrawStr(graphics, SETUP_MENU_CENTERED_MARGIN, baseline, line);
 }
 
 static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item)
@@ -371,7 +369,6 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
     setup_menu_draw_line(graphics,
                          "SETUP",
                          SETUP_MENU_FIVE_CHAR_COUNT,
-                         SETUP_MENU_FIVE_CHAR_MARGIN,
                          OLED_FIRST_TEXT_BASELINE);
 
     /* Advance two rows: row two is deliberately blank. */
@@ -380,7 +377,7 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     if (item <= SETUP_MENU_LAST_VALUE_ITEM)
     {
-        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, SETUP_MENU_FIVE_CHAR_MARGIN, baseline);
+        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, baseline);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
         option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
         setup_menu_draw_text(graphics, option, '|', baseline);
