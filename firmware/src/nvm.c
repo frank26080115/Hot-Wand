@@ -15,9 +15,9 @@
 // -----------------------------------------------------------------------------
 
 #define NVM_EXPECTED_PAGE_SIZE 1024
-#define NVM_RECORD_MAGIC 0xA5
-#define NVM_ERASED_HALFWORD 0xFFFF
-#define NVM_SLOT_SIZE_BYTES ((uint16_t)sizeof(hotwand_setup_nvm_t))
+#define NVM_RECORD_MAGIC       0xA5
+#define NVM_ERASED_HALFWORD    0xFFFF
+#define NVM_SLOT_SIZE_BYTES    ((uint16_t)sizeof(hotwand_setup_nvm_t))
 
 #if FLASH_PAGE_SIZE != NVM_EXPECTED_PAGE_SIZE
 #error "The NVM layout requires 1 KiB flash erase pages"

@@ -19,11 +19,11 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define BATTERY_FAULT_BAR_WIDTH 32
+#define BATTERY_FAULT_BAR_WIDTH  32
 #define BATTERY_FAULT_BAR_HEIGHT 3
-#define BATTERY_FAULT_BAR_Y 85
+#define BATTERY_FAULT_BAR_Y      85
 #define BATTERY_FAULT_REFRESH_MS 67
-#define BATTERY_FAULT_STEP_MS 156
+#define BATTERY_FAULT_STEP_MS    156
 
 // -----------------------------------------------------------------------------
 // Globals

@@ -14,24 +14,24 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define ADC_INPUT_COUNT 6
-#define ADC_LPF_SCALE 1024
-#define ADC_LPF_ROUNDING (ADC_LPF_SCALE / 2)
-#define ADC_DEFAULT_LPF_ALPHA 900
-#define ADC_ANALOG_PINS (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | BUCK_SENS_PINn | CURR_SENS_PINn)
-#define ADC_REFERENCE_MV 3300
-#define ADC_FULL_SCALE 1023
-#define VOLTAGE_DIVIDER_SCALE 11
-#define CURRENT_FULL_SCALE_MA 6037
-#define INPUT_V_CALIB_SCALE 1024
+#define ADC_INPUT_COUNT        6
+#define ADC_LPF_SCALE          1024
+#define ADC_LPF_ROUNDING       (ADC_LPF_SCALE / 2)
+#define ADC_DEFAULT_LPF_ALPHA  900
+#define ADC_ANALOG_PINS        (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | BUCK_SENS_PINn | CURR_SENS_PINn)
+#define ADC_REFERENCE_MV       3300
+#define ADC_FULL_SCALE         1023
+#define VOLTAGE_DIVIDER_SCALE  11
+#define CURRENT_FULL_SCALE_MA  6037
+#define INPUT_V_CALIB_SCALE    1024
 #define INPUT_V_CALIB_ROUNDING (INPUT_V_CALIB_SCALE / 2)
 
-#define NTC_TABLE_STEP_C 10
-#define MCU_TEMP_CAL1_ADDRESS 0x1FFFF7B8
-#define MCU_TEMP_CAL1_C 30
-#define MCU_TEMP_ADC_FULL_SCALE 4095
+#define NTC_TABLE_STEP_C         10
+#define MCU_TEMP_CAL1_ADDRESS    0x1FFFF7B8
+#define MCU_TEMP_CAL1_C          30
+#define MCU_TEMP_ADC_FULL_SCALE  4095
 #define MCU_TEMP_SLOPE_TENTHS_MV 43
-#define MCU_TEMP_SCALE (MCU_TEMP_ADC_FULL_SCALE * MCU_TEMP_SLOPE_TENTHS_MV)
+#define MCU_TEMP_SCALE           (MCU_TEMP_ADC_FULL_SCALE * MCU_TEMP_SLOPE_TENTHS_MV)
 
 // -----------------------------------------------------------------------------
 // Types

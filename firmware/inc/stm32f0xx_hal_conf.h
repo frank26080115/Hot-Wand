@@ -83,7 +83,7 @@ extern "C"
 /*#define HAL_RTC_MODULE_ENABLED   */
 /*#define HAL_SPI_MODULE_ENABLED   */
 #define HAL_TIM_MODULE_ENABLED
-#define HAL_UART_MODULE_ENABLED */
+#define HAL_UART_MODULE_ENABLED  */
 #define HAL_USART_MODULE_ENABLED */
 /*#define HAL_IRDA_MODULE_ENABLED   */
 /*#define HAL_SMARTCARD_MODULE_ENABLED   */
@@ -190,14 +190,14 @@ extern "C"
 /**
  * @brief This is the HAL system configuration section
  */
-#define VDD_VALUE ((uint32_t)3300)      /*!< Value of VDD in mv */
-#define TICK_INT_PRIORITY ((uint32_t)0) /*!< tick interrupt priority (lowest by default)  */
-                                        /*  Warning: Must be set to higher priority for HAL_Delay()  */
-                                        /*  and HAL_GetTick() usage under interrupt context          */
-#define USE_RTOS 0
-#define PREFETCH_ENABLE 1
+#define VDD_VALUE         ((uint32_t)3300) /*!< Value of VDD in mv */
+#define TICK_INT_PRIORITY ((uint32_t)0)    /*!< tick interrupt priority (lowest by default)  */
+                                           /*  Warning: Must be set to higher priority for HAL_Delay()  */
+                                           /*  and HAL_GetTick() usage under interrupt context          */
+#define USE_RTOS                 0
+#define PREFETCH_ENABLE          1
 #define INSTRUCTION_CACHE_ENABLE 0
-#define DATA_CACHE_ENABLE 0
+#define DATA_CACHE_ENABLE        0
 /* ########################## Assert Selection ############################## */
 /**
  * @brief Uncomment the line below to expanse the "assert_param" macro in the

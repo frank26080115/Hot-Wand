@@ -26,13 +26,13 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define TEST_STATUS_INTERVAL_MS 100
-#define TEST_RFGEN_BURST_DURATION_MS 1000
-#define TEST_PWRLVL_75_PERCENT_CCR 24
-#define TEST_NVM_VERBOSE_SAVE_COUNT 4
+#define TEST_STATUS_INTERVAL_MS               100
+#define TEST_RFGEN_BURST_DURATION_MS          1000
+#define TEST_PWRLVL_75_PERCENT_CCR            24
+#define TEST_NVM_VERBOSE_SAVE_COUNT           4
 #define TEST_BATTERY_GUESS_MINIMUM_MILLIVOLTS 14000
 #define TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS 36000
-#define TEST_BATTERY_GUESS_STEP_MILLIVOLTS 250
+#define TEST_BATTERY_GUESS_STEP_MILLIVOLTS    250
 
 // -----------------------------------------------------------------------------
 // Globals

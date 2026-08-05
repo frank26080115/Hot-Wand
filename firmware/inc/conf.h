@@ -25,16 +25,16 @@
 // Power and Thermal Limits
 // -----------------------------------------------------------------------------
 
-#define TEMPERATURE_FAN_THRESHOLD_LOW_C 50
+#define TEMPERATURE_FAN_THRESHOLD_LOW_C  50
 #define TEMPERATURE_FAN_THRESHOLD_HIGH_C 80
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
-#define TEMPERATURE_HYSTERYSIS_C 5
+#define TEMPERATURE_HYSTERYSIS_C         5
 
 #if TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C
 #error "Temperature hysteresis exceeds the hot-warning threshold"
 #endif
 
-#define DC_HIGH_POWER_MINIMUM_MV 19000
+#define DC_HIGH_POWER_MINIMUM_MV    19000
 #define DC_HIGH_POWER_HYSTERESIS_MV 1000
 
 #if (DC_HIGH_POWER_MINIMUM_MV <= 0) || (DC_HIGH_POWER_MINIMUM_MV > 65535) || (DC_HIGH_POWER_HYSTERESIS_MV < 0) ||      \
@@ -43,7 +43,7 @@
 #endif
 
 #define PWRLVL_SHORT_CIRCUIT_CURRENT_MA 5800
-#define PWRLVL_SHORT_CIRCUIT_TIME_MS 5000
+#define PWRLVL_SHORT_CIRCUIT_TIME_MS    5000
 
 #if (PWRLVL_SHORT_CIRCUIT_CURRENT_MA == 0) || (PWRLVL_SHORT_CIRCUIT_CURRENT_MA > 65535)
 #error "PWRLVL_SHORT_CIRCUIT_CURRENT_MA must fit in milliamps"
@@ -87,15 +87,15 @@
 // Display
 // -----------------------------------------------------------------------------
 
-#define OLED_DIM_CONTRAST 32
+#define OLED_DIM_CONTRAST      32
 #define OLED_MAX_PIXEL_SHIFT_X 3
 #define OLED_MAX_PIXEL_SHIFT_Y 3
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot. */
 /* Each 100 ms column captures the interval's peak; 32 columns show 3.2 seconds. */
-#define PWRMGT_GRAPH_TEXT_HEIGHT_PX 28
+#define PWRMGT_GRAPH_TEXT_HEIGHT_PX     28
 #define PWRMGT_GRAPH_UPDATE_INTERVAL_MS 100
-#define PWRMGT_GRAPH_MAX_POWER_MW 100000
+#define PWRMGT_GRAPH_MAX_POWER_MW       100000
 
 #if PWRMGT_GRAPH_TEXT_HEIGHT_PX >= 128
 #error "PWRMGT_GRAPH_TEXT_HEIGHT_PX must leave room for the graph"
@@ -113,8 +113,8 @@
 // Boot Power Qualification
 // -----------------------------------------------------------------------------
 
-#define BOOT_POWER_WAIT_MS 300
-#define BOOT_POWER_STABLE_MS 100
+#define BOOT_POWER_WAIT_MS    300
+#define BOOT_POWER_STABLE_MS  100
 #define BOOT_POWER_TIMEOUT_MS 2000
 
 #if (BOOT_POWER_WAIT_MS == 0) || (BOOT_POWER_STABLE_MS == 0) || (BOOT_POWER_TIMEOUT_MS == 0)

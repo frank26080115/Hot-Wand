@@ -21,10 +21,10 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define SETUP_MENU_CHARS_PER_LINE 6
+#define SETUP_MENU_CHARS_PER_LINE  6
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
-#define SETUP_MENU_LINE_HEIGHT 10
-#define SETUP_MENU_FIRST_BASELINE 9
+#define SETUP_MENU_LINE_HEIGHT     10
+#define SETUP_MENU_FIRST_BASELINE  9
 
 // -----------------------------------------------------------------------------
 // Types

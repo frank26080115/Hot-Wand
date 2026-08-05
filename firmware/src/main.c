@@ -33,12 +33,12 @@
 #error "This source supports only the STM32F030 and STM32F042 targets."
 #endif
 
-#define SETUP_HOLD_BAR_WIDTH 32
-#define SETUP_HOLD_BAR_HEIGHT 3
-#define SETUP_HOLD_BAR_Y 45
-#define MAIN_DISPLAY_FRAME_INTERVAL_MS 67
+#define SETUP_HOLD_BAR_WIDTH             32
+#define SETUP_HOLD_BAR_HEIGHT            3
+#define SETUP_HOLD_BAR_Y                 45
+#define MAIN_DISPLAY_FRAME_INTERVAL_MS   67
 #define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8
-#define MAIN_DISPLAY_VOLTAGE_BASELINE 9
+#define MAIN_DISPLAY_VOLTAGE_BASELINE    9
 
 // -----------------------------------------------------------------------------
 // Globals

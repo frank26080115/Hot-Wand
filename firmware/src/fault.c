@@ -23,14 +23,14 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAULT_DISPLAY_HEIGHT 32
-#define FAULT_FONT_ASCENT 8
-#define FAULT_LINE_HEIGHT 10
+#define FAULT_DISPLAY_HEIGHT      32
+#define FAULT_FONT_ASCENT         8
+#define FAULT_LINE_HEIGHT         10
 #define FAULT_REFRESH_INTERVAL_MS 200
-#define FAULT_SHIFT_INTERVAL_MS 5000
-#define FAULT_LINE_BUFFER_SIZE 6
+#define FAULT_SHIFT_INTERVAL_MS   5000
+#define FAULT_LINE_BUFFER_SIZE    6
 #define FAULT_VOLTAGE_BUFFER_SIZE 8
-#define SHORT_MSG_BUFFER_SIZE 72
+#define SHORT_MSG_BUFFER_SIZE     72
 
 // -----------------------------------------------------------------------------
 // Globals

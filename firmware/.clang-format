@@ -32,3 +32,8 @@ SpaceBeforeParens: ControlStatements
 SpacesInParentheses: false
 Cpp11BracedListStyle: true
 InsertBraces: true
+
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false

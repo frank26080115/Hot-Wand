@@ -12,9 +12,9 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define RFGEN_CLOCK_HZ 27120000
+#define RFGEN_CLOCK_HZ   27120000
 #define RFGEN_PWM_PERIOD 1
-#define RFGEN_PWM_PULSE 1
+#define RFGEN_PWM_PULSE  1
 
 /*
  * TIM1 runs directly from the 27.12 MHz crystal.  With PSC = 0 and ARR = 1,
