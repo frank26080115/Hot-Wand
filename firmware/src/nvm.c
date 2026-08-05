@@ -65,6 +65,21 @@ void nvm_init(void)
     nvm_initialized = true;
 }
 
+void nvm_apply_defaults(hotwand_setup_nvm_t *settings)
+{
+    if (settings == NULL) {
+        return;
+    }
+
+    *settings = (hotwand_setup_nvm_t){0};
+    settings->startup_power_level = POWER_LEVEL_MAX;
+    settings->fan_mode = FAN_MODE_AUTO_LOW;
+    settings->auto_sleep = AUTO_SLEEP_OFF;
+    settings->auto_dim = AUTO_DIM_OFF;
+    settings->idle_detect_thresh = IDLE_DETECT_THRESH_10W;
+    settings->batt_mode = BATT_MODE_NONE;
+}
+
 bool nvm_read(hotwand_setup_nvm_t *settings)
 {
     if (!nvm_initialized || !nvm_has_saved_settings ||
@@ -117,6 +132,18 @@ bool nvm_save(const hotwand_setup_nvm_t *settings)
     nvm_has_saved_settings = true;
     ++nvm_next_slot;
     return true;
+}
+
+bool nvm_factory_reset(void)
+{
+    /* Permit factory reset to be used independently of normal startup while
+     * retaining the same reserved-page layout validation. */
+    nvm_init();
+    if (!nvm_initialized) {
+        return false;
+    }
+
+    return nvm_erase_page();
 }
 
 static uintptr_t nvm_page_start(void)

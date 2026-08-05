@@ -1,7 +1,11 @@
+#include "hotwand.h"
 #include "adc.h"
 #include "battery.h"
 #include "button.h"
+#include "conf.h"
 #include "fan.h"
+#include "fault.h"
+#include "miscutils.h"
 #include "nvm.h"
 #include "oled.h"
 #include "pwrmgt.h"
@@ -12,6 +16,7 @@
 #include "systick.h"
 #include "tipdetect.h"
 #include "uart_debug.h"
+#include "tests.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,17 +31,26 @@
 #define SETUP_HOLD_BAR_WIDTH      32U
 #define SETUP_HOLD_BAR_HEIGHT      3U
 #define SETUP_HOLD_BAR_Y          45U
+#define MAIN_DISPLAY_FRAME_INTERVAL_MS 67UL
+#define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8U
+#define MAIN_DISPLAY_VOLTAGE_BASELINE    9U
 
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width);
+static void main_render_display(void);
 static void Error_Handler(void);
+
+void enter_sleep_mode(void);
+
+uint8_t pixshift_x = 0U;
+uint8_t pixshift_y = 0U;
 
 int main(void)
 {
     battery_guess_t battery_guess_result;
-    hotwand_setup_nvm_t settings = {0};
-    const battery_cell_voltage_range_t *cell_range;
+    hotwand_setup_nvm_t settings;
     uint32_t random_seed;
+    uint32_t display_last_frame_ms;
     uint16_t input_millivolts;
     bool boot_button_down;
 
@@ -61,6 +75,8 @@ int main(void)
         random_seed = adc_get_rand_seed();
     } while (random_seed == 0U);
     hotwand_srand(random_seed);
+    pixshift_x = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_X;
+    pixshift_y = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_Y;
 
     boot_button_down = btn_is_down();
     UART_SetAllowed(boot_button_down);
@@ -72,22 +88,22 @@ int main(void)
            (adc_to_millivolts(DC_SENS_IDX) < BOOT_DC_READY_MV)) {
     }
 
-    (void)nvm_read(&settings);
+    if (!nvm_read(&settings)) {
+        nvm_apply_defaults(&settings);
+    }
     input_millivolts = adc_to_millivolts(DC_SENS_IDX);
 
     if ((settings.batt_mode != BATT_MODE_NONE) &&
         (settings.batt_mode <= BATT_MODE_LIFE_SAFE)) {
-        cell_range = &battery_cell_voltage_ranges[settings.batt_mode];
         if (battery_guess(input_millivolts,
-                          cell_range->maximum_millivolts_per_cell,
-                          cell_range->minimum_millivolts_per_cell,
+                          settings.batt_mode,
                           &battery_guess_result)) {
             (void)battery_set_params(
                 battery_guess_result.optimistic_cell_count,
-                cell_range->minimum_millivolts_per_cell);
+                settings.batt_mode);
         }
     } else {
-        (void)battery_set_params(0U, 0U);
+        (void)battery_set_params(0U, BATT_MODE_NONE);
     }
 
     /* perform all other initialization here */
@@ -96,10 +112,46 @@ int main(void)
     pwrmgt_set_desired_power_level(
         (pwrlvl_mode_t)settings.startup_power_level);
     fan_init();
+    display_last_frame_ms =
+        systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
+
+    test_run(); // if the test is enabled, then this will never return
 
     for (;;) {
+        uint32_t now;
+
+        btn_task();
+        tipdetect_task();
+
+        /* Both faults are latched and stop the RF generator at their source.
+         * Their screens are terminal until the user requests a reset. */
+        if (tipdetect_has_triggered()) {
+            show_fault("TIP\nFAULT", true);
+        }
+        if (rfgen_has_fault()) {
+            show_fault("CLOCK\nFAULT", true);
+        }
+
+        /* Power management owns battery, temperature, and input-voltage
+         * supervision.  The lower power-level task applies its decision. */
         pwrmgt_task();
-        /* TODO: implement the remaining main-loop tasks. */
+        pwrlvl_task();
+        fan_task();
+        UART_debug_task();
+
+        now = systick_get_ms();
+
+        if (btn_has_short_press(true)) pwrmgt_change_pwr_lvl();
+        if (btn_has_long_press(true)) enter_sleep_mode();
+
+        /* Transient messages own the display while active.  Otherwise draw
+         * the live voltage and graph at no more than 15 frames per second. */
+        if (!short_msg_task() &&
+            ((uint32_t)(now - display_last_frame_ms) >=
+             MAIN_DISPLAY_FRAME_INTERVAL_MS)) {
+            display_last_frame_ms = now;
+            main_render_display();
+        }
     }
 }
 
@@ -116,7 +168,7 @@ static void boot_check_for_setup(void)
     }
 
     u8g2_SetDisplayRotation(graphics, U8G2_R1);
-    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     boot_draw_setup_hold(graphics, 0U);
     hold_start_ms = systick_get_ms();
 
@@ -183,10 +235,44 @@ static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width)
     (void)OLED_SendBuffer(&oled);
 }
 
+static void main_render_display(void)
+{
+    char voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
+    char *end;
+    u8g2_t *graphics = OLED_GetGraphics(&oled);
+
+    if (graphics == NULL) {
+        return;
+    }
+
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1U);
+    end = voltage;
+    while (*end != '\0') {
+        ++end;
+    }
+    *end++ = 'V';
+    *end = '\0';
+
+    u8g2_SetDisplayRotation(graphics, U8G2_R1);
+    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+    u8g2_ClearBuffer(graphics);
+    u8g2_DrawStr(graphics,
+                 (u8g2_uint_t)pixshift_x,
+                 (u8g2_uint_t)(MAIN_DISPLAY_VOLTAGE_BASELINE + pixshift_y),
+                 voltage);
+    pwrmgt_render_graph(graphics);
+    (void)OLED_SendBuffer(&oled);
+}
+
 static void Error_Handler(void)
 {
     __disable_irq();
 
     for (;;) {
     }
+}
+
+void enter_sleep_mode(void)
+{
+    show_fault("ZZZZZ", true);
 }

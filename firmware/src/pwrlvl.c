@@ -1,6 +1,8 @@
 #include "pwrlvl.h"
 
 #include "adc.h"
+#include "conf.h"
+#include "fault.h"
 #include "pins.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
@@ -30,10 +32,10 @@
 #define PWRLVL_CURRENT_LIMIT_MA       5200U
 #endif
 
-static TIM_HandleTypeDef pwrlvl_timer;
 static pwrlvl_mode_t pwrlvl_mode = PWRLVL_MODE_100_PERCENT;
 static uint32_t pwrlvl_last_update_ms;
 static uint32_t pwrlvl_previous_power_mw;
+static uint32_t pwrlvl_short_circuit_started_ms;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
 static uint16_t pwrlvl_previous_current_ma;
 #endif
@@ -41,15 +43,14 @@ static uint8_t pwrlvl_pwm_value;
 static bool pwrlvl_initialized;
 static bool pwrlvl_forced_minimum;
 static bool pwrlvl_current_limiting;
+static bool pwrlvl_short_circuit_timing;
 
 static uint32_t pwrlvl_get_limit_mw(void);
 static void pwrlvl_set_pwm(uint8_t value);
-static void pwrlvl_fault(void);
 
 void pwrlvl_init(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
-    TIM_OC_InitTypeDef pwm_cfg = {0};
     uint8_t initial_pwm_value;
 
     if (pwrlvl_initialized) {
@@ -58,6 +59,8 @@ void pwrlvl_init(void)
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_TIM3_CLK_ENABLE();
+    __HAL_RCC_TIM3_FORCE_RESET();
+    __HAL_RCC_TIM3_RELEASE_RESET();
 
     /*
      * Keep the GPIO at the state that matches the initial timer output while
@@ -78,32 +81,16 @@ void pwrlvl_init(void)
     gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
 
-    pwrlvl_timer.Instance = TIM3;
-    pwrlvl_timer.Init.Prescaler = 0U;
-    pwrlvl_timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-    pwrlvl_timer.Init.Period = PWRLVL_PWM_MAX;
-    pwrlvl_timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    pwrlvl_timer.Init.RepetitionCounter = 0U;
-    pwrlvl_timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
-    if (HAL_TIM_PWM_Init(&pwrlvl_timer) != HAL_OK) {
-        pwrlvl_fault();
-    }
-
-    pwm_cfg.OCMode = TIM_OCMODE_PWM1;
-    pwm_cfg.Pulse = initial_pwm_value;
-    pwm_cfg.OCPolarity = TIM_OCPOLARITY_HIGH;
-    pwm_cfg.OCFastMode = TIM_OCFAST_DISABLE;
-
-    if (HAL_TIM_PWM_ConfigChannel(&pwrlvl_timer,
-                                  &pwm_cfg,
-                                  TIM_CHANNEL_1) != HAL_OK) {
-        pwrlvl_fault();
-    }
-
-    if (HAL_TIM_PWM_Start(&pwrlvl_timer, TIM_CHANNEL_1) != HAL_OK) {
-        pwrlvl_fault();
-    }
+    TIM3->PSC = 0U;
+    TIM3->ARR = PWRLVL_PWM_MAX;
+    TIM3->CCR1 = initial_pwm_value;
+    TIM3->CCMR1 = TIM_CCMR1_OC1M_1 |
+                  TIM_CCMR1_OC1M_2 |
+                  TIM_CCMR1_OC1PE;
+    TIM3->EGR = TIM_EGR_UG;
+    TIM3->SR = 0U;
+    TIM3->CCER = TIM_CCER_CC1E;
+    TIM3->CR1 = TIM_CR1_CEN;
 
     gpio_cfg.Mode = GPIO_MODE_AF_PP;
     gpio_cfg.Alternate = GPIO_AF1_TIM3;
@@ -111,6 +98,8 @@ void pwrlvl_init(void)
 
     pwrlvl_pwm_value = initial_pwm_value;
     pwrlvl_previous_power_mw = 0U;
+    pwrlvl_short_circuit_started_ms = 0U;
+    pwrlvl_short_circuit_timing = false;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
     pwrlvl_previous_current_ma = 0U;
 #endif
@@ -124,13 +113,35 @@ void pwrlvl_task(void)
     uint32_t limit_mw;
     uint32_t now;
     uint32_t update_period_ms;
+    uint16_t current_ma;
     uint8_t next_pwm;
     bool ramp_up;
-#if PWRLVL_CURRENT_LIMIT_ENABLED
-    uint16_t current_ma;
-#endif
 
-    if (!pwrlvl_initialized || pwrlvl_forced_minimum) {
+    if (!pwrlvl_initialized) {
+        pwrlvl_current_limiting = false;
+        return;
+    }
+
+    now = systick_get_ms();
+    current_ma = adc_to_milliamps(CURR_SENS_IDX);
+
+    /* This is a continuous-duration test: any sample at or below 5.8 A
+     * cancels the pending fault interval.  Keep it independent of the normal
+     * current limiter so disabling that feature cannot disable protection. */
+    if (current_ma > PWRLVL_SHORT_CIRCUIT_CURRENT_MA) {
+        if (!pwrlvl_short_circuit_timing) {
+            pwrlvl_short_circuit_started_ms = now;
+            pwrlvl_short_circuit_timing = true;
+        } else if ((uint32_t)(now - pwrlvl_short_circuit_started_ms) >=
+                   PWRLVL_SHORT_CIRCUIT_TIME_MS) {
+            /* show_fault() does not return and safely shuts down all outputs. */
+            show_fault("SHORT\nCIRKT\nFAULT", false);
+        }
+    } else {
+        pwrlvl_short_circuit_timing = false;
+    }
+
+    if (pwrlvl_forced_minimum) {
         pwrlvl_current_limiting = false;
         return;
     }
@@ -151,7 +162,6 @@ void pwrlvl_task(void)
      * one previous reading in the decision, matching the power-limit response
      * and ensuring an over-current sample gets at least one fast ramp step.
      */
-    current_ma = adc_to_milliamps(CURR_SENS_IDX);
     pwrlvl_current_limiting =
         (current_ma >= PWRLVL_CURRENT_LIMIT_MA) ||
         (pwrlvl_previous_current_ma >= PWRLVL_CURRENT_LIMIT_MA);
@@ -163,7 +173,6 @@ void pwrlvl_task(void)
 
     update_period_ms = ramp_up ? PWRLVL_RAMP_UP_PERIOD_MS
                                : PWRLVL_UPDATE_PERIOD_MS;
-    now = systick_get_ms();
     if ((uint32_t)(now - pwrlvl_last_update_ms) <
         update_period_ms) {
         return;
@@ -220,9 +229,7 @@ void pwrlvl_force_minimum(void)
     pwrlvl_current_limiting = false;
 
     if (pwrlvl_initialized) {
-        __HAL_TIM_SET_COMPARE(&pwrlvl_timer,
-                              TIM_CHANNEL_1,
-                              PWRLVL_PWM_FULL_DUTY);
+        TIM3->CCR1 = PWRLVL_PWM_FULL_DUTY;
     }
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -252,9 +259,7 @@ void pwrlvl_release_minimum(void)
 
     /* Resume at almost full attenuation, then let pwrlvl_task() ramp toward
      * the power limit selected before the forced-minimum request. */
-    __HAL_TIM_SET_COMPARE(&pwrlvl_timer,
-                          TIM_CHANNEL_1,
-                          PWRLVL_PWM_MAX);
+    TIM3->CCR1 = PWRLVL_PWM_MAX;
 
     gpio_cfg.Pin = PWR_ATTENU_PINn;
     gpio_cfg.Mode = GPIO_MODE_AF_PP;
@@ -290,26 +295,5 @@ static void pwrlvl_set_pwm(uint8_t value)
     }
 
     pwrlvl_pwm_value = value;
-    __HAL_TIM_SET_COMPARE(&pwrlvl_timer, TIM_CHANNEL_1, value);
-}
-
-static void pwrlvl_fault(void)
-{
-    GPIO_InitTypeDef gpio_cfg = {0};
-
-    /*
-     * A high attenuation signal lowers the buck output, making this the
-     * safer static state if PWM setup fails.
-     */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    HAL_GPIO_WritePin(PWR_ATTENU_GPIOx, PWR_ATTENU_PINn, GPIO_PIN_SET);
-
-    gpio_cfg.Pin = PWR_ATTENU_PINn;
-    gpio_cfg.Mode = GPIO_MODE_OUTPUT_PP;
-    gpio_cfg.Pull = GPIO_NOPULL;
-    gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
-
-    for (;;) {
-    }
+    TIM3->CCR1 = value;
 }

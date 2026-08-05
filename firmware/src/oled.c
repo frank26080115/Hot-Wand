@@ -1,9 +1,12 @@
 #include "oled.h"
 
+#include "systick.h"
+
 #include <string.h>
 
 /* 100 kHz standard-mode I2C with the reset-default 8 MHz HSI clock. */
 #define I2C_TIMING_100KHZ_AT_8MHZ 0x2000090EU
+#define OLED_I2C_TIMEOUT_MS              100UL
 
 I2C_HandleTypeDef i2c1;
 OLED_Handle oled;
@@ -17,8 +20,12 @@ static uint8_t OLED_GPIOAndDelayCallback(u8x8_t *u8x8,
                                          uint8_t argument,
                                          void *data);
 static OLED_Handle *OLED_FromU8x8(u8x8_t *u8x8);
+static bool OLED_I2CTransmit(uint16_t address,
+                             const uint8_t *data,
+                             uint8_t length);
+static bool OLED_I2CWaitFor(uint32_t flag);
+static void OLED_I2CClearErrors(void);
 static void OLED_SetTransportError(OLED_Handle *oled);
-static void OLED_ErrorHandler(void);
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef *handle)
 {
@@ -50,18 +57,16 @@ void I2C1_Init(void)
     __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
 
     i2c1.Instance = I2C1;
-    i2c1.Init.Timing = I2C_TIMING_100KHZ_AT_8MHZ;
-    i2c1.Init.OwnAddress1 = 0U;
-    i2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-    i2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-    i2c1.Init.OwnAddress2 = 0U;
-    i2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-    i2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-    i2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    HAL_I2C_MspInit(&i2c1);
 
-    if (HAL_I2C_Init(&i2c1) != HAL_OK) {
-        OLED_ErrorHandler();
-    }
+    CLEAR_BIT(I2C1->CR1, I2C_CR1_PE);
+    I2C1->CR1 = 0U;
+    I2C1->CR2 = 0U;
+    I2C1->OAR1 = 0U;
+    I2C1->OAR2 = 0U;
+    I2C1->TIMINGR = I2C_TIMING_100KHZ_AT_8MHZ;
+    OLED_I2CClearErrors();
+    SET_BIT(I2C1->CR1, I2C_CR1_PE);
 }
 
 bool OLED_Init(OLED_Handle *oled, I2C_HandleTypeDef *i2c)
@@ -174,12 +179,10 @@ static uint8_t OLED_I2CByteCallback(u8x8_t *u8x8,
         }
 
         if ((oled->transfer_length > 0U) &&
-            (HAL_I2C_Master_Transmit(
-                 oled->i2c,
-                 (uint16_t)u8x8_GetI2CAddress(u8x8),
-                 oled->transfer_buffer,
-                 oled->transfer_length,
-                 100U) != HAL_OK)) {
+            !OLED_I2CTransmit(
+                (uint16_t)u8x8_GetI2CAddress(u8x8),
+                oled->transfer_buffer,
+                oled->transfer_length)) {
             OLED_SetTransportError(oled);
             return 0U;
         }
@@ -230,17 +233,73 @@ static OLED_Handle *OLED_FromU8x8(u8x8_t *u8x8)
     return (OLED_Handle *)u8x8_GetUserPtr(u8x8);
 }
 
+static bool OLED_I2CTransmit(uint16_t address,
+                             const uint8_t *data,
+                             uint8_t length)
+{
+    OLED_I2CClearErrors();
+    I2C1->CR2 = (uint32_t)address |
+                 ((uint32_t)length << I2C_CR2_NBYTES_Pos) |
+                 I2C_CR2_AUTOEND |
+                 I2C_CR2_START;
+
+    while (length-- != 0U) {
+        if (!OLED_I2CWaitFor(I2C_ISR_TXIS)) {
+            OLED_I2CClearErrors();
+            return false;
+        }
+        I2C1->TXDR = *data++;
+    }
+
+    if (!OLED_I2CWaitFor(I2C_ISR_STOPF)) {
+        OLED_I2CClearErrors();
+        return false;
+    }
+    WRITE_REG(I2C1->ICR, I2C_ICR_STOPCF);
+    return true;
+}
+
+static bool OLED_I2CWaitFor(uint32_t flag)
+{
+    uint32_t start = systick_get_ms();
+    uint32_t status;
+
+    do {
+        status = I2C1->ISR;
+        if ((status & (I2C_ISR_NACKF |
+                       I2C_ISR_BERR |
+                       I2C_ISR_ARLO |
+                       I2C_ISR_OVR)) != 0U) {
+            return false;
+        }
+
+        if ((status & flag) != 0U) {
+            return true;
+        }
+    } while ((uint32_t)(systick_get_ms() - start) <
+             OLED_I2C_TIMEOUT_MS);
+
+    return false;
+}
+
+static void OLED_I2CClearErrors(void)
+{
+    SET_BIT(I2C1->CR2, I2C_CR2_STOP);
+    WRITE_REG(I2C1->ICR,
+              I2C_ICR_ADDRCF |
+              I2C_ICR_NACKCF |
+              I2C_ICR_STOPCF |
+              I2C_ICR_BERRCF |
+              I2C_ICR_ARLOCF |
+              I2C_ICR_OVRCF |
+              I2C_ICR_PECCF |
+              I2C_ICR_TIMOUTCF |
+              I2C_ICR_ALERTCF);
+}
+
 static void OLED_SetTransportError(OLED_Handle *oled)
 {
     oled->transport_ok = 0U;
     oled->transfer_active = 0U;
     oled->transfer_length = 0U;
-}
-
-static void OLED_ErrorHandler(void)
-{
-    __disable_irq();
-
-    for (;;) {
-    }
 }

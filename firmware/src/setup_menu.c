@@ -81,7 +81,6 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     },
 };
 
-static void setup_menu_load_settings(hotwand_setup_nvm_t *settings);
 static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t *settings,
                                     uint8_t item);
 static uint8_t setup_menu_get_option_count(uint8_t item);
@@ -121,7 +120,9 @@ void setup_menu(void)
 
     btn_init();
     nvm_init();
-    setup_menu_load_settings(&settings);
+    if (!nvm_read(&settings)) {
+        nvm_apply_defaults(&settings);
+    }
 
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL) {
@@ -207,23 +208,6 @@ void setup_menu(void)
 
         HAL_Delay(1U);
     }
-}
-
-static void setup_menu_load_settings(hotwand_setup_nvm_t *settings)
-{
-    if (settings == NULL) {
-        return;
-    }
-
-    *settings = (hotwand_setup_nvm_t){0};
-    settings->startup_power_level = POWER_LEVEL_MAX;
-    settings->fan_mode = FAN_MODE_AUTO_LOW;
-    settings->auto_sleep = AUTO_SLEEP_OFF;
-    settings->auto_dim = AUTO_DIM_OFF;
-    settings->idle_detect_thresh = IDLE_DETECT_THRESH_5W;
-    settings->batt_mode = BATT_MODE_NONE;
-
-    (void)nvm_read(settings);
 }
 
 static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t *settings,
@@ -376,7 +360,7 @@ static void setup_menu_render(u8g2_t *graphics,
     menu_item = &setup_menu_items[item];
 
     u8g2_ClearBuffer(graphics);
-    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
 
     setup_menu_draw_line(graphics, "SETUP", 5U, SETUP_MENU_FIRST_BASELINE);
 

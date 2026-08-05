@@ -2,6 +2,7 @@
 
 #include "hotwand.h"
 #include "pwrlvl.h"
+#include "u8g2.h"
 
 #include <stdint.h>
 
@@ -18,7 +19,11 @@ extern "C" {
 #endif
 
 void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode);
+/* Advances the desired level, or defers blocked feedback until button release. */
+void pwrmgt_change_pwr_lvl(void);
 void pwrmgt_task(void);
+/* Draws only the graph region; the caller owns the text and buffer send. */
+void pwrmgt_render_graph(u8g2_t *graphics);
 pwrlvl_mode_t pwrmgt_get_applied_power_level(void);
 uint8_t pwrmgt_get_attenuation_reasons(void);
 

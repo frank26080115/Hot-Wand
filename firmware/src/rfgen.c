@@ -15,7 +15,6 @@
 _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ,
                "RF generator requires a 27.12 MHz external crystal");
 
-static TIM_HandleTypeDef rfgen_timer;
 static volatile bool rfgen_fault_logged;
 
 static bool rfgen_tip_allows_start(void);
@@ -80,9 +79,6 @@ bool rfgen_has_fault(void)
 void rfgen_start(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
-    TIM_MasterConfigTypeDef master_cfg = {0};
-    TIM_OC_InitTypeDef pwm_cfg = {0};
-    TIM_BreakDeadTimeConfigTypeDef break_cfg = {0};
     uint32_t interrupt_state;
 
     if (rfgen_has_fault()) {
@@ -113,70 +109,36 @@ void rfgen_start(void)
     __HAL_RCC_TIM1_FORCE_RESET();
     __HAL_RCC_TIM1_RELEASE_RESET();
 
-    rfgen_timer = (TIM_HandleTypeDef){0};
-    rfgen_timer.Instance = TIM1;
-    rfgen_timer.Init.Prescaler = 0U;
-    rfgen_timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-    rfgen_timer.Init.Period = RFGEN_PWM_PERIOD;
-    rfgen_timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    rfgen_timer.Init.RepetitionCounter = 0U;
-    rfgen_timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
-    if (HAL_TIM_PWM_Init(&rfgen_timer) != HAL_OK) {
-        rfgen_fault();
-        return;
-    }
-
-    master_cfg.MasterOutputTrigger = TIM_TRGO_RESET;
-    master_cfg.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(&rfgen_timer,
-                                              &master_cfg) != HAL_OK) {
-        rfgen_fault();
-        return;
-    }
-
     /*
      * PB1 is TIM1_CH3N on this MCU.  PWM1 makes the complementary output
      * begin low at CNT = 0; CCR = 1 still gives an exact 50 percent duty cycle.
      */
-    pwm_cfg.OCMode = TIM_OCMODE_PWM1;
-    pwm_cfg.Pulse = RFGEN_PWM_PULSE;
-    pwm_cfg.OCPolarity = TIM_OCPOLARITY_HIGH;
-    pwm_cfg.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-    pwm_cfg.OCFastMode = TIM_OCFAST_DISABLE;
-    pwm_cfg.OCIdleState = TIM_OCIDLESTATE_RESET;
-    pwm_cfg.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-
-    if (HAL_TIM_PWM_ConfigChannel(&rfgen_timer,
-                                  &pwm_cfg,
-                                  TIM_CHANNEL_3) != HAL_OK) {
-        rfgen_fault();
-        return;
-    }
+    TIM1->PSC = 0U;
+    TIM1->ARR = RFGEN_PWM_PERIOD;
+    TIM1->RCR = 0U;
+    TIM1->CCR3 = RFGEN_PWM_PULSE;
+    TIM1->CCMR2 = TIM_CCMR2_OC3M_1 |
+                  TIM_CCMR2_OC3M_2 |
+                  TIM_CCMR2_OC3PE;
+    TIM1->CCER = 0U;
 
     /*
      * Internal lockup and SRAM-parity faults are routed to TIM1's break input.
      * Both run and idle off-states hold the RF output inactive (low).
      */
-    break_cfg.OffStateRunMode = TIM_OSSR_ENABLE;
-    break_cfg.OffStateIDLEMode = TIM_OSSI_ENABLE;
-    break_cfg.LockLevel = TIM_LOCKLEVEL_3;
-    break_cfg.DeadTime = 0U;
-    break_cfg.BreakState = TIM_BREAK_ENABLE;
-    break_cfg.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-    break_cfg.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-
-    if (HAL_TIMEx_ConfigBreakDeadTime(&rfgen_timer, &break_cfg) != HAL_OK) {
-        rfgen_fault();
-        return;
-    }
+    TIM1->BDTR = TIM_BDTR_OSSR |
+                 TIM_BDTR_OSSI |
+                 TIM_BDTR_LOCK_0 |
+                 TIM_BDTR_LOCK_1 |
+                 TIM_BDTR_BKE |
+                 TIM_BDTR_BKP;
 
     __HAL_SYSCFG_BREAK_LOCKUP_LOCK();
     __HAL_SYSCFG_BREAK_SRAMPARITY_LOCK();
 
-    __HAL_TIM_SET_COUNTER(&rfgen_timer, 0U);
+    TIM1->CNT = 0U;
     TIM1->EGR = TIM_EGR_UG;
-    __HAL_TIM_CLEAR_FLAG(&rfgen_timer, TIM_FLAG_UPDATE | TIM_FLAG_BREAK);
+    TIM1->SR = 0U;
 
     /*
      * Enable CH3N while MOE is clear so TIM1's configured idle state drives
@@ -206,13 +168,8 @@ void rfgen_start(void)
         return;
     }
 
-    if (HAL_TIMEx_PWMN_Start(&rfgen_timer, TIM_CHANNEL_3) != HAL_OK) {
-        rfgen_fault();
-        if (interrupt_state == 0U) {
-            __enable_irq();
-        }
-        return;
-    }
+    SET_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+    SET_BIT(TIM1->CR1, TIM_CR1_CEN);
 
     if (interrupt_state == 0U) {
         __enable_irq();

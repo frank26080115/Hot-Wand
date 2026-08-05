@@ -61,6 +61,17 @@ void fan_on_wake(void)
     fan_last_wake_ms = systick_get_ms();
 }
 
+void fan_stop(void)
+{
+    fan_enabled = false;
+
+    /* An uninitialized PA13 still belongs to SWD and the fan has never been
+     * started, so do not take ownership of the pin merely to stop it. */
+    if (fan_pin_initialized) {
+        HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
+    }
+}
+
 static void fan_pin_init(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};

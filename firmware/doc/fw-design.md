@@ -17,17 +17,9 @@ The screen is 128x32 but oriented in a portrait fashion, so it is 32 pixels wide
 
 The top line is always the DC input voltage (for battery monitoring)
 
-The second line shows either "FAULT" or "SLEEP" or "POWER" or "IDLE" depending on situation.
-
 If a temperature limit is reached, the first line will also blink "!HOT!" every other second.
 
-Below that is the power meter. There is a solid horizontal line indicating the 100% boundary
-
-If we are in full power mode (and full power is available), then the whole area below this is a solid rectangle growing from the bottom upwards according to power consumption.
-
-If we are in a power limited mode (or input voltage is too low to support full power), then the bottom area is split in two halves, the left half is blank except for a dotted horizontal line indicating the targeted power level. The right side of this area grows as a solid rectangle from the bottom upwards according to power consumption.
-
-If we are in "FAULT" or "SLEEP" display state, the whole display (meaning the voltage will too) will very slowly scroll downward as a measure to even out OLED burn-in.
+Below that is the power graph. It plots the power vs time with solid shaded plot.
 
 # Power Levels
 
