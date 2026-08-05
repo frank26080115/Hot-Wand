@@ -12,8 +12,42 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-/* 100 kHz standard-mode I2C with the reset-default 8 MHz HSI clock. */
-#define I2C_TIMING_100KHZ_AT_8MHZ 0x2000090E
+/* The analog filter stays enabled and the digital filter stays disabled. */
+/* Values below are TIMINGR field encodings, not register bit masks. */
+#define I2C_HSE_CLOCK_HZ 27120000
+
+#define I2C_HSI_FAST_MODE_PRESCALER 0
+#define I2C_HSI_FAST_MODE_DATA_SETUP_TIME 1
+#define I2C_HSI_FAST_MODE_DATA_HOLD_TIME 0
+#define I2C_HSI_FAST_MODE_SCL_HIGH_PERIOD 2
+#define I2C_HSI_FAST_MODE_SCL_LOW_PERIOD 10
+
+#define I2C_HSE_FAST_MODE_PRESCALER 0
+#define I2C_HSE_FAST_MODE_DATA_SETUP_TIME 9
+#define I2C_HSE_FAST_MODE_DATA_HOLD_TIME 0
+#define I2C_HSE_FAST_MODE_SCL_HIGH_PERIOD 18
+#define I2C_HSE_FAST_MODE_SCL_LOW_PERIOD 31
+
+#define I2C_TIMING_FIELD(VALUE, FIELD) ((((uint32_t)(VALUE)) << FIELD##_Pos) & FIELD##_Msk)
+
+/* 400 kHz fast mode using the reset-default 8 MHz HSI I2C kernel clock. */
+#define I2C_TIMING_400KHZ_AT_8MHZ                                                                                      \
+    (I2C_TIMING_FIELD(I2C_HSI_FAST_MODE_PRESCALER, I2C_TIMINGR_PRESC) |                                                \
+     I2C_TIMING_FIELD(I2C_HSI_FAST_MODE_DATA_SETUP_TIME, I2C_TIMINGR_SCLDEL) |                                         \
+     I2C_TIMING_FIELD(I2C_HSI_FAST_MODE_DATA_HOLD_TIME, I2C_TIMINGR_SDADEL) |                                          \
+     I2C_TIMING_FIELD(I2C_HSI_FAST_MODE_SCL_HIGH_PERIOD, I2C_TIMINGR_SCLH) |                                           \
+     I2C_TIMING_FIELD(I2C_HSI_FAST_MODE_SCL_LOW_PERIOD, I2C_TIMINGR_SCLL))
+
+/* 400 kHz fast mode using the confirmed 27.12 MHz HSE system clock. */
+#define I2C_TIMING_400KHZ_AT_27_12MHZ                                                                                  \
+    (I2C_TIMING_FIELD(I2C_HSE_FAST_MODE_PRESCALER, I2C_TIMINGR_PRESC) |                                                \
+     I2C_TIMING_FIELD(I2C_HSE_FAST_MODE_DATA_SETUP_TIME, I2C_TIMINGR_SCLDEL) |                                         \
+     I2C_TIMING_FIELD(I2C_HSE_FAST_MODE_DATA_HOLD_TIME, I2C_TIMINGR_SDADEL) |                                          \
+     I2C_TIMING_FIELD(I2C_HSE_FAST_MODE_SCL_HIGH_PERIOD, I2C_TIMINGR_SCLH) |                                           \
+     I2C_TIMING_FIELD(I2C_HSE_FAST_MODE_SCL_LOW_PERIOD, I2C_TIMINGR_SCLL))
+
+_Static_assert(HSE_VALUE == I2C_HSE_CLOCK_HZ, "I2C HSE timing must be recalculated for a different crystal");
+
 #define OLED_I2C_TIMEOUT_MS 100
 
 // -----------------------------------------------------------------------------
@@ -41,7 +75,20 @@ static void         OLED_SetTransportError(OLED_Handle* oled);
 
 void I2C1_Init(void)
 {
-    __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
+    uint32_t timing;
+
+    /* HSERDY alone does not prove that the system-clock switch completed. */
+    if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) != RESET) &&
+        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE))
+    {
+        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_SYSCLK);
+        timing = I2C_TIMING_400KHZ_AT_27_12MHZ;
+    }
+    else
+    {
+        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
+        timing = I2C_TIMING_400KHZ_AT_8MHZ;
+    }
 
     i2c1.Instance = I2C1;
     HAL_I2C_MspInit(&i2c1);
@@ -51,7 +98,7 @@ void I2C1_Init(void)
     I2C1->CR2     = 0;
     I2C1->OAR1    = 0;
     I2C1->OAR2    = 0;
-    I2C1->TIMINGR = I2C_TIMING_100KHZ_AT_8MHZ;
+    I2C1->TIMINGR = timing;
     OLED_I2CClearErrors();
     SET_BIT(I2C1->CR1, I2C_CR1_PE);
 }
