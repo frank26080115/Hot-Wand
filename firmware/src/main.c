@@ -38,7 +38,6 @@
 #define SETUP_HOLD_BAR_Y                 45
 #define MAIN_DISPLAY_FRAME_INTERVAL_MS   67
 #define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8
-#define MAIN_DISPLAY_VOLTAGE_BASELINE    9
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -298,10 +297,10 @@ static void boot_check_for_setup(void)
 static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width)
 {
     u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, 1, 9, "HOLD");
-    u8g2_DrawStr(graphics, 1, 19, "TO");
-    u8g2_DrawStr(graphics, 1, 29, "ENTER");
-    u8g2_DrawStr(graphics, 1, 39, "SETUP");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "HOLD");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, "TO");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), "ENTER");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), "SETUP");
     u8g2_DrawBox(graphics, 0, SETUP_HOLD_BAR_Y, bar_width, SETUP_HOLD_BAR_HEIGHT);
     OLED_SendBuffer(&oled);
 }
@@ -341,7 +340,7 @@ static void boot_wait_for_power_stable(void)
             if (graphics != NULL)
             {
                 u8g2_ClearBuffer(graphics);
-                u8g2_DrawStr(graphics, 1, 9, ".....");
+                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, ".....");
                 OLED_SendBuffer(&oled);
             }
 
@@ -368,7 +367,7 @@ static void main_render_display(void)
     voltage[voltage_length]   = '\0';
 
     u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(MAIN_DISPLAY_VOLTAGE_BASELINE + pixshift_y), voltage);
+    u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y), voltage);
     pwrmgt_render_graph(graphics);
     OLED_SendBuffer(&oled);
 }

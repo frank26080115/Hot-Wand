@@ -23,8 +23,6 @@
 
 #define SETUP_MENU_CHARS_PER_LINE  6
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
-#define SETUP_MENU_LINE_HEIGHT     10
-#define SETUP_MENU_FIRST_BASELINE  9
 
 // -----------------------------------------------------------------------------
 // Types
@@ -312,7 +310,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
         }
 
         setup_menu_draw_line(graphics, line, (size_t)(end - line), baseline);
-        baseline = (uint8_t)(baseline + SETUP_MENU_LINE_HEIGHT);
+        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
 
         if (*end != '\n')
         {
@@ -363,16 +361,16 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     u8g2_ClearBuffer(graphics);
 
-    setup_menu_draw_line(graphics, "SETUP", 5, SETUP_MENU_FIRST_BASELINE);
+    setup_menu_draw_line(graphics, "SETUP", 5, OLED_FIRST_TEXT_BASELINE);
 
     /* Advance two rows: row two is deliberately blank. */
-    baseline = (uint8_t)(SETUP_MENU_FIRST_BASELINE + (2 * SETUP_MENU_LINE_HEIGHT));
+    baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
     baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
 
     if (item <= SETUP_MENU_LAST_VALUE_ITEM)
     {
         setup_menu_draw_line(graphics, "  =  ", 5, baseline);
-        baseline = (uint8_t)(baseline + SETUP_MENU_LINE_HEIGHT);
+        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
         option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
         setup_menu_draw_text(graphics, option, '|', baseline);
     }

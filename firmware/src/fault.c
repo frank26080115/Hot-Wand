@@ -26,7 +26,6 @@
 
 #define FAULT_DISPLAY_HEIGHT        32
 #define FAULT_FONT_ASCENT           8
-#define FAULT_LINE_HEIGHT           10
 #define FAULT_REFRESH_INTERVAL_MS   200
 #define FAULT_SHIFT_INTERVAL_MS     5000
 #define FAULT_LINE_BUFFER_SIZE      6
@@ -107,7 +106,7 @@ void show_fault(const char* text, bool allow_button_reset)
         }
     }
 
-    text_height = (int16_t)((fault_count_message_lines(text) + 1) * FAULT_LINE_HEIGHT);
+    text_height = (int16_t)((fault_count_message_lines(text) + 1) * OLED_TEXT_LINE_HEIGHT);
     if (text_height <= FAULT_DISPLAY_HEIGHT)
     {
         lower_offset = 0;
@@ -255,7 +254,7 @@ void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t 
     u8g2_ClearBuffer(graphics);
     baseline = (int16_t)(y_offset + FAULT_FONT_ASCENT);
     fault_draw_line(graphics, voltage, x_offset, baseline);
-    fault_draw_text(graphics, text, x_offset, (int16_t)(baseline + FAULT_LINE_HEIGHT));
+    fault_draw_text(graphics, text, x_offset, (int16_t)(baseline + OLED_TEXT_LINE_HEIGHT));
 }
 
 // -----------------------------------------------------------------------------
@@ -313,7 +312,7 @@ static void fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset
         }
 
         fault_draw_line(graphics, line, x_offset, baseline);
-        baseline = (int16_t)(baseline + FAULT_LINE_HEIGHT);
+        baseline = (int16_t)(baseline + OLED_TEXT_LINE_HEIGHT);
     }
 }
 

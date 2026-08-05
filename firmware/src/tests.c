@@ -519,8 +519,8 @@ static void test_report_tip_state(bool triggered)
     }
 
     u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, 1, 9, "TIP");
-    u8g2_DrawStr(graphics, 1, 19, triggered ? "FAULT" : "OK");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "TIP");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, triggered ? "FAULT" : "OK");
     OLED_SendBuffer(&oled);
 }
 
