@@ -123,7 +123,6 @@ static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
 static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
 static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
-static void        setup_menu_sleep(u8g2_t* graphics);
 static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
 
 // -----------------------------------------------------------------------------
@@ -171,7 +170,7 @@ void setup_menu(void)
 
         if ((uint32_t)(now - last_activity_ms) >= SETUP_MENU_TIMEOUT_MS)
         {
-            setup_menu_sleep(graphics);
+            enter_sleep_mode();
         }
 
         if (btn_has_short_press(true))
@@ -379,21 +378,6 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
     }
 
     OLED_SendBuffer(&oled);
-}
-
-static void setup_menu_sleep(u8g2_t* graphics)
-{
-    if (graphics != NULL)
-    {
-        u8g2_SetPowerSave(graphics, 1);
-    }
-
-    /* There is not yet a shared sleep-mode policy.  Stay asleep after every
-     * interrupt wake and leave both power outputs in their safe states. */
-    for (;;)
-    {
-        __WFI();
-    }
 }
 
 static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
