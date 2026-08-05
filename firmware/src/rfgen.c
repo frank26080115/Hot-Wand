@@ -228,10 +228,10 @@ static void rfgen_fault(void)
 }
 
 /*
- * This vector symbol is intentionally private to the module's CSS handling;
- * it is not part of the public rfgen interface.
+ * Implementation target for the strong vector shim in interrupt_vectors.S.
+ * It is intentionally not part of the public rfgen interface.
  */
-void NMI_Handler(void)
+void NMI_Handler_Impl(void)
 {
     bool css_fault = __HAL_RCC_GET_IT(RCC_IT_CSS) != RESET;
 

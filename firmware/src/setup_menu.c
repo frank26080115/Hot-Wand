@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 #define SETUP_MENU_CHARS_PER_LINE    6U
-#define SETUP_MENU_LAST_VALUE_ITEM   SETUP_ITEM_BATTERY_MODE
+#define SETUP_MENU_LAST_VALUE_ITEM   SETUP_ITEM_INPUT_V_CALIB
 #define SETUP_MENU_LINE_HEIGHT       10U
 #define SETUP_MENU_FIRST_BASELINE    9U
 
@@ -26,6 +26,7 @@ enum
     SETUP_ITEM_AUTO_DIM,
     SETUP_ITEM_IDLE_DETECT_THRESH,
     SETUP_ITEM_BATTERY_MODE,
+    SETUP_ITEM_INPUT_V_CALIB,
     SETUP_ITEM_SAVE_AND_EXIT,
     SETUP_ITEM_EXIT_NO_SAVE,
     SETUP_MENU_ITEM_COUNT,
@@ -68,6 +69,11 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
         .title = "BATT\nMODE",
         .items = "NONE|LIPO|LIPO\nSAFER|LIHV|LIHV\nSAFER|LIFE|LIFE\nSAFER",
         .items_cnt = 7,
+    },
+    [SETUP_ITEM_INPUT_V_CALIB] = {
+        .title = "INPUT\nVOLT\nCALIB",
+        .items = "0|+1|+2|+3|+4|+5|-1|-2|-3|-4|-5",
+        .items_cnt = 11,
     },
     [SETUP_ITEM_SAVE_AND_EXIT] = {
         .title = "SAVE\nAND\nEXIT",
@@ -226,6 +232,8 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t *settings,
         return settings->idle_detect_thresh;
     case SETUP_ITEM_BATTERY_MODE:
         return settings->batt_mode;
+    case SETUP_ITEM_INPUT_V_CALIB:
+        return settings->input_v_calib;
     default:
         return 0U;
     }
@@ -270,6 +278,9 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t *settings,
         break;
     case SETUP_ITEM_BATTERY_MODE:
         settings->batt_mode = value;
+        break;
+    case SETUP_ITEM_INPUT_V_CALIB:
+        settings->input_v_calib = value;
         break;
     default:
         break;

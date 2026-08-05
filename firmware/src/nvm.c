@@ -78,6 +78,7 @@ void nvm_apply_defaults(hotwand_setup_nvm_t *settings)
     settings->auto_dim = AUTO_DIM_OFF;
     settings->idle_detect_thresh = IDLE_DETECT_THRESH_10W;
     settings->batt_mode = BATT_MODE_NONE;
+    settings->input_v_calib = INPUT_VOLTAGE_CALIB_NONE;
 }
 
 bool nvm_read(hotwand_setup_nvm_t *settings)
@@ -301,6 +302,24 @@ static bool nvm_settings_fields_are_valid(
         return false;
     }
 
+    switch (settings->input_v_calib) {
+    case INPUT_VOLTAGE_CALIB_NONE:
+    case INPUT_VOLTAGE_CALIB_P1:
+    case INPUT_VOLTAGE_CALIB_P2:
+    case INPUT_VOLTAGE_CALIB_P3:
+    case INPUT_VOLTAGE_CALIB_P4:
+    case INPUT_VOLTAGE_CALIB_P5:
+    case INPUT_VOLTAGE_CALIB_N1:
+    case INPUT_VOLTAGE_CALIB_N2:
+    case INPUT_VOLTAGE_CALIB_N3:
+    case INPUT_VOLTAGE_CALIB_N4:
+    case INPUT_VOLTAGE_CALIB_N5:
+        break;
+
+    default:
+        return false;
+    }
+
     return true;
 }
 
@@ -329,6 +348,7 @@ static void nvm_prepare_record(const hotwand_setup_nvm_t *settings,
     record->auto_dim = settings->auto_dim;
     record->idle_detect_thresh = settings->idle_detect_thresh;
     record->batt_mode = settings->batt_mode;
+    record->input_v_calib = settings->input_v_calib;
     record->rsvd_1 = 0U;
     record->rsvd_2 = 0U;
     record->checksum = nvm_checksum(record);

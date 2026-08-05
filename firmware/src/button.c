@@ -145,8 +145,8 @@ void btn_task(void)
 }
 
 /*
- * EXTI4_15_IRQHandler lives in tipdetect.c because PA5 and PA7 share that
- * vector.  Its non-tip dispatch calls this standard HAL hook.
+ * The EXTI4_15 handler implementation lives in tipdetect.c because PA5 and
+ * PA7 share that vector. Its non-tip dispatch calls this standard HAL hook.
  */
 void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 {

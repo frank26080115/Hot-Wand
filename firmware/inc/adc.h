@@ -8,6 +8,7 @@ extern "C" {
 
 void adc_init(void);
 uint16_t adc_get(uint8_t idx);
+void adc_set_input_voltage_calibration(uint8_t calibration);
 
 /* Unit conversions return 0 when idx does not represent that quantity. */
 uint16_t adc_to_millivolts(uint8_t idx);

@@ -2,6 +2,7 @@
 
 #include "pins.h"
 #include "stm32f0xx_hal.h"
+#include "typedefs.h"
 
 #include <stdint.h>
 
@@ -15,6 +16,8 @@
 #define ADC_FULL_SCALE           1023U
 #define VOLTAGE_DIVIDER_SCALE    11U
 #define CURRENT_FULL_SCALE_MA    6037U
+#define INPUT_V_CALIB_SCALE      1024U
+#define INPUT_V_CALIB_ROUNDING   (INPUT_V_CALIB_SCALE / 2U)
 
 #define NTC_TABLE_STEP_C         10U
 #define MCU_TEMP_CAL1_ADDRESS    0x1FFFF7B8UL
@@ -30,6 +33,12 @@ typedef struct
     uint16_t lpf_alpha_high;
     uint16_t lpf_alpha_low;
 } adc_cfg_t;
+
+typedef struct
+{
+    uint16_t slope_q10;
+    int8_t offset_mv;
+} input_voltage_calib_t;
 
 /*
  * Alpha is the weight retained from the previous filtered value:
@@ -81,6 +90,26 @@ static const uint16_t ntc_adc_by_10c[] = {
     374U, 305U, 246U, 198U, 160U, 129U, 105U, 85U,
 };
 
+/* Q10 slopes are the nearest integers to the requested multipliers. */
+static const input_voltage_calib_t input_voltage_calib_table[] = {
+    [INPUT_VOLTAGE_CALIB_NONE] = {1024U,   0},
+    [INPUT_VOLTAGE_CALIB_P1]   = {1029U,   5},
+    [INPUT_VOLTAGE_CALIB_P2]   = {1034U,  10},
+    [INPUT_VOLTAGE_CALIB_P3]   = {1039U,  15},
+    [INPUT_VOLTAGE_CALIB_P4]   = {1044U,  20},
+    [INPUT_VOLTAGE_CALIB_P5]   = {1050U,  25},
+    [INPUT_VOLTAGE_CALIB_N1]   = {1019U,  -5},
+    [INPUT_VOLTAGE_CALIB_N2]   = {1014U, -10},
+    [INPUT_VOLTAGE_CALIB_N3]   = {1009U, -15},
+    [INPUT_VOLTAGE_CALIB_N4]   = {1004U, -20},
+    [INPUT_VOLTAGE_CALIB_N5]   = { 998U, -25},
+};
+
+_Static_assert((sizeof(input_voltage_calib_table) /
+                sizeof(input_voltage_calib_table[0])) ==
+                   (INPUT_VOLTAGE_CALIB_N5 + 1U),
+               "Input-voltage calibration table is incomplete");
+
 static ADC_HandleTypeDef adc_handle;
 static uint32_t lpf_state[ADC_INPUT_COUNT];
 static volatile uint16_t result[ADC_INPUT_COUNT];
@@ -88,9 +117,11 @@ static volatile uint16_t raw[ADC_INPUT_COUNT];
 static volatile uint8_t initialized_channels;
 static volatile uint8_t current_idx;
 static volatile uint32_t system_rand_seed = 0;
+static uint8_t input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
 
 static void adc_filter_sample(uint8_t idx, uint16_t sample);
 static void adc_select_and_start(uint8_t idx);
+static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
 static void adc_fault(void);
@@ -174,6 +205,15 @@ uint16_t adc_get(uint8_t idx)
     return result[idx];
 }
 
+void adc_set_input_voltage_calibration(uint8_t calibration)
+{
+    if (calibration > INPUT_VOLTAGE_CALIB_N5) {
+        calibration = INPUT_VOLTAGE_CALIB_NONE;
+    }
+
+    input_voltage_calibration = calibration;
+}
+
 uint16_t adc_to_millivolts(uint8_t idx)
 {
     uint32_t millivolts;
@@ -186,7 +226,13 @@ uint16_t adc_to_millivolts(uint8_t idx)
                  VOLTAGE_DIVIDER_SCALE;
     millivolts += ADC_FULL_SCALE / 2U;
 
-    return (uint16_t)(millivolts / ADC_FULL_SCALE);
+    millivolts /= ADC_FULL_SCALE;
+
+    if (idx == DC_SENS_IDX) {
+        return adc_calibrate_input_voltage((uint16_t)millivolts);
+    }
+
+    return (uint16_t)millivolts;
 }
 
 uint16_t adc_to_milliamps(uint8_t idx)
@@ -238,10 +284,10 @@ uint32_t adc_get_milliwatts(void)
 }
 
 /*
- * This symbol must have external linkage because it is referenced by the
- * STM32F030 vector table. It is intentionally not part of adc.h's public API.
+ * Implementation target for the strong vector shim in interrupt_vectors.S.
+ * It is intentionally not part of adc.h's public API.
  */
-void ADC1_IRQHandler(void)
+void ADC1_IRQHandler_Impl(void)
 {
     uint32_t flags = adc_handle.Instance->ISR;
     uint16_t sample;
@@ -290,6 +336,31 @@ void ADC1_IRQHandler(void)
     }
 }
 
+static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
+{
+    const input_voltage_calib_t *calibration;
+    int32_t calibrated_mv;
+    uint32_t scaled_mv;
+
+    if (input_voltage_calibration == INPUT_VOLTAGE_CALIB_NONE) {
+        return millivolts;
+    }
+
+    calibration = &input_voltage_calib_table[input_voltage_calibration];
+    scaled_mv = (uint32_t)calibration->slope_q10 * millivolts;
+    calibrated_mv = (int32_t)((scaled_mv + INPUT_V_CALIB_ROUNDING) >> 10U) +
+                    calibration->offset_mv;
+
+    if (calibrated_mv <= 0L) {
+        return 0U;
+    }
+    if (calibrated_mv > (int32_t)UINT16_MAX) {
+        return UINT16_MAX;
+    }
+
+    return (uint16_t)calibrated_mv;
+}
+
 static void adc_filter_sample(uint8_t idx, uint16_t sample)
 {
     const adc_cfg_t *cfg = &lpf_cfg_table[idx];
@@ -299,6 +370,7 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     uint32_t new_weight;
     uint32_t state;
     uint32_t weighted_sum;
+    uint16_t new_value;
 
     if ((initialized_channels & initialized_mask) == 0U) {
         lpf_state[idx] = target;
@@ -318,7 +390,8 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     state = (weighted_sum + ADC_LPF_ROUNDING) / ADC_LPF_SCALE;
 
     lpf_state[idx] = state;
-    result[idx] = (uint16_t)((state + ADC_LPF_ROUNDING) / ADC_LPF_SCALE);
+    new_value = (uint16_t)((state + ADC_LPF_ROUNDING) / ADC_LPF_SCALE);
+    result[idx] = new_value;
 }
 
 static void adc_select_and_start(uint8_t idx)

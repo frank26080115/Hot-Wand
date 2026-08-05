@@ -26,8 +26,6 @@
 #error "This source supports only the STM32F030 and STM32F042 targets."
 #endif
 
-#define BOOT_POWER_WAIT_MS       300UL
-#define SETUP_HOLD_DURATION_MS  5000UL
 #define SETUP_HOLD_BAR_WIDTH      32U
 #define SETUP_HOLD_BAR_HEIGHT      3U
 #define SETUP_HOLD_BAR_Y          45U
@@ -37,6 +35,7 @@
 
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width);
+static void boot_wait_for_power_stable(void);
 static void main_render_display(void);
 static void Error_Handler(void);
 
@@ -70,6 +69,10 @@ int main(void)
     }
 
     nvm_init();
+    if (!nvm_read(&settings)) {
+        nvm_apply_defaults(&settings);
+    }
+    adc_set_input_voltage_calibration(settings.input_v_calib);
 
     do {
         random_seed = adc_get_rand_seed();
@@ -84,13 +87,8 @@ int main(void)
         boot_check_for_setup();
     }
 
-    while ((systick_get_ms() < BOOT_POWER_WAIT_MS) &&
-           (adc_to_millivolts(DC_SENS_IDX) < BOOT_DC_READY_MV)) {
-    }
+    boot_wait_for_power_stable();
 
-    if (!nvm_read(&settings)) {
-        nvm_apply_defaults(&settings);
-    }
     input_millivolts = adc_to_millivolts(DC_SENS_IDX);
 
     if ((settings.batt_mode != BATT_MODE_NONE) &&
@@ -233,6 +231,51 @@ static void boot_draw_setup_hold(u8g2_t *graphics, uint8_t bar_width)
                  bar_width,
                  SETUP_HOLD_BAR_HEIGHT);
     (void)OLED_SendBuffer(&oled);
+}
+
+static void boot_wait_for_power_stable(void)
+{
+    uint16_t maximum_millivolts = adc_to_millivolts(DC_SENS_IDX);
+    uint32_t wait_started_ms = systick_get_ms();
+    uint32_t maximum_reached_ms = wait_started_ms;
+    bool wait_message_drawn = false;
+
+    for (;;) {
+        uint16_t millivolts = adc_to_millivolts(DC_SENS_IDX);
+        uint32_t now = systick_get_ms();
+
+        if (millivolts > maximum_millivolts) {
+            maximum_millivolts = millivolts;
+            maximum_reached_ms = now;
+        }
+
+        if ((uint32_t)(now - maximum_reached_ms) >=
+            BOOT_POWER_STABLE_MS) {
+            return;
+        }
+
+        if ((uint32_t)(now - wait_started_ms) >=
+            BOOT_POWER_TIMEOUT_MS) {
+            return;
+        }
+
+        if (!wait_message_drawn &&
+            ((uint32_t)(now - wait_started_ms) >= BOOT_POWER_WAIT_MS)) {
+            u8g2_t *graphics = OLED_GetGraphics(&oled);
+
+            if (graphics != NULL) {
+                u8g2_SetDisplayRotation(graphics, U8G2_R1);
+                u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+                u8g2_ClearBuffer(graphics);
+                u8g2_DrawStr(graphics, 1U, 9U, ".....");
+                (void)OLED_SendBuffer(&oled);
+            }
+
+            wait_message_drawn = true;
+        }
+
+        HAL_Delay(1U);
+    }
 }
 
 static void main_render_display(void)

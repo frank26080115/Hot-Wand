@@ -445,6 +445,8 @@ static void test_nvm_make_settings(uint16_t sequence,
     settings->idle_detect_thresh = (uint8_t)(value % 7U);
     value /= 7U;
     settings->batt_mode = (uint8_t)(value % 7U);
+    value /= 7U;
+    settings->input_v_calib = (uint8_t)(value % 11U);
 }
 
 static bool test_nvm_settings_equal(const hotwand_setup_nvm_t *left,
@@ -456,7 +458,8 @@ static bool test_nvm_settings_equal(const hotwand_setup_nvm_t *left,
            (left->auto_sleep == right->auto_sleep) &&
            (left->auto_dim == right->auto_dim) &&
            (left->idle_detect_thresh == right->idle_detect_thresh) &&
-           (left->batt_mode == right->batt_mode);
+           (left->batt_mode == right->batt_mode) &&
+           (left->input_v_calib == right->input_v_calib);
 }
 
 static uintptr_t test_nvm_page_start(void)
@@ -584,6 +587,8 @@ static void test_nvm_report_settings(const hotwand_setup_nvm_t *settings)
     test_uart_write_number(settings->idle_detect_thresh);
     UART_Write(" BATT=");
     test_uart_write_number(settings->batt_mode);
+    UART_Write(" VCAL=");
+    test_uart_write_number(settings->input_v_calib);
     UART_Write("\r\n");
 }
 

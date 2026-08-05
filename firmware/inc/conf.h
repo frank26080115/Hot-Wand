@@ -28,7 +28,8 @@ especially if subsequent definitions of types depend on them
 #define OLED_DIM_CONTRAST 123 // I don't actually know what the range is
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot.
- * At 100 ms per sample, its 32 columns show 3.2 seconds of history. */
+ * Each 100 ms column captures the peak power observed during its interval,
+ * so the 32 columns show 3.2 seconds of history. */
 #define PWRMGT_GRAPH_TEXT_HEIGHT_PX       28U
 #define PWRMGT_GRAPH_UPDATE_INTERVAL_MS  100UL
 #define PWRMGT_GRAPH_MAX_POWER_MW     100000UL
@@ -43,6 +44,25 @@ especially if subsequent definitions of types depend on them
 
 #if PWRMGT_GRAPH_MAX_POWER_MW == 0UL
 #error "PWRMGT_GRAPH_MAX_POWER_MW must be nonzero"
+#endif
+
+#define BOOT_POWER_WAIT_MS       300UL
+#define BOOT_POWER_STABLE_MS     100UL
+#define BOOT_POWER_TIMEOUT_MS   2000UL
+#define SETUP_HOLD_DURATION_MS  5000UL
+
+#if (BOOT_POWER_WAIT_MS == 0UL) || (BOOT_POWER_STABLE_MS == 0UL) || \
+    (BOOT_POWER_TIMEOUT_MS == 0UL)
+#error "Boot power timing values must be nonzero"
+#endif
+
+#if (BOOT_POWER_WAIT_MS >= BOOT_POWER_TIMEOUT_MS) || \
+    (BOOT_POWER_STABLE_MS >= BOOT_POWER_TIMEOUT_MS)
+#error "Boot power wait and stability times must be shorter than its timeout"
+#endif
+
+#if SETUP_HOLD_DURATION_MS == 0UL
+#error "Setup hold duration must be nonzero"
 #endif
 
 #ifndef BOOT_DC_READY_MV

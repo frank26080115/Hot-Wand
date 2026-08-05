@@ -12,7 +12,7 @@ uint32_t systick_get_ms(void)
     return HAL_GetTick();
 }
 
-void SysTick_Handler(void)
+void SysTick_Handler_Impl(void)
 {
     HAL_IncTick();
 }

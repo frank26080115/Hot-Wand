@@ -7,8 +7,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define TIPDETECT_COUNTS_PER_PERIOD 65536ULL
-#define TIPDETECT_US_PER_SECOND   1000000ULL
+#define TIPDETECT_COUNTS_PER_PERIOD 65536UL
+#define TIPDETECT_HSE_10KHZ          (HSE_VALUE / 10000UL)
+#define TIPDETECT_TIMER_CYCLES       \
+    (((TIPDETECT_HSE_10KHZ * TIPDETECT_DEBOUNCE_US) + 99UL) / 100UL)
+#define TIPDETECT_TIMER_DIVIDER      \
+    ((TIPDETECT_TIMER_CYCLES + TIPDETECT_COUNTS_PER_PERIOD - 1UL) / \
+     TIPDETECT_COUNTS_PER_PERIOD)
+#define TIPDETECT_TIMER_TICKS        \
+    ((TIPDETECT_TIMER_CYCLES + TIPDETECT_TIMER_DIVIDER - 1UL) / \
+     TIPDETECT_TIMER_DIVIDER)
+#define TIPDETECT_TIMER_PRESCALER    (TIPDETECT_TIMER_DIVIDER - 1UL)
+#define TIPDETECT_TIMER_PERIOD       (TIPDETECT_TIMER_TICKS - 1UL)
 
 #define TIPDETECT_TIMER_IRQ_PRIORITY 0U
 #define TIPDETECT_EXTI_IRQ_PRIORITY  3U
@@ -19,16 +29,23 @@ static volatile bool tipdetect_initialized;
 static volatile bool tipdetect_tip_present;
 static volatile bool tipdetect_triggered = true;
 
-static bool tipdetect_get_timer_config(uint32_t *prescaler,
-                                       uint32_t *period);
-static bool tipdetect_arm_timer(void);
+_Static_assert((HSE_VALUE % 10000UL) == 0UL,
+               "HSE frequency must be an exact multiple of 10 kHz");
+_Static_assert((TIPDETECT_TIMER_DIVIDER >= 1UL) &&
+                   (TIPDETECT_TIMER_DIVIDER <=
+                    TIPDETECT_COUNTS_PER_PERIOD),
+               "tip-detect timer prescaler is out of range");
+_Static_assert((TIPDETECT_TIMER_TICKS >= 1UL) &&
+                   (TIPDETECT_TIMER_TICKS <=
+                    TIPDETECT_COUNTS_PER_PERIOD),
+               "tip-detect timer period is out of range");
+
+static void tipdetect_arm_timer(void);
 static void tipdetect_fail_closed(void);
 
 void tipdetect_init(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
-    uint32_t period;
-    uint32_t prescaler;
 
     if (tipdetect_initialized) {
         return;
@@ -39,16 +56,11 @@ void tipdetect_init(void)
     __HAL_RCC_TIM17_FORCE_RESET();
     __HAL_RCC_TIM17_RELEASE_RESET();
 
-    if (!tipdetect_get_timer_config(&prescaler, &period)) {
-        tipdetect_fail_closed();
-        return;
-    }
-
     tipdetect_timer = (TIM_HandleTypeDef){0};
     tipdetect_timer.Instance = TIM17;
-    tipdetect_timer.Init.Prescaler = prescaler;
+    tipdetect_timer.Init.Prescaler = TIPDETECT_TIMER_PRESCALER;
     tipdetect_timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-    tipdetect_timer.Init.Period = period;
+    tipdetect_timer.Init.Period = TIPDETECT_TIMER_PERIOD;
     tipdetect_timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     tipdetect_timer.Init.RepetitionCounter = 0U;
     tipdetect_timer.Init.AutoReloadPreload =
@@ -144,7 +156,7 @@ void tipdetect_reset(void)
     }
 }
 
-void EXTI4_15_IRQHandler(void)
+void EXTI4_15_IRQHandler_Impl(void)
 {
     uint32_t pending;
     uint32_t pin;
@@ -156,8 +168,10 @@ void EXTI4_15_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
         pending &= ~TIP_DET_PINn;
 
-        if (!tipdetect_initialized || !tipdetect_arm_timer()) {
+        if (!tipdetect_initialized) {
             tipdetect_fail_closed();
+        } else {
+            tipdetect_arm_timer();
         }
     }
 
@@ -173,7 +187,7 @@ void EXTI4_15_IRQHandler(void)
     }
 }
 
-void TIM17_IRQHandler(void)
+void TIM17_IRQHandler_Impl(void)
 {
     bool tip_present;
 
@@ -204,80 +218,18 @@ void TIM17_IRQHandler(void)
     SET_BIT(EXTI->IMR, TIP_DET_PINn);
 }
 
-static bool tipdetect_get_timer_config(uint32_t *prescaler,
-                                       uint32_t *period)
+static void tipdetect_arm_timer(void)
 {
-    uint64_t timer_cycles;
-    uint64_t timer_divider;
-    uint64_t timer_ticks;
-    uint32_t timer_clock_hz;
-
-    if ((prescaler == NULL) || (period == NULL)) {
-        return false;
-    }
-
-    timer_clock_hz = HAL_RCC_GetPCLK1Freq();
-    if ((RCC->CFGR & RCC_CFGR_PPRE) != RCC_CFGR_PPRE_DIV1) {
-        timer_clock_hz *= 2U;
-    }
-
-    if (timer_clock_hz == 0U) {
-        return false;
-    }
-
-    timer_cycles =
-        (((uint64_t)timer_clock_hz * TIPDETECT_DEBOUNCE_US) +
-         (TIPDETECT_US_PER_SECOND - 1ULL)) /
-        TIPDETECT_US_PER_SECOND;
-    if (timer_cycles == 0ULL) {
-        timer_cycles = 1ULL;
-    }
-
-    timer_divider =
-        (timer_cycles + TIPDETECT_COUNTS_PER_PERIOD - 1ULL) /
-        TIPDETECT_COUNTS_PER_PERIOD;
-    if ((timer_divider == 0ULL) ||
-        (timer_divider > TIPDETECT_COUNTS_PER_PERIOD)) {
-        return false;
-    }
-
-    timer_ticks =
-        (timer_cycles + timer_divider - 1ULL) / timer_divider;
-    if ((timer_ticks == 0ULL) ||
-        (timer_ticks > TIPDETECT_COUNTS_PER_PERIOD)) {
-        return false;
-    }
-
-    *prescaler = (uint32_t)(timer_divider - 1ULL);
-    *period = (uint32_t)(timer_ticks - 1ULL);
-    return true;
-}
-
-static bool tipdetect_arm_timer(void)
-{
-    uint32_t period;
-    uint32_t prescaler;
-
-    /*
-     * Recalculate on every edge because rfgen_start() can change the APB timer
-     * clock from the reset-default 8 MHz to the 27.12 MHz crystal.
-     */
-    if (!tipdetect_get_timer_config(&prescaler, &period)) {
-        return false;
-    }
-
     CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
     CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);
-    TIM17->PSC = prescaler;
-    TIM17->ARR = period;
+    TIM17->PSC = TIPDETECT_TIMER_PRESCALER;
+    TIM17->ARR = TIPDETECT_TIMER_PERIOD;
     TIM17->CNT = 0U;
     TIM17->EGR = TIM_EGR_UG;
     CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
     HAL_NVIC_ClearPendingIRQ(TIM17_IRQn);
     SET_BIT(TIM17->DIER, TIM_DIER_UIE);
     SET_BIT(TIM17->CR1, TIM_CR1_CEN);
-
-    return true;
 }
 
 static void tipdetect_fail_closed(void)

@@ -56,6 +56,21 @@ enum
     BATT_MODE_LIFE_SAFE = 6,
 };
 
+enum
+{
+    INPUT_VOLTAGE_CALIB_NONE = 0,
+    INPUT_VOLTAGE_CALIB_P1   = 1,
+    INPUT_VOLTAGE_CALIB_P2   = 2,
+    INPUT_VOLTAGE_CALIB_P3   = 3,
+    INPUT_VOLTAGE_CALIB_P4   = 4,
+    INPUT_VOLTAGE_CALIB_P5   = 5,
+    INPUT_VOLTAGE_CALIB_N1   = 6,
+    INPUT_VOLTAGE_CALIB_N2   = 7,
+    INPUT_VOLTAGE_CALIB_N3   = 8,
+    INPUT_VOLTAGE_CALIB_N4   = 9,
+    INPUT_VOLTAGE_CALIB_N5   = 10,
+};
+
 typedef struct __attribute__((packed, aligned(2)))
 {
     uint8_t magic; // 0xFF or 0x00 is invalid
@@ -68,8 +83,8 @@ typedef struct __attribute__((packed, aligned(2)))
     uint8_t batt_mode           : 3;
     uint8_t rsvd_1              : 2;
 
-    /* Keeps the checksum naturally aligned and makes the flash format even. */
-    uint8_t rsvd_2;
+    uint8_t input_v_calib       : 4;
+    uint8_t rsvd_2              : 4;
     uint16_t checksum;
 }
 hotwand_setup_nvm_t;
