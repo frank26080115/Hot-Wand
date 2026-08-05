@@ -69,6 +69,7 @@ void UART_Write(const char* text)
 
 void UART_debug_task(void)
 {
+    char     timestamp[12];
     char     value[UART_DEBUG_VALUE_CAPACITY];
     uint32_t now;
 
@@ -83,6 +84,10 @@ void UART_debug_task(void)
         return;
     }
     uart_debug_last_task_ms = now;
+
+    UART_Write("[");
+    UART_Write(int_to_str((int)now, timestamp, 10));
+    UART_Write("]: ");
 
     millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), value, 1);
     UART_Write(value);
