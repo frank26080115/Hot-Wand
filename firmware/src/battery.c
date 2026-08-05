@@ -76,7 +76,7 @@ const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SA
         },
     [BATT_MODE_LIFE_SAFE] =
         {
-            3000,
+            2750,
             3650,
             BATTERY_MINIMUM_CELL_CNT_LIFE,
             BATTERY_MAXIMUM_CELL_CNT_LIFE,
@@ -124,10 +124,15 @@ bool battery_guess(uint16_t battery_millivolts, uint8_t selected_battery_mode, b
 
     if ((optimistic_cell_count > limits->maximum_cell_count) || (optimistic_cell_count > pessimistic_cell_count))
     {
-        return false;
+        /* No supported cell count puts the measured voltage inside the
+         * chemistry's per-cell range.  Fail toward a low-battery warning:
+         * choose the first cell count whose minimum pack voltage is above the
+         * measurement.  battery_check() must reject this count, while reducing
+         * it by one produces the greatest count that passes the same check. */
+        pessimistic_cell_count++;
+        optimistic_cell_count = pessimistic_cell_count;
     }
-
-    if (pessimistic_cell_count > limits->maximum_cell_count)
+    else if (pessimistic_cell_count > limits->maximum_cell_count)
     {
         pessimistic_cell_count = limits->maximum_cell_count;
     }

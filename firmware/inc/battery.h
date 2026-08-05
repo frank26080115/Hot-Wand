@@ -32,14 +32,18 @@ extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_
  * Determines the range of whole-number cell counts consistent with the
  * supplied pack voltage and the selected BATT_MODE_* limits.
  *
- * The optimistic result uses the fewest plausible cells and therefore the
- * highest inferred charge per cell.  The pessimistic result uses the most
- * plausible cells and therefore the lowest inferred charge per cell.  Both
- * results are constrained by the selected chemistry's configured maximum;
- * no result is reported when even the optimistic count exceeds it.
+ * The optimistic result normally uses the fewest plausible cells and therefore
+ * the highest inferred charge per cell.  The pessimistic result normally uses
+ * the most plausible cells and therefore the lowest inferred charge per cell.
  *
- * Returns false and clears *guess when the inputs describe no plausible
- * whole-number cell count.  A NULL result pointer also returns false.
+ * When the voltage does not fit any supported cell count, the function assumes
+ * the battery is too low.  Both results contain the first cell count whose
+ * minimum pack voltage exceeds the measurement.  This deliberately causes
+ * battery_check() to report a low battery; reducing that count by one produces
+ * the greatest count that passes the same threshold.
+ *
+ * Returns false and clears *guess only for zero voltage, a disabled or invalid
+ * battery mode, or a NULL result pointer.
  */
 bool battery_guess(uint16_t battery_millivolts, uint8_t battery_mode, battery_guess_t* guess);
 
