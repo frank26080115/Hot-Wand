@@ -15,12 +15,26 @@
 #error "BTN_LONG_PRESS_MS must not be shorter than BTN_DEBOUNCE_MS"
 #endif
 
+typedef enum
+{
+    BTN_SHORT_PRESS_ON_PRESS = 0,
+    BTN_SHORT_PRESS_ON_RELEASE
+} btn_short_press_mode_t;
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 void btn_init(void);
+
+/*
+ * The default mode emits a short press on the falling edge. Release mode
+ * emits it after a debounced release only
+ * when the hold was shorter than
+ * BTN_LONG_PRESS_MS.
+ */
+void btn_set_short_press_mode(btn_short_press_mode_t mode);
 bool btn_is_down(void);
 
 /*

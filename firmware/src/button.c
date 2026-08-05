@@ -21,20 +21,22 @@
 // Globals
 // -----------------------------------------------------------------------------
 
-static volatile bool     btn_initialized;
-static volatile bool     btn_down;
-static volatile bool     btn_release_pending;
-static volatile bool     btn_short_press;
-static volatile bool     btn_long_press;
-static volatile bool     btn_long_press_emitted;
-static volatile uint32_t btn_down_since_ms;
-static volatile uint32_t btn_release_since_ms;
+static volatile bool                   btn_initialized;
+static volatile bool                   btn_down;
+static volatile bool                   btn_release_pending;
+static volatile bool                   btn_short_press;
+static volatile bool                   btn_long_press;
+static volatile bool                   btn_long_press_emitted;
+static volatile uint32_t               btn_down_since_ms;
+static volatile uint32_t               btn_release_since_ms;
+static volatile btn_short_press_mode_t btn_short_press_mode = BTN_SHORT_PRESS_ON_PRESS;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
 static void btn_accept_down(uint32_t now);
+static void btn_accept_release(void);
 static bool btn_get_event(volatile bool* event, bool clear_flag);
 
 // -----------------------------------------------------------------------------
@@ -125,6 +127,7 @@ void btn_task(void)
              */
             if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
             {
+                btn_accept_release();
                 btn_accept_down(now);
             }
             else
@@ -134,9 +137,7 @@ void btn_task(void)
         }
         else if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
         {
-            btn_down               = false;
-            btn_release_pending    = false;
-            btn_long_press_emitted = false;
+            btn_accept_release();
         }
     }
 
@@ -187,6 +188,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
              */
             if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
             {
+                btn_accept_release();
                 btn_accept_down(now);
             }
             else
@@ -205,6 +207,24 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 // -----------------------------------------------------------------------------
 // Getters and Setters
 // -----------------------------------------------------------------------------
+
+void btn_set_short_press_mode(btn_short_press_mode_t mode)
+{
+    uint32_t interrupt_state;
+
+    if (mode != BTN_SHORT_PRESS_ON_RELEASE)
+    {
+        mode = BTN_SHORT_PRESS_ON_PRESS;
+    }
+
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+    btn_short_press_mode = mode;
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+}
 
 bool btn_is_down(void)
 {
@@ -235,7 +255,24 @@ static void btn_accept_down(uint32_t now)
     btn_down               = true;
     btn_release_pending    = false;
     btn_down_since_ms      = now;
-    btn_short_press        = true;
+    btn_long_press_emitted = false;
+
+    if (btn_short_press_mode == BTN_SHORT_PRESS_ON_PRESS)
+    {
+        btn_short_press = true;
+    }
+}
+
+static void btn_accept_release(void)
+{
+    if ((btn_short_press_mode == BTN_SHORT_PRESS_ON_RELEASE) && !btn_long_press_emitted &&
+        ((uint32_t)(btn_release_since_ms - btn_down_since_ms) < BTN_LONG_PRESS_MS))
+    {
+        btn_short_press = true;
+    }
+
+    btn_down               = false;
+    btn_release_pending    = false;
     btn_long_press_emitted = false;
 }
 

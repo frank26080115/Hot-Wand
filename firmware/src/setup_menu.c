@@ -134,14 +134,8 @@ void setup_menu(void)
 {
     hotwand_setup_nvm_t settings;
     u8g2_t*             graphics;
-    uint32_t            initial_release_ms = 0;
-    uint32_t            pending_release_ms = 0;
     uint32_t            last_activity_ms;
-    uint8_t             selected_item          = SETUP_ITEM_STARTUP_POWER_LEVEL;
-    bool                initial_release_timing = false;
-    bool                input_enabled          = false;
-    bool                short_press_pending    = false;
-    bool                pending_release_timing = false;
+    uint8_t             selected_item = SETUP_ITEM_STARTUP_POWER_LEVEL;
 
     /* Both energy-producing outputs must be safe before entering the menu. */
     rfgen_stop();
@@ -160,7 +154,10 @@ void setup_menu(void)
         setup_menu_render(graphics, &settings, selected_item);
     }
 
-    /* Discard the hold used by boot logic to enter this function. */
+    /* In the menu, a short press is an action only after a short release. */
+    btn_set_short_press_mode(BTN_SHORT_PRESS_ON_RELEASE);
+
+    /* Discard the events used by boot logic to enter this function. */
     btn_has_short_press(true);
     btn_has_long_press(true);
     last_activity_ms = systick_get_ms();
@@ -177,45 +174,16 @@ void setup_menu(void)
             setup_menu_sleep(graphics);
         }
 
-        if (!input_enabled)
-        {
-            /* Require a continuously released, debounced button before the
-             * first menu press can be accepted. */
-            if (btn_is_down())
-            {
-                initial_release_timing = false;
-                last_activity_ms       = now;
-            }
-            else if (!initial_release_timing)
-            {
-                initial_release_ms     = now;
-                initial_release_timing = true;
-            }
-            else if ((uint32_t)(now - initial_release_ms) >= BTN_DEBOUNCE_MS)
-            {
-                btn_has_short_press(true);
-                btn_has_long_press(true);
-                input_enabled    = true;
-                last_activity_ms = now;
-            }
-
-            HAL_Delay(1);
-            continue;
-        }
-
         if (btn_has_short_press(true))
         {
-            short_press_pending    = true;
-            pending_release_timing = false;
-            last_activity_ms       = now;
+            selected_item    = (uint8_t)((selected_item + 1) % SETUP_MENU_ITEM_COUNT);
+            last_activity_ms = now;
+            setup_menu_render(graphics, &settings, selected_item);
         }
 
         if (btn_has_long_press(true))
         {
-            /* A long press and its initial button-down event are one action. */
-            short_press_pending    = false;
-            pending_release_timing = false;
-            last_activity_ms       = now;
+            last_activity_ms = now;
 
             if (selected_item == SETUP_ITEM_SAVE_AND_EXIT)
             {
@@ -228,27 +196,6 @@ void setup_menu(void)
             else
             {
                 setup_menu_cycle_value(&settings, selected_item);
-                setup_menu_render(graphics, &settings, selected_item);
-            }
-        }
-
-        if (short_press_pending)
-        {
-            if (btn_is_down())
-            {
-                pending_release_timing = false;
-            }
-            else if (!pending_release_timing)
-            {
-                pending_release_ms     = now;
-                pending_release_timing = true;
-            }
-            else if ((uint32_t)(now - pending_release_ms) >= BTN_DEBOUNCE_MS)
-            {
-                short_press_pending    = false;
-                pending_release_timing = false;
-                selected_item          = (uint8_t)((selected_item + 1) % SETUP_MENU_ITEM_COUNT);
-                last_activity_ms       = now;
                 setup_menu_render(graphics, &settings, selected_item);
             }
         }
