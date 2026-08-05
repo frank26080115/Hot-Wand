@@ -25148,6 +25148,7 @@ curr meas</text>
 <pinref part="R32" gate="G$1" pin="1"/>
 <wire x1="149.86" y1="-640.08" x2="154.94" y2="-640.08" width="0.1524" layer="91"/>
 <wire x1="149.86" y1="-647.7" x2="149.86" y2="-640.08" width="0.1524" layer="91"/>
+<junction x="149.86" y="-640.08"/>
 </segment>
 </net>
 <net name="N$27" class="0">
