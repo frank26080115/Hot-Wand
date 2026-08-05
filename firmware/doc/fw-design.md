@@ -28,7 +28,7 @@ The assumption is that this is an electrically 100W-ish system because the buck 
 The user can choose between power level modes. Available levels are:
 
  * "SPORT" (100W)
- * "NORM" (75W)
+ * "NORMAL" (75W)
  * "ECO" (50W, must never fail when used with a 65W USB power supply)
 
 To actually modulate the power, there is a PWM pin allocated to send a bias signal to the buck converter's feedback input through a resistor and diode.

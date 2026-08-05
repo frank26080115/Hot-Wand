@@ -21,8 +21,11 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define SETUP_MENU_CHARS_PER_LINE  6
-#define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
+#define SETUP_MENU_CHARS_PER_LINE   6
+#define SETUP_MENU_FIVE_CHAR_COUNT  5
+#define SETUP_MENU_FIVE_CHAR_MARGIN 3
+#define SETUP_MENU_SIX_CHAR_MARGIN  1
+#define SETUP_MENU_LAST_VALUE_ITEM  SETUP_ITEM_INPUT_V_CALIB
 
 // -----------------------------------------------------------------------------
 // Types
@@ -57,7 +60,7 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_STARTUP_POWER_LEVEL] =
         {
             .title     = "START\nPOWER\nLEVEL",
-            .items     = "SPORT|NORM|ECO",
+            .items     = "SPORT|NORMAL|ECO",
             .items_cnt = 3,
         },
     [SETUP_ITEM_FAN_MODE] =
@@ -69,25 +72,25 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_AUTO_SLEEP] =
         {
             .title     = "AUTO\nSLEEP",
-            .items     = "OFF|5 MIN|15MIN|30MIN",
+            .items     = "OFF|5 MIN|15 MIN|30 MIN",
             .items_cnt = 4,
         },
     [SETUP_ITEM_AUTO_DIM] =
         {
             .title     = "AUTO\nDIM",
-            .items     = "OFF|15 S|30 S|60 S",
+            .items     = "OFF|15 SEC|30 SEC|60 SEC",
             .items_cnt = 4,
         },
     [SETUP_ITEM_IDLE_DETECT_THRESH] =
         {
-            .title     = "ACTIV\nMIN W",
+            .title     = "ACTIVE\nMIN W",
             .items     = "1 W|2 W|5 W|10 W|20 W|30 W|40 W",
             .items_cnt = 7,
         },
     [SETUP_ITEM_BATTERY_MODE] =
         {
             .title     = "BATT\nMODE",
-            .items     = "NONE|LIPO|LIPO\nSAFER|LIHV|LIHV\nSAFER|LIFE|LIFE\nSAFER",
+            .items     = "NONE|LiPo|LiPo\nSAFER|LiHV|LiHV\nSAFER|LiFE|LiFE\nSAFER",
             .items_cnt = 7,
         },
     [SETUP_ITEM_INPUT_V_CALIB] =
@@ -104,7 +107,7 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
         },
     [SETUP_ITEM_EXIT_NO_SAVE] =
         {
-            .title     = "EXIT\nNO\nSAVE",
+            .title     = "EXIT\nDON'T\nSAVE",
             .items     = "",
             .items_cnt = 0,
         },
@@ -119,9 +122,9 @@ static uint8_t     setup_menu_get_option_count(uint8_t item);
 static void        setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item);
 static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
-static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
-static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
-static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
+static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t margin, uint8_t baseline);
+static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
+static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -303,13 +306,17 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
     while ((*line != '\0') && (*line != terminator))
     {
         const char* end = line;
+        size_t      length;
+        uint8_t     margin;
 
         while ((*end != '\0') && (*end != '\n') && (*end != terminator))
         {
             ++end;
         }
 
-        setup_menu_draw_line(graphics, line, (size_t)(end - line), baseline);
+        length = (size_t)(end - line);
+        margin = length <= SETUP_MENU_FIVE_CHAR_COUNT ? SETUP_MENU_FIVE_CHAR_MARGIN : SETUP_MENU_SIX_CHAR_MARGIN;
+        setup_menu_draw_line(graphics, line, length, margin, baseline);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
 
         if (*end != '\n')
@@ -322,7 +329,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
     return baseline;
 }
 
-static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline)
+static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t margin, uint8_t baseline)
 {
     char   line[SETUP_MENU_CHARS_PER_LINE + 1];
     size_t index;
@@ -343,7 +350,7 @@ static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t leng
     }
     line[length] = '\0';
 
-    u8g2_DrawStr(graphics, 1, baseline, line);
+    u8g2_DrawStr(graphics, margin, baseline, line);
 }
 
 static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item)
@@ -361,7 +368,11 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     u8g2_ClearBuffer(graphics);
 
-    setup_menu_draw_line(graphics, "SETUP", 5, OLED_FIRST_TEXT_BASELINE);
+    setup_menu_draw_line(graphics,
+                         "SETUP",
+                         SETUP_MENU_FIVE_CHAR_COUNT,
+                         SETUP_MENU_FIVE_CHAR_MARGIN,
+                         OLED_FIRST_TEXT_BASELINE);
 
     /* Advance two rows: row two is deliberately blank. */
     baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
@@ -369,7 +380,7 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     if (item <= SETUP_MENU_LAST_VALUE_ITEM)
     {
-        setup_menu_draw_line(graphics, "  =  ", 5, baseline);
+        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, SETUP_MENU_FIVE_CHAR_MARGIN, baseline);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
         option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
         setup_menu_draw_text(graphics, option, '|', baseline);

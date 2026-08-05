@@ -340,7 +340,7 @@ static void boot_wait_for_power_stable(void)
             if (graphics != NULL)
             {
                 u8g2_ClearBuffer(graphics);
-                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, ".....");
+                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "......");
                 OLED_SendBuffer(&oled);
             }
 
