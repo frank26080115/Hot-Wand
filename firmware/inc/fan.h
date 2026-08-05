@@ -13,6 +13,8 @@ void fan_task(void);
 void fan_on_wake(void);
 /* Stops the fan and prevents fan_task() from restarting it. */
 void fan_stop(void);
+/* Re-enables fan_task() after a recoverable stop, preserving the configured mode. */
+void fan_resume(void);
 
 #ifdef __cplusplus
 }

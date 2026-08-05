@@ -104,6 +104,7 @@ static const adc_cfg_t lpf_cfg_table[ADC_INPUT_COUNT] = {
 /*
  * Expected 10-bit ADC readings for the 10K, beta-3950 NTC thermistors and
  * their 2.2K pull-ups, in 10 C steps from 0 C through 150 C.
+ * use "tools\ntc_table_gen.py" to generate a new table for different thermistors
  */
 static const uint16_t ntc_adc_by_10c[] = {
     960,
@@ -484,6 +485,7 @@ static uint16_t adc_ntc_to_celcius(uint16_t sample)
 {
     uint8_t table_idx;
 
+    // this will catch a disconnected/missing NTC thermistor, which will read as a very high ADC value
     if (sample >= ntc_adc_by_10c[0])
     {
         return 0;
@@ -544,6 +546,19 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
 
 static void adc_fault(void)
 {
+    /*
+    Under the present boot sequence, all these preconditions are controlled:
+
+    adc_handle starts zero-initialized; The ADC clock is explicitly enabled; Calibration runs while the ADC is disabled;
+    Channel configuration happens before conversion starts; adc_init() is called only once;
+
+    Therefore, on healthy hardware and uncorrupted firmware, adc_fault() should effectively never happen. Realistic
+    causes would be:
+
+    Damaged or malfunctioning ADC peripheral; ADC clock-domain failure; Severe undervoltage or clock instability during
+    startup; RAM/register corruption; Calling adc_init() again while conversions are running; A future
+    initialization-order regression;
+    */
     HAL_NVIC_DisableIRQ(ADC1_IRQn);
 
     for (;;)

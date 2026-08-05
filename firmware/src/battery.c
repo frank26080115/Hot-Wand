@@ -3,11 +3,12 @@
 // -----------------------------------------------------------------------------
 
 #include "battery.h"
+#include "pins.h"
 #include "adc.h"
 #include "button.h"
 #include "fault.h"
 #include "oled.h"
-#include "pins.h"
+#include "fan.h"
 #include "pwrlvl.h"
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
@@ -87,12 +88,17 @@ const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SA
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
+static void battery_show_fault_fatal(void);
 static void battery_render_fault(u8g2_t* graphics, uint8_t progress);
 
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
 
+/*
+Guess the number of cells according to total voltage and user selected battery chemistry
+This guess will be used later to implement a low battery cutoff
+*/
 bool battery_guess(uint16_t battery_millivolts, uint8_t selected_battery_mode, battery_guess_t* guess)
 {
     const battery_cell_voltage_range_t* limits;
@@ -174,11 +180,14 @@ void battery_show_fault(bool allow_override)
 
     rfgen_stop();
     pwrlvl_force_minimum();
+    fan_stop();
+
     if (!allow_override || !battery_can_override())
     {
-        show_fault("LOW\nBATT\n!!!!!", false);
+        battery_show_fault_fatal();
         return;
     }
+
     btn_init();
 
     graphics = OLED_GetGraphics(&oled);
@@ -243,14 +252,24 @@ void battery_show_fault(bool allow_override)
 
             if (override_ready)
             {
-                if (!battery_can_override() || !battery_set_params((uint16_t)(battery_cell_count - 1), battery_mode))
+                if (!battery_set_params((uint16_t)(battery_cell_count - 1), battery_mode))
                 {
-                    show_fault("LOW\nBATT\n!!!!!", false);
+                    // revoke permission, but this should never happen
+                    battery_show_fault_fatal();
                     return;
                 }
+
                 battery_override_used = true;
+                fan_resume();
                 rfgen_start();
                 pwrlvl_release_minimum();
+                return;
+            }
+
+            // revoke override ability if the voltage has continued to drop
+            if (!battery_can_override())
+            {
+                battery_show_fault_fatal();
                 return;
             }
         }
@@ -267,6 +286,7 @@ bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
 {
     if (cell_count == 0)
     {
+        // enforced policy: if the cell count is zero, the battery mode must also be NONE
         battery_cell_count = 0;
         battery_mode       = BATT_MODE_NONE;
         return true;
@@ -274,6 +294,7 @@ bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
 
     if ((selected_battery_mode == BATT_MODE_NONE) || (selected_battery_mode > BATT_MODE_LIFE_SAFE))
     {
+        // this is an error, because cell count cannot be non-zero while battery mode is NONE or invalid
         return false;
     }
 
@@ -285,17 +306,27 @@ bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
 
 bool battery_can_override(void)
 {
+    // the override capability is mostly to overcome a bad guess of cell count
+    // when used, it sets the cell count to one less than the guessed count
+    // so we only allow override to be used once
+    // and also we only allow override if the cell count is still above the minimum supported cell count
     if (battery_override_used || (battery_cell_count <= battery_cell_voltage_ranges[battery_mode].minimum_cell_count))
     {
         return false;
     }
 
+    // must also respect a minimum absolute voltage
     return adc_to_millivolts(DC_SENS_IDX) >= BATTERY_OVERRIDE_MINIMUM_MV;
 }
 
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
+
+static void battery_show_fault_fatal(void)
+{
+    show_fault("LOW\nBATT\n!!!!!", false);
+}
 
 static void battery_render_fault(u8g2_t* graphics, uint8_t progress)
 {
