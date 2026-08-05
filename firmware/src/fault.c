@@ -9,6 +9,7 @@
 #include "conf.h"
 #include "fan.h"
 #include "miscutils.h"
+#include "nvm.h"
 #include "oled.h"
 #include "pins.h"
 #include "pwrlvl.h"
@@ -49,11 +50,12 @@ static bool     fault_button_release_pending;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static uint8_t fault_count_message_lines(const char* text);
-static void    fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
-static void    fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
-static uint8_t fault_random_x(void);
-static void    fault_reset_if_button_pressed(void);
+static uint8_t  fault_count_message_lines(const char* text);
+static void     fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
+static void     fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
+static uint8_t  fault_random_x(void);
+static void     fault_reset_if_button_pressed(void);
+static uint32_t fault_get_auto_dim_delay_ms(void);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -62,6 +64,8 @@ static void    fault_reset_if_button_pressed(void);
 void show_fault(const char* text, bool allow_button_reset)
 {
     u8g2_t*  graphics;
+    uint32_t auto_dim_delay_ms;
+    uint32_t last_activity_ms;
     uint32_t last_refresh_ms;
     uint32_t last_shift_ms;
     int16_t  text_height;
@@ -77,14 +81,18 @@ void show_fault(const char* text, bool allow_button_reset)
     pwrlvl_force_minimum();
     fan_stop();
 
+    btn_init();
+    btn_has_short_press(true);
+    btn_has_long_press(true);
+
     if (allow_button_reset)
     {
-        btn_init();
-        btn_has_short_press(true);
-        btn_has_long_press(true);
         fault_button_reset_armed     = !btn_is_down();
         fault_button_release_pending = false;
     }
+
+    auto_dim_delay_ms = fault_get_auto_dim_delay_ms();
+    OLED_SetDimMode(&oled, false);
 
     graphics = OLED_GetGraphics(&oled);
     if (graphics == NULL)
@@ -115,8 +123,9 @@ void show_fault(const char* text, bool allow_button_reset)
 
     fault_render(graphics, text, x_offset, y_offset);
     OLED_SendBuffer(&oled);
-    last_shift_ms   = systick_get_ms();
-    last_refresh_ms = last_shift_ms;
+    last_shift_ms    = systick_get_ms();
+    last_refresh_ms  = last_shift_ms;
+    last_activity_ms = last_shift_ms;
 
     for (;;)
     {
@@ -126,7 +135,17 @@ void show_fault(const char* text, bool allow_button_reset)
         {
             fault_reset_if_button_pressed();
         }
+        else
+        {
+            btn_task();
+            if (btn_has_short_press(true))
+            {
+                last_activity_ms = systick_get_ms();
+            }
+        }
         now = systick_get_ms();
+
+        OLED_SetDimMode(&oled, (auto_dim_delay_ms != 0) && ((uint32_t)(now - last_activity_ms) >= auto_dim_delay_ms));
 
         if ((uint32_t)(now - last_shift_ms) >= FAULT_SHIFT_INTERVAL_MS)
         {
@@ -301,6 +320,32 @@ static void fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset
 static uint8_t fault_random_x(void)
 {
     return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)OLED_MAX_PIXEL_SHIFT_X + 1));
+}
+
+static uint32_t fault_get_auto_dim_delay_ms(void)
+{
+    hotwand_setup_nvm_t settings;
+
+    if (!nvm_read(&settings))
+    {
+        nvm_apply_defaults(&settings);
+    }
+
+    switch (settings.auto_dim)
+    {
+    case AUTO_DIM_15SEC:
+        return 15 * 1000;
+
+    case AUTO_DIM_30SEC:
+        return 30 * 1000;
+
+    case AUTO_DIM_60SEC:
+        return 60 * 1000;
+
+    case AUTO_DIM_OFF:
+    default:
+        return 0;
+    }
 }
 
 static void fault_reset_if_button_pressed(void)

@@ -50,6 +50,14 @@
 #error "Invalid high-power DC threshold or hysteresis"
 #endif
 
+#ifndef PWRLVL_CURRENT_LIMIT_ENABLED
+#define PWRLVL_CURRENT_LIMIT_ENABLED 1
+#endif
+
+#if PWRLVL_CURRENT_LIMIT_ENABLED
+#define PWRLVL_CURRENT_LIMIT_MA 5200
+#endif
+
 #define PWRLVL_SHORT_CIRCUIT_CURRENT_MA 5800
 #define PWRLVL_SHORT_CIRCUIT_TIME_MS    5000
 

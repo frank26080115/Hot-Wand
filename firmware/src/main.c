@@ -147,11 +147,6 @@ int main(void)
 
     test_run(); // if the test is enabled, then this will never return
 
-    if (!tipdetect_has_triggered() && !rfgen_has_fault())
-    {
-        rfgen_start();
-    }
-
     for (;;)
     {
         uint32_t now;
@@ -172,13 +167,23 @@ int main(void)
         }
 
         /* Central runtime output supervisor:
-         * - Checks the configured battery cutoff and terminal input undervoltage.
+         * - Checks the configured battery cutoff and terminal input
+         * undervoltage.
          * - Applies temperature and input-voltage derating with hysteresis.
          * - Selects the effective power level and advances PWM attenuation.
          * - Enforces current and short-circuit limits in the lower-level task.
          * - Updates attenuation diagnostics, activity timing, and graph history.
          * A terminal fault blocks here until the user resets the controller. */
         pwrmgt_task();
+
+        /* Retry after supervision has ruled out terminal power faults.  The
+         * RF driver performs its own
+         * clock-fault and tip-debounce checks too. */
+        if (!rfgen_is_active() && rfgen_tip_allows_start())
+        {
+            rfgen_start();
+        }
+
         fan_task();        // spins the fan as appropriate
         UART_debug_task(); // spits out a debug message when requested
 

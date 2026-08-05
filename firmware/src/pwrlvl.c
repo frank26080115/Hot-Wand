@@ -1,3 +1,13 @@
+/*
+The circuit of the Hot Wand has a main buck converter
+This particular code module is responsible for controlling the output voltage of that buck converter
+The buck converter's feedback signal is connected to our PWM pin through a resistor and diode
+By sending a PWM signal, a higher duty cycle will drive the feedback signal higher, which will lower the output voltage
+of the buck converter This code module is responsible for slowly ramping the PWM duty cycle up and down to avoid sudden
+changes in output voltage This code module also monitors the current draw of the buck converter and will limit the
+output voltage if the current draw exceeds a certain threshold
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------
@@ -27,16 +37,8 @@
 #define PWRLVL_PWM_JUMP_LEVEL    16
 #define PWRLVL_RAMP_UP_PERIOD_MS 2
 
-#ifndef PWRLVL_CURRENT_LIMIT_ENABLED
-#define PWRLVL_CURRENT_LIMIT_ENABLED 1
-#endif
-
 #if (PWRLVL_CURRENT_LIMIT_ENABLED != 0) && (PWRLVL_CURRENT_LIMIT_ENABLED != 1)
 #error "PWRLVL_CURRENT_LIMIT_ENABLED must be 0 or 1"
-#endif
-
-#if PWRLVL_CURRENT_LIMIT_ENABLED
-#define PWRLVL_CURRENT_LIMIT_MA 5200
 #endif
 
 // -----------------------------------------------------------------------------
@@ -140,7 +142,8 @@ void pwrlvl_task(void)
     now        = systick_get_ms();
     current_ma = adc_to_milliamps(CURR_SENS_IDX);
 
-    /* This is a continuous-duration test: any sample at or below 5.8 A
+#if PWRLVL_CURRENT_LIMIT_ENABLED
+    /* This is a continuous-duration check: any sample at or below 5.8 A
      * cancels the pending fault interval.  Keep it independent of the normal
      * current limiter so disabling that feature cannot disable protection. */
     if (current_ma > PWRLVL_SHORT_CIRCUIT_CURRENT_MA)
@@ -160,6 +163,7 @@ void pwrlvl_task(void)
     {
         pwrlvl_short_circuit_timing = false;
     }
+#endif
 
     if (pwrlvl_forced_minimum)
     {
@@ -223,6 +227,11 @@ void pwrlvl_task(void)
 
 void pwrlvl_force_minimum(void)
 {
+    /*
+     * Puts the output of the buck converter to a minimum voltage level
+     * by driving the feedback signal high through a resistor
+     */
+
     GPIO_InitTypeDef gpio_cfg = {0};
 
     /*
