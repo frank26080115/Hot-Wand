@@ -157,8 +157,6 @@ void setup_menu(void)
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL)
     {
-        /* The setup UI is intentionally read along the long axis of the OLED. */
-        u8g2_SetDisplayRotation(graphics, U8G2_R1);
         setup_menu_render(graphics, &settings, selected_item);
     }
 
@@ -418,7 +416,6 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
     menu_item = &setup_menu_items[item];
 
     u8g2_ClearBuffer(graphics);
-    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
 
     setup_menu_draw_line(graphics, "SETUP", 5, SETUP_MENU_FIRST_BASELINE);
 

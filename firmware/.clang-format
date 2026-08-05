@@ -31,3 +31,4 @@ PenaltyBreakBeforeFirstCallParameter: 0
 SpaceBeforeParens: ControlStatements
 SpacesInParentheses: false
 Cpp11BracedListStyle: true
+InsertBraces: true

@@ -142,6 +142,19 @@ bool OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c)
     return true;
 }
 
+void OLED_ConfigureGraphics(OLED_Handle* oled)
+{
+    if ((oled == NULL) || (oled->initialized == 0))
+    {
+        return;
+    }
+
+    /* These drawing properties persist until explicitly changed. */
+    u8g2_SetDisplayRotation(&oled->graphics, U8G2_R1);
+    u8g2_SetFont(&oled->graphics, u8g2_font_5x7_tr);
+    u8g2_ClearBuffer(&oled->graphics);
+}
+
 bool OLED_SendBuffer(OLED_Handle* oled)
 {
     if ((oled == NULL) || (oled->initialized == 0))

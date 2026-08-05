@@ -47,7 +47,7 @@
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
 static const uint32_t auto_dim_delay_ms[]   = {0, 15 * 1000, 30 * 1000, 60 * 1000};
 
-uint8_t pixshift_x = 0;
+uint8_t pixshift_x = 0; // randomized pixel shift to avoid OLED burn-in
 uint8_t pixshift_y = 0;
 
 // -----------------------------------------------------------------------------
@@ -91,6 +91,7 @@ int main(void)
     {
         Error_Handler();
     }
+    OLED_ConfigureGraphics(&oled);
 
     nvm_init();
     if (!nvm_read(&settings))
@@ -99,6 +100,9 @@ int main(void)
     }
     adc_set_input_voltage_calibration(settings.input_v_calib);
 
+    // when all ADC channels have been read once
+    // we use the LSB of the data to use as a RNG seed
+    // taking advantage of noise
     do
     {
         random_seed = adc_get_rand_seed();
@@ -112,6 +116,7 @@ int main(void)
     if (boot_button_down)
     {
         boot_check_for_setup();
+        // this might just reboot
     }
 
     boot_wait_for_power_stable();
@@ -120,6 +125,7 @@ int main(void)
 
     if ((settings.batt_mode != BATT_MODE_NONE) && (settings.batt_mode <= BATT_MODE_LIFE_SAFE))
     {
+        // automatic cell count determination
         if (battery_guess(input_millivolts, settings.batt_mode, &battery_guess_result))
         {
             battery_set_params(battery_guess_result.optimistic_cell_count, settings.batt_mode);
@@ -127,6 +133,7 @@ int main(void)
     }
     else
     {
+        // 0 cell will disable battery level monitoring
         battery_set_params(0, BATT_MODE_NONE);
     }
 
@@ -163,29 +170,30 @@ int main(void)
          * supervision.  The lower power-level
          * task applies its decision. */
         pwrmgt_task();
-        pwrlvl_task();
-        fan_task();
-        UART_debug_task();
+        pwrlvl_task();     // this only really applys the correct PWM as told by other modules
+        fan_task();        // spins the fan as appropriate
+        UART_debug_task(); // spits out a debug message when requested
 
         now = systick_get_ms();
 
         if (btn_has_short_press(true))
-            pwrmgt_change_pwr_lvl();
-        if (btn_has_long_press(true))
-            enter_sleep_mode();
-
         {
-            uint32_t inactive_ms = pwrmgt_get_time_since_last_activity_ms();
-
-            if ((settings.auto_sleep != AUTO_SLEEP_OFF) && (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep]))
-            {
-                enter_sleep_mode();
-            }
-
-            OLED_SetDimMode(
-                &oled,
-                (settings.auto_dim != AUTO_DIM_OFF) && (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
+            pwrmgt_change_pwr_lvl();
         }
+        if (btn_has_long_press(true))
+        {
+            enter_sleep_mode();
+        }
+
+        uint32_t inactive_ms = pwrmgt_get_time_since_last_activity_ms();
+
+        if ((settings.auto_sleep != AUTO_SLEEP_OFF) && (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep]))
+        {
+            enter_sleep_mode();
+        }
+
+        OLED_SetDimMode(&oled,
+                        (settings.auto_dim != AUTO_DIM_OFF) && (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
 
         /* Transient messages own the display while active.  Otherwise draw
          * the live voltage and graph at no
@@ -215,8 +223,6 @@ static void boot_check_for_setup(void)
         Error_Handler();
     }
 
-    u8g2_SetDisplayRotation(graphics, U8G2_R1);
-    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     boot_draw_setup_hold(graphics, 0);
     hold_start_ms = systick_get_ms();
 
@@ -321,8 +327,6 @@ static void boot_wait_for_power_stable(void)
 
             if (graphics != NULL)
             {
-                u8g2_SetDisplayRotation(graphics, U8G2_R1);
-                u8g2_SetFont(graphics, u8g2_font_5x7_tr);
                 u8g2_ClearBuffer(graphics);
                 u8g2_DrawStr(graphics, 1, 9, ".....");
                 OLED_SendBuffer(&oled);
@@ -338,7 +342,7 @@ static void boot_wait_for_power_stable(void)
 static void main_render_display(void)
 {
     char    voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
-    char*   end;
+    size_t  voltage_length;
     u8g2_t* graphics = OLED_GetGraphics(&oled);
 
     if (graphics == NULL)
@@ -346,17 +350,10 @@ static void main_render_display(void)
         return;
     }
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1);
-    end = voltage;
-    while (*end != '\0')
-    {
-        ++end;
-    }
-    *end++ = 'V';
-    *end   = '\0';
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    voltage[voltage_length++] = 'V';
+    voltage[voltage_length]   = '\0';
 
-    u8g2_SetDisplayRotation(graphics, U8G2_R1);
-    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     u8g2_ClearBuffer(graphics);
     u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(MAIN_DISPLAY_VOLTAGE_BASELINE + pixshift_y), voltage);
     pwrmgt_render_graph(graphics);

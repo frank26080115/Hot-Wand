@@ -29,6 +29,7 @@ extern OLED_Handle       oled;
 void    I2C1_Init(void);
 void    HAL_I2C_MspInit(I2C_HandleTypeDef* handle);
 bool    OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c);
+void    OLED_ConfigureGraphics(OLED_Handle* oled);
 u8g2_t* OLED_GetGraphics(OLED_Handle* oled);
 bool    OLED_SendBuffer(OLED_Handle* oled);
 bool    OLED_SetDimMode(OLED_Handle* oled, bool dimmed);

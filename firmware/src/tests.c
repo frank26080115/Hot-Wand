@@ -108,7 +108,7 @@ void test_bringup_systick(void)
         if (button_down && ((uint32_t)(now - last_report_ms) >= TEST_STATUS_INTERVAL_MS))
         {
             last_report_ms = now;
-            UART_Write(int_to_str((int)now, timestamp, 10));
+            UART_Write(int_to_str((int)now, timestamp, 10, NULL));
             UART_Write("\r\n");
         }
 
@@ -131,7 +131,7 @@ void test_bringup_button(void)
         {
             UART_SetAllowed(true);
             UART_Write("BUTTON PRESSED ");
-            UART_Write(int_to_str((int)systick_get_ms(), timestamp, 10));
+            UART_Write(int_to_str((int)systick_get_ms(), timestamp, 10, NULL));
             UART_Write("\r\n");
         }
         else if (!btn_is_down())
@@ -518,8 +518,6 @@ static void test_report_tip_state(bool triggered)
         return;
     }
 
-    u8g2_SetDisplayRotation(graphics, U8G2_R1);
-    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     u8g2_ClearBuffer(graphics);
     u8g2_DrawStr(graphics, 1, 9, "TIP");
     u8g2_DrawStr(graphics, 1, 19, triggered ? "FAULT" : "OK");
@@ -659,7 +657,7 @@ static void test_uart_write_number(uint32_t value)
 {
     char number[12];
 
-    UART_Write(int_to_str((int)value, number, 10));
+    UART_Write(int_to_str((int)value, number, 10, NULL));
 }
 
 static void test_uart_write_address(uintptr_t address)
@@ -667,7 +665,7 @@ static void test_uart_write_address(uintptr_t address)
     char number[12];
 
     UART_Write("0x");
-    UART_Write(int_to_str((int)address, number, 16));
+    UART_Write(int_to_str((int)address, number, 16, NULL));
 }
 
 static void test_nvm_report_settings(const hotwand_setup_nvm_t* settings)

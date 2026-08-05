@@ -179,8 +179,6 @@ void battery_show_fault(bool allow_override)
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL)
     {
-        u8g2_SetDisplayRotation(graphics, U8G2_R1);
-        u8g2_SetFont(graphics, u8g2_font_5x7_tr);
         battery_render_fault(graphics, progress);
     }
 

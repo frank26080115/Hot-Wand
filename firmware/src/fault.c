@@ -97,7 +97,6 @@ void show_fault(const char* text, bool allow_button_reset)
         }
     }
 
-    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     text_height = (int16_t)((fault_count_message_lines(text) + 1) * FAULT_LINE_HEIGHT);
     if (text_height <= FAULT_DISPLAY_HEIGHT)
     {
@@ -199,8 +198,6 @@ bool short_msg_task(void)
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL)
     {
-        u8g2_SetDisplayRotation(graphics, U8G2_R1);
-        u8g2_SetFont(graphics, u8g2_font_5x7_tr);
         u8g2_ClearBuffer(graphics);
         fault_draw_text(graphics, short_msg_text, 1, FAULT_FONT_ASCENT);
         OLED_SendBuffer(&oled);
@@ -212,7 +209,7 @@ bool short_msg_task(void)
 void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t y_offset)
 {
     char    voltage[FAULT_VOLTAGE_BUFFER_SIZE];
-    char*   end;
+    size_t  voltage_length;
     int16_t baseline;
 
     if (graphics == NULL)
@@ -220,14 +217,9 @@ void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t 
         return;
     }
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1);
-    end = voltage;
-    while (*end != '\0')
-    {
-        ++end;
-    }
-    *end++ = 'V';
-    *end   = '\0';
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    voltage[voltage_length++] = 'V';
+    voltage[voltage_length]   = '\0';
 
     u8g2_ClearBuffer(graphics);
     baseline = (int16_t)(y_offset + FAULT_FONT_ASCENT);

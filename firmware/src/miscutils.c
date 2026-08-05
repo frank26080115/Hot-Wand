@@ -14,7 +14,7 @@ static uint32_t hotwand_rand_state = 1;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places);
+static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places, size_t* length);
 
 // -----------------------------------------------------------------------------
 // Utility Functions
@@ -32,7 +32,7 @@ uint16_t hotwand_rand(void)
     return (uint16_t)((hotwand_rand_state >> 16) & HOTWAND_RAND_MAX);
 }
 
-char* int_to_str(int value, char* str, int base)
+char* int_to_str(int value, char* str, int base, size_t* length)
 {
     static const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     char*             left;
@@ -43,12 +43,20 @@ char* int_to_str(int value, char* str, int base)
 
     if (str == (char*)0)
     {
+        if (length != NULL)
+        {
+            *length = 0;
+        }
         return str;
     }
 
     if ((base < 2) || (base > 36))
     {
         str[0] = '\0';
+        if (length != NULL)
+        {
+            *length = 0;
+        }
         return str;
     }
 
@@ -87,27 +95,32 @@ char* int_to_str(int value, char* str, int base)
         *right-- = temporary;
     }
 
+    if (length != NULL)
+    {
+        *length = (size_t)(write - str);
+    }
+
     return str;
 }
 
-char* millivolts_to_str(uint32_t millivolts, char* str, uint8_t decimal_places)
+char* millivolts_to_str(uint32_t millivolts, char* str, uint8_t decimal_places, size_t* length)
 {
-    return milliunits_to_str(millivolts, str, decimal_places);
+    return milliunits_to_str(millivolts, str, decimal_places, length);
 }
 
-char* milliamps_to_str(uint32_t milliamps, char* str, uint8_t decimal_places)
+char* milliamps_to_str(uint32_t milliamps, char* str, uint8_t decimal_places, size_t* length)
 {
-    return milliunits_to_str(milliamps, str, decimal_places);
+    return milliunits_to_str(milliamps, str, decimal_places, length);
 }
 
-char* milliwatts_to_str(uint32_t milliwatts, char* str, uint8_t decimal_places)
+char* milliwatts_to_str(uint32_t milliwatts, char* str, uint8_t decimal_places, size_t* length)
 {
-    return milliunits_to_str(milliwatts, str, decimal_places);
+    return milliunits_to_str(milliwatts, str, decimal_places, length);
 }
 
-char* celcius_to_str(int celcius, char* str)
+char* celcius_to_str(int celcius, char* str, size_t* length)
 {
-    return int_to_str(celcius, str, 10);
+    return int_to_str(celcius, str, 10, length);
 }
 
 uint16_t fletcher16(const uint8_t* data, size_t length)
@@ -144,7 +157,7 @@ uint16_t fletcher16(const uint8_t* data, size_t length)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places)
+static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places, size_t* length)
 {
     char     fraction_str[4];
     char*    write;
@@ -152,12 +165,17 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
     uint32_t remainder;
     uint32_t divisor;
     uint32_t fraction;
-    uint8_t  fraction_length;
+    size_t   whole_length;
+    size_t   fraction_length;
+    size_t   index;
     uint8_t  shown_places;
-    uint8_t  index;
 
     if (str == (char*)0)
     {
+        if (length != NULL)
+        {
+            *length = 0;
+        }
         return str;
     }
 
@@ -186,28 +204,22 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
      * remains within the range accepted by
      * int_to_str().
      */
-    int_to_str((int)whole, str, 10);
+    int_to_str((int)whole, str, 10, &whole_length);
 
     if (decimal_places == 0)
     {
+        if (length != NULL)
+        {
+            *length = whole_length;
+        }
         return str;
     }
 
-    write = str;
-    while (*write != '\0')
-    {
-        ++write;
-    }
+    write    = str + whole_length;
     *write++ = '.';
 
     fraction = remainder / divisor;
-    int_to_str((int)fraction, fraction_str, 10);
-
-    fraction_length = 0;
-    while (fraction_str[fraction_length] != '\0')
-    {
-        ++fraction_length;
-    }
+    int_to_str((int)fraction, fraction_str, 10, &fraction_length);
 
     for (index = fraction_length; index < shown_places; ++index)
     {
@@ -225,5 +237,9 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
     }
 
     *write = '\0';
+    if (length != NULL)
+    {
+        *length = (size_t)(write - str);
+    }
     return str;
 }

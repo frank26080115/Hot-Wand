@@ -86,30 +86,30 @@ void UART_debug_task(void)
     uart_debug_last_task_ms = now;
 
     UART_Write("[");
-    UART_Write(int_to_str((int)now, timestamp, 10));
+    UART_Write(int_to_str((int)now, timestamp, 10, NULL));
     UART_Write("]: ");
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), value, 1);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), value, 1, NULL);
     UART_Write(value);
     UART_Write("V ");
 
-    millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), value, 1);
+    millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), value, 1, NULL);
     UART_Write(value);
     UART_Write("V ");
 
-    milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), value, 2);
+    milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), value, 2, NULL);
     UART_Write(value);
     UART_Write("A ");
 
-    celcius_to_str((int)adc_to_celcius(THERM_1_IDX), value);
+    celcius_to_str((int)adc_to_celcius(THERM_1_IDX), value, NULL);
     UART_Write(value);
     UART_Write("C ");
 
-    celcius_to_str((int)adc_to_celcius(THERM_2_IDX), value);
+    celcius_to_str((int)adc_to_celcius(THERM_2_IDX), value, NULL);
     UART_Write(value);
     UART_Write("C ");
 
-    celcius_to_str((int)adc_to_celcius(MCU_TEMP_IDX), value);
+    celcius_to_str((int)adc_to_celcius(MCU_TEMP_IDX), value, NULL);
     UART_Write(value);
     UART_Write("C ");
 
@@ -127,7 +127,7 @@ void UART_debug_task(void)
         break;
     }
 
-    int_to_str((int)pwrmgt_get_attenuation_reasons(), value, 16);
+    int_to_str((int)pwrmgt_get_attenuation_reasons(), value, 16, NULL);
     UART_Write("0x");
     UART_Write(value);
     UART_Write("\r\n");
