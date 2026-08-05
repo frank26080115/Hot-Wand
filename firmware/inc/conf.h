@@ -30,6 +30,15 @@
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
 #define TEMPERATURE_HYSTERYSIS_C         5
 
+/* Set to 0 if production units intentionally omit both external NTC sensors. */
+#ifndef NTC_FAULT_WARNING_ENABLED
+#define NTC_FAULT_WARNING_ENABLED 1
+#endif
+
+#if (NTC_FAULT_WARNING_ENABLED != 0) && (NTC_FAULT_WARNING_ENABLED != 1)
+#error "NTC_FAULT_WARNING_ENABLED must be 0 or 1"
+#endif
+
 #if (TEMPERATURE_FAN_THRESHOLD_LOW_C > TEMPERATURE_FAN_THRESHOLD_HIGH_C) ||                                            \
     (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_FAN_THRESHOLD_LOW_C) ||                                                    \
     (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C)
@@ -108,7 +117,7 @@
 /* Horizontal burn-in shifts for the two fixed-width OLED fonts. */
 #define OLED_MAX_PIXEL_SHIFT_X_SMALLFONT 7
 #define OLED_MAX_PIXEL_SHIFT_X_BIGFONT   3
-#define OLED_MAX_PIXEL_SHIFT_Y 3
+#define OLED_MAX_PIXEL_SHIFT_Y           3
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot. */
 /* Each 100 ms column captures the interval's peak; 32 columns show 3.2 seconds. */

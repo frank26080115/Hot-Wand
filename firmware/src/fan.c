@@ -6,6 +6,7 @@
 
 #include "adc.h"
 #include "conf.h"
+#include "fault.h"
 #include "pins.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
@@ -17,7 +18,9 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAN_START_DELAY_MS 5000
+#define FAN_START_DELAY_MS            5000
+#define NTC_CHECK_DELAY_MS            10000
+#define NTC_FAULT_MESSAGE_DURATION_MS 3000
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -28,6 +31,12 @@ static bool     fan_running;
 static bool     fan_pin_initialized;
 static uint32_t fan_last_wake_ms;
 static uint8_t  fan_mode;
+
+#if NTC_FAULT_WARNING_ENABLED
+static bool     ntc_task_started;
+static bool     ntc_check_complete;
+static uint32_t ntc_task_started_ms;
+#endif
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -81,6 +90,41 @@ void fan_task(void)
 
     HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, should_run ? GPIO_PIN_SET : GPIO_PIN_RESET);
     fan_running = should_run;
+}
+
+void ntc_task(void)
+{
+#if NTC_FAULT_WARNING_ENABLED
+    uint32_t now;
+
+    if (ntc_check_complete)
+    {
+        return;
+    }
+
+    now = systick_get_ms();
+    if (!ntc_task_started)
+    {
+        ntc_task_started    = true;
+        ntc_task_started_ms = now;
+        return;
+    }
+
+    if ((uint32_t)(now - ntc_task_started_ms) < NTC_CHECK_DELAY_MS)
+    {
+        return;
+    }
+
+    ntc_check_complete = true;
+    /* The ADC temperature conversion returns zero for an unavailable or
+     * disconnected external NTC. By this point
+     * every ADC input has had ample
+     * time to initialize. */
+    if ((adc_to_celcius(THERM_1_IDX) == 0) || (adc_to_celcius(THERM_2_IDX) == 0))
+    {
+        show_short_msg("NTC\nSENS\nFAULT", NTC_FAULT_MESSAGE_DURATION_MS);
+    }
+#endif
 }
 
 void fan_on_wake(void)

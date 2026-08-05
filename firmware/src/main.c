@@ -183,6 +183,7 @@ int main(void)
             rfgen_start();
         }
 
+        ntc_task();        // reports missing external temperature sensors once after startup
         fan_task();        // spins the fan as appropriate
         UART_debug_task(); // spits out a debug message when requested
 

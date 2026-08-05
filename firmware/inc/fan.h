@@ -9,6 +9,8 @@ extern "C"
 
 /* Initializes the saved FAN_MODE_*; invalid modes fail safe as off. */
 void fan_init(uint8_t mode);
+/* Performs the optional delayed, one-shot external NTC health warning. */
+void ntc_task(void);
 void fan_task(void);
 void fan_on_wake(void);
 /* Stops the fan and prevents fan_task() from restarting it. */

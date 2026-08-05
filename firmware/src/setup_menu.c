@@ -21,10 +21,10 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define SETUP_MENU_CHARS_PER_LINE   6
-#define SETUP_MENU_FIVE_CHAR_COUNT  5
-#define SETUP_MENU_CENTERED_MARGIN  1
-#define SETUP_MENU_LAST_VALUE_ITEM  SETUP_ITEM_INPUT_V_CALIB
+#define SETUP_MENU_CHARS_PER_LINE  6
+#define SETUP_MENU_FIVE_CHAR_COUNT 5
+#define SETUP_MENU_CENTERED_MARGIN 1
+#define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
 
 // -----------------------------------------------------------------------------
 // Types
@@ -122,8 +122,8 @@ static void        setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t
 static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
 static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
-static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
-static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
+static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
+static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -366,10 +366,7 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     u8g2_ClearBuffer(graphics);
 
-    setup_menu_draw_line(graphics,
-                         "SETUP",
-                         SETUP_MENU_FIVE_CHAR_COUNT,
-                         OLED_FIRST_TEXT_BASELINE);
+    setup_menu_draw_line(graphics, "SETUP", SETUP_MENU_FIVE_CHAR_COUNT, OLED_FIRST_TEXT_BASELINE);
 
     /* Advance two rows: row two is deliberately blank. */
     baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
