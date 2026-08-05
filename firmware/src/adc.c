@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "adc.h"
 
 #include "pins.h"
@@ -5,6 +9,10 @@
 #include "typedefs.h"
 
 #include <stdint.h>
+
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 
 #define ADC_INPUT_COUNT 6
 #define ADC_LPF_SCALE 1024
@@ -25,6 +33,10 @@
 #define MCU_TEMP_SLOPE_TENTHS_MV 43
 #define MCU_TEMP_SCALE (MCU_TEMP_ADC_FULL_SCALE * MCU_TEMP_SLOPE_TENTHS_MV)
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
 typedef struct
 {
     uint32_t channel;
@@ -37,6 +49,10 @@ typedef struct
     uint16_t slope_q10;
     int8_t   offset_mv;
 } input_voltage_calib_t;
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 /*
  * Alpha is the weight retained from the previous filtered value:
@@ -136,12 +152,20 @@ static volatile uint8_t  current_idx;
 static volatile uint32_t system_rand_seed          = 0;
 static uint8_t           input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
 
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
 static void     adc_filter_sample(uint8_t idx, uint16_t sample);
 static void     adc_select_and_start(uint8_t idx);
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
 static void     adc_fault(void);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void adc_init(void)
 {
@@ -209,7 +233,7 @@ void adc_init(void)
     }
 
     HAL_NVIC_ClearPendingIRQ(ADC1_IRQn);
-    HAL_NVIC_SetPriority(ADC1_IRQn, 1U, 0U);
+    HAL_NVIC_SetPriority(ADC1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(ADC1_IRQn);
 
     if (HAL_ADC_Start_IT(&adc_handle) != HAL_OK)
@@ -218,25 +242,64 @@ void adc_init(void)
     }
 }
 
-uint16_t adc_get(uint8_t idx)
+/*
+ * Implementation target for the strong vector shim in interrupt_vectors.S.
+ * It is intentionally not part of
+ * adc.h's public API.
+ */
+void ADC1_IRQHandler_Impl(void)
 {
-    if (idx >= ADC_INPUT_COUNT)
+    uint32_t flags = adc_handle.Instance->ISR;
+    uint16_t sample;
+    uint8_t  completed_idx;
+    uint8_t  next_idx;
+
+    if ((flags & (ADC_ISR_EOC | ADC_ISR_EOS)) == 0)
     {
-        return 0;
+        adc_handle.Instance->ISR = flags & ADC_ISR_OVR;
+
+        if ((adc_handle.Instance->CR & ADC_CR_ADSTART) == 0)
+        {
+            adc_select_and_start(current_idx);
+        }
+
+        return;
     }
 
-    return result[idx];
-}
+    completed_idx      = current_idx;
+    sample             = (uint16_t)HAL_ADC_GetValue(&adc_handle);
+    raw[completed_idx] = sample;
 
-void adc_set_input_voltage_calibration(uint8_t calibration)
-{
-    if (calibration > INPUT_VOLTAGE_CALIB_N5)
+    next_idx = (uint8_t)(completed_idx + 1);
+    if (next_idx >= ADC_INPUT_COUNT)
     {
-        calibration = INPUT_VOLTAGE_CALIB_NONE;
+        next_idx = 0;
     }
+    current_idx = next_idx;
 
-    input_voltage_calibration = calibration;
+    /*
+     * Clear the completed conversion before starting the next one. No flags
+     * are cleared after ADSTART, so
+     * a fast next conversion cannot be lost.
+     */
+    adc_handle.Instance->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
+    adc_select_and_start(next_idx);
+
+    /* Filter while the ADC is already sampling the next channel. */
+    adc_filter_sample(completed_idx, sample);
+
+    /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
+    if (next_idx == 0)
+    {
+        system_rand_seed = (HAL_GetTick() & 0x3) | (((uint32_t)raw[0] & 0x03) << 2) | (((uint32_t)raw[1] & 0x03) << 4) |
+                           (((uint32_t)raw[2] & 0x03) << 6) | (((uint32_t)raw[3] & 0x03) << 8) |
+                           (((uint32_t)raw[4] & 0x03) << 10);
+    }
 }
+
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
 
 uint16_t adc_to_millivolts(uint8_t idx)
 {
@@ -290,7 +353,7 @@ uint16_t adc_to_celcius(uint8_t idx)
         return 0;
     }
 
-    initialized_mask = (uint8_t)(1U << idx);
+    initialized_mask = (uint8_t)(1 << idx);
     if ((initialized_channels & initialized_mask) == 0)
     {
         return 0;
@@ -312,58 +375,38 @@ uint32_t adc_get_milliwatts(void)
     return ((millivolts * milliamps) + 500) / 1000;
 }
 
-/*
- * Implementation target for the strong vector shim in interrupt_vectors.S.
- * It is intentionally not part of adc.h's public API.
- */
-void ADC1_IRQHandler_Impl(void)
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+uint16_t adc_get(uint8_t idx)
 {
-    uint32_t flags = adc_handle.Instance->ISR;
-    uint16_t sample;
-    uint8_t  completed_idx;
-    uint8_t  next_idx;
-
-    if ((flags & (ADC_ISR_EOC | ADC_ISR_EOS)) == 0)
+    if (idx >= ADC_INPUT_COUNT)
     {
-        adc_handle.Instance->ISR = flags & ADC_ISR_OVR;
-
-        if ((adc_handle.Instance->CR & ADC_CR_ADSTART) == 0)
-        {
-            adc_select_and_start(current_idx);
-        }
-
-        return;
+        return 0;
     }
 
-    completed_idx      = current_idx;
-    sample             = (uint16_t)HAL_ADC_GetValue(&adc_handle);
-    raw[completed_idx] = sample;
-
-    next_idx = (uint8_t)(completed_idx + 1);
-    if (next_idx >= ADC_INPUT_COUNT)
-    {
-        next_idx = 0;
-    }
-    current_idx = next_idx;
-
-    /*
-     * Clear the completed conversion before starting the next one. No flags
-     * are cleared after ADSTART, so a fast next conversion cannot be lost.
-     */
-    adc_handle.Instance->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
-    adc_select_and_start(next_idx);
-
-    /* Filter while the ADC is already sampling the next channel. */
-    adc_filter_sample(completed_idx, sample);
-
-    /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
-    if (next_idx == 0)
-    {
-        system_rand_seed = (HAL_GetTick() & 0x3) | (((uint32_t)raw[0] & 0x03) << 2) | (((uint32_t)raw[1] & 0x03) << 4) |
-                           (((uint32_t)raw[2] & 0x03) << 6) | (((uint32_t)raw[3] & 0x03) << 8) |
-                           (((uint32_t)raw[4] & 0x03) << 10);
-    }
+    return result[idx];
 }
+
+void adc_set_input_voltage_calibration(uint8_t calibration)
+{
+    if (calibration > INPUT_VOLTAGE_CALIB_N5)
+    {
+        calibration = INPUT_VOLTAGE_CALIB_NONE;
+    }
+
+    input_voltage_calibration = calibration;
+}
+
+uint32_t adc_get_rand_seed(void)
+{
+    return (int32_t)system_rand_seed;
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
 {
@@ -495,10 +538,9 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
     return (uint16_t)temperature;
 }
 
-uint32_t adc_get_rand_seed(void)
-{
-    return (int32_t)system_rand_seed;
-}
+// -----------------------------------------------------------------------------
+// Debug / Fault Helpers
+// -----------------------------------------------------------------------------
 
 static void adc_fault(void)
 {

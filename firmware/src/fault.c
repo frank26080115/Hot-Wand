@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "fault.h"
 
 #include "adc.h"
@@ -15,20 +19,22 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
 #define FAULT_DISPLAY_HEIGHT 32
 #define FAULT_FONT_ASCENT 8
 #define FAULT_LINE_HEIGHT 10
-#define FAULT_REFRESH_INTERVAL_MS 200UL
-#define FAULT_SHIFT_INTERVAL_MS 5000UL
-#define FAULT_LINE_BUFFER_SIZE 6U
-#define FAULT_VOLTAGE_BUFFER_SIZE 8U
-#define SHORT_MSG_BUFFER_SIZE 72U
+#define FAULT_REFRESH_INTERVAL_MS 200
+#define FAULT_SHIFT_INTERVAL_MS 5000
+#define FAULT_LINE_BUFFER_SIZE 6
+#define FAULT_VOLTAGE_BUFFER_SIZE 8
+#define SHORT_MSG_BUFFER_SIZE 72
 
-static uint8_t fault_count_message_lines(const char* text);
-static void    fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
-static void    fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
-static uint8_t fault_random_x(void);
-static void    fault_reset_if_button_pressed(void);
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static char     short_msg_text[SHORT_MSG_BUFFER_SIZE];
 static uint32_t short_msg_start_ms;
@@ -36,6 +42,20 @@ static uint32_t short_msg_duration_ms;
 static uint32_t fault_button_release_started_ms;
 static bool     fault_button_reset_armed;
 static bool     fault_button_release_pending;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
+static uint8_t fault_count_message_lines(const char* text);
+static void    fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
+static void    fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
+static uint8_t fault_random_x(void);
+static void    fault_reset_if_button_pressed(void);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void show_fault(const char* text, bool allow_button_reset)
 {
@@ -47,7 +67,7 @@ void show_fault(const char* text, bool allow_button_reset)
     int16_t  upper_offset;
     int16_t  y_offset = 0;
     int8_t   direction;
-    uint8_t  x_offset = 0U;
+    uint8_t  x_offset = 0;
 
     /* A fault screen is terminal until reset.  Put every power-producing or
      * moving output into its safe state before attempting any UI work. */
@@ -58,8 +78,8 @@ void show_fault(const char* text, bool allow_button_reset)
     if (allow_button_reset)
     {
         btn_init();
-        (void)btn_has_short_press(true);
-        (void)btn_has_long_press(true);
+        btn_has_short_press(true);
+        btn_has_long_press(true);
         fault_button_reset_armed     = !btn_is_down();
         fault_button_release_pending = false;
     }
@@ -73,12 +93,12 @@ void show_fault(const char* text, bool allow_button_reset)
             {
                 fault_reset_if_button_pressed();
             }
-            HAL_Delay(1U);
+            HAL_Delay(1);
         }
     }
 
     u8g2_SetFont(graphics, u8g2_font_5x7_tr);
-    text_height = (int16_t)((fault_count_message_lines(text) + 1U) * FAULT_LINE_HEIGHT);
+    text_height = (int16_t)((fault_count_message_lines(text) + 1) * FAULT_LINE_HEIGHT);
     if (text_height <= FAULT_DISPLAY_HEIGHT)
     {
         lower_offset = 0;
@@ -93,7 +113,7 @@ void show_fault(const char* text, bool allow_button_reset)
     }
 
     fault_render(graphics, text, x_offset, y_offset);
-    (void)OLED_SendBuffer(&oled);
+    OLED_SendBuffer(&oled);
     last_shift_ms   = systick_get_ms();
     last_refresh_ms = last_shift_ms;
 
@@ -130,26 +150,26 @@ void show_fault(const char* text, bool allow_button_reset)
         {
             last_refresh_ms = now;
             fault_render(graphics, text, x_offset, y_offset);
-            (void)OLED_SendBuffer(&oled);
+            OLED_SendBuffer(&oled);
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
 void show_short_msg(const char* text, uint32_t duration_ms)
 {
-    uint8_t copied = 0U;
+    uint8_t copied = 0;
 
     short_msg_text[0]     = '\0';
-    short_msg_duration_ms = 0U;
+    short_msg_duration_ms = 0;
 
-    if ((text == NULL) || (*text == '\0') || (duration_ms == 0U))
+    if ((text == NULL) || (*text == '\0') || (duration_ms == 0))
     {
         return;
     }
 
-    while ((*text != '\0') && (copied < (SHORT_MSG_BUFFER_SIZE - 1U)))
+    while ((*text != '\0') && (copied < (SHORT_MSG_BUFFER_SIZE - 1)))
     {
         short_msg_text[copied++] = *text++;
     }
@@ -172,7 +192,7 @@ bool short_msg_task(void)
     if ((uint32_t)(now - short_msg_start_ms) >= short_msg_duration_ms)
     {
         short_msg_text[0]     = '\0';
-        short_msg_duration_ms = 0U;
+        short_msg_duration_ms = 0;
         return false;
     }
 
@@ -182,8 +202,8 @@ bool short_msg_task(void)
         u8g2_SetDisplayRotation(graphics, U8G2_R1);
         u8g2_SetFont(graphics, u8g2_font_5x7_tr);
         u8g2_ClearBuffer(graphics);
-        fault_draw_text(graphics, short_msg_text, 1U, FAULT_FONT_ASCENT);
-        (void)OLED_SendBuffer(&oled);
+        fault_draw_text(graphics, short_msg_text, 1, FAULT_FONT_ASCENT);
+        OLED_SendBuffer(&oled);
     }
 
     return true;
@@ -200,7 +220,7 @@ void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t 
         return;
     }
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1U);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1);
     end = voltage;
     while (*end != '\0')
     {
@@ -215,13 +235,17 @@ void fault_render(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t 
     fault_draw_text(graphics, text, x_offset, (int16_t)(baseline + FAULT_LINE_HEIGHT));
 }
 
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
 static uint8_t fault_count_message_lines(const char* text)
 {
-    uint8_t count = 0U;
+    uint8_t count = 0;
 
     if ((text != NULL) && (*text != '\0'))
     {
-        count = 1U;
+        count = 1;
         while (*text != '\0')
         {
             if (*text++ == '\n')
@@ -250,10 +274,10 @@ static void fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset
 
     while ((text != NULL) && (*text != '\0'))
     {
-        copied = 0U;
+        copied = 0;
         while ((*text != '\0') && (*text != '\n'))
         {
-            if (copied < (FAULT_LINE_BUFFER_SIZE - 1U))
+            if (copied < (FAULT_LINE_BUFFER_SIZE - 1))
             {
                 line[copied++] = *text;
             }
@@ -272,7 +296,7 @@ static void fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset
 
 static uint8_t fault_random_x(void)
 {
-    return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)OLED_MAX_PIXEL_SHIFT_X + 1U));
+    return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)OLED_MAX_PIXEL_SHIFT_X + 1));
 }
 
 static void fault_reset_if_button_pressed(void)
@@ -304,8 +328,8 @@ static void fault_reset_if_button_pressed(void)
             return;
         }
 
-        (void)btn_has_short_press(true);
-        (void)btn_has_long_press(true);
+        btn_has_short_press(true);
+        btn_has_long_press(true);
         fault_button_reset_armed     = true;
         fault_button_release_pending = false;
         return;

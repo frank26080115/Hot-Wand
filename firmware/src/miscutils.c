@@ -1,8 +1,24 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "miscutils.h"
 
-static uint32_t hotwand_rand_state = 1U;
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
+
+static uint32_t hotwand_rand_state = 1;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
 
 static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places);
+
+// -----------------------------------------------------------------------------
+// Utility Functions
+// -----------------------------------------------------------------------------
 
 void hotwand_srand(uint32_t seed)
 {
@@ -11,9 +27,9 @@ void hotwand_srand(uint32_t seed)
 
 uint16_t hotwand_rand(void)
 {
-    hotwand_rand_state = (hotwand_rand_state * 1103515245UL) + 12345UL;
+    hotwand_rand_state = (hotwand_rand_state * 1103515245) + 12345;
 
-    return (uint16_t)((hotwand_rand_state >> 16U) & HOTWAND_RAND_MAX);
+    return (uint16_t)((hotwand_rand_state >> 16) & HOTWAND_RAND_MAX);
 }
 
 char* int_to_str(int value, char* str, int base)
@@ -42,10 +58,10 @@ char* int_to_str(int value, char* str, int base)
     {
         /*
          * Unsigned arithmetic is intentional: it obtains the magnitude of
-         * INT_MIN without
-         * overflowing a signed int.
+         * INT_MIN without overflowing a
+         * signed int.
          */
-        magnitude = 0U - magnitude;
+        magnitude = 0 - magnitude;
     }
 
     write = str;
@@ -53,7 +69,7 @@ char* int_to_str(int value, char* str, int base)
     {
         *write++ = digits[magnitude % (unsigned int)base];
         magnitude /= (unsigned int)base;
-    } while (magnitude != 0U);
+    } while (magnitude != 0);
 
     if (negative)
     {
@@ -96,33 +112,37 @@ char* celcius_to_str(int celcius, char* str)
 
 uint16_t fletcher16(const uint8_t* data, size_t length)
 {
-    uint16_t sum1 = 0U;
-    uint16_t sum2 = 0U;
+    uint16_t sum1 = 0;
+    uint16_t sum2 = 0;
 
-    if ((data == NULL) && (length != 0U))
+    if ((data == NULL) && (length != 0))
     {
-        return 0U;
+        return 0;
     }
 
-    while (length != 0U)
+    while (length != 0)
     {
         sum1 = (uint16_t)(sum1 + *data++);
-        if (sum1 >= 255U)
+        if (sum1 >= 255)
         {
-            sum1 = (uint16_t)(sum1 - 255U);
+            sum1 = (uint16_t)(sum1 - 255);
         }
 
         sum2 = (uint16_t)(sum2 + sum1);
-        if (sum2 >= 255U)
+        if (sum2 >= 255)
         {
-            sum2 = (uint16_t)(sum2 - 255U);
+            sum2 = (uint16_t)(sum2 - 255);
         }
 
         --length;
     }
 
-    return (uint16_t)((sum2 << 8U) | sum1);
+    return (uint16_t)((sum2 << 8) | sum1);
 }
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places)
 {
@@ -141,34 +161,34 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
         return str;
     }
 
-    whole        = value / 1000U;
-    remainder    = value % 1000U;
-    shown_places = (decimal_places < 3U) ? decimal_places : 3U;
+    whole        = value / 1000;
+    remainder    = value % 1000;
+    shown_places = (decimal_places < 3) ? decimal_places : 3;
 
-    divisor = 1U;
-    for (index = shown_places; index < 3U; ++index)
+    divisor = 1;
+    for (index = shown_places; index < 3; ++index)
     {
-        divisor *= 10U;
+        divisor *= 10;
     }
 
-    if (shown_places < 3U)
+    if (shown_places < 3)
     {
-        remainder += divisor / 2U;
-        if (remainder >= 1000U)
+        remainder += divisor / 2;
+        if (remainder >= 1000)
         {
             ++whole;
-            remainder -= 1000U;
+            remainder -= 1000;
         }
     }
 
     /*
      * UINT32_MAX mill-units has a whole part of only 4294967, so this cast
-     * remains within the range
-     * accepted by int_to_str().
+     * remains within the range accepted by
+     * int_to_str().
      */
     int_to_str((int)whole, str, 10);
 
-    if (decimal_places == 0U)
+    if (decimal_places == 0)
     {
         return str;
     }
@@ -183,7 +203,7 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
     fraction = remainder / divisor;
     int_to_str((int)fraction, fraction_str, 10);
 
-    fraction_length = 0U;
+    fraction_length = 0;
     while (fraction_str[fraction_length] != '\0')
     {
         ++fraction_length;
@@ -194,7 +214,7 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
         *write++ = '0';
     }
 
-    for (index = 0U; index < fraction_length; ++index)
+    for (index = 0; index < fraction_length; ++index)
     {
         *write++ = fraction_str[index];
     }

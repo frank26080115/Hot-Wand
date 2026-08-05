@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "pwrlvl.h"
 
 #include "adc.h"
@@ -10,14 +14,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define PWRLVL_LIMIT_100_PERCENT_MW 100000UL
-#define PWRLVL_LIMIT_75_PERCENT_MW 75000UL
-#define PWRLVL_LIMIT_50_PERCENT_MW 50000UL
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 
-#define PWRLVL_PWM_MAX 31U
-#define PWRLVL_PWM_FULL_DUTY (PWRLVL_PWM_MAX + 1U)
-#define PWRLVL_PWM_JUMP_LEVEL 16U
-#define PWRLVL_RAMP_UP_PERIOD_MS 2U
+#define PWRLVL_LIMIT_100_PERCENT_MW 100000
+#define PWRLVL_LIMIT_75_PERCENT_MW 75000
+#define PWRLVL_LIMIT_50_PERCENT_MW 50000
+
+#define PWRLVL_PWM_MAX 31
+#define PWRLVL_PWM_FULL_DUTY (PWRLVL_PWM_MAX + 1)
+#define PWRLVL_PWM_JUMP_LEVEL 16
+#define PWRLVL_RAMP_UP_PERIOD_MS 2
 
 #ifndef PWRLVL_CURRENT_LIMIT_ENABLED
 #define PWRLVL_CURRENT_LIMIT_ENABLED 1
@@ -28,8 +36,12 @@
 #endif
 
 #if PWRLVL_CURRENT_LIMIT_ENABLED
-#define PWRLVL_CURRENT_LIMIT_MA 5200U
+#define PWRLVL_CURRENT_LIMIT_MA 5200
 #endif
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static pwrlvl_mode_t pwrlvl_mode = PWRLVL_MODE_100_PERCENT;
 static uint32_t      pwrlvl_last_update_ms;
@@ -44,8 +56,16 @@ static bool    pwrlvl_forced_minimum;
 static bool    pwrlvl_current_limiting;
 static bool    pwrlvl_short_circuit_timing;
 
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
 static uint32_t pwrlvl_get_limit_mw(void);
 static void     pwrlvl_set_pwm(uint8_t value);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void pwrlvl_init(void)
 {
@@ -68,7 +88,7 @@ void pwrlvl_init(void)
      * that requested minimum output before initialization instead gets a
      * continuously high attenuation signal with no low-going interval.
      */
-    initial_pwm_value = pwrlvl_forced_minimum ? PWRLVL_PWM_FULL_DUTY : 0U;
+    initial_pwm_value = pwrlvl_forced_minimum ? PWRLVL_PWM_FULL_DUTY : 0;
     HAL_GPIO_WritePin(PWR_ATTENU_GPIOx, PWR_ATTENU_PINn, pwrlvl_forced_minimum ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
     gpio_cfg.Pin   = PWR_ATTENU_PINn;
@@ -77,12 +97,12 @@ void pwrlvl_init(void)
     gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
 
-    TIM3->PSC   = 0U;
+    TIM3->PSC   = 0;
     TIM3->ARR   = PWRLVL_PWM_MAX;
     TIM3->CCR1  = initial_pwm_value;
     TIM3->CCMR1 = TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1PE;
     TIM3->EGR   = TIM_EGR_UG;
-    TIM3->SR    = 0U;
+    TIM3->SR    = 0;
     TIM3->CCER  = TIM_CCER_CC1E;
     TIM3->CR1   = TIM_CR1_CEN;
 
@@ -91,11 +111,11 @@ void pwrlvl_init(void)
     HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
 
     pwrlvl_pwm_value                = initial_pwm_value;
-    pwrlvl_previous_power_mw        = 0U;
-    pwrlvl_short_circuit_started_ms = 0U;
+    pwrlvl_previous_power_mw        = 0;
+    pwrlvl_short_circuit_started_ms = 0;
     pwrlvl_short_circuit_timing     = false;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
-    pwrlvl_previous_current_ma = 0U;
+    pwrlvl_previous_current_ma = 0;
 #endif
     pwrlvl_last_update_ms = systick_get_ms();
     pwrlvl_initialized    = true;
@@ -190,7 +210,7 @@ void pwrlvl_task(void)
             ++next_pwm;
         }
     }
-    else if (next_pwm > 0U)
+    else if (next_pwm > 0)
     {
         --next_pwm;
     }
@@ -199,26 +219,6 @@ void pwrlvl_task(void)
     {
         pwrlvl_set_pwm(next_pwm);
     }
-}
-
-void pwrlvl_set_mode(pwrlvl_mode_t mode)
-{
-    switch (mode)
-    {
-    case PWRLVL_MODE_100_PERCENT:
-    case PWRLVL_MODE_75_PERCENT:
-    case PWRLVL_MODE_50_PERCENT:
-        pwrlvl_mode = mode;
-        break;
-
-    default:
-        break;
-    }
-}
-
-bool pwrlvl_is_current_limiting(void)
-{
-    return pwrlvl_current_limiting;
 }
 
 void pwrlvl_force_minimum(void)
@@ -281,6 +281,34 @@ void pwrlvl_release_minimum(void)
     pwrlvl_last_update_ms = systick_get_ms();
     pwrlvl_forced_minimum = false;
 }
+
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+void pwrlvl_set_mode(pwrlvl_mode_t mode)
+{
+    switch (mode)
+    {
+    case PWRLVL_MODE_100_PERCENT:
+    case PWRLVL_MODE_75_PERCENT:
+    case PWRLVL_MODE_50_PERCENT:
+        pwrlvl_mode = mode;
+        break;
+
+    default:
+        break;
+    }
+}
+
+bool pwrlvl_is_current_limiting(void)
+{
+    return pwrlvl_current_limiting;
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static uint32_t pwrlvl_get_limit_mw(void)
 {

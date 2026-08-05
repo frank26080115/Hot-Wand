@@ -1,12 +1,20 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "rfgen.h"
 
 #include "pins.h"
 #include "stm32f0xx_hal.h"
 #include "tipdetect.h"
 
-#define RFGEN_CLOCK_HZ 27120000UL
-#define RFGEN_PWM_PERIOD 1U
-#define RFGEN_PWM_PULSE 1U
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
+#define RFGEN_CLOCK_HZ 27120000
+#define RFGEN_PWM_PERIOD 1
+#define RFGEN_PWM_PULSE 1
 
 /*
  * TIM1 runs directly from the 27.12 MHz crystal.  With PSC = 0 and ARR = 1,
@@ -14,11 +22,23 @@
  */
 _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ, "RF generator requires a 27.12 MHz external crystal");
 
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
+
 static volatile bool rfgen_fault_logged;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
 
 static bool rfgen_tip_allows_start(void);
 static void rfgen_pin_low(void);
 static void rfgen_fault(void);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 bool rfgen_clock_init(void)
 {
@@ -73,11 +93,6 @@ bool rfgen_clock_init(void)
     return true;
 }
 
-bool rfgen_has_fault(void)
-{
-    return rfgen_fault_logged;
-}
-
 void rfgen_start(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
@@ -118,12 +133,12 @@ void rfgen_start(void)
      * PB1 is TIM1_CH3N on this MCU.  PWM1 makes the complementary output
      * begin low at CNT = 0; CCR = 1 still gives an exact 50 percent duty cycle.
      */
-    TIM1->PSC   = 0U;
+    TIM1->PSC   = 0;
     TIM1->ARR   = RFGEN_PWM_PERIOD;
-    TIM1->RCR   = 0U;
+    TIM1->RCR   = 0;
     TIM1->CCR3  = RFGEN_PWM_PULSE;
     TIM1->CCMR2 = TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC3M_2 | TIM_CCMR2_OC3PE;
-    TIM1->CCER  = 0U;
+    TIM1->CCER  = 0;
 
     /*
      * Internal lockup and SRAM-parity faults are routed to TIM1's break input.
@@ -134,9 +149,9 @@ void rfgen_start(void)
     __HAL_SYSCFG_BREAK_LOCKUP_LOCK();
     __HAL_SYSCFG_BREAK_SRAMPARITY_LOCK();
 
-    TIM1->CNT = 0U;
+    TIM1->CNT = 0;
     TIM1->EGR = TIM_EGR_UG;
-    TIM1->SR  = 0U;
+    TIM1->SR  = 0;
 
     /*
      * Enable CH3N while MOE is clear so TIM1's configured idle state drives
@@ -161,7 +176,7 @@ void rfgen_start(void)
     if (!rfgen_tip_allows_start())
     {
         rfgen_stop();
-        if (interrupt_state == 0U)
+        if (interrupt_state == 0)
         {
             __enable_irq();
         }
@@ -171,7 +186,7 @@ void rfgen_start(void)
     SET_BIT(TIM1->BDTR, TIM_BDTR_MOE);
     SET_BIT(TIM1->CR1, TIM_CR1_CEN);
 
-    if (interrupt_state == 0U)
+    if (interrupt_state == 0)
     {
         __enable_irq();
     }
@@ -193,6 +208,19 @@ void rfgen_stop(void)
     }
 }
 
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+bool rfgen_has_fault(void)
+{
+    return rfgen_fault_logged;
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
 static bool rfgen_tip_allows_start(void)
 {
     /*
@@ -200,7 +228,7 @@ static bool rfgen_tip_allows_start(void)
      * its debounce window.  Waiting also prevents the system-clock change in
      * rfgen_clock_init() from shortening an active timer interval.
      */
-    if (tipdetect_has_triggered() || ((TIM17->DIER & TIM_DIER_UIE) != 0U))
+    if (tipdetect_has_triggered() || ((TIM17->DIER & TIM_DIER_UIE) != 0))
     {
         return false;
     }
@@ -221,6 +249,10 @@ static void rfgen_pin_low(void)
     gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(RFGEN_GPIOx, &gpio_cfg);
 }
+
+// -----------------------------------------------------------------------------
+// Debug / Fault Helpers
+// -----------------------------------------------------------------------------
 
 static void rfgen_fault(void)
 {
@@ -243,7 +275,7 @@ void NMI_Handler_Impl(void)
     {
         /* CSS has already changed SYSCLK to HSI; restore the 1 ms HAL tick. */
         SystemCoreClockUpdate();
-        (void)HAL_InitTick(TICK_INT_PRIORITY);
+        HAL_InitTick(TICK_INT_PRIORITY);
     }
 }
 

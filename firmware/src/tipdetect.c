@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "tipdetect.h"
 
 #include "pins.h"
@@ -7,32 +11,48 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define TIPDETECT_COUNTS_PER_PERIOD 65536UL
-#define TIPDETECT_HSE_10KHZ (HSE_VALUE / 10000UL)
-#define TIPDETECT_TIMER_CYCLES (((TIPDETECT_HSE_10KHZ * TIPDETECT_DEBOUNCE_US) + 99UL) / 100UL)
-#define TIPDETECT_TIMER_DIVIDER                                                                                        \
-    ((TIPDETECT_TIMER_CYCLES + TIPDETECT_COUNTS_PER_PERIOD - 1UL) / TIPDETECT_COUNTS_PER_PERIOD)
-#define TIPDETECT_TIMER_TICKS ((TIPDETECT_TIMER_CYCLES + TIPDETECT_TIMER_DIVIDER - 1UL) / TIPDETECT_TIMER_DIVIDER)
-#define TIPDETECT_TIMER_PRESCALER (TIPDETECT_TIMER_DIVIDER - 1UL)
-#define TIPDETECT_TIMER_PERIOD (TIPDETECT_TIMER_TICKS - 1UL)
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 
-#define TIPDETECT_TIMER_IRQ_PRIORITY 0U
-#define TIPDETECT_EXTI_IRQ_PRIORITY 3U
-#define TIPDETECT_EXTI4_15_MASK 0xFFF0U
+#define TIPDETECT_COUNTS_PER_PERIOD 65536
+#define TIPDETECT_HSE_10KHZ (HSE_VALUE / 10000)
+#define TIPDETECT_TIMER_CYCLES (((TIPDETECT_HSE_10KHZ * TIPDETECT_DEBOUNCE_US) + 99) / 100)
+#define TIPDETECT_TIMER_DIVIDER                                                                                        \
+    ((TIPDETECT_TIMER_CYCLES + TIPDETECT_COUNTS_PER_PERIOD - 1) / TIPDETECT_COUNTS_PER_PERIOD)
+#define TIPDETECT_TIMER_TICKS ((TIPDETECT_TIMER_CYCLES + TIPDETECT_TIMER_DIVIDER - 1) / TIPDETECT_TIMER_DIVIDER)
+#define TIPDETECT_TIMER_PRESCALER (TIPDETECT_TIMER_DIVIDER - 1)
+#define TIPDETECT_TIMER_PERIOD (TIPDETECT_TIMER_TICKS - 1)
+
+#define TIPDETECT_TIMER_IRQ_PRIORITY 0
+#define TIPDETECT_EXTI_IRQ_PRIORITY 3
+#define TIPDETECT_EXTI4_15_MASK 0xFFF0
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static TIM_HandleTypeDef tipdetect_timer;
 static volatile bool     tipdetect_initialized;
 static volatile bool     tipdetect_tip_present;
 static volatile bool     tipdetect_triggered = true;
 
-_Static_assert((HSE_VALUE % 10000UL) == 0UL, "HSE frequency must be an exact multiple of 10 kHz");
-_Static_assert((TIPDETECT_TIMER_DIVIDER >= 1UL) && (TIPDETECT_TIMER_DIVIDER <= TIPDETECT_COUNTS_PER_PERIOD),
+_Static_assert((HSE_VALUE % 10000) == 0, "HSE frequency must be an exact multiple of 10 kHz");
+_Static_assert((TIPDETECT_TIMER_DIVIDER >= 1) && (TIPDETECT_TIMER_DIVIDER <= TIPDETECT_COUNTS_PER_PERIOD),
                "tip-detect timer prescaler is out of range");
-_Static_assert((TIPDETECT_TIMER_TICKS >= 1UL) && (TIPDETECT_TIMER_TICKS <= TIPDETECT_COUNTS_PER_PERIOD),
+_Static_assert((TIPDETECT_TIMER_TICKS >= 1) && (TIPDETECT_TIMER_TICKS <= TIPDETECT_COUNTS_PER_PERIOD),
                "tip-detect timer period is out of range");
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
 
 static void tipdetect_arm_timer(void);
 static void tipdetect_fail_closed(void);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void tipdetect_init(void)
 {
@@ -54,7 +74,7 @@ void tipdetect_init(void)
     tipdetect_timer.Init.CounterMode       = TIM_COUNTERMODE_UP;
     tipdetect_timer.Init.Period            = TIPDETECT_TIMER_PERIOD;
     tipdetect_timer.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-    tipdetect_timer.Init.RepetitionCounter = 0U;
+    tipdetect_timer.Init.RepetitionCounter = 0;
     tipdetect_timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
     if (HAL_TIM_Base_Init(&tipdetect_timer) != HAL_OK)
@@ -91,9 +111,9 @@ void tipdetect_init(void)
     tipdetect_triggered   = !tipdetect_tip_present;
     tipdetect_initialized = true;
 
-    HAL_NVIC_SetPriority(TIM17_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0U);
+    HAL_NVIC_SetPriority(TIM17_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(TIM17_IRQn);
-    HAL_NVIC_SetPriority(EXTI4_15_IRQn, TIPDETECT_EXTI_IRQ_PRIORITY, 0U);
+    HAL_NVIC_SetPriority(EXTI4_15_IRQn, TIPDETECT_EXTI_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
     if (tipdetect_triggered)
@@ -105,18 +125,12 @@ void tipdetect_init(void)
 void tipdetect_task(void)
 {
     /*
-     * Edge qualification and fault latching are interrupt-driven.  This hook
+     * Edge qualification and fault latching are interrupt-driven. This hook
      * is retained so tip detection
-     * fits the main-loop task interface.  The
-     * legacy 100 ms delay controlled automatic RF restart; the explicit
-
-     * * latched reset API replaces that behavior here.
+     * fits the main-loop task interface. The
+     * explicit latched-reset API replaces the legacy automatic RF
+     * restart.
      */
-}
-
-bool tipdetect_has_triggered(void)
-{
-    return tipdetect_triggered;
 }
 
 void tipdetect_reset(void)
@@ -137,13 +151,13 @@ void tipdetect_reset(void)
      * tip is absent, or while an edge is still
      * being qualified by TIM17.
      */
-    if (((TIM17->DIER & TIM_DIER_UIE) == 0U) && tipdetect_tip_present &&
+    if (((TIM17->DIER & TIM_DIER_UIE) == 0) && tipdetect_tip_present &&
         (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET))
     {
         tipdetect_triggered = false;
     }
 
-    if (interrupt_state == 0U)
+    if (interrupt_state == 0)
     {
         __enable_irq();
     }
@@ -156,7 +170,7 @@ void EXTI4_15_IRQHandler_Impl(void)
 
     pending = EXTI->PR & EXTI->IMR & TIPDETECT_EXTI4_15_MASK;
 
-    if ((pending & TIP_DET_PINn) != 0U)
+    if ((pending & TIP_DET_PINn) != 0)
     {
         CLEAR_BIT(EXTI->IMR, TIP_DET_PINn);
         __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
@@ -178,9 +192,9 @@ void EXTI4_15_IRQHandler_Impl(void)
      * button or peripheral cannot cause an
      * unhandled-interrupt storm.
      */
-    for (pin = GPIO_PIN_4; pin <= GPIO_PIN_15; pin <<= 1U)
+    for (pin = GPIO_PIN_4; pin <= GPIO_PIN_15; pin <<= 1)
     {
-        if ((pending & pin) != 0U)
+        if ((pending & pin) != 0)
         {
             HAL_GPIO_EXTI_IRQHandler((uint16_t)pin);
         }
@@ -191,7 +205,7 @@ void TIM17_IRQHandler_Impl(void)
 {
     bool tip_present;
 
-    if (((TIM17->SR & TIM_SR_UIF) == 0U) || ((TIM17->DIER & TIM_DIER_UIE) == 0U))
+    if (((TIM17->SR & TIM_SR_UIF) == 0) || ((TIM17->DIER & TIM_DIER_UIE) == 0))
     {
         return;
     }
@@ -220,13 +234,26 @@ void TIM17_IRQHandler_Impl(void)
     SET_BIT(EXTI->IMR, TIP_DET_PINn);
 }
 
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+bool tipdetect_has_triggered(void)
+{
+    return tipdetect_triggered;
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
 static void tipdetect_arm_timer(void)
 {
     CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
     CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);
     TIM17->PSC = TIPDETECT_TIMER_PRESCALER;
     TIM17->ARR = TIPDETECT_TIMER_PERIOD;
-    TIM17->CNT = 0U;
+    TIM17->CNT = 0;
     TIM17->EGR = TIM_EGR_UG;
     CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
     HAL_NVIC_ClearPendingIRQ(TIM17_IRQn);

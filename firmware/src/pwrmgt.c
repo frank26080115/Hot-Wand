@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "pwrmgt.h"
 
 #include "adc.h"
@@ -12,6 +16,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
 _Static_assert((THERM_2_IDX == (THERM_1_IDX + 1)) && (MCU_TEMP_IDX == (THERM_2_IDX + 1)),
                "temperature ADC indices must remain contiguous, a loop in `pwrmgt_task` depends on this");
 
@@ -24,6 +32,10 @@ _Static_assert((THERM_2_IDX == (THERM_1_IDX + 1)) && (MCU_TEMP_IDX == (THERM_2_I
 #define PWRMGT_POWER_100W_MW 100000
 
 #define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS 300
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static const char pwrmgt_low_voltage_message[]      = "CAN'T\nLOW\nVOLT";
 static const char pwrmgt_too_hot_message[]          = "CAN'T\nTOO\nHOT";
@@ -46,8 +58,12 @@ static uint8_t       pwrmgt_graph_dotted_phase;
 static uint32_t      pwrmgt_history_last_update_ms;
 static uint32_t      pwrmgt_idle_started_ms;
 static uint32_t      pwrmgt_last_active_ms;
-static uint32_t      pwrmgt_idle_power_threshold_mw = 10000U;
+static uint32_t      pwrmgt_idle_power_threshold_mw = 10000;
 static bool          pwrmgt_is_idle;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
 
 static uint8_t  pwrmgt_history_peek(uint8_t position);
 static void     pwrmgt_history_push(uint32_t power_milliwatts, bool increment_pointer);
@@ -56,67 +72,9 @@ static uint32_t pwrmgt_get_applied_limit_mw(void);
 static void     pwrmgt_blocked_change_task(void);
 static void     pwrmgt_clear_blocked_change(void);
 
-void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode)
-{
-    if ((uint32_t)mode <= (uint32_t)PWRLVL_MODE_50_PERCENT)
-    {
-        pwrmgt_desired_power_level = mode;
-    }
-}
-
-void pwrmgt_set_idle_power_threshold(uint8_t threshold)
-{
-    static const uint32_t thresholds_mw[] = {1000U, 2000U, 5000U, 10000U, 20000U, 30000U, 40000U};
-
-    if (threshold < (sizeof(thresholds_mw) / sizeof(thresholds_mw[0])))
-    {
-        pwrmgt_idle_power_threshold_mw = thresholds_mw[threshold];
-    }
-}
-
-uint32_t pwrmgt_get_idle_duration_ms(void)
-{
-    return pwrmgt_is_idle ? (uint32_t)(systick_get_ms() - pwrmgt_idle_started_ms) : 0U;
-}
-
-uint32_t pwrmgt_get_time_since_last_activity_ms(void)
-{
-    return (uint32_t)(systick_get_ms() - pwrmgt_last_active_ms);
-}
-
-void pwrmgt_change_pwr_lvl(void)
-{
-    pwrmgt_last_active_ms = systick_get_ms();
-
-    if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited)
-    {
-        if (pwrmgt_pending_blocked_message == NULL)
-        {
-            pwrmgt_pending_blocked_message =
-                pwrmgt_temperature_limited ? pwrmgt_too_hot_message : pwrmgt_low_voltage_message;
-            pwrmgt_blocked_release_pending = false;
-        }
-        return;
-    }
-
-    switch (pwrmgt_desired_power_level)
-    {
-    case PWRLVL_MODE_100_PERCENT:
-        pwrmgt_change_direction_up = false;
-        pwrmgt_desired_power_level = PWRLVL_MODE_75_PERCENT;
-        break;
-
-    case PWRLVL_MODE_50_PERCENT:
-        pwrmgt_change_direction_up = true;
-        pwrmgt_desired_power_level = PWRLVL_MODE_75_PERCENT;
-        break;
-
-    case PWRLVL_MODE_75_PERCENT:
-    default:
-        pwrmgt_desired_power_level = pwrmgt_change_direction_up ? PWRLVL_MODE_100_PERCENT : PWRLVL_MODE_50_PERCENT;
-        break;
-    }
-}
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void pwrmgt_task(void)
 {
@@ -274,6 +232,66 @@ void pwrmgt_render_graph(u8g2_t* graphics)
     }
 }
 
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
+
+void pwrmgt_change_pwr_lvl(void)
+{
+    pwrmgt_last_active_ms = systick_get_ms();
+
+    if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited)
+    {
+        if (pwrmgt_pending_blocked_message == NULL)
+        {
+            pwrmgt_pending_blocked_message =
+                pwrmgt_temperature_limited ? pwrmgt_too_hot_message : pwrmgt_low_voltage_message;
+            pwrmgt_blocked_release_pending = false;
+        }
+        return;
+    }
+
+    switch (pwrmgt_desired_power_level)
+    {
+    case PWRLVL_MODE_100_PERCENT:
+        pwrmgt_change_direction_up = false;
+        pwrmgt_desired_power_level = PWRLVL_MODE_75_PERCENT;
+        break;
+
+    case PWRLVL_MODE_50_PERCENT:
+        pwrmgt_change_direction_up = true;
+        pwrmgt_desired_power_level = PWRLVL_MODE_75_PERCENT;
+        break;
+
+    case PWRLVL_MODE_75_PERCENT:
+    default:
+        pwrmgt_desired_power_level = pwrmgt_change_direction_up ? PWRLVL_MODE_100_PERCENT : PWRLVL_MODE_50_PERCENT;
+        break;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode)
+{
+    if ((uint32_t)mode <= (uint32_t)PWRLVL_MODE_50_PERCENT)
+    {
+        pwrmgt_desired_power_level = mode;
+    }
+}
+
+void pwrmgt_set_idle_power_threshold(uint8_t threshold)
+{
+    static const uint32_t thresholds_mw[] = {1000, 2000, 5000, 10000, 20000, 30000, 40000};
+
+    if (threshold < (sizeof(thresholds_mw) / sizeof(thresholds_mw[0])))
+    {
+        pwrmgt_idle_power_threshold_mw = thresholds_mw[threshold];
+    }
+}
+
 pwrlvl_mode_t pwrmgt_get_applied_power_level(void)
 {
     return pwrmgt_applied_power_level;
@@ -283,6 +301,20 @@ uint8_t pwrmgt_get_attenuation_reasons(void)
 {
     return pwrmgt_attenuation_reasons;
 }
+
+uint32_t pwrmgt_get_idle_duration_ms(void)
+{
+    return pwrmgt_is_idle ? (uint32_t)(systick_get_ms() - pwrmgt_idle_started_ms) : 0;
+}
+
+uint32_t pwrmgt_get_time_since_last_activity_ms(void)
+{
+    return (uint32_t)(systick_get_ms() - pwrmgt_last_active_ms);
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static uint8_t pwrmgt_history_peek(uint8_t position)
 {

@@ -7,9 +7,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define OLED_I2C_ADDRESS_7BIT 0x3CU
-#define OLED_I2C_ADDRESS_U8G2 ((uint8_t)(OLED_I2C_ADDRESS_7BIT << 1U))
-#define OLED_I2C_TRANSFER_CAPACITY 32U
+#define OLED_I2C_ADDRESS_7BIT 0x3C
+#define OLED_I2C_ADDRESS_U8G2 ((uint8_t)(OLED_I2C_ADDRESS_7BIT << 1))
+#define OLED_I2C_TRANSFER_CAPACITY 32
 
 typedef struct
 {

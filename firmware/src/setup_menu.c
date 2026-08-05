@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "setup_menu.h"
 
 #include "button.h"
@@ -13,10 +17,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define SETUP_MENU_CHARS_PER_LINE 6U
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
+#define SETUP_MENU_CHARS_PER_LINE 6
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
-#define SETUP_MENU_LINE_HEIGHT 10U
-#define SETUP_MENU_FIRST_BASELINE 9U
+#define SETUP_MENU_LINE_HEIGHT 10
+#define SETUP_MENU_FIRST_BASELINE 9
+
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 
 enum
 {
@@ -38,6 +50,10 @@ typedef struct
     const char* items;
     uint8_t     items_cnt;
 } setup_menu_item_t;
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_STARTUP_POWER_LEVEL] =
@@ -96,6 +112,10 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
         },
 };
 
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
 static uint8_t     setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t item);
 static uint8_t     setup_menu_get_option_count(uint8_t item);
 static void        setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item);
@@ -105,6 +125,10 @@ static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size
 static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
 static void        setup_menu_sleep(u8g2_t* graphics);
 static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void setup_menu(void)
 {
@@ -139,8 +163,8 @@ void setup_menu(void)
     }
 
     /* Discard the hold used by boot logic to enter this function. */
-    (void)btn_has_short_press(true);
-    (void)btn_has_long_press(true);
+    btn_has_short_press(true);
+    btn_has_long_press(true);
     last_activity_ms = systick_get_ms();
 
     for (;;)
@@ -171,13 +195,13 @@ void setup_menu(void)
             }
             else if ((uint32_t)(now - initial_release_ms) >= BTN_DEBOUNCE_MS)
             {
-                (void)btn_has_short_press(true);
-                (void)btn_has_long_press(true);
+                btn_has_short_press(true);
+                btn_has_long_press(true);
                 input_enabled    = true;
                 last_activity_ms = now;
             }
 
-            HAL_Delay(1U);
+            HAL_Delay(1);
             continue;
         }
 
@@ -225,15 +249,19 @@ void setup_menu(void)
             {
                 short_press_pending    = false;
                 pending_release_timing = false;
-                selected_item          = (uint8_t)((selected_item + 1U) % SETUP_MENU_ITEM_COUNT);
+                selected_item          = (uint8_t)((selected_item + 1) % SETUP_MENU_ITEM_COUNT);
                 last_activity_ms       = now;
                 setup_menu_render(graphics, &settings, selected_item);
             }
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t item)
 {
@@ -254,7 +282,7 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t
     case SETUP_ITEM_INPUT_V_CALIB:
         return settings->input_v_calib;
     default:
-        return 0U;
+        return 0;
     }
 }
 
@@ -262,7 +290,7 @@ static uint8_t setup_menu_get_option_count(uint8_t item)
 {
     if (item >= SETUP_MENU_ITEM_COUNT)
     {
-        return 0U;
+        return 0;
     }
 
     return setup_menu_items[item].items_cnt;
@@ -273,12 +301,12 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
     uint8_t count = setup_menu_get_option_count(item);
     uint8_t value;
 
-    if ((settings == NULL) || (count == 0U))
+    if ((settings == NULL) || (count == 0))
     {
         return;
     }
 
-    value = (uint8_t)((setup_menu_get_value(settings, item) + 1U) % count);
+    value = (uint8_t)((setup_menu_get_value(settings, item) + 1) % count);
 
     switch (item)
     {
@@ -315,7 +343,7 @@ static const char* setup_menu_find_option(const char* items, uint8_t option)
         return "";
     }
 
-    while ((option > 0U) && (*items != '\0'))
+    while ((option > 0) && (*items != '\0'))
     {
         if (*items++ == '|')
         {
@@ -354,7 +382,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
 
 static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline)
 {
-    char   line[SETUP_MENU_CHARS_PER_LINE + 1U];
+    char   line[SETUP_MENU_CHARS_PER_LINE + 1];
     size_t index;
 
     if ((graphics == NULL) || (text == NULL))
@@ -367,13 +395,13 @@ static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t leng
         length = SETUP_MENU_CHARS_PER_LINE;
     }
 
-    for (index = 0U; index < length; ++index)
+    for (index = 0; index < length; ++index)
     {
         line[index] = text[index];
     }
     line[length] = '\0';
 
-    u8g2_DrawStr(graphics, 1U, baseline, line);
+    u8g2_DrawStr(graphics, 1, baseline, line);
 }
 
 static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item)
@@ -392,28 +420,28 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
     u8g2_ClearBuffer(graphics);
     u8g2_SetFont(graphics, u8g2_font_5x7_tr);
 
-    setup_menu_draw_line(graphics, "SETUP", 5U, SETUP_MENU_FIRST_BASELINE);
+    setup_menu_draw_line(graphics, "SETUP", 5, SETUP_MENU_FIRST_BASELINE);
 
     /* Advance two rows: row two is deliberately blank. */
-    baseline = (uint8_t)(SETUP_MENU_FIRST_BASELINE + (2U * SETUP_MENU_LINE_HEIGHT));
+    baseline = (uint8_t)(SETUP_MENU_FIRST_BASELINE + (2 * SETUP_MENU_LINE_HEIGHT));
     baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
 
     if (item <= SETUP_MENU_LAST_VALUE_ITEM)
     {
-        setup_menu_draw_line(graphics, "  =  ", 5U, baseline);
+        setup_menu_draw_line(graphics, "  =  ", 5, baseline);
         baseline = (uint8_t)(baseline + SETUP_MENU_LINE_HEIGHT);
         option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
-        (void)setup_menu_draw_text(graphics, option, '|', baseline);
+        setup_menu_draw_text(graphics, option, '|', baseline);
     }
 
-    (void)OLED_SendBuffer(&oled);
+    OLED_SendBuffer(&oled);
 }
 
 static void setup_menu_sleep(u8g2_t* graphics)
 {
     if (graphics != NULL)
     {
-        u8g2_SetPowerSave(graphics, 1U);
+        u8g2_SetPowerSave(graphics, 1);
     }
 
     /* There is not yet a shared sleep-mode policy.  Stay asleep after every
@@ -428,7 +456,7 @@ static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
 {
     if (save)
     {
-        (void)nvm_save(settings);
+        nvm_save(settings);
     }
 
     NVIC_SystemReset();

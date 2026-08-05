@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "uart_debug.h"
 #include "adc.h"
 #include "miscutils.h"
@@ -10,63 +14,32 @@
 #include <stdint.h>
 #include <string.h>
 
-#define UART_DEBUG_TASK_PERIOD_MS 200UL
-#define UART_DEBUG_VALUE_CAPACITY 8U
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
+#define UART_DEBUG_TASK_PERIOD_MS 200
+#define UART_DEBUG_VALUE_CAPACITY 8
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static UART_HandleTypeDef uart1;
 static bool               uart_allowed;
 static bool               uart_initialized;
 static uint32_t           uart_debug_last_task_ms;
 
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
 static bool USART1_TX_Init(void);
 static void UART_ErrorHandler(void);
 
-void HAL_UART_MspInit(UART_HandleTypeDef* handle)
-{
-    GPIO_InitTypeDef gpio = {0};
-
-    if (handle->Instance != USART1)
-    {
-        return;
-    }
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_USART1_CLK_ENABLE();
-
-    gpio.Pin       = UART_TX_PINn;
-    gpio.Mode      = GPIO_MODE_AF_PP;
-    gpio.Pull      = GPIO_NOPULL;
-    gpio.Speed     = GPIO_SPEED_FREQ_HIGH;
-    gpio.Alternate = GPIO_AF1_USART1;
-    HAL_GPIO_Init(UART_TX_GPIOx, &gpio);
-}
-
-void UART_SetAllowed(bool allowed)
-{
-    uart_allowed = allowed;
-}
-
-static bool USART1_TX_Init(void)
-{
-    uart1.Instance                    = USART1;
-    uart1.Init.BaudRate               = 115200U;
-    uart1.Init.WordLength             = UART_WORDLENGTH_8B;
-    uart1.Init.StopBits               = UART_STOPBITS_1;
-    uart1.Init.Parity                 = UART_PARITY_NONE;
-    uart1.Init.Mode                   = UART_MODE_TX;
-    uart1.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
-    uart1.Init.OverSampling           = UART_OVERSAMPLING_16;
-    uart1.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
-    uart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-
-    if (HAL_UART_Init(&uart1) != HAL_OK)
-    {
-        return false;
-    }
-
-    uart_initialized = true;
-    return true;
-}
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void UART_Write(const char* text)
 {
@@ -78,7 +51,7 @@ void UART_Write(const char* text)
     }
 
     length = strlen(text);
-    if ((length == 0U) || (length > UINT16_MAX))
+    if ((length == 0) || (length > UINT16_MAX))
     {
         return;
     }
@@ -111,15 +84,15 @@ void UART_debug_task(void)
     }
     uart_debug_last_task_ms = now;
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), value, 1U);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), value, 1);
     UART_Write(value);
     UART_Write("V ");
 
-    millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), value, 1U);
+    millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), value, 1);
     UART_Write(value);
     UART_Write("V ");
 
-    milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), value, 2U);
+    milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), value, 2);
     UART_Write(value);
     UART_Write("A ");
 
@@ -154,6 +127,65 @@ void UART_debug_task(void)
     UART_Write(value);
     UART_Write("\r\n");
 }
+
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+void UART_SetAllowed(bool allowed)
+{
+    uart_allowed = allowed;
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
+void HAL_UART_MspInit(UART_HandleTypeDef* handle)
+{
+    GPIO_InitTypeDef gpio = {0};
+
+    if (handle->Instance != USART1)
+    {
+        return;
+    }
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_USART1_CLK_ENABLE();
+
+    gpio.Pin       = UART_TX_PINn;
+    gpio.Mode      = GPIO_MODE_AF_PP;
+    gpio.Pull      = GPIO_NOPULL;
+    gpio.Speed     = GPIO_SPEED_FREQ_HIGH;
+    gpio.Alternate = GPIO_AF1_USART1;
+    HAL_GPIO_Init(UART_TX_GPIOx, &gpio);
+}
+
+static bool USART1_TX_Init(void)
+{
+    uart1.Instance                    = USART1;
+    uart1.Init.BaudRate               = 115200;
+    uart1.Init.WordLength             = UART_WORDLENGTH_8B;
+    uart1.Init.StopBits               = UART_STOPBITS_1;
+    uart1.Init.Parity                 = UART_PARITY_NONE;
+    uart1.Init.Mode                   = UART_MODE_TX;
+    uart1.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
+    uart1.Init.OverSampling           = UART_OVERSAMPLING_16;
+    uart1.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
+    uart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+
+    if (HAL_UART_Init(&uart1) != HAL_OK)
+    {
+        return false;
+    }
+
+    uart_initialized = true;
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// Debug / Fault Helpers
+// -----------------------------------------------------------------------------
 
 static void UART_ErrorHandler(void)
 {

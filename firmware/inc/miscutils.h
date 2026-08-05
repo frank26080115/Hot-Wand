@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-#define HOTWAND_RAND_MAX 32767U
+#define HOTWAND_RAND_MAX 32767
 
 void     hotwand_srand(uint32_t seed);
 uint16_t hotwand_rand(void);

@@ -4,10 +4,10 @@
 
 /* Ramp-down update period; ramp-up uses a fixed 2 ms period. */
 #ifndef PWRLVL_UPDATE_PERIOD_MS
-#define PWRLVL_UPDATE_PERIOD_MS 50U
+#define PWRLVL_UPDATE_PERIOD_MS 50
 #endif
 
-#if (PWRLVL_UPDATE_PERIOD_MS < 5U) || (PWRLVL_UPDATE_PERIOD_MS > 100U)
+#if (PWRLVL_UPDATE_PERIOD_MS < 5) || (PWRLVL_UPDATE_PERIOD_MS > 100)
 #error "PWRLVL_UPDATE_PERIOD_MS must be between 5 and 100 milliseconds"
 #endif
 

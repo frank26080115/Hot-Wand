@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "button.h"
 
 #include "pins.h"
@@ -7,7 +11,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define BTN_EXTI_IRQ_PRIORITY 3U
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
+#define BTN_EXTI_IRQ_PRIORITY 3
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 
 static volatile bool     btn_initialized;
 static volatile bool     btn_down;
@@ -18,8 +30,16 @@ static volatile bool     btn_long_press_emitted;
 static volatile uint32_t btn_down_since_ms;
 static volatile uint32_t btn_release_since_ms;
 
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
 static void btn_accept_down(uint32_t now);
 static bool btn_get_event(volatile bool* event, bool clear_flag);
+
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 void btn_init(void)
 {
@@ -65,33 +85,13 @@ void btn_init(void)
      * not clear the shared NVIC
      * pending bit, which could discard a tip edge.
      */
-    HAL_NVIC_SetPriority(EXTI4_15_IRQn, BTN_EXTI_IRQ_PRIORITY, 0U);
+    HAL_NVIC_SetPriority(EXTI4_15_IRQn, BTN_EXTI_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
-    if (interrupt_state == 0U)
+    if (interrupt_state == 0)
     {
         __enable_irq();
     }
-}
-
-bool btn_is_down(void)
-{
-    if (!btn_initialized)
-    {
-        return false;
-    }
-
-    return HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET;
-}
-
-bool btn_has_short_press(bool clear_flag)
-{
-    return btn_get_event(&btn_short_press, clear_flag);
-}
-
-bool btn_has_long_press(bool clear_flag)
-{
-    return btn_get_event(&btn_long_press, clear_flag);
 }
 
 void btn_task(void)
@@ -118,7 +118,7 @@ void btn_task(void)
             /*
              * The falling-edge callback may still be pending while this task
              * owns the
-             * critical section.  Preserve a new press if the high
+             * critical section. Preserve a new press if the high
              * interval already qualified as a real
              * release; otherwise cancel
              * it as bounce.
@@ -147,7 +147,7 @@ void btn_task(void)
         btn_long_press_emitted = true;
     }
 
-    if (interrupt_state == 0U)
+    if (interrupt_state == 0)
     {
         __enable_irq();
     }
@@ -184,7 +184,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
              * this is a
              * new press.  Otherwise it was contact bounce belonging
              * to the existing hold.
- */
+             */
             if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
             {
                 btn_accept_down(now);
@@ -201,6 +201,34 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
         btn_release_pending  = true;
     }
 }
+
+// -----------------------------------------------------------------------------
+// Getters and Setters
+// -----------------------------------------------------------------------------
+
+bool btn_is_down(void)
+{
+    if (!btn_initialized)
+    {
+        return false;
+    }
+
+    return HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET;
+}
+
+bool btn_has_short_press(bool clear_flag)
+{
+    return btn_get_event(&btn_short_press, clear_flag);
+}
+
+bool btn_has_long_press(bool clear_flag)
+{
+    return btn_get_event(&btn_long_press, clear_flag);
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static void btn_accept_down(uint32_t now)
 {
@@ -230,7 +258,7 @@ static bool btn_get_event(volatile bool* event, bool clear_flag)
         *event = false;
     }
 
-    if (interrupt_state == 0U)
+    if (interrupt_state == 0)
     {
         __enable_irq();
     }

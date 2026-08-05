@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "tests.h"
 
 #include "button.h"
@@ -17,10 +21,25 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define TEST_STATUS_INTERVAL_MS 100UL
-#define TEST_RFGEN_BURST_DURATION_MS 1000UL
-#define TEST_PWRLVL_75_PERCENT_CCR 24U
-#define TEST_NVM_VERBOSE_SAVE_COUNT 4U
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
+#define TEST_STATUS_INTERVAL_MS 100
+#define TEST_RFGEN_BURST_DURATION_MS 1000
+#define TEST_PWRLVL_75_PERCENT_CCR 24
+#define TEST_NVM_VERBOSE_SAVE_COUNT 4
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
+
+extern const uint8_t __nvm_page_start__;
+extern const uint8_t __nvm_page_end__;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
 
 static void      test_fan_pin_init(void);
 static void      test_report_tip_state(bool triggered);
@@ -40,8 +59,9 @@ static void      test_uart_write_address(uintptr_t address);
 static void      test_nvm_report_settings(const hotwand_setup_nvm_t* settings);
 static bool      test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number);
 
-extern const uint8_t __nvm_page_start__;
-extern const uint8_t __nvm_page_end__;
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 /*
  * PA14 is shared by UART TX and SWCLK.  Each UART test leaves UART disabled
@@ -87,7 +107,7 @@ void test_bringup_systick(void)
             UART_Write("\r\n");
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -96,7 +116,7 @@ void test_bringup_button(void)
     char timestamp[12];
 
     UART_SetAllowed(false);
-    (void)btn_has_short_press(true);
+    btn_has_short_press(true);
 
     for (;;)
     {
@@ -114,14 +134,14 @@ void test_bringup_button(void)
             UART_SetAllowed(false);
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
 void test_bringup_adc(void)
 {
     UART_SetAllowed(false);
-    (void)btn_has_short_press(true);
+    btn_has_short_press(true);
 
     for (;;)
     {
@@ -132,7 +152,7 @@ void test_bringup_adc(void)
         }
 
         UART_debug_task();
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -159,20 +179,20 @@ void test_bringup_fan(void)
             HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
 void test_bringup_pwrlvl(void)
 {
     pwrlvl_init();
-    TIM3->CCR1 = 0U;
+    TIM3->CCR1 = 0;
 
     for (;;)
     {
         /* TIM3 has 32 counts per period, so CCR1 = 24 is exactly 75%. */
-        TIM3->CCR1 = btn_is_down() ? TEST_PWRLVL_75_PERCENT_CCR : 0U;
-        HAL_Delay(1U);
+        TIM3->CCR1 = btn_is_down() ? TEST_PWRLVL_75_PERCENT_CCR : 0;
+        HAL_Delay(1);
     }
 }
 
@@ -181,7 +201,7 @@ void test_bringup_pwrlvl_min(void)
     bool minimum_applied = false;
 
     pwrlvl_init();
-    TIM3->CCR1 = 0U;
+    TIM3->CCR1 = 0;
 
     for (;;)
     {
@@ -195,11 +215,11 @@ void test_bringup_pwrlvl_min(void)
         else if (!button_down && minimum_applied)
         {
             pwrlvl_release_minimum();
-            TIM3->CCR1      = 0U;
+            TIM3->CCR1      = 0;
             minimum_applied = false;
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -237,19 +257,19 @@ void test_rfgen(void)
         }
 
         UART_debug_task();
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
 void test_rfgen_burst(void)
 {
-    uint32_t burst_started_ms = 0U;
+    uint32_t burst_started_ms = 0;
     bool     burst_active     = false;
     bool     last_tip_state;
 
     UART_SetAllowed(false);
     rfgen_stop();
-    (void)btn_has_short_press(true);
+    btn_has_short_press(true);
     last_tip_state = tipdetect_has_triggered();
     test_report_tip_state(last_tip_state);
 
@@ -288,7 +308,7 @@ void test_rfgen_burst(void)
             burst_active = false;
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -296,10 +316,10 @@ void test_nvm_simple(void)
 {
     hotwand_setup_nvm_t current;
     hotwand_setup_nvm_t next;
-    uint16_t            sequence = 0U;
+    uint16_t            sequence = 0;
 
     UART_SetAllowed(false);
-    (void)btn_has_short_press(true);
+    btn_has_short_press(true);
     nvm_init();
 
     for (;;)
@@ -319,11 +339,11 @@ void test_nvm_simple(void)
                 ++sequence;
             }
 
-            (void)test_nvm_verbose_save(sequence, sequence + 1U);
+            test_nvm_verbose_save(sequence, sequence + 1);
             ++sequence;
         }
 
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
 
@@ -336,7 +356,7 @@ void test_nvm_full_page(void)
     uint16_t            trace;
 
     UART_SetAllowed(false);
-    (void)btn_has_short_press(true);
+    btn_has_short_press(true);
     nvm_init();
 
     /* Do absolutely nothing until a press opts in to UART and flash writes. */
@@ -348,7 +368,7 @@ void test_nvm_full_page(void)
             UART_SetAllowed(true);
             break;
         }
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 
     UART_Write("\r\nNVM FULL PAGE TEST\r\n");
@@ -362,22 +382,22 @@ void test_nvm_full_page(void)
     test_uart_write_number(test_nvm_slot_count());
     UART_Write("\r\n");
 
-    if ((test_nvm_slot_count() < 2U) || !nvm_factory_reset())
+    if ((test_nvm_slot_count() < 2) || !nvm_factory_reset())
     {
         UART_Write("FACTORY ERASE FAILED\r\n");
         for (;;)
         {
-            HAL_Delay(1U);
+            HAL_Delay(1);
         }
     }
     UART_Write("FACTORY ERASE PASSED\r\n");
 
-    fill_count = (uint16_t)(test_nvm_slot_count() - 2U);
+    fill_count = (uint16_t)(test_nvm_slot_count() - 2);
     UART_Write("SILENTLY FILLING ");
     test_uart_write_number(fill_count);
     UART_Write(" SLOTS\r\n");
 
-    for (sequence = 0U; sequence < fill_count; ++sequence)
+    for (sequence = 0; sequence < fill_count; ++sequence)
     {
         test_nvm_make_settings(sequence, &expected);
         if (!nvm_save(&expected) || !nvm_read(&read_back) || !test_nvm_settings_equal(&expected, &read_back))
@@ -387,7 +407,7 @@ void test_nvm_full_page(void)
             UART_Write("\r\n");
             for (;;)
             {
-                HAL_Delay(1U);
+                HAL_Delay(1);
             }
         }
     }
@@ -396,28 +416,32 @@ void test_nvm_full_page(void)
     test_uart_write_number((uint32_t)(test_nvm_slot_count() - test_nvm_used_slot_count()));
     UART_Write("\r\n");
 
-    for (trace = 0U; trace < TEST_NVM_VERBOSE_SAVE_COUNT; ++trace)
+    for (trace = 0; trace < TEST_NVM_VERBOSE_SAVE_COUNT; ++trace)
     {
-        if (!test_nvm_verbose_save((uint16_t)(fill_count + trace), (uint16_t)(trace + 1U)))
+        if (!test_nvm_verbose_save((uint16_t)(fill_count + trace), (uint16_t)(trace + 1)))
         {
             UART_Write("VERBOSE SAVE FAILED\r\n");
             for (;;)
             {
-                HAL_Delay(1U);
+                HAL_Delay(1);
             }
         }
     }
 
     UART_Write("FINAL USED SLOTS ");
     test_uart_write_number(test_nvm_used_slot_count());
-    UART_Write(test_nvm_used_slot_count() == 2U ? " (PASS)\r\n" : " (FAIL, EXPECTED 2)\r\n");
+    UART_Write(test_nvm_used_slot_count() == 2 ? " (PASS)\r\n" : " (FAIL, EXPECTED 2)\r\n");
     UART_Write("NVM FULL PAGE TEST COMPLETE\r\n");
 
     for (;;)
     {
-        HAL_Delay(1U);
+        HAL_Delay(1);
     }
 }
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static void test_fan_pin_init(void)
 {
@@ -449,9 +473,9 @@ static void test_report_tip_state(bool triggered)
     u8g2_SetDisplayRotation(graphics, U8G2_R1);
     u8g2_SetFont(graphics, u8g2_font_5x7_tr);
     u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, 1U, 9U, "TIP");
-    u8g2_DrawStr(graphics, 1U, 19U, triggered ? "FAULT" : "OK");
-    (void)OLED_SendBuffer(&oled);
+    u8g2_DrawStr(graphics, 1, 9, "TIP");
+    u8g2_DrawStr(graphics, 1, 19, triggered ? "FAULT" : "OK");
+    OLED_SendBuffer(&oled);
 }
 
 static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* settings)
@@ -459,19 +483,19 @@ static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* setti
     uint16_t value = sequence;
 
     nvm_apply_defaults(settings);
-    settings->startup_power_level = (uint8_t)(value % 3U);
-    value /= 3U;
-    settings->fan_mode = (uint8_t)(value % 4U);
-    value /= 4U;
-    settings->auto_sleep = (uint8_t)(value % 4U);
-    value /= 4U;
-    settings->auto_dim = (uint8_t)(value % 4U);
-    value /= 4U;
-    settings->idle_detect_thresh = (uint8_t)(value % 7U);
-    value /= 7U;
-    settings->batt_mode = (uint8_t)(value % 7U);
-    value /= 7U;
-    settings->input_v_calib = (uint8_t)(value % 11U);
+    settings->startup_power_level = (uint8_t)(value % 3);
+    value /= 3;
+    settings->fan_mode = (uint8_t)(value % 4);
+    value /= 4;
+    settings->auto_sleep = (uint8_t)(value % 4);
+    value /= 4;
+    settings->auto_dim = (uint8_t)(value % 4);
+    value /= 4;
+    settings->idle_detect_thresh = (uint8_t)(value % 7);
+    value /= 7;
+    settings->batt_mode = (uint8_t)(value % 7);
+    value /= 7;
+    settings->input_v_calib = (uint8_t)(value % 11);
 }
 
 static bool test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right)
@@ -507,9 +531,9 @@ static bool test_nvm_slot_is_erased(uint16_t slot)
     const volatile uint16_t* flash = (const volatile uint16_t*)test_nvm_slot_address(slot);
     uint16_t                 halfword;
 
-    for (halfword = 0U; halfword < (sizeof(hotwand_setup_nvm_t) / sizeof(uint16_t)); ++halfword)
+    for (halfword = 0; halfword < (sizeof(hotwand_setup_nvm_t) / sizeof(uint16_t)); ++halfword)
     {
-        if (flash[halfword] != 0xFFFFU)
+        if (flash[halfword] != 0xFFFF)
         {
             return false;
         }
@@ -521,9 +545,9 @@ static bool test_nvm_slot_is_erased(uint16_t slot)
 static uint16_t test_nvm_used_slot_count(void)
 {
     uint16_t slot;
-    uint16_t used = 0U;
+    uint16_t used = 0;
 
-    for (slot = 0U; slot < test_nvm_slot_count(); ++slot)
+    for (slot = 0; slot < test_nvm_slot_count(); ++slot)
     {
         if (!test_nvm_slot_is_erased(slot))
         {
@@ -538,7 +562,7 @@ static uint16_t test_nvm_next_slot(void)
 {
     uint16_t slot;
 
-    for (slot = 0U; slot < test_nvm_slot_count(); ++slot)
+    for (slot = 0; slot < test_nvm_slot_count(); ++slot)
     {
         if (test_nvm_slot_is_erased(slot))
         {
@@ -554,7 +578,7 @@ static bool test_nvm_erase_is_expected(void)
     uint16_t slot;
     bool     erased_slot_seen = false;
 
-    for (slot = 0U; slot < test_nvm_slot_count(); ++slot)
+    for (slot = 0; slot < test_nvm_slot_count(); ++slot)
     {
         if (test_nvm_slot_is_erased(slot))
         {
@@ -577,7 +601,7 @@ static void test_nvm_read_physical(uintptr_t address, hotwand_setup_nvm_t* setti
     uint8_t*                destination = (uint8_t*)settings;
     uint16_t                index;
 
-    for (index = 0U; index < sizeof(*settings); ++index)
+    for (index = 0; index < sizeof(*settings); ++index)
     {
         destination[index] = source[index];
     }
@@ -655,7 +679,7 @@ static bool test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number)
 
     save_ok         = nvm_save(&expected);
     after_used      = test_nvm_used_slot_count();
-    erase_confirmed = erase_expected && save_ok && (after_used == 1U);
+    erase_confirmed = erase_expected && save_ok && (after_used == 1);
 
     api_read_ok = save_ok && nvm_read(&read_back) && test_nvm_settings_equal(&expected, &read_back);
     test_nvm_read_physical(write_address, &physical);

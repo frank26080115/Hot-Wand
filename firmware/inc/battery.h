@@ -26,7 +26,7 @@ typedef struct
 } battery_cell_voltage_range_t;
 
 /* Indexed by BATT_MODE_*.  BATT_MODE_NONE contains a zeroed range. */
-extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SAFE + 1U];
+extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SAFE + 1];
 
 /*
  * Determines the range of whole-number cell counts consistent with the

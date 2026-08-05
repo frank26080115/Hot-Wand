@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+// Includes
+// -----------------------------------------------------------------------------
+
 #include "hotwand.h"
 #include "adc.h"
 #include "battery.h"
@@ -21,6 +25,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
+
 #if !defined(HOT_WAND_TARGET_STM32F030) && !defined(HOT_WAND_TARGET_STM32F042)
 #error "This source supports only the STM32F030 and STM32F042 targets."
 #endif
@@ -32,8 +40,21 @@
 #define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8
 #define MAIN_DISPLAY_VOLTAGE_BASELINE 9
 
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
+
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
 static const uint32_t auto_dim_delay_ms[]   = {0, 15 * 1000, 30 * 1000, 60 * 1000};
+
+uint8_t pixshift_x = 0;
+uint8_t pixshift_y = 0;
+
+// -----------------------------------------------------------------------------
+// Function Prototypes
+// -----------------------------------------------------------------------------
+
+void enter_sleep_mode(void);
 
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
@@ -41,10 +62,9 @@ static void boot_wait_for_power_stable(void);
 static void main_render_display(void);
 static void Error_Handler(void);
 
-void enter_sleep_mode(void);
-
-uint8_t pixshift_x = 0;
-uint8_t pixshift_y = 0;
+// -----------------------------------------------------------------------------
+// Main Flow
+// -----------------------------------------------------------------------------
 
 int main(void)
 {
@@ -56,7 +76,7 @@ int main(void)
     bool                boot_button_down;
 
     /* HAL provides the temporary reset-clock tick needed by the RCC startup
-     * timeout.  Application initialization
+     * timeout. Application initialization
      * begins with HSE immediately
      * afterward. */
     HAL_Init();
@@ -177,6 +197,10 @@ int main(void)
         }
     }
 }
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static void boot_check_for_setup(void)
 {
@@ -339,6 +363,15 @@ static void main_render_display(void)
     OLED_SendBuffer(&oled);
 }
 
+void enter_sleep_mode(void)
+{
+    show_fault("ZZZZZ", true);
+}
+
+// -----------------------------------------------------------------------------
+// Debug / Fault Helpers
+// -----------------------------------------------------------------------------
+
 static void Error_Handler(void)
 {
     __disable_irq();
@@ -346,9 +379,4 @@ static void Error_Handler(void)
     for (;;)
     {
     }
-}
-
-void enter_sleep_mode(void)
-{
-    show_fault("ZZZZZ", true);
 }
