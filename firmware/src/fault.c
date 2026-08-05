@@ -1,3 +1,8 @@
+/*
+The fault display is a terminal screen that shows a message and prevents any further operation until the user resets the device
+It is animated in a way that prevents OLED burn-in, and it can be dimmed after a period of inactivity
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

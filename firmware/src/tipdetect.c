@@ -1,3 +1,10 @@
+/*
+Tip Detection
+This code module is responsible for detecting the presence or absence of a tip connected to the device.
+The system must shutdown RF power if the tip is removed, as the missing load will cause very high voltages to appear at the MOSFET
+This code module uses a timer to debounce the tip detection signal, shutdown RF power when the tip is confirmed to be removed, and it latches the fault until the user resets it.
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

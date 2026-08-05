@@ -1,3 +1,8 @@
+/*
+Non Volatile Memory
+This code module is responsible for loading and saving persistent user settings
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

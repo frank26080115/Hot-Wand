@@ -1,3 +1,9 @@
+/*
+Power Management
+This code module is responsible for managing the power levels and handling power-related logic.
+The user's preferred power level is used, but can be limited by temperature or input voltage
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

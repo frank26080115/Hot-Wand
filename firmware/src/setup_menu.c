@@ -1,3 +1,10 @@
+/*
+This code module implements the setup menu, which allows the user to configure various settings of the device.
+The menu is displayed on an OLED screen and navigated using a button.
+The user can cycle through different configuration items, adjust their values, and save or discard changes before exiting the menu.
+This menu acts as it's own application, and exiting it will cause the device to reboot (into the normal application).
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

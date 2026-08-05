@@ -1,3 +1,8 @@
+/*
+The UART is only used to debug the device, and it is not required for normal operation.
+The UART debug output is disabled by default, and only activated if the button is held down during power-on.
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

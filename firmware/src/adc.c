@@ -1,3 +1,10 @@
+/*
+The ADC code will sample all connected ADC channels in a round-robin fashion.
+The completion of one conversion triggers the next channel's conversion, using the ISR.
+A digital low pass filter is automatically applied. This filter can be configured on a per-channel basis.
+This file also contains some convenience functions for unit conversions.
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

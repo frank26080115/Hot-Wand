@@ -1,3 +1,8 @@
+/*
+Fan control state machine
+Determines when to turn on the fan based on the configured mode and the measured temperatures
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

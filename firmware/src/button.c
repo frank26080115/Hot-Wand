@@ -1,3 +1,9 @@
+/*
+Handles button presses
+Detects button press, button release, and long-hold presses
+It uses interrupts and also features debouncing
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

@@ -1,3 +1,9 @@
+/*
+This code module is responsible for guessing the cell count when using a battery pack.
+From the cell count, it is able to issue low battery warnings.
+The warning will pause the operation of the soldering iron, and the user can override the warning to continue usage
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------
