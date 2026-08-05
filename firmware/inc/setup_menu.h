@@ -7,12 +7,14 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*
  * Runs the blocking setup menu.  The function exits only by resetting the
- * MCU after either of its explicit exit choices.  Inactivity enters sleep
+ * MCU after either of its explicit
+ * exit choices.  Inactivity enters sleep
  * without saving.
  */
 void setup_menu(void);

@@ -3,7 +3,8 @@
 #include "hotwand.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 bool rfgen_clock_init(void);

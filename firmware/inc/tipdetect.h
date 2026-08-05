@@ -5,20 +5,21 @@
 
 /*
  * Time to wait after a TIP_DET edge before sampling the new pin level.
- * The legacy PSC = 0, ARR = 8135 setup at 27.12 MHz was exactly 300 us.
+ * The legacy PSC = 0, ARR = 8135 setup
+ * at 27.12 MHz was exactly 300 us.
  * Override this with a compiler definition if a different debounce is needed.
  */
 #ifndef TIPDETECT_DEBOUNCE_US
 #define TIPDETECT_DEBOUNCE_US 300UL
 #endif
 
-#if (TIPDETECT_DEBOUNCE_US < 1UL) || \
-    (TIPDETECT_DEBOUNCE_US > 1000000UL)
+#if (TIPDETECT_DEBOUNCE_US < 1UL) || (TIPDETECT_DEBOUNCE_US > 1000000UL)
 #error "TIPDETECT_DEBOUNCE_US must be between 1 and 1000000 microseconds"
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 void tipdetect_init(void);

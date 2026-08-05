@@ -10,4 +10,4 @@
 #include "fault.h"
 
 void enter_sleep_mode(void);
-void show_fault(const char *text, bool allow_button_reset);
+void show_fault(const char* text, bool allow_button_reset);

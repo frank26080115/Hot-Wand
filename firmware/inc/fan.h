@@ -3,7 +3,8 @@
 #include "hotwand.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 void fan_init(void);

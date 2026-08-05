@@ -15,20 +15,21 @@ enum
 };
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode);
-void pwrmgt_set_idle_power_threshold(uint8_t threshold);
+void     pwrmgt_set_desired_power_level(pwrlvl_mode_t mode);
+void     pwrmgt_set_idle_power_threshold(uint8_t threshold);
 uint32_t pwrmgt_get_idle_duration_ms(void);
 uint32_t pwrmgt_get_time_since_last_activity_ms(void);
 /* Advances the desired level, or defers blocked feedback until button release. */
 void pwrmgt_change_pwr_lvl(void);
 void pwrmgt_task(void);
 /* Draws only the graph region; the caller owns the text and buffer send. */
-void pwrmgt_render_graph(u8g2_t *graphics);
+void          pwrmgt_render_graph(u8g2_t* graphics);
 pwrlvl_mode_t pwrmgt_get_applied_power_level(void);
-uint8_t pwrmgt_get_attenuation_reasons(void);
+uint8_t       pwrmgt_get_attenuation_reasons(void);
 
 #ifdef __cplusplus
 }

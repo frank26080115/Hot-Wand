@@ -4,14 +4,10 @@
 #include <stdbool.h>
 
 #ifndef BTN_DEBOUNCE_MS
-#define BTN_DEBOUNCE_MS 50UL
+#define BTN_DEBOUNCE_MS 50
 #endif
 
-#ifndef BTN_LONG_PRESS_MS
-#define BTN_LONG_PRESS_MS 1000UL
-#endif
-
-#if (BTN_DEBOUNCE_MS < 50UL)
+#if (BTN_DEBOUNCE_MS < 50)
 #error "BTN_DEBOUNCE_MS must be at least 50 milliseconds"
 #endif
 
@@ -20,7 +16,8 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 void btn_init(void);

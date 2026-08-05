@@ -36,13 +36,13 @@ enum
 
 enum
 {
-    IDLE_DETECT_THRESH_1W   = 0,
-    IDLE_DETECT_THRESH_2W   = 1,
-    IDLE_DETECT_THRESH_5W   = 2,
-    IDLE_DETECT_THRESH_10W  = 3,
-    IDLE_DETECT_THRESH_20W  = 4,
-    IDLE_DETECT_THRESH_30W  = 5,
-    IDLE_DETECT_THRESH_40W  = 6,
+    IDLE_DETECT_THRESH_1W  = 0,
+    IDLE_DETECT_THRESH_2W  = 1,
+    IDLE_DETECT_THRESH_5W  = 2,
+    IDLE_DETECT_THRESH_10W = 3,
+    IDLE_DETECT_THRESH_20W = 4,
+    IDLE_DETECT_THRESH_30W = 5,
+    IDLE_DETECT_THRESH_40W = 6,
 };
 
 enum
@@ -76,31 +76,24 @@ typedef struct __attribute__((packed, aligned(2)))
     uint8_t magic; // 0xFF or 0x00 is invalid
 
     uint8_t startup_power_level : 2;
-    uint8_t fan_mode            : 2;
-    uint8_t auto_sleep          : 2;
-    uint8_t auto_dim            : 2;
-    uint8_t idle_detect_thresh  : 3;
-    uint8_t batt_mode           : 3;
-    uint8_t rsvd_1              : 2;
+    uint8_t fan_mode : 2;
+    uint8_t auto_sleep : 2;
+    uint8_t auto_dim : 2;
+    uint8_t idle_detect_thresh : 3;
+    uint8_t batt_mode : 3;
+    uint8_t rsvd_1 : 2;
 
-    uint8_t input_v_calib       : 4;
-    uint8_t rsvd_2              : 4;
+    uint8_t  input_v_calib : 4;
+    uint8_t  rsvd_2 : 4;
     uint16_t checksum;
-}
-hotwand_setup_nvm_t;
+} hotwand_setup_nvm_t;
 
 #if defined(__cplusplus)
-static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U,
-              "Unexpected setup NVM checksum offset");
-static_assert(sizeof(hotwand_setup_nvm_t) == 6U,
-              "Unexpected setup NVM record size");
-static_assert(alignof(hotwand_setup_nvm_t) == 2U,
-              "Setup NVM records must be halfword aligned");
+static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U, "Unexpected setup NVM checksum offset");
+static_assert(sizeof(hotwand_setup_nvm_t) == 6U, "Unexpected setup NVM record size");
+static_assert(alignof(hotwand_setup_nvm_t) == 2U, "Setup NVM records must be halfword aligned");
 #else
-_Static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U,
-               "Unexpected setup NVM checksum offset");
-_Static_assert(sizeof(hotwand_setup_nvm_t) == 6U,
-               "Unexpected setup NVM record size");
-_Static_assert(_Alignof(hotwand_setup_nvm_t) == 2U,
-               "Setup NVM records must be halfword aligned");
+_Static_assert(offsetof(hotwand_setup_nvm_t, checksum) == 4U, "Unexpected setup NVM checksum offset");
+_Static_assert(sizeof(hotwand_setup_nvm_t) == 6U, "Unexpected setup NVM record size");
+_Static_assert(_Alignof(hotwand_setup_nvm_t) == 2U, "Setup NVM records must be halfword aligned");
 #endif

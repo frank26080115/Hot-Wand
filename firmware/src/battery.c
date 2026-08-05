@@ -11,75 +11,84 @@
 
 #include <stddef.h>
 
-#define BATTERY_FAULT_BAR_WIDTH          32U
-#define BATTERY_FAULT_BAR_HEIGHT          3U
-#define BATTERY_FAULT_BAR_Y              85U
-#define BATTERY_FAULT_REFRESH_MS          67UL
-#define BATTERY_FAULT_STEP_MS           156UL
+#define BATTERY_FAULT_BAR_WIDTH 32U
+#define BATTERY_FAULT_BAR_HEIGHT 3U
+#define BATTERY_FAULT_BAR_Y 85U
+#define BATTERY_FAULT_REFRESH_MS 67UL
+#define BATTERY_FAULT_STEP_MS 156UL
 
 static uint16_t battery_cell_count;
-static uint8_t battery_mode;
-static bool battery_override_used;
+static uint8_t  battery_mode;
+static bool     battery_override_used;
 
-static void battery_render_fault(u8g2_t *graphics, uint8_t progress);
+static void battery_render_fault(u8g2_t* graphics, uint8_t progress);
 
-static const char battery_override_message[] =
-    "LOW\nBATT\n!!!!!\nHOLD\nTO\nOVER-\nRIDE";
+static const char battery_override_message[] = "LOW\nBATT\n!!!!!\nHOLD\nTO\nOVER-\nRIDE";
 
 /* One table keeps the voltage and supported cell-count limits for each
  * BATT_MODE_* adjacent with no separate lookup code. */
-const battery_cell_voltage_range_t battery_cell_voltage_ranges[
-    BATT_MODE_LIFE_SAFE + 1U] = {
+const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SAFE + 1U] = {
     [BATT_MODE_NONE] = {0U, 0U, 0U, 0U},
-    [BATT_MODE_LIPO] = {
-        3100U, 4200U,
-        BATTERY_MINIMUM_CELL_CNT_LIPO,
-        BATTERY_MAXIMUM_CELL_CNT_LIPO,
-    },
-    [BATT_MODE_LIPO_SAFE] = {
-        3300U, 4200U,
-        BATTERY_MINIMUM_CELL_CNT_LIPO,
-        BATTERY_MAXIMUM_CELL_CNT_LIPO,
-    },
-    [BATT_MODE_LIHV] = {
-        3100U, 4350U,
-        BATTERY_MINIMUM_CELL_CNT_LIHV,
-        BATTERY_MAXIMUM_CELL_CNT_LIHV,
-    },
-    [BATT_MODE_LIHV_SAFE] = {
-        3300U, 4350U,
-        BATTERY_MINIMUM_CELL_CNT_LIHV,
-        BATTERY_MAXIMUM_CELL_CNT_LIHV,
-    },
-    [BATT_MODE_LIFE] = {
-        2500U, 3650U,
-        BATTERY_MINIMUM_CELL_CNT_LIFE,
-        BATTERY_MAXIMUM_CELL_CNT_LIFE,
-    },
-    [BATT_MODE_LIFE_SAFE] = {
-        3000U, 3650U,
-        BATTERY_MINIMUM_CELL_CNT_LIFE,
-        BATTERY_MAXIMUM_CELL_CNT_LIFE,
-    },
+    [BATT_MODE_LIPO] =
+        {
+            3100U,
+            4200U,
+            BATTERY_MINIMUM_CELL_CNT_LIPO,
+            BATTERY_MAXIMUM_CELL_CNT_LIPO,
+        },
+    [BATT_MODE_LIPO_SAFE] =
+        {
+            3300U,
+            4200U,
+            BATTERY_MINIMUM_CELL_CNT_LIPO,
+            BATTERY_MAXIMUM_CELL_CNT_LIPO,
+        },
+    [BATT_MODE_LIHV] =
+        {
+            3100U,
+            4350U,
+            BATTERY_MINIMUM_CELL_CNT_LIHV,
+            BATTERY_MAXIMUM_CELL_CNT_LIHV,
+        },
+    [BATT_MODE_LIHV_SAFE] =
+        {
+            3300U,
+            4350U,
+            BATTERY_MINIMUM_CELL_CNT_LIHV,
+            BATTERY_MAXIMUM_CELL_CNT_LIHV,
+        },
+    [BATT_MODE_LIFE] =
+        {
+            2500U,
+            3650U,
+            BATTERY_MINIMUM_CELL_CNT_LIFE,
+            BATTERY_MAXIMUM_CELL_CNT_LIFE,
+        },
+    [BATT_MODE_LIFE_SAFE] =
+        {
+            3000U,
+            3650U,
+            BATTERY_MINIMUM_CELL_CNT_LIFE,
+            BATTERY_MAXIMUM_CELL_CNT_LIFE,
+        },
 };
 
-bool battery_guess(uint16_t battery_millivolts,
-                   uint8_t selected_battery_mode,
-                   battery_guess_t *guess)
+bool battery_guess(uint16_t battery_millivolts, uint8_t selected_battery_mode, battery_guess_t* guess)
 {
-    const battery_cell_voltage_range_t *limits;
-    uint32_t optimistic_cell_count;
-    uint32_t pessimistic_cell_count;
+    const battery_cell_voltage_range_t* limits;
+    uint32_t                            optimistic_cell_count;
+    uint32_t                            pessimistic_cell_count;
 
-    if (guess == NULL) {
+    if (guess == NULL)
+    {
         return false;
     }
 
     *guess = (battery_guess_t){0};
 
-    if ((battery_millivolts == 0U) ||
-        (selected_battery_mode == BATT_MODE_NONE) ||
-        (selected_battery_mode > BATT_MODE_LIFE_SAFE)) {
+    if ((battery_millivolts == 0U) || (selected_battery_mode == BATT_MODE_NONE) ||
+        (selected_battery_mode > BATT_MODE_LIFE_SAFE))
+    {
         return false;
     }
     limits = &battery_cell_voltage_ranges[selected_battery_mode];
@@ -87,50 +96,46 @@ bool battery_guess(uint16_t battery_millivolts,
     /* Ceiling division finds the fewest cells that do not exceed the
      * configured maximum per-cell voltage. */
     optimistic_cell_count =
-        ((uint32_t)battery_millivolts +
-         limits->maximum_millivolts_per_cell - 1U) /
-        limits->maximum_millivolts_per_cell;
+        ((uint32_t)battery_millivolts + limits->maximum_millivolts_per_cell - 1U) / limits->maximum_millivolts_per_cell;
 
     /* Floor division finds the most cells that remain at or above the
      * configured minimum per-cell voltage. */
-    pessimistic_cell_count =
-        (uint32_t)battery_millivolts /
-        limits->minimum_millivolts_per_cell;
+    pessimistic_cell_count = (uint32_t)battery_millivolts / limits->minimum_millivolts_per_cell;
 
-    if ((optimistic_cell_count > limits->maximum_cell_count) ||
-        (optimistic_cell_count > pessimistic_cell_count)) {
+    if ((optimistic_cell_count > limits->maximum_cell_count) || (optimistic_cell_count > pessimistic_cell_count))
+    {
         return false;
     }
 
-    if (pessimistic_cell_count > limits->maximum_cell_count) {
+    if (pessimistic_cell_count > limits->maximum_cell_count)
+    {
         pessimistic_cell_count = limits->maximum_cell_count;
     }
 
-    guess->optimistic_cell_count = (uint16_t)optimistic_cell_count;
-    guess->pessimistic_cell_count = (uint16_t)pessimistic_cell_count;
-    guess->optimistic_millivolts_per_cell =
-        (uint16_t)((uint32_t)battery_millivolts / optimistic_cell_count);
-    guess->pessimistic_millivolts_per_cell =
-        (uint16_t)((uint32_t)battery_millivolts / pessimistic_cell_count);
+    guess->optimistic_cell_count           = (uint16_t)optimistic_cell_count;
+    guess->pessimistic_cell_count          = (uint16_t)pessimistic_cell_count;
+    guess->optimistic_millivolts_per_cell  = (uint16_t)((uint32_t)battery_millivolts / optimistic_cell_count);
+    guess->pessimistic_millivolts_per_cell = (uint16_t)((uint32_t)battery_millivolts / pessimistic_cell_count);
 
     return true;
 }
 
 bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
 {
-    if (cell_count == 0U) {
+    if (cell_count == 0U)
+    {
         battery_cell_count = 0U;
-        battery_mode = BATT_MODE_NONE;
+        battery_mode       = BATT_MODE_NONE;
         return true;
     }
 
-    if ((selected_battery_mode == BATT_MODE_NONE) ||
-        (selected_battery_mode > BATT_MODE_LIFE_SAFE)) {
+    if ((selected_battery_mode == BATT_MODE_NONE) || (selected_battery_mode > BATT_MODE_LIFE_SAFE))
+    {
         return false;
     }
 
     battery_cell_count = cell_count;
-    battery_mode = selected_battery_mode;
+    battery_mode       = selected_battery_mode;
 
     return true;
 }
@@ -143,58 +148,57 @@ bool battery_check(void)
      * presenting battery_show_fault() when it fails.  Do not duplicate the
      * check in main or another task. */
 
-    if (battery_cell_count == 0U) {
+    if (battery_cell_count == 0U)
+    {
         return true;
     }
 
     minimum_battery_millivolts =
-        (uint32_t)battery_cell_count *
-        battery_cell_voltage_ranges[battery_mode]
-            .minimum_millivolts_per_cell;
+        (uint32_t)battery_cell_count * battery_cell_voltage_ranges[battery_mode].minimum_millivolts_per_cell;
 
-    return (uint32_t)adc_to_millivolts(DC_SENS_IDX) >=
-           minimum_battery_millivolts;
+    return (uint32_t)adc_to_millivolts(DC_SENS_IDX) >= minimum_battery_millivolts;
 }
 
 bool battery_can_override(void)
 {
-    if (battery_override_used ||
-        (battery_cell_count <=
-         battery_cell_voltage_ranges[battery_mode].minimum_cell_count)) {
+    if (battery_override_used || (battery_cell_count <= battery_cell_voltage_ranges[battery_mode].minimum_cell_count))
+    {
         return false;
     }
 
-    return adc_to_millivolts(DC_SENS_IDX) >=
-           BATTERY_OVERRIDE_MINIMUM_MV;
+    return adc_to_millivolts(DC_SENS_IDX) >= BATTERY_OVERRIDE_MINIMUM_MV;
 }
 
 void battery_show_fault(bool allow_override)
 {
-    u8g2_t *graphics;
+    u8g2_t*  graphics;
     uint32_t last_refresh_ms;
     uint32_t last_step_ms;
-    uint8_t progress = 0U;
-    bool override_ready = false;
+    uint8_t  progress       = 0U;
+    bool     override_ready = false;
 
     rfgen_stop();
     pwrlvl_force_minimum();
-    if (!allow_override || !battery_can_override()) {
+    if (!allow_override || !battery_can_override())
+    {
         show_fault("LOW\nBATT\n!!!!!", false);
         return;
     }
     btn_init();
 
     graphics = OLED_GetGraphics(&oled);
-    if (graphics != NULL) {
+    if (graphics != NULL)
+    {
         u8g2_SetDisplayRotation(graphics, U8G2_R1);
         u8g2_SetFont(graphics, u8g2_font_5x7_tr);
         battery_render_fault(graphics, progress);
     }
 
-    last_step_ms = systick_get_ms();
+    last_step_ms    = systick_get_ms();
     last_refresh_ms = last_step_ms;
 
-    for (;;) {
+    for (;;)
+    {
         uint32_t elapsed;
         uint32_t now;
         uint32_t steps;
@@ -203,44 +207,51 @@ void battery_show_fault(bool allow_override)
         now = systick_get_ms();
 
         /* Once completed, keep the full bar latched until its next frame. */
-        if (!override_ready) {
-            if (!btn_is_down()) {
-                if (progress != 0U) {
+        if (!override_ready)
+        {
+            if (!btn_is_down())
+            {
+                if (progress != 0U)
+                {
                     progress = 0U;
                 }
                 last_step_ms = now;
-            } else {
+            }
+            else
+            {
                 elapsed = (uint32_t)(now - last_step_ms);
-                steps = elapsed / BATTERY_FAULT_STEP_MS;
+                steps   = elapsed / BATTERY_FAULT_STEP_MS;
 
-                if (steps > 0U) {
+                if (steps > 0U)
+                {
                     last_step_ms += steps * BATTERY_FAULT_STEP_MS;
-                    if (steps >= (uint32_t)(BATTERY_FAULT_BAR_WIDTH -
-                                            progress)) {
+                    if (steps >= (uint32_t)(BATTERY_FAULT_BAR_WIDTH - progress))
+                    {
                         progress = BATTERY_FAULT_BAR_WIDTH;
-                    } else {
+                    }
+                    else
+                    {
                         progress = (uint8_t)(progress + steps);
                     }
-                    override_ready =
-                        progress >= BATTERY_FAULT_BAR_WIDTH;
+                    override_ready = progress >= BATTERY_FAULT_BAR_WIDTH;
                 }
             }
         }
 
         /* 67 ms is the nearest whole-millisecond period that does not exceed
          * 15 frames per second. */
-        if ((uint32_t)(now - last_refresh_ms) >=
-            BATTERY_FAULT_REFRESH_MS) {
-            if (graphics != NULL) {
+        if ((uint32_t)(now - last_refresh_ms) >= BATTERY_FAULT_REFRESH_MS)
+        {
+            if (graphics != NULL)
+            {
                 battery_render_fault(graphics, progress);
             }
             last_refresh_ms = now;
 
-            if (override_ready) {
-                if (!battery_can_override() ||
-                    !battery_set_params(
-                        (uint16_t)(battery_cell_count - 1U),
-                        battery_mode)) {
+            if (override_ready)
+            {
+                if (!battery_can_override() || !battery_set_params((uint16_t)(battery_cell_count - 1U), battery_mode))
+                {
                     show_fault("LOW\nBATT\n!!!!!", false);
                     return;
                 }
@@ -255,13 +266,9 @@ void battery_show_fault(bool allow_override)
     }
 }
 
-static void battery_render_fault(u8g2_t *graphics, uint8_t progress)
+static void battery_render_fault(u8g2_t* graphics, uint8_t progress)
 {
     fault_render(graphics, battery_override_message, 1U, 1);
-    u8g2_DrawBox(graphics,
-                 0U,
-                 BATTERY_FAULT_BAR_Y,
-                 progress,
-                 BATTERY_FAULT_BAR_HEIGHT);
+    u8g2_DrawBox(graphics, 0U, BATTERY_FAULT_BAR_Y, progress, BATTERY_FAULT_BAR_HEIGHT);
     (void)OLED_SendBuffer(&oled);
 }

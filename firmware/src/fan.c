@@ -8,11 +8,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define FAN_START_DELAY_MS       5000U
-#define FAN_RUN_TEMPERATURE_C    50U
+#define FAN_START_DELAY_MS 5000U
+#define FAN_RUN_TEMPERATURE_C 50U
 
-static bool fan_enabled;
-static bool fan_pin_initialized;
+static bool     fan_enabled;
+static bool     fan_pin_initialized;
 static uint32_t fan_last_wake_ms;
 
 static void fan_pin_init(void);
@@ -28,12 +28,13 @@ void fan_task(void)
 {
     bool should_run;
 
-    if (!fan_enabled) {
+    if (!fan_enabled)
+    {
         return;
     }
 
-    if ((uint32_t)(systick_get_ms() - fan_last_wake_ms) <
-        FAN_START_DELAY_MS) {
+    if ((uint32_t)(systick_get_ms() - fan_last_wake_ms) < FAN_START_DELAY_MS)
+    {
         return;
     }
 
@@ -43,17 +44,17 @@ void fan_task(void)
      * PA13 is also SWDIO. Leave it completely untouched until the fan
      * actually needs to run.
      */
-    if (should_run && !fan_pin_initialized) {
+    if (should_run && !fan_pin_initialized)
+    {
         fan_pin_init();
     }
 
-    if (!fan_pin_initialized) {
+    if (!fan_pin_initialized)
+    {
         return;
     }
 
-    HAL_GPIO_WritePin(FAN_GPIOx,
-                      FAN_PINn,
-                      should_run ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, should_run ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 void fan_on_wake(void)
@@ -67,7 +68,8 @@ void fan_stop(void)
 
     /* An uninitialized PA13 still belongs to SWD and the fan has never been
      * started, so do not take ownership of the pin merely to stop it. */
-    if (fan_pin_initialized) {
+    if (fan_pin_initialized)
+    {
         HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
     }
 }
@@ -84,9 +86,9 @@ static void fan_pin_init(void)
      */
     HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
 
-    gpio_cfg.Pin = FAN_PINn;
-    gpio_cfg.Mode = GPIO_MODE_OUTPUT_PP;
-    gpio_cfg.Pull = GPIO_NOPULL;
+    gpio_cfg.Pin   = FAN_PINn;
+    gpio_cfg.Mode  = GPIO_MODE_OUTPUT_PP;
+    gpio_cfg.Pull  = GPIO_NOPULL;
     gpio_cfg.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
 

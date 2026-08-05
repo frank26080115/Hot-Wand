@@ -19,7 +19,8 @@ typedef enum
 } pwrlvl_mode_t;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 void pwrlvl_init(void);

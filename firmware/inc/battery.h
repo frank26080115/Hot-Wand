@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 typedef struct
@@ -20,13 +21,12 @@ typedef struct
 {
     uint16_t minimum_millivolts_per_cell;
     uint16_t maximum_millivolts_per_cell;
-    uint8_t minimum_cell_count;
-    uint8_t maximum_cell_count;
+    uint8_t  minimum_cell_count;
+    uint8_t  maximum_cell_count;
 } battery_cell_voltage_range_t;
 
 /* Indexed by BATT_MODE_*.  BATT_MODE_NONE contains a zeroed range. */
-extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[
-    BATT_MODE_LIFE_SAFE + 1U];
+extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SAFE + 1U];
 
 /*
  * Determines the range of whole-number cell counts consistent with the
@@ -41,9 +41,7 @@ extern const battery_cell_voltage_range_t battery_cell_voltage_ranges[
  * Returns false and clears *guess when the inputs describe no plausible
  * whole-number cell count.  A NULL result pointer also returns false.
  */
-bool battery_guess(uint16_t battery_millivolts,
-                   uint8_t battery_mode,
-                   battery_guess_t *guess);
+bool battery_guess(uint16_t battery_millivolts, uint8_t battery_mode, battery_guess_t* guess);
 
 /*
  * Confirms the cell count and BATT_MODE_* for the current powered session.
@@ -74,4 +72,3 @@ void battery_show_fault(bool allow_override);
 #ifdef __cplusplus
 }
 #endif
-

@@ -18,6 +18,7 @@ IncludeBlocks: Preserve
 
 NamespaceIndentation: None
 AccessModifierOffset: -4
+IndentExternBlock: NoIndent
 
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
