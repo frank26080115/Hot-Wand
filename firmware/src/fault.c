@@ -23,14 +23,15 @@
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAULT_DISPLAY_HEIGHT      32
-#define FAULT_FONT_ASCENT         8
-#define FAULT_LINE_HEIGHT         10
-#define FAULT_REFRESH_INTERVAL_MS 200
-#define FAULT_SHIFT_INTERVAL_MS   5000
-#define FAULT_LINE_BUFFER_SIZE    6
-#define FAULT_VOLTAGE_BUFFER_SIZE 8
-#define SHORT_MSG_BUFFER_SIZE     72
+#define FAULT_DISPLAY_HEIGHT        32
+#define FAULT_FONT_ASCENT           8
+#define FAULT_LINE_HEIGHT           10
+#define FAULT_REFRESH_INTERVAL_MS   200
+#define FAULT_SHIFT_INTERVAL_MS     5000
+#define FAULT_LINE_BUFFER_SIZE      6
+#define FAULT_VOLTAGE_BUFFER_SIZE   8
+#define SHORT_MSG_BUFFER_SIZE       72
+#define SHORT_MSG_FRAME_INTERVAL_MS 100
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -39,6 +40,7 @@
 static char     short_msg_text[SHORT_MSG_BUFFER_SIZE];
 static uint32_t short_msg_start_ms;
 static uint32_t short_msg_duration_ms;
+static uint32_t short_msg_last_frame_ms;
 static uint32_t fault_button_release_started_ms;
 static bool     fault_button_reset_armed;
 static bool     fault_button_release_pending;
@@ -175,6 +177,9 @@ void show_short_msg(const char* text, uint32_t duration_ms)
     short_msg_text[copied] = '\0';
     short_msg_start_ms     = systick_get_ms();
     short_msg_duration_ms  = duration_ms;
+
+    /* Backdate the frame timestamp so the next task call draws immediately. */
+    short_msg_last_frame_ms = short_msg_start_ms - SHORT_MSG_FRAME_INTERVAL_MS;
 }
 
 bool short_msg_task(void)
@@ -195,9 +200,16 @@ bool short_msg_task(void)
         return false;
     }
 
+    /* Retain display ownership so the normal screen cannot overwrite the message between frames. */
+    if ((uint32_t)(now - short_msg_last_frame_ms) < SHORT_MSG_FRAME_INTERVAL_MS)
+    {
+        return true;
+    }
+
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL)
     {
+        short_msg_last_frame_ms = now;
         u8g2_ClearBuffer(graphics);
         fault_draw_text(graphics, short_msg_text, 1, FAULT_FONT_ASCENT);
         OLED_SendBuffer(&oled);

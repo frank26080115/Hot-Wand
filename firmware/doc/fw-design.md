@@ -35,11 +35,11 @@ To actually modulate the power, there is a PWM pin allocated to send a bias sign
 
 If the currently utilized power is above the set limit, the attenuation is raised at a steady pace, otherwise, it is lowered.
 
-Pressing the button will cycle through the power modes, in the lowering direction. It is forbidden to change from low power to high power while current draw is above 30W.
+Pressing the button will cycle through the power modes.
 
 # Power Management
 
-If the input power is below 14V (undervoltage lockout threshold of the secondary buck converter), then all soldering iron functionality is disabled. The GUI will show "LOW POWER FAULT". Button presses in this state will cause a reboot. The microcontroller shall be in a state that can accept SWD connections.
+If the input power is below 14V (undervoltage lockout threshold of the secondary buck converter), then all soldering iron functionality is disabled. The GUI will show "LOW VOLT FAULT". Button presses in this state will cause a reboot. The microcontroller shall be in a state that can accept SWD connections.
 
 # Cooling Fan Control
 

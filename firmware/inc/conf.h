@@ -36,6 +36,12 @@
 #error "Invalid fan thresholds or temperature hysteresis"
 #endif
 
+#define DC_UNDERVOLTAGE_FAULT_MV 14000
+
+#if (DC_UNDERVOLTAGE_FAULT_MV == 0) || (DC_UNDERVOLTAGE_FAULT_MV > 65535)
+#error "DC_UNDERVOLTAGE_FAULT_MV must fit in millivolts"
+#endif
+
 #define DC_HIGH_POWER_MINIMUM_MV    19000
 #define DC_HIGH_POWER_HYSTERESIS_MV 1000
 
@@ -125,12 +131,4 @@
 
 #if (BOOT_POWER_WAIT_MS >= BOOT_POWER_TIMEOUT_MS) || (BOOT_POWER_STABLE_MS >= BOOT_POWER_TIMEOUT_MS)
 #error "Boot power wait and stability times must be shorter than its timeout"
-#endif
-
-#ifndef BOOT_DC_READY_MV
-#define BOOT_DC_READY_MV 20000
-#endif
-
-#if (BOOT_DC_READY_MV == 0) || (BOOT_DC_READY_MV > 65535)
-#error "BOOT_DC_READY_MV must be between 1 and 65535 millivolts"
 #endif

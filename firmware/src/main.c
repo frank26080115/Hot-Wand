@@ -108,8 +108,8 @@ int main(void)
         random_seed = adc_get_rand_seed();
     } while (random_seed == 0);
     hotwand_srand(random_seed);
-    pixshift_x = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_X;
-    pixshift_y = hotwand_rand() & OLED_MAX_PIXEL_SHIFT_Y;
+    pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X + 1);
+    pixshift_y = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_Y + 1);
 
     boot_button_down = btn_is_down();
     UART_SetAllowed(boot_button_down);
@@ -147,6 +147,11 @@ int main(void)
 
     test_run(); // if the test is enabled, then this will never return
 
+    if (!tipdetect_has_triggered() && !rfgen_has_fault())
+    {
+        rfgen_start();
+    }
+
     for (;;)
     {
         uint32_t now;
@@ -166,11 +171,14 @@ int main(void)
             show_fault("CLOCK\nFAULT", true);
         }
 
-        /* Power management owns battery, temperature, and input-voltage
-         * supervision.  The lower power-level
-         * task applies its decision. */
+        /* Central runtime output supervisor:
+         * - Checks the configured battery cutoff and terminal input undervoltage.
+         * - Applies temperature and input-voltage derating with hysteresis.
+         * - Selects the effective power level and advances PWM attenuation.
+         * - Enforces current and short-circuit limits in the lower-level task.
+         * - Updates attenuation diagnostics, activity timing, and graph history.
+         * A terminal fault blocks here until the user resets the controller. */
         pwrmgt_task();
-        pwrlvl_task();     // this only really applys the correct PWM as told by other modules
         fan_task();        // spins the fan as appropriate
         UART_debug_task(); // spits out a debug message when requested
 

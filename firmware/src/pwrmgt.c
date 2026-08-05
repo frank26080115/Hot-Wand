@@ -100,6 +100,14 @@ void pwrmgt_task(void)
         return;
     }
 
+    /* This terminal hardware lockout is distinct from the recoverable
+     * high-power derating below DC_HIGH_POWER_MINIMUM_MV. */
+    if (adc_to_millivolts(DC_SENS_IDX) < DC_UNDERVOLTAGE_FAULT_MV)
+    {
+        show_fault("LOW\nVOLT\nFAULT", true);
+        return;
+    }
+
     highest_temperature = 0;
     for (adc_idx = THERM_1_IDX; adc_idx <= MCU_TEMP_IDX; ++adc_idx)
     {

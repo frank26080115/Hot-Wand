@@ -35,7 +35,6 @@ static uint32_t           uart_debug_last_task_ms;
 // -----------------------------------------------------------------------------
 
 static bool USART1_TX_Init(void);
-static void UART_ErrorHandler(void);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -58,12 +57,12 @@ void UART_Write(const char* text)
 
     if (!uart_initialized && !USART1_TX_Init())
     {
-        UART_ErrorHandler();
+        return;
     }
 
     if (HAL_UART_Transmit(&uart1, (const uint8_t*)text, (uint16_t)length, HAL_MAX_DELAY) != HAL_OK)
     {
-        UART_ErrorHandler();
+        return;
     }
 }
 
@@ -191,12 +190,3 @@ static bool USART1_TX_Init(void)
 // -----------------------------------------------------------------------------
 // Debug / Fault Helpers
 // -----------------------------------------------------------------------------
-
-static void UART_ErrorHandler(void)
-{
-    __disable_irq();
-
-    for (;;)
-    {
-    }
-}
