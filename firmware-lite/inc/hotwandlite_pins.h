@@ -9,7 +9,7 @@
 #define BLINK_LED_PIN D10
 
 // XIAO's active-low onboard user LED is Arduino pin 13, SAMD21 PA17.
-#define BLINK_BOARD_LED_PIN LED_BUILTIN
+#define BLINK_XIAOBUILTIN_LED_PIN LED_BUILTIN
 
 // Power-selection jumpers: names match their JP6 connector pin numbers.
 #define SEL2_PIN D5 // XIAO D5/A5, SAMD21 PA09.

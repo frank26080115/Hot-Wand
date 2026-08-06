@@ -95,9 +95,9 @@ void blink_init(void)
 {
     // Keep both LEDs dark until power management confirms the initial status.
     digitalWrite(BLINK_LED_PIN, LOW);
-    digitalWrite(BLINK_BOARD_LED_PIN, HIGH);
+    digitalWrite(BLINK_XIAOBUILTIN_LED_PIN, HIGH);
     pinMode(BLINK_LED_PIN, OUTPUT);
-    pinMode(BLINK_BOARD_LED_PIN, OUTPUT);
+    pinMode(BLINK_XIAOBUILTIN_LED_PIN, OUTPUT);
 
     g_initialized = true;
     if (g_patternSelected)
@@ -226,12 +226,12 @@ static void restart_pattern()
 static void led_on()
 {
     digitalWrite(BLINK_LED_PIN, HIGH);
-    digitalWrite(BLINK_BOARD_LED_PIN, LOW);
+    digitalWrite(BLINK_XIAOBUILTIN_LED_PIN, LOW);
 }
 
 static void led_off()
 {
     digitalWrite(BLINK_LED_PIN, LOW);
-    digitalWrite(BLINK_BOARD_LED_PIN, HIGH);
+    digitalWrite(BLINK_XIAOBUILTIN_LED_PIN, HIGH);
 }
 } // namespace
