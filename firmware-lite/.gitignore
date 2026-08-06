@@ -1,0 +1,64 @@
+# Legacy firmware
+old/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Build directories
+build/
+Build/
+Debug/
+Release/
+cmake-build-*/
+
+# Compiler and dependency files
+*.d
+*.o
+*.obj
+*.lo
+*.slo
+*.su
+
+# Libraries and host executables
+*.a
+*.la
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Firmware and linker outputs
+*.elf
+*.axf
+*.hex
+*.bin
+*.eep
+*.map
+*.lst
+*.lss
+*.s19
+*.srec
+*.sym
+
+# Generated IDE, index, and CMake data
+.vscode/
+.idea/
+.cache/
+.clangd/
+.deps/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Coverage and editor temporary files
+*.gcda
+*.gcno
+*.gcov
+*.swp
+*.swo
+*~
