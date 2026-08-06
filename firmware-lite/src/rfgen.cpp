@@ -1,9 +1,14 @@
 /*
  * Hardware-timed 470 kHz RF carrier and burst-power control.
  *
- * TCC0 produces the carrier on PA04. TC5 schedules
- * partial-power on/off
+ * TCC0 produces the carrier on PA04. TC5 schedules partial-power on/off
  * windows while TCC0's buffered compare register guarantees low-safe stops.
+ *
+ * The RF generator signal must never be left high
+ * as this would make the MOSFET turn on indefinitely
+ * and the current would flow through the inductor and MOSFET
+ * as if it were a short circuit
+ *
  */
 
 // -----------------------------------------------------------------------------

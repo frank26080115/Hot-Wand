@@ -1,8 +1,7 @@
 /*
  * Input monitoring and confirmed power-state management.
  *
- * The task tracks voltage-range and jumper changes
- * immediately, but delays
+ * The task tracks voltage-range and jumper changes immediately, but delays
  * their effect until the inputs have remained stable for the required time.
  */
 

@@ -4,11 +4,8 @@ Set-StrictMode -Version Latest
 $repoRoot = Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')
 $searchDirs = @('src', 'inc', 'lib', 'test')
 $ignoreDirs = @(
-    'lib\u8g2',
-    'old'
 )
 $ignoreFiles = @(
-    'src\interrupt_vectors.S'
 )
 $extensions = @('.c', '.cpp', '.h', '.hpp')
 

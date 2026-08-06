@@ -1,9 +1,8 @@
 /*
  * Non-blocking status LED pattern playback.
  *
- * Patterns encode long pulses, short pulses, and explicit pauses as
- * characters.
- * A null terminator loops each row without storing or calculating row lengths.
+ * Patterns encode long pulses, short pulses, and explicit pauses
+ * A null terminator loops each row without storing or calculating row lengths
  */
 
 // -----------------------------------------------------------------------------
