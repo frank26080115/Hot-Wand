@@ -16571,7 +16571,7 @@ Max Component Height - 25.57mm</description>
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
 Max Component Height - 25.57mm</description>
 <pad name="1" x="0" y="5.44" drill="1.5" diameter="2.4" shape="square"/>
-<pad name="2" x="0" y="0" drill="1.5" diameter="2.4"/>
+<pad name="2" x="0" y="0" drill="1.5" diameter="2"/>
 <pad name="3" x="0" y="-5.44" drill="1.5" diameter="2.4"/>
 <wire x1="-2.287" y1="-7.957" x2="-2.287" y2="7.957" width="0.1" layer="51"/>
 <wire x1="-2.287" y1="-7.957" x2="2.333" y2="-7.957" width="0.1" layer="51"/>
@@ -16649,20 +16649,20 @@ Max Component Height - 25.57mm</description>
 <wire x1="9.15" y1="12.17" x2="9.15" y2="-10.75" width="0.05" layer="39"/>
 <wire x1="9.15" y1="-10.75" x2="-9.15" y2="-10.75" width="0.05" layer="39"/>
 <wire x1="-9.15" y1="-10.75" x2="-9.15" y2="12.17" width="0.05" layer="39"/>
-<pad name="1" x="-7.62" y="7.62" drill="1.02" shape="square"/>
-<pad name="2" x="-7.62" y="5.08" drill="1.02"/>
-<pad name="3" x="-7.62" y="2.54" drill="1.02"/>
-<pad name="4" x="-7.62" y="0" drill="1.02"/>
-<pad name="5" x="-7.62" y="-2.54" drill="1.02"/>
-<pad name="6" x="-7.62" y="-5.08" drill="1.02"/>
-<pad name="7" x="-7.62" y="-7.62" drill="1.02"/>
-<pad name="8" x="7.62" y="-7.62" drill="1.02"/>
-<pad name="9" x="7.62" y="-5.08" drill="1.02"/>
-<pad name="10" x="7.62" y="-2.54" drill="1.02"/>
-<pad name="11" x="7.62" y="0" drill="1.02"/>
-<pad name="12" x="7.62" y="2.54" drill="1.02"/>
-<pad name="13" x="7.62" y="5.08" drill="1.02"/>
-<pad name="14" x="7.62" y="7.62" drill="1.02"/>
+<pad name="1" x="-7.62" y="7.62" drill="1" shape="square"/>
+<pad name="2" x="-7.62" y="5.08" drill="1"/>
+<pad name="3" x="-7.62" y="2.54" drill="1"/>
+<pad name="4" x="-7.62" y="0" drill="1"/>
+<pad name="5" x="-7.62" y="-2.54" drill="1"/>
+<pad name="6" x="-7.62" y="-5.08" drill="1"/>
+<pad name="7" x="-7.62" y="-7.62" drill="1"/>
+<pad name="8" x="7.62" y="-7.62" drill="1"/>
+<pad name="9" x="7.62" y="-5.08" drill="1"/>
+<pad name="10" x="7.62" y="-2.54" drill="1"/>
+<pad name="11" x="7.62" y="0" drill="1"/>
+<pad name="12" x="7.62" y="2.54" drill="1"/>
+<pad name="13" x="7.62" y="5.08" drill="1"/>
+<pad name="14" x="7.62" y="7.62" drill="1"/>
 </package>
 <package name="MOLEX-1X3">
 <wire x1="-1.27" y1="3.048" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
