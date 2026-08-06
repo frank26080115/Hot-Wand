@@ -405,15 +405,6 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <circle x="104" y="4.6" radius="3" width="0" layer="29"/>
 <circle x="104" y="67.4" radius="3" width="0" layer="29"/>
 </package>
-<package name="PCB-ART-VERSION">
-<text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
-<text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
-<wire x1="-10" y1="2" x2="9.5" y2="2" width="0" layer="41"/>
-<wire x1="9.5" y1="2" x2="9.5" y2="-2" width="0" layer="41"/>
-<wire x1="9.5" y1="-2" x2="-10" y2="-2" width="0" layer="41"/>
-<wire x1="-10" y1="-2" x2="-10" y2="2" width="0" layer="41"/>
-<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
-</package>
 <package name="TO247-COMBO">
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
 Max Component Height - 25.57mm</description>
@@ -824,6 +815,15 @@ Max Component Height - 1.45mm</description>
 <rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
 <rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
 </package>
+<package name="PCB-ART-VERSION-LITE">
+<text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND L</text>
+<text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND L</text>
+<wire x1="-12.3" y1="2" x2="11.8" y2="2" width="0" layer="41"/>
+<wire x1="11.8" y1="2" x2="11.8" y2="-2" width="0" layer="41"/>
+<wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
+<wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
+<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+</package>
 </packages>
 </library>
 </libraries>
@@ -1083,19 +1083,16 @@ Max Component Height - 1.45mm</description>
 <element name="JP3" library="hot-wand" package="XT30PW" value="XT-CONNECTOR-XT30PW" x="2" y="53" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="2" y="53" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="L5" library="hot-wand" package="IND-KOOLMU" value="" x="99" y="25"/>
-<element name="L4" library="hot-wand" package="IND-KOOLMU" value="" x="82" y="36" rot="R180"/>
-<element name="L3" library="hot-wand" package="IND-KOOLMU" value="" x="65" y="19" rot="R180"/>
-<element name="L2" library="hot-wand" package="IND-KOOLMU-2W" value="" x="41" y="33"/>
-<element name="L1" library="hot-wand" package="IND_PA4343.103NLT" value="" x="33" y="56"/>
+<element name="L5" library="hot-wand" package="IND-KOOLMU" value="11u5" x="99" y="25"/>
+<element name="L4" library="hot-wand" package="IND-KOOLMU" value="16u9" x="82" y="36" rot="R180"/>
+<element name="L3" library="hot-wand" package="IND-KOOLMU" value="16u9" x="65" y="19" rot="R180"/>
+<element name="L2" library="hot-wand" package="IND-KOOLMU-2W" value="6u2" x="41" y="33"/>
+<element name="L1" library="hot-wand" package="IND_PA4343.103NLT" value="33u" x="33" y="56"/>
 <element name="LED1" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" rot="MR180">
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0">
 <attribute name="JLC-DNP" value="1" x="0" y="0" size="1.778" layer="27" display="off"/>
-</element>
-<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION" value="PCB-ART-VERSION" x="-142" y="112">
-<attribute name="JLC-DNP" value="1" x="-142" y="112" size="1.778" layer="27" display="off"/>
 </element>
 <element name="Q1" library="hot-wand" package="TO247-COMBO" value="NCHAN" x="46" y="66" rot="R90"/>
 <element name="Q4" library="hot-wand" package="POWERPAK-SO8-X1" value="SIRS5800DP-T1-GE3" x="19.5" y="49.9" smashed="yes">
@@ -1222,17 +1219,17 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLC_ROTATION" value="180" x="13" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="F1" library="hot-wand" package="FUSE_5MM" value="FUSEX20MM" x="24" y="68" rot="R270"/>
-<element name="C1" library="hot-wand" package="1206" value="" x="46" y="62" rot="MR270"/>
-<element name="C2" library="hot-wand" package="1206" value="" x="36.1" y="37.3" rot="MR270"/>
-<element name="C3" library="hot-wand" package="1206" value="" x="33.6" y="37.3" rot="MR270"/>
-<element name="C4" library="hot-wand" package="1206" value="" x="31.1" y="37.3" rot="MR270"/>
-<element name="C5" library="hot-wand" package="1206" value="" x="28.6" y="37.3" rot="MR270"/>
-<element name="C6" library="hot-wand" package="1206" value="" x="59.3" y="27.3" rot="MR0"/>
-<element name="C7" library="hot-wand" package="1206" value="" x="59.3" y="29.8" rot="MR0"/>
-<element name="C8" library="hot-wand" package="1206" value="" x="59.3" y="24.8" rot="MR0"/>
-<element name="C9" library="hot-wand" package="1206" value="" x="69" y="27.3" rot="MR180"/>
-<element name="C10" library="hot-wand" package="1206" value="" x="104.7" y="36" rot="MR0"/>
-<element name="C11" library="hot-wand" package="1206" value="" x="104.7" y="33.5" rot="MR0"/>
+<element name="C1" library="hot-wand" package="1206" value="15n" x="46" y="62" rot="MR270"/>
+<element name="C2" library="hot-wand" package="1206" value="22n" x="36.1" y="37.3" rot="MR270"/>
+<element name="C3" library="hot-wand" package="1206" value="22n" x="33.6" y="37.3" rot="MR270"/>
+<element name="C4" library="hot-wand" package="1206" value="22n" x="31.1" y="37.3" rot="MR270"/>
+<element name="C5" library="hot-wand" package="1206" value="15n" x="28.6" y="37.3" rot="MR270"/>
+<element name="C6" library="hot-wand" package="1206" value="10n" x="59.3" y="27.3" rot="MR0"/>
+<element name="C7" library="hot-wand" package="1206" value="10n" x="59.3" y="29.8" rot="MR0"/>
+<element name="C8" library="hot-wand" package="1206" value="10n" x="59.3" y="24.8" rot="MR0"/>
+<element name="C9" library="hot-wand" package="1206" value="6n8" x="69" y="27.3" rot="MR180"/>
+<element name="C10" library="hot-wand" package="1206" value="6n8" x="104.7" y="36" rot="MR0"/>
+<element name="C11" library="hot-wand" package="1206" value="1n" x="104.7" y="33.5" rot="MR0"/>
 <element name="C12" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="10u" x="60.5" y="45" rot="R90"/>
 <element name="IC2" library="hot-wand" package="SOT223" value="" x="59" y="56.5" rot="MR90"/>
 <element name="U1" library="hot-wand" package="MODULE_102010388" value="SEEED-XIAO-SAMD21" x="88" y="62" rot="R270">
@@ -1256,6 +1253,7 @@ Max Component Height - 1.45mm</description>
 <element name="LED2" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" rot="R180">
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
+<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="41.5" y="5.1" rot="MR0"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1610,6 +1608,39 @@ Max Component Height - 1.45mm</description>
 <via x="53" y="34.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55.6" y="34.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="57.7" y="32" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="106.3" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="111.3" y="66.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="111.3" y="5.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="106.3" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="111.3" y="25" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="111.3" y="15" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="5.7" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.7" y="5.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="25" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="49" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="65" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="82" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="95" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.7" y="28" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.7" y="33" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="0.7" y="66.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="5.7" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="24" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="37" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="43.5" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="56.2" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="68" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="76" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="98" y="71.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="14" y="18" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="9" y="20" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="9" y="18" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="JP7" pad="4"/>
+<contactref element="JP7" pad="1"/>
+<via x="94" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="90" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="87" y="53" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -2172,36 +2203,21 @@ Max Component Height - 1.45mm</description>
 <wire x1="19" y1="20" x2="18" y2="19" width="0.4064" layer="16"/>
 <wire x1="18" y1="19" x2="1.973" y2="19" width="0.4064" layer="16"/>
 </signal>
-<signal name="SEL4">
-<contactref element="U1" pad="4"/>
-<contactref element="JP7" pad="4"/>
-<wire x1="110.127" y1="62.02" x2="95.6" y2="62.02" width="0.4064" layer="1"/>
-<wire x1="95.6" y1="62.02" x2="88" y2="69.62" width="0.4064" layer="1"/>
-</signal>
 <signal name="SEL3">
 <contactref element="U1" pad="5"/>
 <contactref element="JP7" pad="3"/>
-<wire x1="109.873" y1="59.48" x2="105.72" y2="59.48" width="0.4064" layer="1"/>
-<wire x1="105.72" y1="59.48" x2="104" y2="61.2" width="0.4064" layer="1"/>
-<wire x1="104" y1="61.2" x2="93.88" y2="61.2" width="0.4064" layer="1"/>
-<wire x1="93.88" y1="61.2" x2="85.46" y2="69.62" width="0.4064" layer="1"/>
+<wire x1="109.873" y1="59.48" x2="106.92" y2="59.48" width="0.4064" layer="1"/>
+<wire x1="106.92" y1="59.48" x2="104.3" y2="62.1" width="0.4064" layer="1"/>
+<wire x1="104.3" y1="62.1" x2="92.98" y2="62.1" width="0.4064" layer="1"/>
+<wire x1="92.98" y1="62.1" x2="85.46" y2="69.62" width="0.4064" layer="1"/>
 </signal>
 <signal name="SEL2">
 <contactref element="U1" pad="6"/>
 <contactref element="JP7" pad="2"/>
-<wire x1="110.127" y1="56.94" x2="107.16" y2="56.94" width="0.4064" layer="1"/>
-<wire x1="107.16" y1="56.94" x2="103.7" y2="60.4" width="0.4064" layer="1"/>
-<wire x1="103.7" y1="60.4" x2="92.14" y2="60.4" width="0.4064" layer="1"/>
+<wire x1="110.127" y1="56.94" x2="106.96" y2="56.94" width="0.4064" layer="1"/>
+<wire x1="106.96" y1="56.94" x2="103.5" y2="60.4" width="0.4064" layer="1"/>
+<wire x1="103.5" y1="60.4" x2="92.14" y2="60.4" width="0.4064" layer="1"/>
 <wire x1="92.14" y1="60.4" x2="82.92" y2="69.62" width="0.4064" layer="1"/>
-</signal>
-<signal name="SEL1">
-<contactref element="U1" pad="7"/>
-<contactref element="JP7" pad="1"/>
-<wire x1="107.7" y1="55.1" x2="103.4" y2="59.6" width="0.4064" layer="1"/>
-<wire x1="103.4" y1="59.6" x2="90.4" y2="59.6" width="0.4064" layer="1"/>
-<wire x1="90.4" y1="59.6" x2="80.38" y2="69.62" width="0.4064" layer="1"/>
-<wire x1="107.7" y1="55.1" x2="109.173" y2="55.1" width="0.4064" layer="1"/>
-<wire x1="109.173" y1="55.1" x2="109.873" y2="54.4" width="0.4064" layer="1"/>
 </signal>
 <signal name="LED">
 <contactref element="U1" pad="11"/>
