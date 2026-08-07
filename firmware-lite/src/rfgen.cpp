@@ -28,6 +28,7 @@
 
 static constexpr uint8_t  kMaximumPowerPercent  = 100;
 static constexpr uint32_t kDefaultBurstPeriodMs = 10;
+static constexpr uint32_t kPowerRampDurationMs  = 1000;
 static constexpr uint32_t kRfFrequencyHz        = 470000;
 
 // GCLK0 is the 48 MHz CPU clock. 102 clocks produce 470.588 kHz.
@@ -51,14 +52,27 @@ static volatile bool     g_burstIsOn     = false;
 static volatile uint16_t g_burstOnTicks  = 1;
 static volatile uint16_t g_burstOffTicks = 1;
 
+static bool     g_settingInitialized = false;
+static bool     g_rampIsActive       = false;
+static uint32_t g_appliedPeriodTicks = 0;
+static uint32_t g_appliedOnTicks     = 0;
+static uint32_t g_desiredPeriodTicks = 0;
+static uint32_t g_desiredOnTicks     = 0;
+static uint32_t g_rampStartOnTicks   = 0;
+static uint32_t g_rampStartedMs      = 0;
+
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
 extern "C" void TC5_Handler();
 
-static void     rfgen_initialize();
 static uint32_t burst_period_to_ticks(uint32_t periodMs);
+static uint32_t power_percent_to_on_ticks(uint8_t powerPercent, uint32_t periodTicks);
+static uint32_t scale_on_ticks(uint32_t onTicks, uint32_t oldPeriodTicks, uint32_t newPeriodTicks);
+static void     rfgen_apply_ramp_ticks(uint32_t periodTicks, uint32_t onTicks);
+static void     rfgen_apply_ticks(uint32_t periodTicks, uint32_t onTicks);
+static void     rfgen_initialize();
 static void     burst_timer_start(uint16_t firstIntervalTicks);
 static void     burst_timer_stop();
 static void     burst_timer_set_interval(uint16_t ticks);
@@ -72,77 +86,87 @@ static void     wait_for_tc5_sync();
 
 void rfgen_set(uint8_t powerPercent, uint32_t periodMs)
 {
+    uint32_t currentOnTicks;
+
     // Treat out-of-range requests as full power rather than overflowing math.
     if (powerPercent > kMaximumPowerPercent)
     {
         powerPercent = kMaximumPowerPercent;
     }
 
-    if (!g_initialized)
-    {
-        if (powerPercent == 0)
-        {
-            // A zero request must be safe without paying the timer-init cost.
-            digitalWrite(RFGEN_PIN, LOW);
-            pinMode(RFGEN_PIN, OUTPUT);
-            return;
-        }
+    const uint32_t periodTicks = burst_period_to_ticks(periodMs);
+    const uint32_t onTicks     = power_percent_to_on_ticks(powerPercent, periodTicks);
 
-        rfgen_initialize();
+    // Repeating the same request must not restart an in-progress ramp. This is
+    // useful if a future caller refreshes its desired state every loop.
+    if (g_settingInitialized && (periodTicks == g_desiredPeriodTicks) && (onTicks == g_desiredOnTicks))
+    {
+        return;
     }
 
-    uint16_t onTicks  = 1;
-    uint16_t offTicks = 1;
-    if ((powerPercent > 0) && (powerPercent < kMaximumPowerPercent))
+    if (!g_settingInitialized)
     {
-        const uint32_t periodTicks    = burst_period_to_ticks(periodMs);
-        uint32_t       roundedOnTicks = ((periodTicks * powerPercent) + 50) / 100;
-        if (roundedOnTicks == 0)
-        {
-            roundedOnTicks = 1;
-        }
-        else if (roundedOnTicks >= periodTicks)
-        {
-            roundedOnTicks = periodTicks - 1;
-        }
-
-        onTicks  = static_cast<uint16_t>(roundedOnTicks);
-        offTicks = static_cast<uint16_t>(periodTicks - roundedOnTicks);
-    }
-
-    /*
-     * TC5's ISR shares the burst state and timer registers with this setter.
-     * Preserve the caller's
-     * interrupt state around the complete reconfiguration.
-     */
-    const uint32_t interruptState = __get_PRIMASK();
-    __disable_irq();
-
-    burst_timer_stop();
-
-    if (powerPercent == 0)
-    {
-        g_burstIsOn = false;
-        rf_pwm_set(false);
-    }
-    else if (powerPercent == kMaximumPowerPercent)
-    {
-        // Full power never schedules an off window.
-        g_burstIsOn = true;
-        rf_pwm_set(true);
+        // Establish a known-low output even if the first request is nonzero.
+        // The first increase will then begin from zero in rfgen_task().
+        rfgen_apply_ticks(periodTicks, 0);
+        currentOnTicks       = 0;
+        g_settingInitialized = true;
     }
     else
     {
-        g_burstOnTicks  = onTicks;
-        g_burstOffTicks = offTicks;
-        g_burstIsOn     = true;
-        rf_pwm_set(true);
-        burst_timer_start(onTicks);
+        // Express the currently applied duty in the new period's tick scale.
+        // This lets a simultaneous period change preserve actual power while
+        // the requested increase ramps from its present level.
+        currentOnTicks = scale_on_ticks(g_appliedOnTicks, g_appliedPeriodTicks, periodTicks);
     }
 
-    if (interruptState == 0)
+    g_desiredPeriodTicks = periodTicks;
+    g_desiredOnTicks     = onTicks;
+
+    if (onTicks <= currentOnTicks)
     {
-        __enable_irq();
+        // Reductions are safety-relevant and take effect synchronously in the
+        // setter. Equality also applies a requested period change immediately.
+        g_rampIsActive = false;
+        if ((g_appliedPeriodTicks != periodTicks) || (g_appliedOnTicks != onTicks))
+        {
+            rfgen_apply_ticks(periodTicks, onTicks);
+        }
+        return;
+    }
+
+    // Increases are deferred to rfgen_task(). The task derives the appropriate
+    // duty ticks from elapsed milliseconds, so loop frequency does not affect
+    // the one-second 0-to-100-percent ramp rate.
+    g_rampStartOnTicks = currentOnTicks;
+    g_rampStartedMs    = millis();
+    g_rampIsActive     = true;
+}
+
+void rfgen_task(void)
+{
+    if (!g_settingInitialized || !g_rampIsActive)
+    {
+        return;
+    }
+
+    const uint32_t elapsedMs = static_cast<uint32_t>(millis() - g_rampStartedMs);
+    const uint64_t nextOnTicksWide =
+        g_rampStartOnTicks + ((static_cast<uint64_t>(elapsedMs) * g_desiredPeriodTicks) / kPowerRampDurationMs);
+    uint32_t nextOnTicks;
+    if (nextOnTicksWide >= g_desiredOnTicks)
+    {
+        nextOnTicks    = g_desiredOnTicks;
+        g_rampIsActive = false;
+    }
+    else
+    {
+        nextOnTicks = static_cast<uint32_t>(nextOnTicksWide);
+    }
+
+    if ((g_appliedPeriodTicks != g_desiredPeriodTicks) || (g_appliedOnTicks != nextOnTicks))
+    {
+        rfgen_apply_ramp_ticks(g_desiredPeriodTicks, nextOnTicks);
     }
 }
 
@@ -252,6 +276,138 @@ static uint32_t burst_period_to_ticks(uint32_t periodMs)
     }
 
     return static_cast<uint32_t>(roundedTicks);
+}
+
+static uint32_t power_percent_to_on_ticks(uint8_t powerPercent, uint32_t periodTicks)
+{
+    if (powerPercent == 0)
+    {
+        return 0;
+    }
+    if (powerPercent >= kMaximumPowerPercent)
+    {
+        return periodTicks;
+    }
+
+    uint32_t onTicks = ((periodTicks * powerPercent) + (kMaximumPowerPercent / 2)) / kMaximumPowerPercent;
+
+    // Every partial-power setting needs at least one on tick and one off tick.
+    if (onTicks == 0)
+    {
+        return 1;
+    }
+    if (onTicks >= periodTicks)
+    {
+        return periodTicks - 1;
+    }
+    return onTicks;
+}
+
+static uint32_t scale_on_ticks(uint32_t onTicks, uint32_t oldPeriodTicks, uint32_t newPeriodTicks)
+{
+    if ((onTicks == 0) || (oldPeriodTicks == 0))
+    {
+        return 0;
+    }
+    if (onTicks >= oldPeriodTicks)
+    {
+        return newPeriodTicks;
+    }
+
+    const uint64_t scaledNumerator = static_cast<uint64_t>(onTicks) * newPeriodTicks;
+    return static_cast<uint32_t>((scaledNumerator + (oldPeriodTicks / 2)) / oldPeriodTicks);
+}
+
+static void rfgen_apply_ramp_ticks(uint32_t periodTicks, uint32_t onTicks)
+{
+    const bool appliedIsPartial = (g_appliedOnTicks > 0) && (g_appliedOnTicks < g_appliedPeriodTicks);
+    const bool nextIsPartial    = (onTicks > 0) && (onTicks < periodTicks);
+
+    if (!g_initialized || !appliedIsPartial || !nextIsPartial || (g_appliedPeriodTicks != periodTicks))
+    {
+        // Entering or leaving partial power, and changing the burst period,
+        // requires a complete timer reconfiguration.
+        rfgen_apply_ticks(periodTicks, onTicks);
+        return;
+    }
+
+    /*
+     * Do not restart TC5 for each ramp tick. Ramp updates arrive more often
+     * than one burst period, so restarting would repeatedly favor the on phase
+     * and produce much more power than requested. The ISR will use these new
+     * durations at its next on/off boundary.
+     */
+    const uint32_t interruptState = __get_PRIMASK();
+    __disable_irq();
+    g_burstOnTicks  = static_cast<uint16_t>(onTicks);
+    g_burstOffTicks = static_cast<uint16_t>(periodTicks - onTicks);
+    if (interruptState == 0)
+    {
+        __enable_irq();
+    }
+
+    g_appliedPeriodTicks = periodTicks;
+    g_appliedOnTicks     = onTicks;
+}
+
+static void rfgen_apply_ticks(uint32_t periodTicks, uint32_t onTicks)
+{
+    if (onTicks > periodTicks)
+    {
+        onTicks = periodTicks;
+    }
+
+    if (!g_initialized)
+    {
+        if (onTicks == 0)
+        {
+            // A zero request must be safe without paying the timer-init cost.
+            digitalWrite(RFGEN_PIN, LOW);
+            pinMode(RFGEN_PIN, OUTPUT);
+            g_appliedPeriodTicks = periodTicks;
+            g_appliedOnTicks     = 0;
+            return;
+        }
+
+        rfgen_initialize();
+    }
+
+    /*
+     * TC5's ISR shares the burst state and timer registers with foreground
+     * control. Preserve the caller's interrupt state around reconfiguration.
+     */
+    const uint32_t interruptState = __get_PRIMASK();
+    __disable_irq();
+
+    burst_timer_stop();
+
+    if (onTicks == 0)
+    {
+        g_burstIsOn = false;
+        rf_pwm_set(false);
+    }
+    else if (onTicks >= periodTicks)
+    {
+        // Full power never schedules an off window.
+        g_burstIsOn = true;
+        rf_pwm_set(true);
+    }
+    else
+    {
+        g_burstOnTicks  = static_cast<uint16_t>(onTicks);
+        g_burstOffTicks = static_cast<uint16_t>(periodTicks - onTicks);
+        g_burstIsOn     = true;
+        rf_pwm_set(true);
+        burst_timer_start(g_burstOnTicks);
+    }
+
+    if (interruptState == 0)
+    {
+        __enable_irq();
+    }
+
+    g_appliedPeriodTicks = periodTicks;
+    g_appliedOnTicks     = onTicks;
 }
 
 static void burst_timer_start(uint16_t firstIntervalTicks)

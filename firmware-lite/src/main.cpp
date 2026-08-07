@@ -29,7 +29,9 @@ void setup()
 
 void loop()
 {
-    // Run input management first so a newly confirmed pattern can start now.
+    // Run input management first so a newly confirmed power request can begin
+    // ramping during this same pass through the cooperative loop.
     pwrmgt_task();
+    rfgen_task();
     blink_task();
 }
