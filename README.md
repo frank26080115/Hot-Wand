@@ -14,6 +14,7 @@ This is nearly a clone of [SergeyMax's design](https://github.com/SergeyMax/Sold
  * uses a STM32F042F6P6 microcontroller (more flash memory)
  * optional cooling fan, temperature sensors
  * internal glass fuse
+ * substituted parts that are only available from Russia
 
 I implemented a rather fancy GUI, fancier than what is available on a Metcal soldering station. The firmware features/supports:
 
