@@ -29,6 +29,12 @@
 #define TEMPERATURE_FAN_THRESHOLD_HIGH_C 80
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
 #define TEMPERATURE_HYSTERYSIS_C         5
+#define FAN_MINIMUM_ON_TIME_MS           (10 * 1000)
+#define FAN_MINIMUM_OFF_TIME_MS          (5 * 1000)
+
+#if (FAN_MINIMUM_ON_TIME_MS == 0) || (FAN_MINIMUM_OFF_TIME_MS == 0)
+#error "Fan minimum on and off times must be nonzero"
+#endif
 
 /* Set to 0 if production units intentionally omit both external NTC sensors. */
 #ifndef NTC_FAULT_WARNING_ENABLED

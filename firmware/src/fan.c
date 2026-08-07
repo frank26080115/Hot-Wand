@@ -23,7 +23,6 @@ Determines when to turn on the fan based on the configured mode and the measured
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAN_START_DELAY_MS            5000
 #define NTC_CHECK_DELAY_MS            10000
 #define NTC_FAULT_MESSAGE_DURATION_MS 3000
 
@@ -34,7 +33,7 @@ Determines when to turn on the fan based on the configured mode and the measured
 static bool     fan_enabled;
 static bool     fan_running;
 static bool     fan_pin_initialized;
-static uint32_t fan_last_wake_ms;
+static uint32_t fan_last_transition_ms;
 static uint8_t  fan_mode;
 
 #if NTC_FAULT_WARNING_ENABLED
@@ -65,19 +64,36 @@ void fan_init(uint8_t mode)
 
 void fan_task(void)
 {
-    bool should_run;
+    bool     should_run;
+    uint32_t now;
 
     if (!fan_enabled)
     {
         return;
     }
 
-    if ((uint32_t)(systick_get_ms() - fan_last_wake_ms) < FAN_START_DELAY_MS)
+    now        = systick_get_ms();
+    should_run = fan_should_run();
+
+    /* Hold each commanded state long enough to prevent rapid, irritating
+     * cycling around a temperature threshold. Unsigned subtraction keeps the
+     * elapsed-time check valid when the millisecond tick wraps around. */
+    if (fan_running && !should_run && ((uint32_t)(now - fan_last_transition_ms) < FAN_MINIMUM_ON_TIME_MS))
     {
         return;
     }
 
-    should_run = fan_should_run();
+    if (!fan_running && should_run && ((uint32_t)(now - fan_last_transition_ms) < FAN_MINIMUM_OFF_TIME_MS))
+    {
+        return;
+    }
+
+    /* There is no transition to apply, so avoid repeatedly writing the same
+     * GPIO state and leave the transition timestamp unchanged. */
+    if (should_run == fan_running)
+    {
+        return;
+    }
 
     /*
      * PA13 is also SWDIO. Leave it completely untouched until the fan
@@ -94,7 +110,8 @@ void fan_task(void)
     }
 
     HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, should_run ? GPIO_PIN_SET : GPIO_PIN_RESET);
-    fan_running = should_run;
+    fan_running            = should_run;
+    fan_last_transition_ms = now;
 }
 
 void ntc_task(void)
@@ -134,11 +151,15 @@ void ntc_task(void)
 
 void fan_on_wake(void)
 {
-    fan_last_wake_ms = systick_get_ms();
+    /* Initialization begins in the off state. Starting its dwell interval here
+     * also preserves the configured startup delay before PA13 is claimed. */
+    fan_last_transition_ms = systick_get_ms();
 }
 
 void fan_stop(void)
 {
+    bool was_running = fan_running;
+
     fan_enabled = false;
     fan_running = false;
 
@@ -147,6 +168,14 @@ void fan_stop(void)
     if (fan_pin_initialized)
     {
         HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
+    }
+
+    /* Explicit safety and fault stops override the minimum-on time. If the fan
+     * was running, still begin a full minimum-off interval so fan_resume()
+     * cannot immediately cycle it back on. */
+    if (was_running)
+    {
+        fan_last_transition_ms = systick_get_ms();
     }
 }
 

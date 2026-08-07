@@ -45,9 +45,9 @@ If the input power is below 14V (undervoltage lockout threshold of the secondary
 
 The cooling fan hardware is optional, but the control for it will always exist.
 
-The fan is always off for at least 5 seconds after power up. After the 5 seconds, the fan will respect the configured operation mode. If the mode is always-on, then it will turn on.
+The fan is always off for at least the configured minimum-off time after power up. After that interval, the fan will respect the configured operation mode. If the mode is always-on, then it will turn on.
 
-In either automatic mode, the fan turns on when any monitored temperature exceeds that mode's configured low or high threshold. It turns off only after every monitored temperature falls to or below the selected threshold minus the configured temperature hysteresis.
+In either automatic mode, the fan turns on when any monitored temperature exceeds that mode's configured low or high threshold. It turns off only after every monitored temperature falls to or below the selected threshold minus the configured temperature hysteresis. Normal state-machine transitions keep the fan on for at least the configured minimum-on time and off for at least the configured minimum-off time, preventing rapid cycling around a threshold. Explicit safety, fault, and sleep stops remain immediate; if such a stop is recoverable, the minimum-off interval is enforced before the fan can restart.
 
 The fan is off during sleep mode.
 
