@@ -7,14 +7,16 @@ if errorlevel 1 goto :launch_error
 where py >nul 2>&1
 if errorlevel 1 goto :use_python
 
-py -3 -B "%~dp0..\mfg\generate_gerbers.py" --board "%~dp0..\hot-wand-lite.brd" --output-dir "%~dp0gerbers" --archive-dir "%~dp0" --preview-script "%~dp0..\mfg\generate_gerbv_preview_svg.py" %*
+rem Append a dot because %~dp0 ends in a backslash, which would escape the
+rem closing quote when Python parses the Windows command line.
+py -3 -B "%~dp0..\mfg\generate_gerbers.py" --board "%~dp0..\hot-wand-lite.brd" --output-dir "%~dp0gerbers" --archive-dir "%~dp0." --preview-script "%~dp0..\mfg\generate_gerbv_preview_svg.py" %*
 set "EXIT_CODE=%ERRORLEVEL%"
 goto :finished
 
 :use_python
 where python >nul 2>&1
 if errorlevel 1 goto :python_missing
-python -B "%~dp0..\mfg\generate_gerbers.py" --board "%~dp0..\hot-wand-lite.brd" --output-dir "%~dp0gerbers" --archive-dir "%~dp0" --preview-script "%~dp0..\mfg\generate_gerbv_preview_svg.py" %*
+python -B "%~dp0..\mfg\generate_gerbers.py" --board "%~dp0..\hot-wand-lite.brd" --output-dir "%~dp0gerbers" --archive-dir "%~dp0." --preview-script "%~dp0..\mfg\generate_gerbv_preview_svg.py" %*
 set "EXIT_CODE=%ERRORLEVEL%"
 goto :finished
 
