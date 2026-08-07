@@ -83,6 +83,10 @@ With two power inputs, I need one to not explode the other, especially the batte
 
 I am not using a 10V tap from a AC transformer like SergeyMax, instead, I've placed a 12V fixed voltage buck converter in the circuit. This powers the gate driver and the cooling fan. The microcontroller is also powered by a similar 3.3V buck converter. These are small and compatible with 78XX series voltage regulators.
 
+The Radio Thermal design features a NTC in-rush limiter on the barrel jack. In my design, the AP53781 slowly opens the MOSFET that gates the VBUS power. When the MOSFETs connect, the in-rush towards the input bulk capacitor should not exceed 2A. If 2A is tripping the USB power supply then we have bigger issues. The RF amplifier should not cause a large in-rush when starting. The MOSFET will close and the inductor will essentially block the current surge that you would expect.
+
+Leaving out a barrel jack in my design is a deliberate decision.
+
 I also added a classic glass fuse in my design. I expect it to be appreciated during a short circuit event or a MOSFET failure.
 
 ### Thermal and Cooling
