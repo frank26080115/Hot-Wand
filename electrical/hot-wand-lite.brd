@@ -1111,6 +1111,8 @@ Max Component Height - 1.45mm</description>
 <attribute name="AVAILABILITY" value="In Stock" x="109.8" y="36" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="DESCRIPTION" value="                                                      SMA Connector Jack, Female Socket 50 Ohms Board Edge, End Launch Solder                                              " x="109.8" y="36" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="111.46533125" y="31.71605" size="0.8128" layer="26" font="fixed" rot="MR270"/>
+<attribute name="PARTNUM" value="SMA-J-P-H-ST-EM1" x="109.8" y="36" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLC-DNP" value="1" x="109.8" y="36" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="JP2" library="hot-wand" package="SAMESKY_UJC-H-G-SMT-2-P6-TR-DRILL" value="USBC-CHGONLY-4M-DRILL" x="2.6" y="40" smashed="yes" rot="R270">
 <attribute name="MF" value="Same Sky" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1128,22 +1130,27 @@ Max Component Height - 1.45mm</description>
 <element name="L5" library="hot-wand" package="IND-KOOLMU" value="11u5" x="99" y="25" smashed="yes">
 <attribute name="NAME" x="93" y="26" size="0.8128" layer="25" font="fixed"/>
 <attribute name="VALUE" x="93" y="24" size="0.8128" layer="27" font="fixed"/>
+<attribute name="JLC-DNP" value="1" x="99" y="25" size="1.778" layer="27" display="off"/>
 </element>
 <element name="L4" library="hot-wand" package="IND-KOOLMU" value="16u9" x="82" y="36" smashed="yes" rot="R180">
 <attribute name="NAME" x="88" y="35" size="0.8128" layer="25" font="fixed" rot="R180"/>
 <attribute name="VALUE" x="88" y="37" size="0.8128" layer="27" font="fixed" rot="R180"/>
+<attribute name="JLC-DNP" value="1" x="82" y="36" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="L3" library="hot-wand" package="IND-KOOLMU" value="16u9" x="65" y="19" smashed="yes" rot="R180">
 <attribute name="NAME" x="71" y="18" size="0.8128" layer="25" font="fixed" rot="R180"/>
 <attribute name="VALUE" x="71" y="20" size="0.8128" layer="27" font="fixed" rot="R180"/>
+<attribute name="JLC-DNP" value="1" x="65" y="19" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="L2" library="hot-wand" package="IND-KOOLMU-2W" value="6u2" x="41" y="33" smashed="yes">
 <attribute name="NAME" x="33.9" y="32.6" size="0.8128" layer="25" font="fixed"/>
 <attribute name="VALUE" x="33.9" y="31.5" size="0.8128" layer="27" font="fixed"/>
+<attribute name="JLC-DNP" value="1" x="41" y="33" size="1.778" layer="27" display="off"/>
 </element>
 <element name="L1" library="hot-wand" package="IND_PA4343.103NLT" value="33u" x="33" y="56" smashed="yes">
 <attribute name="NAME" x="25.57283125" y="58.14403125" size="0.8128" layer="25" font="fixed" rot="R90"/>
 <attribute name="VALUE" x="24.50605" y="58.038540625" size="0.8128" layer="27" rot="R90"/>
+<attribute name="JLCPARTNUM" value="C2453886" x="33" y="56" size="1.778" layer="27" display="off"/>
 </element>
 <element name="LED1" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" smashed="yes" rot="MR180">
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -1151,6 +1158,7 @@ Max Component Height - 1.45mm</description>
 </element>
 <element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0" smashed="yes">
 <attribute name="JLC-DNP" value="1" x="0" y="0" size="1.778" layer="27" display="off"/>
+<attribute name="DNP" value="1" x="0" y="0" size="1.778" layer="27" display="off"/>
 </element>
 <element name="Q1" library="hot-wand" package="INF-PG-TO247-3" value="NCHAN" x="46" y="66" smashed="yes" rot="R90">
 <attribute name="NAME" x="37.546" y="64.16" size="0.8128" layer="25" font="fixed" ratio="13" rot="SR90"/>
@@ -1225,7 +1233,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLCPARTNUM" value="C23162" x="19.5" y="52" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="R5" library="hot-wand" package="0603-RES" value="1K" x="110.4" y="44.3" smashed="yes" rot="MR270">
-<attribute name="JLCPARTNUM" value="C4190" x="110.4" y="44.3" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C21190" x="110.4" y="44.3" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="110.062" y="46.111" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="109.157" y="47.484" size="0.8128" layer="28" font="vector" rot="MR90"/>
 </element>
@@ -1247,6 +1255,7 @@ Max Component Height - 1.45mm</description>
 <element name="R16" library="hot-wand" package="0603-RES" value="39K" x="17" y="27.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="17.338" y="25.689" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 <attribute name="VALUE" x="17.843" y="23.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="JLCPARTNUM" value="C23153" x="17" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="SJ2" library="hot-wand" package="SJ_2S-NO" value="" x="14.2" y="21.9" smashed="yes" rot="MR270">
 <attribute name="NAME" x="12.83" y="23.008" size="0.8128" layer="26" font="fixed" rot="MR270"/>
@@ -1297,58 +1306,73 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLCPARTNUM" value="C52730979" x="13" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="JLC_ROTATION" value="180" x="13" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="F1" library="hot-wand" package="FUSE_5MM" value="FUSEX20MM" x="24" y="68" smashed="yes" rot="R270"/>
+<element name="F1" library="hot-wand" package="FUSE_5MM" value="FUSEX20MM" x="24" y="68" smashed="yes" rot="R270">
+<attribute name="JLC-DNP" value="1" x="24" y="68" size="1.778" layer="27" rot="R270" display="off"/>
+</element>
 <element name="C1" library="hot-wand" package="1206" value="15n" x="46" y="62" smashed="yes" rot="MR270">
 <attribute name="NAME" x="44.657" y="63.07" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 <attribute name="VALUE" x="43.524" y="63.097" size="0.8128" layer="28" rot="MR270"/>
+<attribute name="JLCPARTNUM" value="C3858208" x="46" y="62" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C2" library="hot-wand" package="1206" value="22n" x="36.1" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="35.743" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="36.876" y="40.103" size="0.8128" layer="28" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C3862155" x="36.1" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C3" library="hot-wand" package="1206" value="22n" x="33.6" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="32.743" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="33.876" y="40.103" size="0.8128" layer="28" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C3862155" x="33.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C4" library="hot-wand" package="1206" value="22n" x="31.1" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="30.243" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="31.376" y="40.103" size="0.8128" layer="28" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C3862155" x="31.1" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C5" library="hot-wand" package="1206" value="15n" x="28.6" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="27.643" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="28.776" y="40.103" size="0.8128" layer="28" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C3858208" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C6" library="hot-wand" package="1206" value="10n" x="59.3" y="27.3" smashed="yes" rot="MR0">
 <attribute name="NAME" x="56.67" y="26.343" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="56.697" y="27.476" size="0.8128" layer="28" rot="MR0"/>
+<attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C7" library="hot-wand" package="1206" value="10n" x="59.3" y="29.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.73" y="30.857" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="61.703" y="29.724" size="0.8128" layer="28" rot="MR180"/>
+<attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C8" library="hot-wand" package="1206" value="10n" x="59.3" y="24.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.73" y="25.857" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="61.703" y="24.724" size="0.8128" layer="28" rot="MR180"/>
+<attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="24.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C9" library="hot-wand" package="1206" value="6n8" x="69" y="27.3" smashed="yes" rot="MR180">
 <attribute name="NAME" x="68.13" y="26.057" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="68.103" y="25.024" size="0.8128" layer="28" rot="MR180"/>
+<attribute name="JLCPARTNUM" value="C2182121" x="69" y="27.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C10" library="hot-wand" package="1206" value="6n8" x="103.8" y="36" smashed="yes" rot="MR0">
 <attribute name="NAME" x="101.27" y="36.143" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="101.297" y="35.076" size="0.8128" layer="28" rot="MR0"/>
+<attribute name="JLCPARTNUM" value="C2182121" x="103.8" y="36" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C11" library="hot-wand" package="1206" value="1n" x="103.8" y="33.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="101.27" y="33.443" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="101.197" y="32.276" size="0.8128" layer="28" rot="MR0"/>
+<attribute name="JLCPARTNUM" value="C3859218" x="103.8" y="33.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C12" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="470u" x="60.5" y="45" smashed="yes" rot="R90">
 <attribute name="VALUE" x="63.818" y="41.295" size="0.8128" layer="27" rot="R90"/>
 <attribute name="NAME" x="65.438" y="41.721" size="0.8128" layer="25" font="fixed" rot="R225"/>
+<attribute name="JLC-DNP" value="1" x="60.5" y="45" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="IC2" library="hot-wand" package="SOT223" value="" x="59" y="56.5" smashed="yes" rot="MR90">
+<element name="IC2" library="hot-wand" package="SOT223" value="AMS1117-5.0" x="59" y="56.5" smashed="yes" rot="MR90">
 <attribute name="NAME" x="61.9915" y="54.1255" size="0.8128" layer="26" font="fixed" rot="MR270"/>
-<attribute name="VALUE" x="58.8095" y="55.4205" size="0.4064" layer="28" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C6187" x="59" y="56.5" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="PARTNUM" value="AMS1117-5.0" x="59" y="56.5" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="U1" library="hot-wand" package="MODULE_102010388" value="SEEED-XIAO-SAMD21" x="88" y="62" smashed="yes" rot="R270">
 <attribute name="PRICE" value="None" x="88" y="62" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1361,25 +1385,30 @@ Max Component Height - 1.45mm</description>
 <attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/102010388/Seeed+Studio/view-part/?ref=snap" x="88" y="62" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="DESCRIPTION" value="                                                      ATSAMD21G18 XIAO SAMD21 SAM D ARM® Cortex®-M0 MCU 32-Bit Embedded Evaluation Board                                              " x="88" y="62" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="NAME" x="97" y="70.35" size="0.8128" layer="25" font="fixed" rot="R270"/>
+<attribute name="JLC-DNP" value="1" x="88" y="62" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="JP5" library="hot-wand" package="1X03_LOCK" value="" x="2.1" y="19" smashed="yes" rot="R90">
 <attribute name="NAME" x="3.7288" y="19.9462" size="0.8128" layer="25" font="fixed" ratio="10" rot="R270"/>
 <attribute name="VALUE" x="5.275" y="17.73" size="1.27" layer="27" rot="R90"/>
+<attribute name="JLC-DNP" value="1" x="2.1" y="19" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="R17" library="hot-wand" package="0603-RES" value="79K" x="19" y="27.3" smashed="yes" rot="MR270">
-<attribute name="NAME" x="19.438" y="25.689" size="0.8128" layer="26" font="fixed" rot="MR270"/>
-<attribute name="VALUE" x="19.943" y="23.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<element name="R17" library="hot-wand" package="0603-RES" value="3K" x="19" y="27.3" smashed="yes" rot="MR270">
+<attribute name="NAME" x="19.862" y="27.911" size="0.8128" layer="26" font="fixed" rot="MR90"/>
+<attribute name="VALUE" x="18.857" y="28.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C4211" x="19" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="JP6" library="hot-wand" package="1X04_LOCK" value="" x="110" y="54.4" smashed="yes" rot="R90">
 <attribute name="NAME" x="108.1712" y="53.0538" size="0.8128" layer="25" font="fixed" ratio="10" rot="R90"/>
 <attribute name="VALUE" x="113.175" y="53.13" size="1.27" layer="27" rot="R90"/>
+<attribute name="JLC-DNP" value="1" x="110" y="54.4" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="JP4" library="hot-wand" package="1X03_LOCK" value="" x="2.1" y="13.9" smashed="yes" rot="R270">
 <attribute name="NAME" x="3.7288" y="15.2462" size="0.8128" layer="25" font="fixed" ratio="10" rot="R270"/>
 <attribute name="VALUE" x="-1.075" y="15.17" size="1.27" layer="27" rot="R270"/>
+<attribute name="JLC-DNP" value="1" x="2.1" y="13.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="R6" library="hot-wand" package="0603-RES" value="1K" x="108.4" y="44.3" smashed="yes" rot="MR270">
-<attribute name="JLCPARTNUM" value="C4190" x="108.4" y="44.3" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C21190" x="108.4" y="44.3" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="108.062" y="46.111" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="108.843" y="45.716" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
@@ -1387,8 +1416,11 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="110.389" y="41.7015" size="0.8128" layer="25" font="fixed" rot="R180"/>
 </element>
-<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="41.5" y="5.1" smashed="yes" rot="MR0"/>
-<element name="R18" library="hot-wand" package="0603-RES" value="470Ω" x="63.5" y="50.7" smashed="yes" rot="MR0">
+<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="41.5" y="5.1" smashed="yes" rot="MR0">
+<attribute name="JLC-DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
+</element>
+<element name="R20" library="hot-wand" package="0603-RES" value="470Ω" x="63.5" y="50.7" smashed="yes" rot="MR0">
 <attribute name="JLCPARTNUM" value="C23179" x="63.5" y="50.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
 <attribute name="NAME" x="65.111" y="51.538" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="65.084" y="50.443" size="0.8128" layer="28" font="fixed" rot="MR180"/>
@@ -1402,6 +1434,11 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLCPARTNUM" value="C14663" x="72" y="51.9" size="0.8128" layer="28" font="fixed" rot="MR270" display="off"/>
 <attribute name="NAME" x="71.662" y="53.811" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="72.857" y="51.284" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R18" library="hot-wand" package="0603-RES" value="75K" x="19" y="23.9" smashed="yes" rot="MR270">
+<attribute name="NAME" x="19.862" y="22.811" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="20.857" y="22.784" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<attribute name="JLCPARTNUM" value="C23242" x="19" y="23.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 </elements>
 <signals>
@@ -1813,7 +1850,7 @@ Max Component Height - 1.45mm</description>
 <via x="75" y="50" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="79" y="51.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="80" y="50.4" extent="1-16" drill="0.3" shape="octagon"/>
-<contactref element="R18" pad="2"/>
+<contactref element="R20" pad="2"/>
 <via x="61.5" y="50.7" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="C22" pad="1"/>
 <via x="72" y="53.8" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2425,19 +2462,20 @@ Max Component Height - 1.45mm</description>
 <wire x1="55.9012" y1="56.5" x2="62.099" y2="56.5" width="1" layer="16"/>
 <wire x1="62.099" y1="56.5" x2="65" y2="56.5" width="1" layer="16"/>
 <wire x1="65" y1="56.5" x2="65" y2="56.4" width="1" layer="16"/>
-<wire x1="95.62" y1="57" x2="95.62" y2="54.38" width="1" layer="16"/>
-<wire x1="95.62" y1="57" x2="65.6" y2="57" width="1" layer="16"/>
+<wire x1="95.62" y1="54.38" x2="95.62" y2="56.299715625" width="1" layer="16"/>
+<wire x1="95.62" y1="56.299715625" x2="94.919715625" y2="57" width="1" layer="16"/>
+<wire x1="94.919715625" y1="57" x2="65.6" y2="57" width="1" layer="16"/>
 <wire x1="65.6" y1="57" x2="65" y2="56.4" width="1" layer="16"/>
 </signal>
 <signal name="3V3">
 <contactref element="U1" pad="12"/>
 </signal>
 <signal name="N$9">
-<contactref element="R17" pad="2"/>
 <contactref element="JP5" pad="1"/>
-<wire x1="19" y1="26.45" x2="19" y2="20" width="0.4064" layer="16"/>
 <wire x1="19" y1="20" x2="18" y2="19" width="0.4064" layer="16"/>
 <wire x1="18" y1="19" x2="1.973" y2="19" width="0.4064" layer="16"/>
+<contactref element="R18" pad="2"/>
+<wire x1="19" y1="23.05" x2="19" y2="20" width="0.4064" layer="16"/>
 </signal>
 <signal name="SEL3">
 <contactref element="U1" pad="5"/>
@@ -2476,7 +2514,7 @@ Max Component Height - 1.45mm</description>
 </signal>
 <signal name="ADC">
 <contactref element="R19" pad="1"/>
-<contactref element="R18" pad="1"/>
+<contactref element="R20" pad="1"/>
 <contactref element="U1" pad="9"/>
 <wire x1="79.24" y1="50.7" x2="82.92" y2="54.38" width="0.4064" layer="16"/>
 <wire x1="64.35" y1="48.7" x2="64.35" y2="50.7" width="0.4064" layer="16"/>
@@ -2485,6 +2523,11 @@ Max Component Height - 1.45mm</description>
 <wire x1="72.1" y1="50.7" x2="79.24" y2="50.7" width="0.4064" layer="16"/>
 <wire x1="72" y1="51.05" x2="72.1" y2="51.05" width="0.4064" layer="16"/>
 <wire x1="72.1" y1="51.05" x2="72.1" y2="50.7" width="0.4064" layer="16"/>
+</signal>
+<signal name="N$2">
+<contactref element="R18" pad="1"/>
+<contactref element="R17" pad="2"/>
+<wire x1="19" y1="26.45" x2="19" y2="24.75" width="0.4064" layer="16"/>
 </signal>
 </signals>
 </board>
