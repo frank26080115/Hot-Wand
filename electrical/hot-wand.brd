@@ -2266,7 +2266,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="R30" library="hot-wand" package="0603-RES" value="4K3" x="13.4" y="34.9" smashed="yes" rot="MR270">
 <attribute name="NAME" x="14.262" y="34.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="15.257" y="33.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
-<attribute name="JLCPARTNUM" value="C2933230" x="13.4" y="34.9" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C17667" x="13.4" y="34.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="R31" library="hot-wand" package="0603-RES" value="100Ω" x="10.9" y="34.3" smashed="yes" rot="MR180">
 <attribute name="NAME" x="9.189" y="33.462" size="0.8128" layer="26" font="vector" rot="MR0"/>

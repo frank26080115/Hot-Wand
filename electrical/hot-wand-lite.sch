@@ -14267,7 +14267,7 @@ Standard 4-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="R11" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3">
-<attribute name="JLCPARTNUM" value="C2933230"/>
+<attribute name="JLCPARTNUM" value="C17667"/>
 </part>
 <part name="R12" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C22775"/>
