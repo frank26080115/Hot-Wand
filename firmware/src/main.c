@@ -76,7 +76,8 @@ int main(void)
 
     /* HAL provides the temporary reset-clock tick needed by the RCC startup
      * timeout. Application initialization
-     * begins with HSE immediately
+
+     * * begins with HSE immediately
      * afterward. */
     HAL_Init();
 
@@ -107,6 +108,11 @@ int main(void)
         random_seed = adc_get_rand_seed();
     } while (random_seed == 0);
     hotwand_srand(random_seed);
+
+#ifdef SHOW_SPLASH
+    show_splash();
+#endif
+
     pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X_BIGFONT + 1);
     pixshift_y = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_Y + 1);
 
@@ -155,7 +161,8 @@ int main(void)
 
         /* Both faults are latched and stop the RF generator at their source.
          * Their screens are terminal
-         * until the user requests a reset. */
+
+         * * until the user requests a reset. */
         if (tipdetect_has_triggered())
         {
             show_fault("TIP\nFAULT", true);
@@ -167,17 +174,22 @@ int main(void)
 
         /* Central runtime output supervisor:
          * - Checks the configured battery cutoff and terminal input
-         * undervoltage.
+
+         * * undervoltage.
          * - Applies temperature and input-voltage derating with hysteresis.
-         * - Selects the effective power level and advances PWM attenuation.
-         * - Enforces current and short-circuit limits in the lower-level task.
-         * - Updates attenuation diagnostics, activity timing, and graph history.
+         * -
+         * Selects the effective power level and advances PWM attenuation.
+         * - Enforces current and
+         * short-circuit limits in the lower-level task.
+         * - Updates attenuation diagnostics, activity timing,
+         * and graph history.
          * A terminal fault blocks here until the user resets the controller. */
         pwrmgt_task();
 
         /* Retry after supervision has ruled out terminal power faults.  The
          * RF driver performs its own
-         * clock-fault and tip-debounce checks too. */
+
+         * * clock-fault and tip-debounce checks too. */
         if (!rfgen_is_active() && rfgen_tip_allows_start())
         {
             rfgen_start();
@@ -210,7 +222,8 @@ int main(void)
 
         /* Transient messages own the display while active.  Otherwise draw
          * the live voltage and graph at no
-         * more than 15 frames per second. */
+
+         * * more than 15 frames per second. */
         if (!short_msg_task() && ((uint32_t)(now - display_last_frame_ms) >= MAIN_DISPLAY_FRAME_INTERVAL_MS))
         {
             display_last_frame_ms = now;
@@ -340,7 +353,13 @@ static void boot_wait_for_power_stable(void)
 
             if (graphics != NULL)
             {
+#ifdef SHOW_SPLASH
+                u8g2_SetDrawColor(graphics, 0);
+                u8g2_DrawBox(graphics, 0, 0, 32, OLED_TEXT_LINE_HEIGHT);
+                u8g2_SetDrawColor(graphics, 1);
+#else
                 u8g2_ClearBuffer(graphics);
+#endif
                 u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, ".....");
                 OLED_SendBuffer(&oled);
             }
@@ -357,6 +376,14 @@ static void main_render_display(void)
     char    voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
     size_t  voltage_length;
     u8g2_t* graphics = OLED_GetGraphics(&oled);
+
+#ifdef SHOW_SPLASH
+    if (systick_get_ms() < SHOW_SPLASH_MS)
+    {
+        // show spash screen for at least some time
+        return;
+    }
+#endif
 
     if (graphics == NULL)
     {

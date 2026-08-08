@@ -7,6 +7,9 @@
 // User Interaction and Setup
 // -----------------------------------------------------------------------------
 
+#define SHOW_SPLASH
+#define SHOW_SPLASH_MS 2000
+
 #ifndef BTN_LONG_PRESS_MS
 #define BTN_LONG_PRESS_MS 1000
 #endif

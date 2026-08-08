@@ -72,40 +72,40 @@ typedef struct
 static const adc_cfg_t lpf_cfg_table[ADC_INPUT_COUNT] = {
     [DC_SENS_IDX] =
         {
-            .channel        = DC_SENS_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = DC_SENS_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
     [BUCK_SENS_IDX] =
         {
-            .channel        = BUCK_SENS_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = BUCK_SENS_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
     [CURR_SENS_IDX] =
         {
-            .channel        = CURR_SENS_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = CURR_SENS_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
     [MCU_TEMP_IDX] =
         {
-            .channel        = MCU_TEMP_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = MCU_TEMP_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
     [THERM_1_IDX] =
         {
-            .channel        = THERM_1_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = THERM_1_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
     [THERM_2_IDX] =
         {
-            .channel        = THERM_2_ADCCHANn,
-            .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
-            .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
-        },
+                       .channel        = THERM_2_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
 };
 
 /*
@@ -134,17 +134,17 @@ static const uint16_t ntc_adc_by_10c[] = {
 
 /* Q10 slopes are the nearest integers to the requested multipliers. */
 static const input_voltage_calib_t input_voltage_calib_table[] = {
-    [INPUT_VOLTAGE_CALIB_NONE] = {1024, 0},
-    [INPUT_VOLTAGE_CALIB_P1]   = {1029, 5},
-    [INPUT_VOLTAGE_CALIB_P2]   = {1034, 10},
-    [INPUT_VOLTAGE_CALIB_P3]   = {1039, 15},
-    [INPUT_VOLTAGE_CALIB_P4]   = {1044, 20},
-    [INPUT_VOLTAGE_CALIB_P5]   = {1050, 25},
-    [INPUT_VOLTAGE_CALIB_N1]   = {1019, -5},
+    [INPUT_VOLTAGE_CALIB_NONE] = {1024, 0  },
+    [INPUT_VOLTAGE_CALIB_P1]   = {1029, 5  },
+    [INPUT_VOLTAGE_CALIB_P2]   = {1034, 10 },
+    [INPUT_VOLTAGE_CALIB_P3]   = {1039, 15 },
+    [INPUT_VOLTAGE_CALIB_P4]   = {1044, 20 },
+    [INPUT_VOLTAGE_CALIB_P5]   = {1050, 25 },
+    [INPUT_VOLTAGE_CALIB_N1]   = {1019, -5 },
     [INPUT_VOLTAGE_CALIB_N2]   = {1014, -10},
     [INPUT_VOLTAGE_CALIB_N3]   = {1009, -15},
     [INPUT_VOLTAGE_CALIB_N4]   = {1004, -20},
-    [INPUT_VOLTAGE_CALIB_N5]   = {998, -25},
+    [INPUT_VOLTAGE_CALIB_N5]   = {998,  -25},
 };
 
 _Static_assert((sizeof(input_voltage_calib_table) / sizeof(input_voltage_calib_table[0])) ==

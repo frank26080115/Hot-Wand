@@ -48,46 +48,34 @@ const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SA
     [BATT_MODE_NONE] = {0, 0, 0, 0},
     [BATT_MODE_LIPO] =
         {
-            3100,
-            4200,
-            BATTERY_MINIMUM_CELL_CNT_LIPO,
-            BATTERY_MAXIMUM_CELL_CNT_LIPO,
-        },
+                        3100, 4200,
+                        BATTERY_MINIMUM_CELL_CNT_LIPO, BATTERY_MAXIMUM_CELL_CNT_LIPO,
+                        },
     [BATT_MODE_LIPO_SAFE] =
         {
-            3300,
-            4200,
-            BATTERY_MINIMUM_CELL_CNT_LIPO,
-            BATTERY_MAXIMUM_CELL_CNT_LIPO,
-        },
+                        3300, 4200,
+                        BATTERY_MINIMUM_CELL_CNT_LIPO, BATTERY_MAXIMUM_CELL_CNT_LIPO,
+                        },
     [BATT_MODE_LIHV] =
         {
-            3100,
-            4350,
-            BATTERY_MINIMUM_CELL_CNT_LIHV,
-            BATTERY_MAXIMUM_CELL_CNT_LIHV,
-        },
+                        3100, 4350,
+                        BATTERY_MINIMUM_CELL_CNT_LIHV, BATTERY_MAXIMUM_CELL_CNT_LIHV,
+                        },
     [BATT_MODE_LIHV_SAFE] =
         {
-            3300,
-            4350,
-            BATTERY_MINIMUM_CELL_CNT_LIHV,
-            BATTERY_MAXIMUM_CELL_CNT_LIHV,
-        },
+                        3300, 4350,
+                        BATTERY_MINIMUM_CELL_CNT_LIHV, BATTERY_MAXIMUM_CELL_CNT_LIHV,
+                        },
     [BATT_MODE_LIFE] =
         {
-            2500,
-            3650,
-            BATTERY_MINIMUM_CELL_CNT_LIFE,
-            BATTERY_MAXIMUM_CELL_CNT_LIFE,
-        },
+                        2500, 3650,
+                        BATTERY_MINIMUM_CELL_CNT_LIFE, BATTERY_MAXIMUM_CELL_CNT_LIFE,
+                        },
     [BATT_MODE_LIFE_SAFE] =
         {
-            2750,
-            3650,
-            BATTERY_MINIMUM_CELL_CNT_LIFE,
-            BATTERY_MAXIMUM_CELL_CNT_LIFE,
-        },
+                        2750, 3650,
+                        BATTERY_MINIMUM_CELL_CNT_LIFE, BATTERY_MAXIMUM_CELL_CNT_LIFE,
+                        },
 };
 
 // -----------------------------------------------------------------------------

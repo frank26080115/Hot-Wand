@@ -1,6 +1,9 @@
 # Legacy firmware
 old/
 
+# Generated artwork tools
+art/png2bin/
+
 # PlatformIO
 .pio/
 .pioenvs/

@@ -1,8 +1,9 @@
 /*
 This code module implements the setup menu, which allows the user to configure various settings of the device.
 The menu is displayed on an OLED screen and navigated using a button.
-The user can cycle through different configuration items, adjust their values, and save or discard changes before exiting the menu.
-This menu acts as it's own application, and exiting it will cause the device to reboot (into the normal application).
+The user can cycle through different configuration items, adjust their values, and save or discard changes before
+exiting the menu. This menu acts as it's own application, and exiting it will cause the device to reboot (into the
+normal application).
 */
 
 // -----------------------------------------------------------------------------
@@ -65,58 +66,58 @@ typedef struct
 static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_STARTUP_POWER_LEVEL] =
         {
-            .title     = "START\nPOWER\nLEVEL",
-            .items     = "SPORT|NORMAL|ECO",
-            .items_cnt = 3,
-        },
+                                          .title     = "START\nPOWER\nLEVEL",
+                                          .items     = "SPORT|NORMAL|ECO",
+                                          .items_cnt = 3,
+                                          },
     [SETUP_ITEM_FAN_MODE] =
         {
-            .title     = "FAN\nMODE",
-            .items     = "OFF|ON|AUTO\nLOW|AUTO\nHIGH",
-            .items_cnt = 4,
-        },
+                                          .title     = "FAN\nMODE",
+                                          .items     = "OFF|ON|AUTO\nLOW|AUTO\nHIGH",
+                                          .items_cnt = 4,
+                                          },
     [SETUP_ITEM_AUTO_SLEEP] =
         {
-            .title     = "AUTO\nSLEEP",
-            .items     = "OFF|5 MIN|15 MIN|30 MIN",
-            .items_cnt = 4,
-        },
+                                          .title     = "AUTO\nSLEEP",
+                                          .items     = "OFF|5 MIN|15 MIN|30 MIN",
+                                          .items_cnt = 4,
+                                          },
     [SETUP_ITEM_AUTO_DIM] =
         {
-            .title     = "AUTO\nDIM",
-            .items     = "OFF|15 SEC|30 SEC|60 SEC",
-            .items_cnt = 4,
-        },
+                                          .title     = "AUTO\nDIM",
+                                          .items     = "OFF|15 SEC|30 SEC|60 SEC",
+                                          .items_cnt = 4,
+                                          },
     [SETUP_ITEM_IDLE_DETECT_THRESH] =
         {
-            .title     = "ACTIVE\nMIN W",
-            .items     = "1 W|2 W|5 W|10 W|20 W|30 W|40 W",
-            .items_cnt = 7,
-        },
+                                          .title     = "ACTIVE\nMIN W",
+                                          .items     = "1 W|2 W|5 W|10 W|20 W|30 W|40 W",
+                                          .items_cnt = 7,
+                                          },
     [SETUP_ITEM_BATTERY_MODE] =
         {
-            .title     = "BATT\nMODE",
-            .items     = "NONE|LiPo|LiPo\nSAFER|LiHV|LiHV\nSAFER|LiFE|LiFE\nSAFER",
-            .items_cnt = 7,
-        },
+                                          .title     = "BATT\nMODE",
+                                          .items     = "NONE|LiPo|LiPo\nSAFER|LiHV|LiHV\nSAFER|LiFE|LiFE\nSAFER",
+                                          .items_cnt = 7,
+                                          },
     [SETUP_ITEM_INPUT_V_CALIB] =
         {
-            .title     = "INPUT\nVOLT\nCALIB",
-            .items     = "0|+1|+2|+3|+4|+5|-1|-2|-3|-4|-5",
-            .items_cnt = 11,
-        },
+                                          .title     = "INPUT\nVOLT\nCALIB",
+                                          .items     = "0|+1|+2|+3|+4|+5|-1|-2|-3|-4|-5",
+                                          .items_cnt = 11,
+                                          },
     [SETUP_ITEM_SAVE_AND_EXIT] =
         {
-            .title     = "SAVE\nAND\nEXIT",
-            .items     = "",
-            .items_cnt = 0,
-        },
+                                          .title     = "SAVE\nAND\nEXIT",
+                                          .items     = "",
+                                          .items_cnt = 0,
+                                          },
     [SETUP_ITEM_EXIT_NO_SAVE] =
         {
-            .title     = "EXIT\nDON'T\nSAVE",
-            .items     = "",
-            .items_cnt = 0,
-        },
+                                          .title     = "EXIT\nDON'T\nSAVE",
+                                          .items     = "",
+                                          .items_cnt = 0,
+                                          },
 };
 
 // -----------------------------------------------------------------------------

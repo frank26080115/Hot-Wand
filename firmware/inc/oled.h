@@ -33,3 +33,4 @@ void    OLED_ConfigureGraphics(OLED_Handle* oled);
 u8g2_t* OLED_GetGraphics(OLED_Handle* oled);
 bool    OLED_SendBuffer(OLED_Handle* oled);
 bool    OLED_SetDimMode(OLED_Handle* oled, bool dimmed);
+void    show_splash(void);
