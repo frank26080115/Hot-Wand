@@ -73,7 +73,8 @@ static void      test_battery_guess_write_row(uint8_t                battery_mod
 
 /*
  * PA14 is shared by UART TX and SWCLK.  Each UART test leaves UART disabled
- * until a physical button action explicitly opts in and sacrifices SWD.
+ * until a physical button action
+ * explicitly opts in and sacrifices SWD.
  */
 void test_run(void)
 {
@@ -250,7 +251,8 @@ void test_rfgen(void)
         if (button_down && !enabled)
         {
             /* The first RF-enable press permanently opts in to UART for the
-             * remainder of this non-returning test. */
+             * remainder of this
+             * non-returning test. */
             UART_SetAllowed(true);
             rfgen_start();
             enabled = true;
@@ -337,7 +339,8 @@ void test_nvm_simple(void)
             UART_Write("\r\nNVM SIMPLE TEST\r\n");
 
             /* nvm_save() deliberately skips unchanged settings.  Advance
-             * past a matching existing record so every press programs flash. */
+             * past a matching existing record
+             * so every press programs flash. */
             test_nvm_make_settings(sequence, &next);
             if (nvm_read(&current) && test_nvm_settings_equal(&current, &next))
             {
@@ -542,6 +545,8 @@ static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* setti
     settings->batt_mode = (uint8_t)(value % 7);
     value /= 7;
     settings->input_v_calib = (uint8_t)(value % 11);
+    value /= 11;
+    settings->show_splash = (uint8_t)(value % 2);
 }
 
 static bool test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right)
@@ -549,7 +554,8 @@ static bool test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwa
     return (left != NULL) && (right != NULL) && (left->startup_power_level == right->startup_power_level) &&
            (left->fan_mode == right->fan_mode) && (left->auto_sleep == right->auto_sleep) &&
            (left->auto_dim == right->auto_dim) && (left->idle_detect_thresh == right->idle_detect_thresh) &&
-           (left->batt_mode == right->batt_mode) && (left->input_v_calib == right->input_v_calib);
+           (left->batt_mode == right->batt_mode) && (left->input_v_calib == right->input_v_calib) &&
+           (left->show_splash == right->show_splash);
 }
 
 static uintptr_t test_nvm_page_start(void)
@@ -633,7 +639,8 @@ static bool test_nvm_erase_is_expected(void)
         else if (erased_slot_seen)
         {
             /* This is the interrupted-journal pattern nvm_scan_page() marks
-             * for erasure before the next save. */
+             * for erasure before the next
+             * save. */
             return true;
         }
     }
@@ -684,6 +691,8 @@ static void test_nvm_report_settings(const hotwand_setup_nvm_t* settings)
     test_uart_write_number(settings->batt_mode);
     UART_Write(" VCAL=");
     test_uart_write_number(settings->input_v_calib);
+    UART_Write(" SPLASH=");
+    test_uart_write_number(settings->show_splash);
     UART_Write("\r\n");
 }
 

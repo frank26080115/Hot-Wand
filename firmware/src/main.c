@@ -46,6 +46,11 @@
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
 static const uint32_t auto_dim_delay_ms[]   = {0, 15 * 1000, 30 * 1000, 60 * 1000};
 
+#ifdef SHOW_SPLASH
+static uint32_t splash_started_ms;
+static bool     splash_visible;
+#endif
+
 uint8_t pixshift_x = 0; // randomized pixel shift to avoid OLED burn-in
 uint8_t pixshift_y = 0;
 
@@ -74,11 +79,8 @@ int main(void)
     uint16_t            input_millivolts;
     bool                boot_button_down;
 
-    /* HAL provides the temporary reset-clock tick needed by the RCC startup
-     * timeout. Application initialization
-
-     * * begins with HSE immediately
-     * afterward. */
+    // HAL provides the temporary reset-clock tick needed by the RCC startup timeout. Application initialization begins
+    // with HSE immediately afterward.
     HAL_Init();
 
     rfgen_clock_init();
@@ -110,7 +112,12 @@ int main(void)
     hotwand_srand(random_seed);
 
 #ifdef SHOW_SPLASH
-    show_splash();
+    if (settings.show_splash)
+    {
+        show_splash();
+        splash_started_ms = systick_get_ms();
+        splash_visible    = true;
+    }
 #endif
 
     pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X_BIGFONT + 1);
@@ -154,15 +161,15 @@ int main(void)
 
     for (;;)
     {
+        uint32_t inactive_ms;
         uint32_t now;
+        bool     short_msg_active;
 
         btn_task();
         tipdetect_task();
 
-        /* Both faults are latched and stop the RF generator at their source.
-         * Their screens are terminal
-
-         * * until the user requests a reset. */
+        // Both faults are latched and stop the RF generator at their source. Their screens are terminal until the user
+        // requests a reset.
         if (tipdetect_has_triggered())
         {
             show_fault("TIP\nFAULT", true);
@@ -172,24 +179,17 @@ int main(void)
             show_fault("CLOCK\nFAULT", true);
         }
 
-        /* Central runtime output supervisor:
-         * - Checks the configured battery cutoff and terminal input
-
-         * * undervoltage.
-         * - Applies temperature and input-voltage derating with hysteresis.
-         * -
-         * Selects the effective power level and advances PWM attenuation.
-         * - Enforces current and
-         * short-circuit limits in the lower-level task.
-         * - Updates attenuation diagnostics, activity timing,
-         * and graph history.
-         * A terminal fault blocks here until the user resets the controller. */
+        // Central runtime output supervisor:
+        // - Checks the configured battery cutoff and terminal input undervoltage.
+        // - Applies temperature and input-voltage derating with hysteresis.
+        // - Selects the effective power level and advances PWM attenuation.
+        // - Enforces current and short-circuit limits in the lower-level task.
+        // - Updates attenuation diagnostics, activity timing, and graph history.
+        // A terminal fault blocks here until the user resets the controller.
         pwrmgt_task();
 
-        /* Retry after supervision has ruled out terminal power faults.  The
-         * RF driver performs its own
-
-         * * clock-fault and tip-debounce checks too. */
+        // Retry after supervision has ruled out terminal power faults. The RF driver performs its own clock-fault and
+        // tip-debounce checks too.
         if (!rfgen_is_active() && rfgen_tip_allows_start())
         {
             rfgen_start();
@@ -203,14 +203,23 @@ int main(void)
 
         if (btn_has_short_press(true))
         {
-            pwrmgt_change_pwr_lvl();
+#ifdef SHOW_SPLASH
+            if (splash_visible)
+            {
+                splash_visible = false;
+            }
+            else
+#endif
+            {
+                pwrmgt_change_pwr_lvl();
+            }
         }
         if (btn_has_long_press(true))
         {
             enter_sleep_mode();
         }
 
-        uint32_t inactive_ms = pwrmgt_get_time_since_last_activity_ms();
+        inactive_ms = pwrmgt_get_time_since_last_activity_ms();
 
         if ((settings.auto_sleep != AUTO_SLEEP_OFF) && (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep]))
         {
@@ -220,11 +229,18 @@ int main(void)
         OLED_SetDimMode(&oled,
                         (settings.auto_dim != AUTO_DIM_OFF) && (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
 
-        /* Transient messages own the display while active.  Otherwise draw
-         * the live voltage and graph at no
+        // Transient messages own the display while active. Otherwise draw the live voltage and graph at no more than 15
+        // frames per second.
+        short_msg_active = short_msg_task();
 
-         * * more than 15 frames per second. */
-        if (!short_msg_task() && ((uint32_t)(now - display_last_frame_ms) >= MAIN_DISPLAY_FRAME_INTERVAL_MS))
+#ifdef SHOW_SPLASH
+        if (short_msg_active)
+        {
+            splash_visible = false;
+        }
+#endif
+
+        if (!short_msg_active && ((uint32_t)(now - display_last_frame_ms) >= MAIN_DISPLAY_FRAME_INTERVAL_MS))
         {
             display_last_frame_ms = now;
             main_render_display();
@@ -248,6 +264,10 @@ static void boot_check_for_setup(void)
     {
         Error_Handler();
     }
+
+#ifdef SHOW_SPLASH
+    splash_visible = false;
+#endif
 
     boot_draw_setup_hold(graphics, 0);
     hold_start_ms = systick_get_ms();
@@ -331,6 +351,21 @@ static void boot_wait_for_power_stable(void)
         uint16_t millivolts = adc_to_millivolts(DC_SENS_IDX);
         uint32_t now        = systick_get_ms();
 
+#ifdef SHOW_SPLASH
+        btn_task();
+        if (splash_visible && btn_has_short_press(true))
+        {
+            u8g2_t* graphics = OLED_GetGraphics(&oled);
+
+            splash_visible = false;
+            if (graphics != NULL)
+            {
+                u8g2_ClearBuffer(graphics);
+                OLED_SendBuffer(&oled);
+            }
+        }
+#endif
+
         if (millivolts > maximum_millivolts)
         {
             maximum_millivolts = millivolts;
@@ -354,12 +389,17 @@ static void boot_wait_for_power_stable(void)
             if (graphics != NULL)
             {
 #ifdef SHOW_SPLASH
-                u8g2_SetDrawColor(graphics, 0);
-                u8g2_DrawBox(graphics, 0, 0, 32, OLED_TEXT_LINE_HEIGHT);
-                u8g2_SetDrawColor(graphics, 1);
-#else
-                u8g2_ClearBuffer(graphics);
+                if (splash_visible)
+                {
+                    u8g2_SetDrawColor(graphics, 0);
+                    u8g2_DrawBox(graphics, 0, 0, 32, OLED_TEXT_LINE_HEIGHT);
+                    u8g2_SetDrawColor(graphics, 1);
+                }
+                else
 #endif
+                {
+                    u8g2_ClearBuffer(graphics);
+                }
                 u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, ".....");
                 OLED_SendBuffer(&oled);
             }
@@ -378,10 +418,14 @@ static void main_render_display(void)
     u8g2_t* graphics = OLED_GetGraphics(&oled);
 
 #ifdef SHOW_SPLASH
-    if (systick_get_ms() < SHOW_SPLASH_MS)
+    if (splash_visible)
     {
-        // show spash screen for at least some time
-        return;
+        if ((uint32_t)(systick_get_ms() - splash_started_ms) < SHOW_SPLASH_MS)
+        {
+            return;
+        }
+
+        splash_visible = false;
     }
 #endif
 

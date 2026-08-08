@@ -9751,16 +9751,20 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="4.47" y1="-2.6" x2="4.47" y2="-1.17" width="0.127" layer="21"/>
 <wire x1="-4.47" y1="2.63" x2="-4.47" y2="1.17" width="0.127" layer="21"/>
 <wire x1="4.47" y1="2.63" x2="4.47" y2="1.17" width="0.127" layer="21"/>
-<smd name="A12" x="2.75" y="3.88" dx="0.8" dy="1.2" layer="1"/>
-<smd name="B12" x="-2.75" y="3.88" dx="0.8" dy="1.2" layer="1"/>
+<smd name="A12" x="2.85" y="3.88" dx="1" dy="1.2" layer="1"/>
+<smd name="B12" x="-2.85" y="3.88" dx="1" dy="1.2" layer="1"/>
 <smd name="B9" x="-1.52" y="3.88" dx="0.76" dy="1.2" layer="1"/>
 <smd name="A9" x="1.52" y="3.88" dx="0.76" dy="1.2" layer="1"/>
 <smd name="A5" x="-0.5" y="3.88" dx="0.7" dy="1.2" layer="1"/>
 <smd name="B5" x="0.5" y="3.88" dx="0.7" dy="1.2" layer="1"/>
 <pad name="M2" x="-4.32" y="0" drill="1.2" diameter="2" shape="octagon" rot="R90"/>
 <pad name="M4" x="4.32" y="0" drill="1.2" diameter="2" shape="octagon" rot="R90"/>
-<pad name="M1" x="-4.32" y="3.8" drill="1.2" diameter="2" shape="square"/>
-<pad name="M3" x="4.32" y="3.8" drill="1.2" diameter="2" shape="square"/>
+<pad name="M1" x="-4.32" y="3.8" drill="1.2" diameter="2" shape="square" stop="no"/>
+<pad name="M3" x="4.32" y="3.8" drill="1.2" diameter="2" shape="square" stop="no"/>
+<rectangle x1="-5.35" y1="2.75" x2="-3.65" y2="4.85" layer="29"/>
+<rectangle x1="-5.35" y1="2.75" x2="-3.3" y2="4.85" layer="30"/>
+<rectangle x1="3.3" y1="2.75" x2="5.35" y2="4.85" layer="30"/>
+<rectangle x1="3.65" y1="2.75" x2="5.35" y2="4.85" layer="29"/>
 </package>
 <package name="TRIM_35WR1KLFTR">
 <wire x1="-1.6" y1="1.5" x2="-1.6" y2="-1.5" width="0.127" layer="51"/>
@@ -10121,20 +10125,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
 <text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
-<package name="IND-KOOLMU-2W">
-<pad name="2B" x="8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2A" x="13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1B" x="-8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1A" x="-13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
-<wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
-<wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>
-<wire x1="12.5" y1="-3" x2="12.5" y2="-16" width="0.127" layer="21"/>
-<wire x1="12.5" y1="-16" x2="-12.5" y2="-16" width="0.127" layer="21"/>
-<wire x1="-12.5" y1="-16" x2="-12.5" y2="-3" width="0.127" layer="21"/>
-<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
-<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
-</package>
 <package name="IND_PA4343.103NLT">
 <wire x1="-7" y1="-6.4" x2="-7" y2="6.4" width="0.127" layer="51"/>
 <wire x1="-7" y1="6.4" x2="7" y2="6.4" width="0.127" layer="51"/>
@@ -10192,38 +10182,6 @@ Max Component Height - 25.57mm</description>
 <wire x1="2.34" y1="7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
 <wire x1="2.34" y1="-7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
 <wire x1="2.333" y1="-7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
-</package>
-<package name="TO247-COMBO">
-<description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
-Max Component Height - 25.57mm</description>
-<pad name="1" x="0" y="5.44" drill="1.5" diameter="2.4" shape="square"/>
-<pad name="2" x="0" y="0" drill="1.5" diameter="2"/>
-<pad name="3" x="0" y="-5.44" drill="1.5" diameter="2.4"/>
-<wire x1="-2.287" y1="-7.957" x2="-2.287" y2="7.957" width="0.1" layer="51"/>
-<wire x1="-2.287" y1="-7.957" x2="2.333" y2="-7.957" width="0.1" layer="51"/>
-<wire x1="2.333" y1="-7.957" x2="2.733" y2="-7.957" width="0.1" layer="51"/>
-<wire x1="2.733" y1="-7.957" x2="2.733" y2="7.957" width="0.1" layer="51"/>
-<wire x1="-2.287" y1="7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
-<wire x1="2.333" y1="7.957" x2="2.733" y2="7.957" width="0.1" layer="51"/>
-<wire x1="-2.79" y1="-8.46" x2="-2.79" y2="8.46" width="0.1" layer="39"/>
-<wire x1="-2.79" y1="-8.46" x2="3.24" y2="-8.46" width="0.1" layer="39"/>
-<wire x1="0" y1="-0.5" x2="0" y2="0.5" width="0.1" layer="23"/>
-<wire x1="-0.5" y1="0" x2="0.5" y2="0" width="0.1" layer="23"/>
-<wire x1="3.24" y1="-8.46" x2="3.24" y2="8.46" width="0.1" layer="39"/>
-<wire x1="-2.79" y1="8.46" x2="3.24" y2="8.46" width="0.1" layer="39"/>
-<circle x="0" y="8.7" radius="0.15" width="0.3" layer="21"/>
-<wire x1="-2.29" y1="-7.96" x2="-2.29" y2="7.96" width="0.2" layer="21"/>
-<wire x1="-2.29" y1="-7.96" x2="2.34" y2="-7.96" width="0.2" layer="21"/>
-<wire x1="2.34" y1="-7.96" x2="2.74" y2="-7.96" width="0.2" layer="21"/>
-<wire x1="2.74" y1="-7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
-<wire x1="-2.29" y1="7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
-<text x="-2.84" y="9.254" size="2.032" layer="25" font="vector" ratio="13" rot="SR0">&gt;NAME</text>
-<text x="-2.84" y="-10.812" size="2.032" layer="27" font="vector" ratio="13" rot="SR0">&gt;VALUE</text>
-<wire x1="2.34" y1="7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
-<wire x1="2.34" y1="-7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
-<wire x1="2.333" y1="-7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
-<pad name="1B" x="0" y="2.6" drill="1" diameter="2" shape="square"/>
-<pad name="3B" x="0" y="-2.6" drill="1" diameter="2"/>
 </package>
 <package name="1X03">
 <wire x1="3.81" y1="0.635" x2="4.445" y2="1.27" width="0.2032" layer="21"/>
@@ -10501,6 +10459,56 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <smd name="3" x="1" y="0" dx="0.6" dy="1.35" layer="1"/>
 <text x="-1.73" y="1.73" size="0.4064" layer="25" rot="R180">&gt;NAME</text>
 <text x="3.46" y="1.73" size="0.4064" layer="27" rot="R180">&gt;VALUE</text>
+</package>
+<package name="IND-KOOLMU-2W">
+<pad name="2B" x="8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="2A" x="13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="1B" x="-8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="1A" x="-13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
+<wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
+<wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>
+<wire x1="12.5" y1="-3" x2="12.5" y2="-16" width="0.127" layer="21"/>
+<wire x1="12.5" y1="-16" x2="-12.5" y2="-16" width="0.127" layer="21"/>
+<wire x1="-12.5" y1="-16" x2="-12.5" y2="-3" width="0.127" layer="21"/>
+<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
+<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
+<smd name="1C" x="-11" y="0" dx="5" dy="2" layer="1" cream="no"/>
+<smd name="1D" x="-11" y="0" dx="5" dy="2" layer="16" cream="no"/>
+<smd name="2C" x="11" y="0" dx="5" dy="2" layer="1" cream="no"/>
+<smd name="2D" x="11" y="0" dx="5" dy="2" layer="16" cream="no"/>
+</package>
+<package name="TO247-COMBO">
+<description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
+Max Component Height - 25.57mm</description>
+<pad name="1" x="0" y="5.44" drill="1.5" diameter="2.6" shape="square"/>
+<pad name="2" x="0" y="0" drill="1.5" diameter="2"/>
+<pad name="3" x="0" y="-5.44" drill="1.5" diameter="2.6" shape="octagon"/>
+<wire x1="-2.287" y1="-7.957" x2="-2.287" y2="7.957" width="0.1" layer="51"/>
+<wire x1="-2.287" y1="-7.957" x2="2.333" y2="-7.957" width="0.1" layer="51"/>
+<wire x1="2.333" y1="-7.957" x2="2.733" y2="-7.957" width="0.1" layer="51"/>
+<wire x1="2.733" y1="-7.957" x2="2.733" y2="7.957" width="0.1" layer="51"/>
+<wire x1="-2.287" y1="7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
+<wire x1="2.333" y1="7.957" x2="2.733" y2="7.957" width="0.1" layer="51"/>
+<wire x1="-2.79" y1="-8.46" x2="-2.79" y2="8.46" width="0.1" layer="39"/>
+<wire x1="-2.79" y1="-8.46" x2="3.24" y2="-8.46" width="0.1" layer="39"/>
+<wire x1="0" y1="-0.5" x2="0" y2="0.5" width="0.1" layer="23"/>
+<wire x1="-0.5" y1="0" x2="0.5" y2="0" width="0.1" layer="23"/>
+<wire x1="3.24" y1="-8.46" x2="3.24" y2="8.46" width="0.1" layer="39"/>
+<wire x1="-2.79" y1="8.46" x2="3.24" y2="8.46" width="0.1" layer="39"/>
+<circle x="0" y="8.7" radius="0.15" width="0.3" layer="21"/>
+<wire x1="-2.29" y1="-7.96" x2="-2.29" y2="7.96" width="0.2" layer="21"/>
+<wire x1="-2.29" y1="-7.96" x2="2.34" y2="-7.96" width="0.2" layer="21"/>
+<wire x1="2.34" y1="-7.96" x2="2.74" y2="-7.96" width="0.2" layer="21"/>
+<wire x1="2.74" y1="-7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
+<wire x1="-2.29" y1="7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
+<text x="-2.84" y="9.254" size="2.032" layer="25" font="vector" ratio="13" rot="SR0">&gt;NAME</text>
+<text x="-2.84" y="-10.812" size="2.032" layer="27" font="vector" ratio="13" rot="SR0">&gt;VALUE</text>
+<wire x1="2.34" y1="7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
+<wire x1="2.34" y1="-7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
+<wire x1="2.333" y1="-7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
+<pad name="1B" x="0" y="3.2" drill="1" diameter="2" shape="square"/>
+<pad name="3B" x="0" y="-3.2" drill="1" diameter="2" shape="octagon"/>
 </package>
 </packages>
 <symbols>
@@ -14141,8 +14149,8 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 </device>
 <device name="-KOOLMU-2W" package="IND-KOOLMU-2W">
 <connects>
-<connect gate="G$1" pin="1" pad="1A 1B"/>
-<connect gate="G$1" pin="2" pad="2A 2B"/>
+<connect gate="G$1" pin="1" pad="1A 1B 1C 1D"/>
+<connect gate="G$1" pin="2" pad="2A 2B 2C 2D"/>
 </connects>
 <technologies>
 <technology name=""/>

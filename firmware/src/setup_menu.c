@@ -1,8 +1,11 @@
 /*
 This code module implements the setup menu, which allows the user to configure various settings of the device.
-The menu is displayed on an OLED screen and navigated using a button.
-The user can cycle through different configuration items, adjust their values, and save or discard changes before
-exiting the menu. This menu acts as it's own application, and exiting it will cause the device to reboot (into the
+The
+ * menu is displayed on an OLED screen and navigated using a button.
+The user can cycle through different configuration
+ * items, adjust their values, and save or discard changes before
+exiting the menu. This menu acts as it's own
+ * application, and exiting it will cause the device to reboot (into the
 normal application).
 */
 
@@ -32,7 +35,11 @@ normal application).
 #define SETUP_MENU_CHARS_PER_LINE  6
 #define SETUP_MENU_FIVE_CHAR_COUNT 5
 #define SETUP_MENU_CENTERED_MARGIN 1
+#ifdef SHOW_SPLASH
+#define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_SHOW_SPLASH
+#else
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_INPUT_V_CALIB
+#endif
 
 // -----------------------------------------------------------------------------
 // Types
@@ -47,6 +54,9 @@ enum
     SETUP_ITEM_IDLE_DETECT_THRESH,
     SETUP_ITEM_BATTERY_MODE,
     SETUP_ITEM_INPUT_V_CALIB,
+#ifdef SHOW_SPLASH
+    SETUP_ITEM_SHOW_SPLASH,
+#endif
     SETUP_ITEM_SAVE_AND_EXIT,
     SETUP_ITEM_EXIT_NO_SAVE,
     SETUP_MENU_ITEM_COUNT,
@@ -106,6 +116,14 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
                                           .items     = "0|+1|+2|+3|+4|+5|-1|-2|-3|-4|-5",
                                           .items_cnt = 11,
                                           },
+#ifdef SHOW_SPLASH
+    [SETUP_ITEM_SHOW_SPLASH] =
+        {
+                                          .title     = "SHOW\nSPLASH",
+                                          .items     = "NO|YES",
+                                          .items_cnt = 2,
+                                          },
+#endif
     [SETUP_ITEM_SAVE_AND_EXIT] =
         {
                                           .title     = "SAVE\nAND\nEXIT",
@@ -233,6 +251,10 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t
         return settings->batt_mode;
     case SETUP_ITEM_INPUT_V_CALIB:
         return settings->input_v_calib;
+#ifdef SHOW_SPLASH
+    case SETUP_ITEM_SHOW_SPLASH:
+        return settings->show_splash;
+#endif
     default:
         return 0;
     }
@@ -283,6 +305,11 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
     case SETUP_ITEM_INPUT_V_CALIB:
         settings->input_v_calib = value;
         break;
+#ifdef SHOW_SPLASH
+    case SETUP_ITEM_SHOW_SPLASH:
+        settings->show_splash = value;
+        break;
+#endif
     default:
         break;
     }
@@ -401,7 +428,8 @@ static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
     NVIC_SystemReset();
 
     /* NVIC_SystemReset() does not return, but keep control contained if a
-     * debugger suppresses the reset request. */
+     * debugger suppresses the reset request.
+     */
     for (;;)
     {
     }

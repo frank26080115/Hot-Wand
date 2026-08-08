@@ -7,8 +7,12 @@
 // User Interaction and Setup
 // -----------------------------------------------------------------------------
 
-#define SHOW_SPLASH
+#define SHOW_SPLASH    // the 5 splash screens use about 3 kb of memory
 #define SHOW_SPLASH_MS 2000
+
+#if defined(SHOW_SPLASH) && (SHOW_SPLASH_MS == 0)
+#error "SHOW_SPLASH_MS must be nonzero when splash screens are enabled"
+#endif
 
 #ifndef BTN_LONG_PRESS_MS
 #define BTN_LONG_PRESS_MS 1000

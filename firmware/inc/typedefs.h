@@ -81,7 +81,8 @@ typedef struct __attribute__((packed, aligned(2)))
     uint8_t auto_dim : 2;
     uint8_t idle_detect_thresh : 3;
     uint8_t batt_mode : 3;
-    uint8_t rsvd_1 : 2;
+    uint8_t show_splash : 1;
+    uint8_t rsvd_1 : 1;
 
     uint8_t  input_v_calib : 4;
     uint8_t  rsvd_2 : 4;
