@@ -67,7 +67,7 @@ While SergeyMax used a classic HD44780 chipset 16x2 LCD screen, I wanted to use 
 
 Fun fact... more modern STM32 families, like STM32C or STM32G, don't offer the same pin-out or crystal inputs for their smaller packages. But luckily, while exceeding 16kb, the firmware is still under 32kb, so I don't need to upgrade beyond a STM32F042.
 
-With all the pins assigned, I still had two ADC capable pins left, so I added footprints to connect two NTC thermistors, just in case I want to monitor temperatures in the circuit somewhere.
+With all the pins assigned, I still had two ADC capable pins left, so I added footprints to connect two NTC thermistors, just in case I want to monitor temperatures in the circuit somewhere. The buck converter is going to get hot but it's got an internal thermal cutoff, the two MOSFETs do not have anything monitoring them, so these are the primary suspects.
 
 ### DC Power Input
 

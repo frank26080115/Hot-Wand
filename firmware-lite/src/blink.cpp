@@ -13,7 +13,7 @@
 
 #include <Arduino.h>
 
-#include "hotwandlite_pins.h"
+#include "hotwandlite.h"
 
 // -----------------------------------------------------------------------------
 // Configuration

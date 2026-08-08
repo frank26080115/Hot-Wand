@@ -14,7 +14,7 @@
 #include <Arduino.h>
 
 #include "blink.h"
-#include "hotwandlite_pins.h"
+#include "hotwandlite.h"
 #include "rfgen.h"
 
 // -----------------------------------------------------------------------------
@@ -26,8 +26,8 @@ namespace
 /*
  * The schematic uses 4.7 kOhm above the ADC node and 470 Ohm below it, giving
  * an exact 11:1 input-to-ADC ratio.
- * AR_DEFAULT uses the 3.3 V analog supply as
- * the effective full-scale input on this SAMD21 Arduino core.
+ * Both XIAO boards use their nominal 3.3 V analog supply as the ADC full
+ * scale. The per-board initialization below requests a 12-bit result.
  */
 constexpr uint32_t kAdcReferenceMv    = 3300;
 constexpr uint32_t kAdcMaximumReading = 4095;
@@ -218,7 +218,15 @@ static void initialize_hardware()
     pinMode(SEL3_PIN, INPUT_PULLUP);
     pinMode(ADC_PIN, INPUT);
 
+#if defined(HOT_WAND_TARGET_XIAO_SAMD21)
+    // The SAMD21 core requires an explicit selection of its 3.3 V supply.
     analogReference(AR_DEFAULT);
+#elif defined(HOT_WAND_TARGET_XIAO_RP2040)
+    // RP2040 ADC reference selection is fixed in hardware; this Arduino core
+    // intentionally has no analogReference() API.
+#else
+#error "Unsupported target for power-management ADC setup"
+#endif
     analogReadResolution(12);
 
     g_hardwareInitialized = true;

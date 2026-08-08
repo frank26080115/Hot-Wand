@@ -14481,6 +14481,8 @@ short = 5A</text>
 <text x="179.07" y="-597.408" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V
 (26K eqv)</text>
 <text x="43.18" y="-162.56" size="5.08" layer="97">RF Class-E Amp and Matching</text>
+<text x="50.8" y="-347.98" size="1.27" layer="97" align="top-left">wired to be compatible with
+both SAMD21 and RP2040</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">

@@ -20,16 +20,11 @@
 #include <Arduino.h>
 #include <wiring_private.h>
 
-#include "hotwandlite_pins.h"
+#include "hotwandlite.h"
 
 // -----------------------------------------------------------------------------
 // Configuration
 // -----------------------------------------------------------------------------
-
-static constexpr uint8_t  kMaximumPowerPercent  = 100;
-static constexpr uint32_t kDefaultBurstPeriodMs = 10;
-static constexpr uint32_t kPowerRampDurationMs  = 1000;
-static constexpr uint32_t kRfFrequencyHz        = 470000;
 
 // GCLK0 is the 48 MHz CPU clock. 102 clocks produce 470.588 kHz.
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (kRfFrequencyHz / 2)) / kRfFrequencyHz;

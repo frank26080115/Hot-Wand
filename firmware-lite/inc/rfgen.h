@@ -11,6 +11,12 @@
  * @param period_ms Burst period at partial power. The default, and an explicit zero,
  * select 10 ms.
  */
+
+#define kMaximumPowerPercent  100
+#define kDefaultBurstPeriodMs 10
+#define kPowerRampDurationMs  1000
+#define kRfFrequencyHz        470000
+
 #ifdef __cplusplus
 extern "C"
 {
