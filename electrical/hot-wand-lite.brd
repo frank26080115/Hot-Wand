@@ -787,36 +787,6 @@ Max Component Height - 1.45mm</description>
 <pad name="13" x="7.62" y="5.08" drill="1"/>
 <pad name="14" x="7.62" y="7.62" drill="1"/>
 </package>
-<package name="1X03_LOCK">
-<wire x1="3.81" y1="0.635" x2="4.445" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="4.445" y1="1.27" x2="5.715" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="5.715" y1="1.27" x2="6.35" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="6.35" y1="-0.635" x2="5.715" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="5.715" y1="-1.27" x2="4.445" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="4.445" y1="-1.27" x2="3.81" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-0.635" y1="1.27" x2="0.635" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="0.635" y1="1.27" x2="1.27" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="1.27" y1="-0.635" x2="0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="1.27" y1="0.635" x2="1.905" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="1.905" y1="1.27" x2="3.175" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="3.175" y1="1.27" x2="3.81" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="3.81" y1="-0.635" x2="3.175" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="3.175" y1="-1.27" x2="1.905" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="1.905" y1="-1.27" x2="1.27" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-0.635" y1="1.27" x2="-1.27" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="-1.27" y1="-0.635" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="0.635" y1="-1.27" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="6.35" y1="0.635" x2="6.35" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="2" x="2.54" y="-0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="3" x="5.08" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<text x="-1.3462" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-1.27" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="4.826" y1="-0.254" x2="5.334" y2="0.254" layer="51"/>
-<rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
-<rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
-</package>
 <package name="1X04_LOCK">
 <wire x1="6.985" y1="1.27" x2="8.255" y2="1.27" width="0.2032" layer="21"/>
 <wire x1="8.255" y1="1.27" x2="8.89" y2="0.635" width="0.2032" layer="21"/>
@@ -863,6 +833,72 @@ Max Component Height - 1.45mm</description>
 <wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
 <text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+</package>
+<package name="1X06_LOCK">
+<description>This footprint was designed to help hold the alignment of a through-hole component (i.e.  6-pin header) while soldering it into place.  
+You may notice that each hole has been shifted either up or down by 0.005 of an inch from it's more standard position (which is a perfectly straight line).  
+This slight alteration caused the pins (the squares in the middle) to touch the edges of the holes.  Because they are alternating, it causes a "brace" 
+to hold the component in place.  0.005 has proven to be the perfect amount of "off-center" position when using our standard breakaway headers.
+Although looks a little odd when you look at the bare footprint, once you have a header in there, the alteration is very hard to notice.  Also,
+if you push a header all the way into place, it is covered up entirely on the bottom side.  This idea of altering the position of holes to aid alignment 
+will be further integrated into the Sparkfun Library for other footprints.  It can help hold any component with 3 or more connection pins.</description>
+<wire x1="-1.27" y1="0.508" x2="-0.635" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="-0.635" y1="1.143" x2="0.635" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="0.635" y1="1.143" x2="1.27" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="0.508" x2="1.905" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="1.905" y1="1.143" x2="3.175" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="3.175" y1="1.143" x2="3.81" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="3.81" y1="0.508" x2="4.445" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="4.445" y1="1.143" x2="5.715" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="5.715" y1="1.143" x2="6.35" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="6.35" y1="0.508" x2="6.985" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="6.985" y1="1.143" x2="8.255" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="8.255" y1="1.143" x2="8.89" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="8.89" y1="0.508" x2="9.525" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="9.525" y1="1.143" x2="10.795" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="10.795" y1="1.143" x2="11.43" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="11.43" y1="0.508" x2="12.065" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="12.065" y1="1.143" x2="13.335" y2="1.143" width="0.2032" layer="21"/>
+<wire x1="13.335" y1="1.143" x2="13.97" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="13.97" y1="0.508" x2="13.97" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="13.97" y1="-0.762" x2="13.335" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="13.335" y1="-1.397" x2="12.065" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="12.065" y1="-1.397" x2="11.43" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="11.43" y1="-0.762" x2="10.795" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="10.795" y1="-1.397" x2="9.525" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="9.525" y1="-1.397" x2="8.89" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="8.89" y1="-0.762" x2="8.255" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="8.255" y1="-1.397" x2="6.985" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="6.985" y1="-1.397" x2="6.35" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="6.35" y1="-0.762" x2="5.715" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="5.715" y1="-1.397" x2="4.445" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="4.445" y1="-1.397" x2="3.81" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="3.81" y1="-0.762" x2="3.175" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="3.175" y1="-1.397" x2="1.905" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="1.905" y1="-1.397" x2="1.27" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="-0.762" x2="0.635" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="0.635" y1="-1.397" x2="-0.635" y2="-1.397" width="0.2032" layer="21"/>
+<wire x1="-0.635" y1="-1.397" x2="-1.27" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="-1.27" y1="-0.762" x2="-1.27" y2="0.508" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="0.508" x2="1.27" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="3.81" y1="0.508" x2="3.81" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="6.35" y1="0.508" x2="6.35" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="8.89" y1="0.508" x2="8.89" y2="-0.762" width="0.2032" layer="21"/>
+<wire x1="11.43" y1="0.508" x2="11.43" y2="-0.762" width="0.2032" layer="21"/>
+<pad name="1" x="0" y="0" drill="1" diameter="1.8796" shape="square"/>
+<pad name="2" x="2.54" y="-0.354" drill="1" diameter="1.8796"/>
+<pad name="3" x="5.08" y="0.1" drill="1" diameter="1.8796"/>
+<pad name="4" x="7.62" y="-0.354" drill="1" diameter="1.8796"/>
+<pad name="5" x="10.16" y="0.1" drill="1" diameter="1.8796"/>
+<pad name="6" x="12.7" y="-0.354" drill="1" diameter="1.8796" shape="octagon"/>
+<text x="-1.27" y="1.778" size="1.27" layer="25" font="vector">&gt;NAME</text>
+<text x="-1.27" y="-3.302" size="1.27" layer="27" font="vector">&gt;VALUE</text>
+<rectangle x1="-0.2921" y1="-0.4191" x2="0.2921" y2="0.1651" layer="51"/>
+<rectangle x1="2.2479" y1="-0.4191" x2="2.8321" y2="0.1651" layer="51"/>
+<rectangle x1="4.7879" y1="-0.4191" x2="5.3721" y2="0.1651" layer="51"/>
+<rectangle x1="7.3279" y1="-0.4191" x2="7.9121" y2="0.1651" layer="51"/>
+<rectangle x1="9.8679" y1="-0.4191" x2="10.4521" y2="0.1651" layer="51"/>
+<rectangle x1="12.4079" y1="-0.4191" x2="12.9921" y2="0.1651" layer="51"/>
 </package>
 </packages>
 </library>
@@ -1271,11 +1307,6 @@ Max Component Height - 1.45mm</description>
 <attribute name="VALUE" x="17.843" y="23.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
 <attribute name="JLCPARTNUM" value="C23153" x="17" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="SJ2" library="hot-wand" package="SJ_2S-NO" value="" x="14.2" y="21.9" smashed="yes" rot="MR270">
-<attribute name="NAME" x="12.83" y="22.208" size="0.8128" layer="26" font="fixed" rot="MR270"/>
-<attribute name="VALUE" x="15.851" y="22.808" size="0.4064" layer="28" rot="MR270"/>
-<attribute name="JLC-DNP" value="1" x="14.2" y="21.9" size="1.778" layer="28" rot="MR270" display="off"/>
-</element>
 <element name="SJ1" library="hot-wand" package="SJ_2S-NO" value="" x="24" y="5.5" smashed="yes" rot="MR90">
 <attribute name="JLC-DNP" value="1" x="24" y="5.5" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="NAME" x="25.27" y="4.592" size="0.8128" layer="26" font="fixed" rot="MR90"/>
@@ -1401,11 +1432,6 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="97" y="70.35" size="0.8128" layer="25" font="fixed" rot="R270"/>
 <attribute name="JLC-DNP" value="1" x="88" y="62" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="JP5" library="hot-wand" package="1X03_LOCK" value="" x="2.1" y="19" smashed="yes" rot="R90">
-<attribute name="NAME" x="3.7288" y="19.9462" size="0.8128" layer="25" font="fixed" ratio="10" rot="R270"/>
-<attribute name="VALUE" x="5.275" y="17.73" size="1.27" layer="27" rot="R90"/>
-<attribute name="JLC-DNP" value="1" x="2.1" y="19" size="1.778" layer="27" rot="R90" display="off"/>
-</element>
 <element name="R17" library="hot-wand" package="0603-RES" value="3K" x="19" y="27.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="19.862" y="27.911" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="18.857" y="28.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
@@ -1415,11 +1441,6 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="108.1712" y="53.0538" size="0.8128" layer="25" font="fixed" ratio="10" rot="R90"/>
 <attribute name="VALUE" x="113.175" y="53.13" size="1.27" layer="27" rot="R90"/>
 <attribute name="JLC-DNP" value="1" x="110" y="54.4" size="1.778" layer="27" rot="R90" display="off"/>
-</element>
-<element name="JP4" library="hot-wand" package="1X03_LOCK" value="" x="2.1" y="13.9" smashed="yes" rot="R270">
-<attribute name="NAME" x="3.7288" y="15.2462" size="0.8128" layer="25" font="fixed" ratio="10" rot="R270"/>
-<attribute name="VALUE" x="-1.075" y="15.17" size="1.27" layer="27" rot="R270"/>
-<attribute name="JLC-DNP" value="1" x="2.1" y="13.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="R6" library="hot-wand" package="0603-RES" value="1K" x="108.4" y="44.3" smashed="yes" rot="MR270">
 <attribute name="JLCPARTNUM" value="C21190" x="108.4" y="44.3" size="1.778" layer="28" rot="MR270" display="off"/>
@@ -1453,6 +1474,10 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="19.862" y="22.811" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="20.857" y="22.784" size="0.8128" layer="28" font="vector" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C23242" x="19" y="23.9" size="1.778" layer="28" rot="MR270" display="off"/>
+</element>
+<element name="JP5" library="hot-wand" package="1X06_LOCK" value="" x="2" y="8.8" smashed="yes" rot="R90">
+<attribute name="NAME" x="3.57" y="7.122" size="0.8128" layer="25" font="fixed" rot="R180"/>
+<attribute name="VALUE" x="5.302" y="7.53" size="1.27" layer="27" font="vector" rot="R90"/>
 </element>
 </elements>
 <signals>
@@ -1539,8 +1564,6 @@ Max Component Height - 1.45mm</description>
 <contactref element="C12" pad="2"/>
 <contactref element="IC2" pad="1"/>
 <contactref element="U1" pad="13"/>
-<contactref element="SJ2" pad="2"/>
-<contactref element="JP5" pad="2"/>
 <contactref element="JP1" pad="2_1"/>
 <contactref element="JP1" pad="3_1"/>
 <contactref element="JP1" pad="3_2"/>
@@ -1550,8 +1573,6 @@ Max Component Height - 1.45mm</description>
 <contactref element="LED2" pad="C"/>
 <wire x1="111" y1="40.3" x2="111" y2="39.4" width="0.4064" layer="1"/>
 <contactref element="R16" pad="2"/>
-<contactref element="JP5" pad="3"/>
-<contactref element="JP4" pad="1"/>
 <via x="26.8" y="37.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="38" y="37.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="40" y="39" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1920,6 +1941,11 @@ Max Component Height - 1.45mm</description>
 <vertex x="52.2" y="67.7"/>
 <vertex x="48.5" y="67.7"/>
 </polygon>
+<contactref element="JP5" pad="4"/>
+<contactref element="JP5" pad="6"/>
+<via x="11" y="16" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="14" y="16" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="7" y="16" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -1985,7 +2011,6 @@ Max Component Height - 1.45mm</description>
 <contactref element="C17" pad="2"/>
 <contactref element="C18" pad="2"/>
 <contactref element="IC2" pad="3"/>
-<contactref element="JP4" pad="3"/>
 <wire x1="24" y1="10.54" x2="24" y2="12.9" width="1" layer="1"/>
 <wire x1="24" y1="12.9" x2="24" y2="35" width="1" layer="1"/>
 <wire x1="24" y1="35" x2="25" y2="36" width="1" layer="1"/>
@@ -2007,12 +2032,14 @@ Max Component Height - 1.45mm</description>
 <wire x1="54.45" y1="64.7" x2="54.55" y2="64.6" width="0.6" layer="16"/>
 <wire x1="54.55" y1="64.6" x2="54.55" y2="61.6" width="0.6" layer="16"/>
 <wire x1="54.55" y1="61.6" x2="54" y2="61.6" width="0.6" layer="16"/>
-<wire x1="2.227" y1="8.82" x2="6.82" y2="8.82" width="0.4064" layer="1"/>
 <wire x1="6.82" y1="8.82" x2="11" y2="13" width="0.4064" layer="1"/>
 <wire x1="11" y1="13" x2="24" y2="13" width="0.4064" layer="1"/>
 <wire x1="24" y1="13" x2="24" y2="12.9" width="0.4064" layer="1"/>
 <wire x1="26.95" y1="10.5" x2="24" y2="10.5" width="1" layer="16"/>
 <wire x1="24" y1="10.5" x2="24" y2="10.54" width="1" layer="16"/>
+<contactref element="JP5" pad="1"/>
+<wire x1="6.82" y1="8.82" x2="2.02" y2="8.82" width="0.4064" layer="1"/>
+<wire x1="2.02" y1="8.82" x2="2" y2="8.8" width="0.4064" layer="1"/>
 </signal>
 <signal name="MCU-RF">
 <contactref element="U2" pad="6"/>
@@ -2342,11 +2369,6 @@ Max Component Height - 1.45mm</description>
 <contactref element="R15" pad="1"/>
 <wire x1="14.2" y1="27.45" x2="14.2" y2="25.55" width="0.3048" layer="16"/>
 </signal>
-<signal name="N$55">
-<contactref element="R15" pad="2"/>
-<contactref element="SJ2" pad="1"/>
-<wire x1="14.2" y1="23.85" x2="14.2" y2="22.35" width="0.4064" layer="16"/>
-</signal>
 <signal name="N$57">
 <contactref element="R13" pad="2"/>
 <contactref element="R12" pad="1"/>
@@ -2458,7 +2480,6 @@ Max Component Height - 1.45mm</description>
 <contactref element="L3" pad="2"/>
 <contactref element="L4" pad="1"/>
 <contactref element="C9" pad="2"/>
-<wire x1="73" y1="27.3" x2="73" y2="28.3" width="1" layer="16"/>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.6096" thermals="no" rank="3">
 <vertex x="72.1" y="18.6"/>
 <vertex x="72.6" y="18.1"/>
@@ -2506,13 +2527,14 @@ Max Component Height - 1.45mm</description>
 <vertex x="111.5" y="35.2"/>
 </polygon>
 </signal>
-<signal name="SWDIO">
+<signal name="FAN-CTRL">
 <contactref element="R7" pad="1"/>
 <contactref element="R8" pad="1"/>
-<contactref element="JP4" pad="2"/>
 <wire x1="16.45" y1="7.1" x2="12.19" y2="11.36" width="0.4064" layer="16"/>
-<wire x1="12.19" y1="11.36" x2="1.973" y2="11.36" width="0.4064" layer="16"/>
 <wire x1="16.45" y1="5" x2="16.45" y2="7.1" width="0.6" layer="16"/>
+<contactref element="JP5" pad="2"/>
+<wire x1="12.19" y1="11.36" x2="2.374" y2="11.36" width="0.4064" layer="16"/>
+<wire x1="2.374" y1="11.36" x2="2.354" y2="11.34" width="0.4064" layer="16"/>
 </signal>
 <signal name="5V">
 <contactref element="C15" pad="A"/>
@@ -2530,12 +2552,14 @@ Max Component Height - 1.45mm</description>
 <signal name="3V3">
 <contactref element="U1" pad="12"/>
 </signal>
-<signal name="N$9">
-<contactref element="JP5" pad="1"/>
-<wire x1="19" y1="20" x2="18" y2="19" width="0.4064" layer="16"/>
-<wire x1="18" y1="19" x2="1.973" y2="19" width="0.4064" layer="16"/>
+<signal name="USB-V-SEL">
 <contactref element="R18" pad="2"/>
 <wire x1="19" y1="23.05" x2="19" y2="20" width="0.4064" layer="16"/>
+<contactref element="JP5" pad="3"/>
+<wire x1="19" y1="20" x2="14" y2="15" width="0.4064" layer="16"/>
+<wire x1="14" y1="15" x2="7" y2="15" width="0.4064" layer="16"/>
+<wire x1="7" y1="15" x2="5.88" y2="13.88" width="0.4064" layer="16"/>
+<wire x1="5.88" y1="13.88" x2="1.9" y2="13.88" width="0.4064" layer="16"/>
 </signal>
 <signal name="SEL3">
 <contactref element="U1" pad="5"/>
@@ -2597,6 +2621,12 @@ Max Component Height - 1.45mm</description>
 <contactref element="R18" pad="1"/>
 <contactref element="R17" pad="2"/>
 <wire x1="19" y1="26.45" x2="19" y2="24.75" width="0.4064" layer="16"/>
+</signal>
+<signal name="USB-I-SEL">
+<contactref element="JP5" pad="5"/>
+<contactref element="R15" pad="2"/>
+<wire x1="14.2" y1="23.85" x2="9.31" y2="18.96" width="0.4064" layer="16"/>
+<wire x1="9.31" y1="18.96" x2="1.9" y2="18.96" width="0.4064" layer="16"/>
 </signal>
 </signals>
 </board>
