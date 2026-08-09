@@ -15,6 +15,7 @@ The user's preferred power level is used, but can be limited by temperature or i
 #include "button.h"
 #include "conf.h"
 #include "fault.h"
+#include "miscutils.h"
 #include "pins.h"
 #include "pwrlvl.h"
 #include "systick.h"
@@ -262,6 +263,7 @@ void pwrmgt_change_pwr_lvl(void)
                 pwrmgt_temperature_limited ? pwrmgt_too_hot_message : pwrmgt_low_voltage_message;
             pwrmgt_blocked_release_pending = false;
         }
+        btn_reset_consecutive_presses();
         return;
     }
 
@@ -282,6 +284,22 @@ void pwrmgt_change_pwr_lvl(void)
         pwrmgt_desired_power_level = pwrmgt_change_direction_up ? PWRLVL_MODE_100_PERCENT : PWRLVL_MODE_50_PERCENT;
         break;
     }
+
+    // clang-format off
+    if (btn_get_consecutive_presses() >= 6)
+    {
+        btn_reset_consecutive_presses();
+        uint8_t r = hotwand_rand() % 5;
+        switch (r)
+        {
+        case 0: show_short_msg("SKILL\nISSUE\n  ?  "    , 1000); break;
+        case 1: show_short_msg("BRUH.\nSTOP."           , 1000); break;
+        case 2: show_short_msg("GIT\nGOOD"              , 1000); break;
+        case 3: show_short_msg("IT'S\nOVER\n9000\n!!!!!", 1000); break;
+        case 4: show_short_msg("THE\nCAKE\nIS A\nLIE !!", 1000); break;
+        }
+    }
+    // clang-format on
 }
 
 // -----------------------------------------------------------------------------
