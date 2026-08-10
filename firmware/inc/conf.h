@@ -141,9 +141,10 @@
 #define OLED_MAX_PIXEL_SHIFT_Y           3
 
 /* Portrait power graph: 28 text pixels plus a 100-pixel, 0-100 W plot. */
-/* Each 100 ms column captures the interval's peak; 32 columns show 3.2 seconds. */
+/* The 16-entry ring retains each x ms interval peak, including the current interval. */
+/* Rendering shows live power in the center pair and mirrors the 15 completed peaks outward. */
 #define PWRMGT_GRAPH_TEXT_HEIGHT_PX     28
-#define PWRMGT_GRAPH_UPDATE_INTERVAL_MS 100
+#define PWRMGT_GRAPH_UPDATE_INTERVAL_MS 250
 #define PWRMGT_GRAPH_MAX_POWER_MW       100000
 
 #if PWRMGT_GRAPH_TEXT_HEIGHT_PX >= 128

@@ -33,6 +33,12 @@ _Static_assert((THERM_2_IDX == (THERM_1_IDX + 1)) && (MCU_TEMP_IDX == (THERM_2_I
 #define PWRMGT_GRAPH_WIDTH_PX         32
 #define PWRMGT_GRAPH_SCREEN_HEIGHT_PX 128
 #define PWRMGT_GRAPH_HEIGHT_PX        (PWRMGT_GRAPH_SCREEN_HEIGHT_PX - PWRMGT_GRAPH_TEXT_HEIGHT_PX)
+#define PWRMGT_HISTORY_RECORD_COUNT   16
+#define PWRMGT_GRAPH_CENTER_LEFT_X    ((PWRMGT_GRAPH_WIDTH_PX / 2) - 1)
+#define PWRMGT_GRAPH_CENTER_RIGHT_X   (PWRMGT_GRAPH_WIDTH_PX / 2)
+
+_Static_assert(PWRMGT_GRAPH_WIDTH_PX == (PWRMGT_HISTORY_RECORD_COUNT * 2),
+               "each power-history record must map to one mirrored column pair");
 
 #define PWRMGT_POWER_50W_MW  50000
 #define PWRMGT_POWER_75W_MW  75000
@@ -58,9 +64,8 @@ static uint8_t       pwrmgt_blocked_change_count;
 static const char*   pwrmgt_pending_blocked_message;
 static uint32_t      pwrmgt_blocked_release_started_ms;
 static bool          pwrmgt_blocked_release_pending;
-static uint8_t       pwrmgt_power_history[PWRMGT_GRAPH_WIDTH_PX];
+static uint32_t      pwrmgt_power_history_mw[PWRMGT_HISTORY_RECORD_COUNT];
 static uint8_t       pwrmgt_history_push_idx;
-static uint32_t      pwrmgt_history_maximum_mw;
 static uint8_t       pwrmgt_graph_dotted_phase;
 static uint32_t      pwrmgt_history_last_update_ms;
 static uint32_t      pwrmgt_idle_started_ms;
@@ -72,8 +77,9 @@ static bool          pwrmgt_is_idle;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static uint8_t  pwrmgt_history_peek(uint8_t position);
-static void     pwrmgt_history_push(uint32_t power_milliwatts, bool increment_pointer);
+static uint32_t pwrmgt_history_peek(uint8_t age);
+static void     pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_segment);
+static void     pwrmgt_draw_power_pair(u8g2_t* graphics, uint8_t distance_from_center, uint32_t power_milliwatts);
 static uint8_t  pwrmgt_power_to_pixels(uint32_t power_milliwatts);
 static uint32_t pwrmgt_get_applied_limit_mw(void);
 static void     pwrmgt_blocked_change_task(void);
@@ -187,18 +193,18 @@ void pwrmgt_task(void)
     }
 
     {
-        bool increment_pointer = false;
+        bool start_new_segment = false;
 
         if ((uint32_t)(now - pwrmgt_history_last_update_ms) >= PWRMGT_GRAPH_UPDATE_INTERVAL_MS)
         {
             pwrmgt_history_last_update_ms = now;
-            increment_pointer             = true;
+            start_new_segment             = true;
             pwrmgt_graph_dotted_phase ^= 1;
         }
 
         /* Capture the peak between graph updates, not merely one sample at
          * the graph-update boundary. */
-        pwrmgt_history_push(power_milliwatts, increment_pointer);
+        pwrmgt_history_push(power_milliwatts, start_new_segment);
     }
 }
 
@@ -206,7 +212,7 @@ void pwrmgt_render_graph(u8g2_t* graphics)
 {
     uint32_t limit_milliwatts;
     uint8_t  limit_pixels;
-    uint8_t  pixels;
+    uint8_t  age;
     uint8_t  x;
 
     if (graphics == NULL)
@@ -219,13 +225,17 @@ void pwrmgt_render_graph(u8g2_t* graphics)
     u8g2_DrawBox(graphics, 0, PWRMGT_GRAPH_TEXT_HEIGHT_PX, PWRMGT_GRAPH_WIDTH_PX, PWRMGT_GRAPH_HEIGHT_PX);
     u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
 
-    for (x = 0; x < PWRMGT_GRAPH_WIDTH_PX; ++x)
+    /* The center pair is sampled at display-render time, so it follows the
+     * fixed fast frame rate instead of
+     * showing the current segment's peak. */
+    pwrmgt_draw_power_pair(graphics, 0, adc_get_milliwatts());
+
+    /* Completed peak segments run backward in time from the center.  Each
+     * value is mirrored so the oldest
+     * retained segment reaches both edges. */
+    for (age = 1; age < PWRMGT_HISTORY_RECORD_COUNT; ++age)
     {
-        pixels = pwrmgt_history_peek(x);
-        if (pixels != 0)
-        {
-            u8g2_DrawVLine(graphics, x, PWRMGT_GRAPH_SCREEN_HEIGHT_PX - pixels, pixels);
-        }
+        pwrmgt_draw_power_pair(graphics, age, pwrmgt_history_peek(age));
     }
 
     /* The dotted XOR line represents the specified ceiling, whether selected
@@ -348,41 +358,64 @@ uint32_t pwrmgt_get_time_since_last_activity_ms(void)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static uint8_t pwrmgt_history_peek(uint8_t position)
+static uint32_t pwrmgt_history_peek(uint8_t age)
 {
-    /* The slot after the current write slot is the oldest. Position zero is
-     * therefore the left edge, while position 31 is the current/right edge. */
-    uint8_t index = (uint8_t)(pwrmgt_history_push_idx + position + 1);
+    uint8_t index;
 
-    if (index >= PWRMGT_GRAPH_WIDTH_PX)
+    if (age >= PWRMGT_HISTORY_RECORD_COUNT)
     {
-        index = (uint8_t)(index - PWRMGT_GRAPH_WIDTH_PX);
+        return 0;
     }
 
-    return pwrmgt_power_history[index];
+    if (pwrmgt_history_push_idx >= age)
+    {
+        index = (uint8_t)(pwrmgt_history_push_idx - age);
+    }
+    else
+    {
+        index = (uint8_t)(PWRMGT_HISTORY_RECORD_COUNT + pwrmgt_history_push_idx - age);
+    }
+
+    return pwrmgt_power_history_mw[index];
 }
 
-static void pwrmgt_history_push(uint32_t power_milliwatts, bool increment_pointer)
+static void pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_segment)
 {
-    if (increment_pointer)
+    if (start_new_segment)
     {
         ++pwrmgt_history_push_idx;
-        if (pwrmgt_history_push_idx >= PWRMGT_GRAPH_WIDTH_PX)
+        if (pwrmgt_history_push_idx >= PWRMGT_HISTORY_RECORD_COUNT)
         {
             pwrmgt_history_push_idx = 0;
         }
 
-        /* The recycled slot must represent zero until this interval observes
-         * a nonzero maximum. */
-        pwrmgt_power_history[pwrmgt_history_push_idx] = 0;
-        pwrmgt_history_maximum_mw                     = 0;
+        /* The recycled slot is the new in-progress segment. */
+        pwrmgt_power_history_mw[pwrmgt_history_push_idx] = 0;
     }
 
-    if (power_milliwatts > pwrmgt_history_maximum_mw)
+    if (power_milliwatts > pwrmgt_power_history_mw[pwrmgt_history_push_idx])
     {
-        pwrmgt_history_maximum_mw                     = power_milliwatts;
-        pwrmgt_power_history[pwrmgt_history_push_idx] = pwrmgt_power_to_pixels(power_milliwatts);
+        pwrmgt_power_history_mw[pwrmgt_history_push_idx] = power_milliwatts;
     }
+}
+
+static void pwrmgt_draw_power_pair(u8g2_t* graphics, uint8_t distance_from_center, uint32_t power_milliwatts)
+{
+    uint8_t left_x;
+    uint8_t pixels;
+    uint8_t right_x;
+
+    pixels = pwrmgt_power_to_pixels(power_milliwatts);
+    if (pixels == 0)
+    {
+        return;
+    }
+
+    left_x  = (uint8_t)(PWRMGT_GRAPH_CENTER_LEFT_X - distance_from_center);
+    right_x = (uint8_t)(PWRMGT_GRAPH_CENTER_RIGHT_X + distance_from_center);
+
+    u8g2_DrawVLine(graphics, left_x, PWRMGT_GRAPH_SCREEN_HEIGHT_PX - pixels, pixels);
+    u8g2_DrawVLine(graphics, right_x, PWRMGT_GRAPH_SCREEN_HEIGHT_PX - pixels, pixels);
 }
 
 static uint8_t pwrmgt_power_to_pixels(uint32_t power_milliwatts)
