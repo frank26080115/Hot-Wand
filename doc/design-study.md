@@ -31,11 +31,17 @@ In SergeyMax's design, there are the major sections:
 
 I can blow away the AC power input section and replace it with a DC power input quite easily. I don't want to play with wall AC power and would rather delegate that to off-the-shelf USB-PD chargers and power banks.
 
-The Radio Thermal design does not use a buck converter so the RF power input is the unconditioned DC power input. SergeyMax's design uses a buck converter and it's feedback network features an adjustable pot and also has a feedback from the current transformer. The adjustment pot is simply for convience, for lowering the power for testing. The feedback from the current transformer is for stability. If the iron draws more current, the voltage will sag, the buck converter will boost the output in response, which could possibly cause even more current to be drawn. This will result in instability. The signal from the current transformer prevents this as it will cause the feedback voltage to rise with current, and so the actual output voltage will not be boosted.
+The Radio Thermal design does not use a buck converter so the RF power input is the unconditioned DC power input. SergeyMax's design uses a buck converter, his design is wall powered so it's gotta have something to take AC power from a transformer and turn it into steady DC. You can't just rectify it and pray. The output from a transformer, even if rectified, is unregulated, with substantial ripple and a voltage that varies with load because of the transformer's finite source impedance.
 
-The other thing is... SergeyMax's design is wall powered so it's gotta have something to take AC power from a transformer and turn it into steady DC. You can't just rectify it and pray, output from a transformer, even if rectified, is unregulated, with substantial ripple and a voltage that varies with load because of the transformer's finite source impedance. That's the other big reason why he has it.
+I was debating whether or not to keep the buck converter in my own design, and I choose to keep it.
 
-I was debating whether or not I just cut out the buck converter in my design. For my own design, I really wanted to have adjustable power levels. The best way to accomplish this is to have a microcontroller interface with the feedback signal of the buck converter. So I kept it in my design.
+The buck converter in SergeyMax's design implements a feedback network with an adjustable pot and also has a feedback from the current transformer. The adjustment pot is simply for convenience, for lowering the power for testing.
+
+For my own design, I really wanted to have adjustable power levels. The best way to accomplish this is to have a microcontroller interface with the feedback signal of the buck converter. So I kept it in my design.
+
+The feedback from the current transformer is for stability. If the iron draws more current, naturally the voltage will sag, the buck converter will boost the output in response, which could possibly cause even more current to be drawn. This will result in instability. The signal from the current transformer prevents this as it will cause the feedback voltage to rise with current, and so the actual output voltage will not be boosted.
+
+You might have noticed that the buck converter circuit has a second LC stage before the current sensor and RF amplifier. This is simply a filter stage to isolate the buck converter's domain from the RF domain, the first is switching at 450 kHz and the latter is switching at 13.56 Mhz and SergeyMax picked 450 kHz and added the filter stage so these two domains don't interact or beat with each other.
 
 ### Gate Driver
 
@@ -58,6 +64,10 @@ SergeyMax's design has a ton of TVS diodes and Zener diodes protecting these MOS
 But why did the Metcal use a 500V rated MOSFET and SergeyMax decide that 150V is enough? The circuit isn't actually supposed to let that V_DS voltage get that high in normal operation, when a proper RF soldering iron cartidge is installed, the output impedance is matched and there is a place for all the energy to go. When you unplug the iron cartridge, the output is open circuit and there's nowhere for the energy, stored as magnetic fields in the inductors, to go. The inductors will spike the voltage to hundreds of volts.
 
 Even if you had a detector for disconnection of the cartridge, your MOSFET must survive this spike somehow, either by being rated very high, or having a TVS diode buddy taking it. It does not matter how fast your tip detection circuit works, the energy is already stored, if it has no where to go, even shutting down the RF generator does stop the voltage spike from happening.
+
+### Tip Detector
+
+There is a NPN transistor and some surrounding circuitry that is triggered by a very high voltage on the RF output, and signals to the microcontroller. This is supposed to be caused by a disconnected iron tip. The microcontroller's job is to stop the generation of the RF wave signal if the tip is detected to be disconnected. SergeyMax's firmware will retry to see if the tip reconnected automatically after a few seconds, which is similar to what actual Metcal stations do. My firmware does not and requires the user to press the button to confirm the tip swap has been completed.
 
 ### Microcontroller
 
@@ -100,3 +110,23 @@ SergeyMax's photos shows he's put small generic heatsinks onto the backs of the 
 The Radio Thermal design uses a decently sized cooling fan, but when I talked with the authors in person during their demo, they said it will run without the fan. However, without cooling, the magnetic properties of the inductor toroids will change and the whole circuit will go out of tune slightly, causing it to be more inefficient.
 
 In my own design, I had plenty of PCB space and physical space to spare, so I added a small 20mm fan. It is controlled by a MOSFET driven by the microcontroller. The user can choose to leave the fan off, or always on, or use temperature sensors to determine when the fan should run.
+
+### Hand Wound Inductor Considerations
+
+First, if you were reading SergeyMax's post and confused as to where he put instructions for winding the custom inductors, the actual instructions are inside the schematic file, you must open it with DipTrace first, you can get a free view-only version to do so.
+
+The instructions for the K16x8x6 9uH inductors (2 of them) are to use 22 AWG wire with 15 turns. The toroid core SergeyMax actually used only existed in Russia. The closest match I found on Digi-Key is Fair-Rite 5961004901, but the target is now around 10 or 11 turns instead of 15.
+
+For the current transformer that's supposed to use the same toroid core, no change is needed. Although, I did add an adjustment potentiometer just in case I need to tune the output of the feedback signal from this current transformer.
+
+For the three large inductors, I purchased the same toroid cores T130-6 from Amidon as SergeyMax specified. The instructions are to use 16 AWG wire, and the turns are 4, 6, and 7. There's no point in attempting to wind these differently, as each turn results in such a huge difference in inductance, that you should just follow the instructions and hope for the best.
+
+In Radio Thermal's design, they used the Kool Mu 0077932A7 core, with Aₗ = 32 nH/turn², +/- 8%. The first core is actually two of these cores epoxied together in a stack, making it roughly Aₗ = 64 nH/turn².
+
+For 6.2 uH: 9 to 10 turns if using 2 cores, 18 to 20 turns if using 1 core
+
+For 16.9 uH: 22 to 24 turns
+
+For 11.5 uH: 18 to 20 turns
+
+They ask that you use 22 AWG wire or thicker, and use a VNA or LCR meter to verify the results.

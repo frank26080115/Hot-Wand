@@ -14914,6 +14914,18 @@ short = 5A</text>
 <text x="50.8" y="-347.98" size="1.27" layer="97" align="top-left">wired to be compatible with
 both SAMD21 and RP2040</text>
 <text x="73.66" y="-381" size="1.016" layer="97" rot="R180" align="top-left">(sub: 7812 eqv)</text>
+<text x="68.58" y="-182.88" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
+22 AWG
+if 2 cores
+9 or 10 turns
+if 1 core
+18 to 20 turns</text>
+<text x="106.68" y="-182.88" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
+22 AWG
+23 ± 1 turns</text>
+<text x="152.4" y="-195.58" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
+22 AWG
+19 ± 1 turns</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">
