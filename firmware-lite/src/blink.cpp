@@ -27,7 +27,11 @@ constexpr uint32_t kPauseMs      = 100;
 
 constexpr uint8_t kVoltageLevelCount = 2;
 constexpr uint8_t kPowerLevelCount   = 3;
+#ifdef ENABLE_POWER_BURST_LEVELS
 constexpr uint8_t kPatternCount      = kVoltageLevelCount * kPowerLevelCount;
+#else
+constexpr uint8_t kPatternCount = kVoltageLevelCount;
+#endif
 
 constexpr char kLongPulse  = 'L';
 constexpr char kShortPulse = 'S';
@@ -57,12 +61,17 @@ enum class PlaybackState : uint8_t
 // -----------------------------------------------------------------------------
 
 constexpr BlinkPattern kPatterns[kPatternCount] = {
+#ifdef ENABLE_POWER_BURST_LEVELS
     {BLINK_VOLTAGE_LOW,  BLINK_POWER_ECO,    "SPPPPPP"},
     {BLINK_VOLTAGE_LOW,  BLINK_POWER_NORMAL, "SSPPPP" },
     {BLINK_VOLTAGE_LOW,  BLINK_POWER_SPORT,  "SSSPP"  },
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_ECO,    "LSPPP"  },
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_NORMAL, "LSSPP"  },
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_SPORT,  "LPLP"   },
+#else
+    {BLINK_VOLTAGE_LOW,  BLINK_POWER_SPORT, "SSSPP"},
+    {BLINK_VOLTAGE_HIGH, BLINK_POWER_SPORT, "LPLP" },
+#endif
 };
 
 // -----------------------------------------------------------------------------
@@ -150,8 +159,14 @@ void blink_set_pattern(blink_voltage_t voltage, blink_power_t power)
         return;
     }
 
+#ifdef ENABLE_POWER_BURST_LEVELS
     // The table stores the three power modes consecutively for each voltage range.
     const uint8_t patternIndex = static_cast<uint8_t>((voltageIndex * kPowerLevelCount) + powerIndex);
+#else
+    // Full-power-only builds indicate voltage while ignoring the jumper-selected
+    // power mode, which the RF generator also promotes to full power.
+    const uint8_t patternIndex = voltageIndex;
+#endif
     if (g_patternSelected && (patternIndex == g_patternIndex))
     {
         return;

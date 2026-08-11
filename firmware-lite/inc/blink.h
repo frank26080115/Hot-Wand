@@ -2,14 +2,14 @@
 
 #include <stdint.h>
 
-// Voltage ranges select the upper or lower half of the six-row pattern table.
+// Voltage ranges always select distinct low- and high-voltage patterns.
 typedef enum
 {
     BLINK_VOLTAGE_LOW = 0,
     BLINK_VOLTAGE_HIGH,
 } blink_voltage_t;
 
-// Power modes select one of the three patterns within a voltage range.
+// Power modes refine the pattern when selectable burst levels are enabled.
 typedef enum
 {
     BLINK_POWER_ECO = 0,

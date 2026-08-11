@@ -31,7 +31,7 @@ static constexpr uint16_t kPwmTop          = static_cast<uint16_t>(kPwmPeriodClo
 static constexpr uint16_t kPwmHighClocks   = static_cast<uint16_t>(kPwmPeriodClocks / 2);
 
 // Avoid an accidentally huge partial-power on window from an unreasonable
-// caller-supplied burst period. Normal operation uses the 10 ms default.
+// caller-supplied burst period. Normal operation uses the 10000 us default.
 static constexpr uint32_t kBurstMaximumPeriodUs = 1000000;
 
 static_assert(F_CPU == 133000000, "RF generator timer settings require a 133 MHz CPU clock");
@@ -66,7 +66,7 @@ static uint32_t g_rampStartedMs      = 0;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static uint32_t burst_period_to_us(uint32_t periodMs);
+static uint32_t normalize_burst_period_us(uint32_t periodUs);
 static uint32_t power_percent_to_on_us(uint8_t powerPercent, uint32_t periodUs);
 static uint32_t scale_on_time(uint32_t onUs, uint32_t oldPeriodUs, uint32_t newPeriodUs);
 static void     restart_ramp_from_applied();
@@ -82,7 +82,7 @@ static int64_t  burst_alarm_callback(alarm_id_t alarmId, void* userData);
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void rfgen_set(uint8_t powerPercent, uint32_t periodMs)
+void rfgen_set(uint8_t powerPercent, uint32_t periodUs)
 {
     uint32_t currentOnUs;
 
@@ -91,8 +91,17 @@ void rfgen_set(uint8_t powerPercent, uint32_t periodMs)
         powerPercent = kMaximumPowerPercent;
     }
 
-    const uint32_t periodUs = burst_period_to_us(periodMs);
-    const uint32_t onUs     = power_percent_to_on_us(powerPercent, periodUs);
+#ifndef ENABLE_POWER_BURST_LEVELS
+    // Builds without selectable burst levels treat every nonzero request as
+    // full power. The existing ramp still uses partial bursts during startup.
+    if (powerPercent > 0)
+    {
+        powerPercent = kMaximumPowerPercent;
+    }
+#endif
+
+    periodUs            = normalize_burst_period_us(periodUs);
+    const uint32_t onUs = power_percent_to_on_us(powerPercent, periodUs);
 
     // Repeated requests do not restart a ramp already in progress.
     if (g_settingInitialized && (periodUs == g_desiredPeriodUs) && (onUs == g_desiredOnUs))
@@ -222,20 +231,19 @@ static int64_t burst_alarm_callback(alarm_id_t alarmId, void* userData)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static uint32_t burst_period_to_us(uint32_t periodMs)
+static uint32_t normalize_burst_period_us(uint32_t periodUs)
 {
-    if (periodMs == 0)
+    if (periodUs == 0)
     {
-        periodMs = kDefaultBurstPeriodMs;
+        periodUs = kDefaultBurstPeriodUs;
     }
 
-    const uint64_t periodUs = static_cast<uint64_t>(periodMs) * 1000;
     if (periodUs > kBurstMaximumPeriodUs)
     {
         return kBurstMaximumPeriodUs;
     }
 
-    return static_cast<uint32_t>(periodUs);
+    return periodUs;
 }
 
 static uint32_t power_percent_to_on_us(uint8_t powerPercent, uint32_t periodUs)

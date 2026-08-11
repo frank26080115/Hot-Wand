@@ -62,7 +62,7 @@ static uint32_t g_rampStartedMs      = 0;
 
 extern "C" void TC5_Handler();
 
-static uint32_t burst_period_to_ticks(uint32_t periodMs);
+static uint32_t burst_period_to_ticks(uint32_t periodUs);
 static uint32_t power_percent_to_on_ticks(uint8_t powerPercent, uint32_t periodTicks);
 static uint32_t scale_on_ticks(uint32_t onTicks, uint32_t oldPeriodTicks, uint32_t newPeriodTicks);
 static void     rfgen_apply_ramp_ticks(uint32_t periodTicks, uint32_t onTicks);
@@ -79,7 +79,7 @@ static void     wait_for_tc5_sync();
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void rfgen_set(uint8_t powerPercent, uint32_t periodMs)
+void rfgen_set(uint8_t powerPercent, uint32_t periodUs)
 {
     uint32_t currentOnTicks;
 
@@ -89,7 +89,16 @@ void rfgen_set(uint8_t powerPercent, uint32_t periodMs)
         powerPercent = kMaximumPowerPercent;
     }
 
-    const uint32_t periodTicks = burst_period_to_ticks(periodMs);
+#ifndef ENABLE_POWER_BURST_LEVELS
+    // Builds without selectable burst levels treat every nonzero request as
+    // full power. The existing ramp still uses partial bursts during startup.
+    if (powerPercent > 0)
+    {
+        powerPercent = kMaximumPowerPercent;
+    }
+#endif
+
+    const uint32_t periodTicks = burst_period_to_ticks(periodUs);
     const uint32_t onTicks     = power_percent_to_on_ticks(powerPercent, periodTicks);
 
     // Repeating the same request must not restart an in-progress ramp. This is
@@ -249,16 +258,16 @@ extern "C" void TC5_Handler()
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static uint32_t burst_period_to_ticks(uint32_t periodMs)
+static uint32_t burst_period_to_ticks(uint32_t periodUs)
 {
-    if (periodMs == 0)
+    if (periodUs == 0)
     {
-        periodMs = kDefaultBurstPeriodMs;
+        periodUs = kDefaultBurstPeriodUs;
     }
 
-    constexpr uint64_t kTicksDenominator = static_cast<uint64_t>(kBurstTimerPrescaler) * 1000;
+    constexpr uint64_t kTicksDenominator = static_cast<uint64_t>(kBurstTimerPrescaler) * 1000000;
     const uint64_t     roundedTicks =
-        ((static_cast<uint64_t>(periodMs) * F_CPU) + (kTicksDenominator / 2)) / kTicksDenominator;
+        ((static_cast<uint64_t>(periodUs) * F_CPU) + (kTicksDenominator / 2)) / kTicksDenominator;
 
     // Partial power always needs at least one on tick and one off tick.
     if (roundedTicks < 2)
