@@ -41,6 +41,8 @@ Pressing the button will cycle through the power modes.
 
 If the input power is below 14V (undervoltage lockout threshold of the secondary buck converter), then all soldering iron functionality is disabled. The GUI will show "LOW VOLT FAULT". Button presses in this state will cause a reboot. The microcontroller shall be in a state that can accept SWD connections.
 
+If the temperature is too hot, the power limit of ECO mode will be automatically imposed. There is also a higher temperature limit, if reached, will cause the system to completely shutdown with the a fault message.
+
 # Cooling Fan Control
 
 The cooling fan hardware is optional, but the control for it will always exist.

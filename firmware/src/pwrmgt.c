@@ -1,7 +1,8 @@
 /*
 Power Management
 This code module is responsible for managing the power levels and handling power-related logic.
-The user's preferred power level is used, but can be limited by temperature or input voltage
+The user's preferred power level is used, but can be limited by temperature or input voltage.
+Sustained excessive temperature causes a terminal shutdown.
 */
 
 // -----------------------------------------------------------------------------
@@ -58,6 +59,8 @@ static pwrlvl_mode_t pwrmgt_desired_power_level = PWRLVL_MODE_100_PERCENT;
 static pwrlvl_mode_t pwrmgt_applied_power_level = PWRLVL_MODE_100_PERCENT;
 static uint8_t       pwrmgt_attenuation_reasons;
 static bool          pwrmgt_temperature_limited;
+static bool          pwrmgt_temperature_shutdown_pending;
+static uint32_t      pwrmgt_temperature_shutdown_started_ms;
 static bool          pwrmgt_low_dc_limited;
 static bool          pwrmgt_change_direction_up; /* false is the default/downward path */
 static uint8_t       pwrmgt_blocked_change_count;
@@ -82,6 +85,7 @@ static void     pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_se
 static void     pwrmgt_draw_power_pair(u8g2_t* graphics, uint8_t distance_from_center, uint32_t power_milliwatts);
 static uint8_t  pwrmgt_power_to_pixels(uint32_t power_milliwatts);
 static uint32_t pwrmgt_get_applied_limit_mw(void);
+static void     pwrmgt_temperature_shutdown_task(uint16_t highest_temperature, uint32_t now);
 static void     pwrmgt_blocked_change_task(void);
 static void     pwrmgt_clear_blocked_change(void);
 
@@ -130,6 +134,12 @@ void pwrmgt_task(void)
             highest_temperature = temperature;
         }
     }
+
+    /* Qualify the terminal threshold separately from the recoverable Eco-mode
+     * derating. A terminal fault blocks in show_fault() until reset. */
+    now = systick_get_ms();
+    pwrmgt_temperature_shutdown_task(highest_temperature, now);
+
     temperature_limit = pwrmgt_temperature_limited ? (TEMPERATURE_HOT_WARNING_THRESH_C - TEMPERATURE_HYSTERYSIS_C)
                                                    : TEMPERATURE_HOT_WARNING_THRESH_C;
     pwrmgt_temperature_limited = highest_temperature > temperature_limit;
@@ -177,7 +187,6 @@ void pwrmgt_task(void)
     pwrmgt_attenuation_reasons = reasons;
 
     power_milliwatts = adc_get_milliwatts();
-    now              = systick_get_ms();
     if (power_milliwatts < pwrmgt_idle_power_threshold_mw)
     {
         if (!pwrmgt_is_idle)
@@ -441,6 +450,31 @@ static uint32_t pwrmgt_get_applied_limit_mw(void)
     case PWRLVL_MODE_100_PERCENT:
     default:
         return PWRMGT_POWER_100W_MW;
+    }
+}
+
+static void pwrmgt_temperature_shutdown_task(uint16_t highest_temperature, uint32_t now)
+{
+    /* The full qualification interval must be continuously above the
+     * threshold. A safe reading immediately cancels the pending shutdown. */
+    if (highest_temperature <= TEMPERATURE_SHUTDOWN_THRESH_C)
+    {
+        pwrmgt_temperature_shutdown_pending = false;
+        return;
+    }
+
+    if (!pwrmgt_temperature_shutdown_pending)
+    {
+        pwrmgt_temperature_shutdown_started_ms = now;
+        pwrmgt_temperature_shutdown_pending    = true;
+        return;
+    }
+
+    if ((uint32_t)(now - pwrmgt_temperature_shutdown_started_ms) >= TEMPERATURE_SHUTDOWN_TIME_MS)
+    {
+        /* show_fault() immediately puts all controlled outputs into their
+         * existing safe fault state and permits recovery only through reset. */
+        show_fault("CIRKT\nTOO\nHOT\nFAULT", true);
     }
 }
 

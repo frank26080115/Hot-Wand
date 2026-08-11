@@ -15,9 +15,12 @@ normal application).
 
 #include "setup_menu.h"
 
+#include "adc.h"
 #include "button.h"
+#include "miscutils.h"
 #include "nvm.h"
 #include "oled.h"
+#include "pins.h"
 #include "pwrlvl.h"
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
@@ -32,9 +35,12 @@ normal application).
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define SETUP_MENU_CHARS_PER_LINE  6
-#define SETUP_MENU_FIVE_CHAR_COUNT 5
-#define SETUP_MENU_CENTERED_MARGIN 1
+#define SETUP_MENU_CHARS_PER_LINE              6
+#define SETUP_MENU_FIVE_CHAR_COUNT             5
+#define SETUP_MENU_CENTERED_MARGIN             1
+#define SETUP_MENU_VOLTAGE_REFRESH_INTERVAL_MS 100
+#define SETUP_MENU_VOLTAGE_BUFFER_SIZE         7
+#define SETUP_MENU_BOTTOM_TEXT_BASELINE        (OLED_FIRST_TEXT_BASELINE + (11 * OLED_TEXT_LINE_HEIGHT))
 #ifdef SHOW_SPLASH
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_SHOW_SPLASH
 #else
@@ -149,6 +155,7 @@ static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
 static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
 static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
+static void        setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration);
 static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
 
 // -----------------------------------------------------------------------------
@@ -160,6 +167,7 @@ void setup_menu(void)
     hotwand_setup_nvm_t settings;
     u8g2_t*             graphics;
     uint32_t            last_activity_ms;
+    uint32_t            last_render_ms;
     uint8_t             selected_item = SETUP_ITEM_STARTUP_POWER_LEVEL;
 
     /* Both energy-producing outputs must be safe before entering the menu. */
@@ -186,6 +194,7 @@ void setup_menu(void)
     btn_has_short_press(true);
     btn_has_long_press(true);
     last_activity_ms = systick_get_ms();
+    last_render_ms   = last_activity_ms;
 
     for (;;)
     {
@@ -203,6 +212,7 @@ void setup_menu(void)
         {
             selected_item    = (uint8_t)((selected_item + 1) % SETUP_MENU_ITEM_COUNT);
             last_activity_ms = now;
+            last_render_ms   = now;
             setup_menu_render(graphics, &settings, selected_item);
         }
 
@@ -221,8 +231,18 @@ void setup_menu(void)
             else
             {
                 setup_menu_cycle_value(&settings, selected_item);
+                last_render_ms = now;
                 setup_menu_render(graphics, &settings, selected_item);
             }
+        }
+
+        /* Only the voltage-calibration page contains changing data. Refresh
+         * it independently of button input so its preview remains live. */
+        if ((selected_item == SETUP_ITEM_INPUT_V_CALIB) &&
+            ((uint32_t)(now - last_render_ms) >= SETUP_MENU_VOLTAGE_REFRESH_INTERVAL_MS))
+        {
+            last_render_ms = now;
+            setup_menu_render(graphics, &settings, selected_item);
         }
 
         HAL_Delay(1);
@@ -415,7 +435,28 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
         setup_menu_draw_text(graphics, option, '|', baseline);
     }
 
+    if (item == SETUP_ITEM_INPUT_V_CALIB)
+    {
+        setup_menu_draw_calibrated_voltage(graphics, settings->input_v_calib);
+    }
+
     OLED_SendBuffer(&oled);
+}
+
+static void setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration)
+{
+    char   voltage[SETUP_MENU_VOLTAGE_BUFFER_SIZE];
+    size_t voltage_length;
+
+    /* Apply the unsaved menu value before reading. This deliberately uses the
+     * same ADC calibration path as normal operation rather than duplicating
+     * its slope and offset calculations in the UI. */
+    adc_set_input_voltage_calibration(calibration);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    voltage[voltage_length++] = 'V';
+    voltage[voltage_length]   = '\0';
+
+    setup_menu_draw_line(graphics, voltage, voltage_length, SETUP_MENU_BOTTOM_TEXT_BASELINE);
 }
 
 static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)

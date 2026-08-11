@@ -180,7 +180,7 @@ int main(void)
         }
 
         // Central runtime output supervisor:
-        // - Checks the configured battery cutoff and terminal input undervoltage.
+        // - Checks the configured battery cutoff, terminal input undervoltage, and sustained overtemperature shutdown.
         // - Applies temperature and input-voltage derating with hysteresis.
         // - Selects the effective power level and advances PWM attenuation.
         // - Enforces current and short-circuit limits in the lower-level task.

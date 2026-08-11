@@ -43,6 +43,8 @@
 #define TEMPERATURE_FAN_THRESHOLD_LOW_C  50
 #define TEMPERATURE_FAN_THRESHOLD_HIGH_C 80
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
+#define TEMPERATURE_SHUTDOWN_THRESH_C    110
+#define TEMPERATURE_SHUTDOWN_TIME_MS     1000
 #define TEMPERATURE_HYSTERYSIS_C         5
 #define FAN_MINIMUM_ON_TIME_MS           (10 * 1000)
 #define FAN_MINIMUM_OFF_TIME_MS          (5 * 1000)
@@ -62,8 +64,9 @@
 
 #if (TEMPERATURE_FAN_THRESHOLD_LOW_C > TEMPERATURE_FAN_THRESHOLD_HIGH_C) ||                                            \
     (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_FAN_THRESHOLD_LOW_C) ||                                                    \
-    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C)
-#error "Invalid fan thresholds or temperature hysteresis"
+    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C) ||                                                   \
+    (TEMPERATURE_HOT_WARNING_THRESH_C >= TEMPERATURE_SHUTDOWN_THRESH_C) || (TEMPERATURE_SHUTDOWN_TIME_MS == 0)
+#error "Invalid thermal thresholds, hysteresis, or shutdown timing"
 #endif
 
 #define DC_UNDERVOLTAGE_FAULT_MV 14000
