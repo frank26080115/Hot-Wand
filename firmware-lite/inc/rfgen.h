@@ -17,6 +17,44 @@
 #define kPowerRampDurationMs  1000
 #define kRfFrequencyHz        470000
 
+/*
+ * Burst frequency = 1000000 / period_us. Approximate auditory reference:
+ *
+ *     Period      Frequency
+ *     100000 us       10  Hz  distinct pulses
+ *      50000 us       20  Hz  lower edge of human hearing
+ *      20000 us       50  Hz
+ *      10000 us      100  Hz
+ *       5000 us      200  Hz
+ *       2000 us      500  Hz
+ *       1000 us        1 kHz
+ *        500 us        2 kHz
+ *        250 us        4 kHz
+ *        100 us       10 kHz
+ *         50 us       20 kHz  upper edge of human hearing
+ */
+
+#if defined(HOT_WAND_TARGET_XIAO_SAMD21) && !defined(HOT_WAND_TARGET_XIAO_RP2040)
+/*
+ * TC5 runs at 48 MHz / 1024. A 512 us burst is exactly 24 timer ticks
+ * and causes at most 3907 short, dedicated TC5 interrupts per second.
+ */
+#define kMinimumDefaultBurstPeriodUs 512
+#elif defined(HOT_WAND_TARGET_XIAO_RP2040) && !defined(HOT_WAND_TARGET_XIAO_SAMD21)
+/*
+ * The hardware alarm has 1 us ticks but uses the longer SDK alarm-pool ISR.
+ * A 250 us burst limits steady-state callbacks to 8000 per second and leaves
+ * ample ISR timing margin in the 83/167 us phases used at 33/66 percent power.
+ */
+#define kMinimumDefaultBurstPeriodUs 250
+#else
+#error "Select exactly one supported microcontroller"
+#endif
+
+#if kDefaultBurstPeriodUs < kMinimumDefaultBurstPeriodUs
+#error "kDefaultBurstPeriodUs is too short for this target's burst scheduler"
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
