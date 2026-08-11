@@ -1,3 +1,9 @@
+# Assembly Instructions for Hot-Wand 13.56 Mhz
+
+This document contains instructions, insights, tips, and deviations, for the assembly of the fully featured 13.56 MHz Hot-Wand project. (for )
+
+This is not a easy project, nor is it a cheap one. It was designed with my own skill level and budget in mind.
+
 ## Soldering
 
 Most of the PCB is assembled by JLCPCB's PCBA service, but only for the bottom side of the board. The SMT and through-hole components on the top side of the board are expected to be soldered on by the hobbyist performing the DIY build.
@@ -14,7 +20,31 @@ The following solder jumpers must be shorted out (soldered over) by you (unless 
 
 ## Custom Inductors
 
+Make sure you are familiar with how to use enamel coated magnet wire correctly, how to prepare the ends of the wires for soldering, etc.
+
+#### 9 uH choke
+
+10 turns of 22 AWG wire around the Fair-Rite 5961004901 toroid core. If you actually managed to get a `K16x8x6`, then use 15 turns.
+
+#### current transformer
+
+The ratio is 1:14:14
+
+Uses the Fair-Rite 5961004901 toroid core and 22 AWG wire.
+
+The primary (the 1 in 1:14:14) is just a single wire crossing the inside of the toroid once. No crossing on the bottom/outside of the toroid.
+
+The two secondaries can be done using a single pair of wires, wrapping the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+
 ## Enclosure Cutouts
+
+### Box Walls
+
+The box walls has holes and cutouts. Two 4mm holes are for the screws that press the MOSFET heat-sinks against the wall. A big 10mm hole is for the coax connector, a 3mm hole is for the button. The coax connector hole and the button hole will be turned into a slot for easier construction using a dremel.
+
+The slots are cut using a dremel and cutoff disk. The big cutout is for the screen.
+
+This is all guided by a 3D printed drilling template. The template also has 2mm holes to help guide the long dremel cuts, used like perforation.
 
 ### Bottom Lid
 
