@@ -1232,9 +1232,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="24.50605" y="58.038540625" size="0.8128" layer="27" rot="R90"/>
 <attribute name="JLCPARTNUM" value="C2453886" x="33" y="56" size="1.778" layer="27" display="off"/>
 </element>
-<element name="LED1" library="hot-wand" package="LED-0603" value="LED" x="111" y="45.3" smashed="yes" rot="MR180">
-<attribute name="JLC-DNP" value="1" x="111" y="45.3" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="NAME" x="110.189" y="44.9985" size="0.8128" layer="26" font="fixed" rot="MR0"/>
+<element name="LED1" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" smashed="yes" rot="MR180">
+<attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="110.5985" y="42.811" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 </element>
 <element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0" smashed="yes">
 <attribute name="JLC-DNP" value="1" x="0" y="0" size="1.778" layer="27" display="off"/>
@@ -1452,9 +1452,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="108.062" y="50.111" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="108.843" y="49.716" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
-<element name="LED2" library="hot-wand" package="LED-0603" value="LED" x="111" y="45.3" smashed="yes" rot="R180">
-<attribute name="JLC-DNP" value="1" x="111" y="45.3" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="NAME" x="110.389" y="45.7015" size="0.8128" layer="25" font="fixed" rot="R180"/>
+<element name="LED2" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" smashed="yes" rot="R180">
+<attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="NAME" x="111.5015" y="42.811" size="0.8128" layer="25" font="fixed" rot="R90"/>
 </element>
 <element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="41.5" y="5.1" smashed="yes" rot="MR0">
 <attribute name="JLC-DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
@@ -1514,7 +1514,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="109" y="31.9" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 </element>
 <element name="SJ4" library="hot-wand" package="1206-SJ" value="SJ-SMALL-1206-SJ" x="108.4" y="42" smashed="yes" rot="R90">
-<attribute name="NAME" x="109.7" y="42.6" size="0.8128" layer="25" font="fixed" rot="R270"/>
+<attribute name="NAME" x="107.3" y="44.4" size="0.8128" layer="25" font="fixed" rot="R90"/>
 </element>
 <element name="SJ5" library="hot-wand" package="1206-SJ" value="SJ-SMALL-1206-SJ" x="108.4" y="42" smashed="yes" rot="MR90">
 <attribute name="NAME" x="107.2" y="42.9" size="0.8128" layer="26" font="fixed" rot="MR270"/>
@@ -1600,7 +1600,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="C12" pad="2"/>
 <contactref element="IC2" pad="1"/>
 <contactref element="U1" pad="13"/>
-<wire x1="111" y1="44.6" x2="111" y2="44.55" width="0.4064" layer="16"/>
+<wire x1="111" y1="40.6" x2="111" y2="40.55" width="0.4064" layer="16"/>
 <contactref element="LED2" pad="C"/>
 <via x="26.8" y="37.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="38" y="37.3" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1961,6 +1961,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="108.8" y="28" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="108.8" y="28.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="108.8" y="29.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="110" y="40.5" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -2360,7 +2361,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$46">
 <contactref element="R5" pad="2"/>
 <contactref element="LED1" pad="A"/>
-<wire x1="111" y1="46.05" x2="111" y2="46.85" width="0.4064" layer="16"/>
+<wire x1="111" y1="42.05" x2="111" y2="46.85" width="0.4064" layer="16"/>
 <wire x1="111" y1="46.85" x2="110.4" y2="47.45" width="0.4064" layer="16"/>
 </signal>
 <signal name="N$57">
@@ -2622,11 +2623,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$8">
 <contactref element="LED2" pad="A"/>
 <contactref element="R6" pad="2"/>
-<wire x1="108.4" y1="47.45" x2="109.65" y2="46.2" width="0.4064" layer="16"/>
-<wire x1="109.65" y1="46.2" x2="110" y2="46.2" width="0.4064" layer="16"/>
-<via x="110" y="46.2" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="110" y1="46.2" x2="111" y2="46.2" width="0.4064" layer="1"/>
-<wire x1="111" y1="46.2" x2="111" y2="46.05" width="0.4064" layer="1"/>
+<wire x1="108.4" y1="47.45" x2="108.4" y2="47.26" width="0.4064" layer="16"/>
+<wire x1="108.4" y1="47.26" x2="109.65" y2="46" width="0.4064" layer="16"/>
+<via x="109.65" y="46" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="109.65" y1="46" x2="111" y2="44.65" width="0.4064" layer="1"/>
+<wire x1="111" y1="44.65" x2="111" y2="42.05" width="0.4064" layer="1"/>
 </signal>
 <signal name="ADC">
 <contactref element="R19" pad="1"/>

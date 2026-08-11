@@ -14909,9 +14909,9 @@ both SAMD21 and RP2040</text>
 <text x="68.58" y="-182.88" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
 22 AWG
 if 2 cores
-9 or 10 turns
+10 turns
 if 1 core
-18 to 20 turns</text>
+14 turns</text>
 <text x="106.68" y="-182.88" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
 22 AWG
 23 ± 1 turns</text>
