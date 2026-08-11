@@ -1988,7 +1988,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="61.99" y1="48.04" x2="59.2" y2="48.04" width="0.4064" layer="16"/>
 <wire x1="50" y1="53.96" x2="53.28" y2="53.96" width="1.5" layer="1"/>
 <wire x1="53.28" y1="53.96" x2="59.2" y2="48.04" width="1.5" layer="1"/>
-<wire x1="45.96" y1="53.96" x2="46" y2="53.95" width="0" layer="19" extent="1-16"/>
+<wire x1="46" y1="53.95" x2="50" y2="53.95" width="1" layer="16"/>
+<wire x1="50" y1="53.95" x2="50" y2="53.96" width="1" layer="16"/>
 </signal>
 <signal name="N$14">
 <contactref element="U2" pad="2"/>
@@ -2706,8 +2707,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="110.3" y1="33.175" x2="109.6" y2="33.175" width="1" layer="1"/>
 <wire x1="110.3" y1="31.2" x2="110.3" y2="33.175" width="1" layer="16"/>
 <wire x1="110.3" y1="33.175" x2="109.6" y2="33.175" width="1" layer="16"/>
-<wire x1="108.4" y1="40.8" x2="108.4" y2="40.8" width="0" layer="19" extent="1-16"/>
-<wire x1="109.6" y1="33.175" x2="109.6" y2="33.175" width="0" layer="19" extent="1-16"/>
+<via x="108.4" y="40.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="110.3" y="31.2" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 </signals>
 </board>
