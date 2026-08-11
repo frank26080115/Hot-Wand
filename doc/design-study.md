@@ -123,10 +123,10 @@ For the three large inductors, I purchased the same toroid cores T130-6 from Ami
 
 In Radio Thermal's design, they used the Kool Mu 0077932A7 core, with Aₗ = 32 nH/turn², +/- 8%. The first core is actually two of these cores epoxied together in a stack, making it roughly Aₗ = 64 nH/turn².
 
-For 6.2 uH: 9 to 10 turns if using 2 cores, 18 to 20 turns if using 1 core
+For 6.2 uH: 10 turns if using 2 cores, 14 turns if using 1 core
 
-For 16.9 uH: 22 to 24 turns
+For 16.9 uH: 22 to 24 turns (choose 23 if no measurement)
 
-For 11.5 uH: 18 to 20 turns
+For 11.5 uH: 18 to 20 turns (choose 19 if no measurement)
 
 They ask that you use 22 AWG wire or thicker, and use a VNA or LCR meter to verify the results.
