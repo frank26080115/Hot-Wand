@@ -20,7 +20,7 @@
 void setup()
 {
     // RF must remain off until the power manager confirms the boot inputs.
-    rfgen_set(RFGEN_POWER_OFF);
+    rfgen_set(0);
     blink_init();
 
     // Serial is the XIAO's USB CDC port; the baud rate is nominal for USB.

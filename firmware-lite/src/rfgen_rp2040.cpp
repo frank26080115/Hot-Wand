@@ -1,16 +1,19 @@
 /*
  * DMA-modulated, fixed-pulse-width RF generator for RP2040.
  *
- * One DMA channel writes the next PWM TOP value after every slice wrap. A
- * second channel reloads and retriggers the data channel after each complete
- * table row, producing an indefinite hardware-only loop.
+ * One DMA channel writes the next PWM TOP value
+ * after every slice wrap. A
+ * second channel restores the table read address and retriggers the data
+ * channel,
+ * producing an indefinite hardware-only loop of the generated table.
  *
- * The RF output must never be left continuously high. Every table entry is
- * validated before use, and all reconfiguration first latches a zero compare
- * value at a PWM boundary.
+ * The RF output must never be left
+ * continuously high. Reconfiguration first
+ * latches a zero compare at a PWM boundary, then disconnects a known-low
+ * pin.
  */
 
-#include "rfgen.h"
+#include "rfgen_internal.h"
 
 #include <Arduino.h>
 #include <hardware/dma.h>
@@ -20,16 +23,26 @@
 #include <hardware/structs/pwm.h>
 
 #include "hotwandlite.h"
-#include "pwr_table.h"
+
+#ifdef RFGEN_MUTED_DEBUG
+
+bool rfgen_platform_start(const uint32_t*, uint16_t)
+{
+    return false;
+}
+
+void rfgen_platform_stop(void) {}
+
+#else
 
 // -----------------------------------------------------------------------------
 // Configuration
 // -----------------------------------------------------------------------------
 
 // One undivided 133 MHz PWM period is 283 clocks, or about 469.965 kHz.
-static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (kRfFrequencyHz / 2)) / kRfFrequencyHz;
-static constexpr uint16_t kPwmInitialTop    = static_cast<uint16_t>(kPwmPeriodClocks - 1);
-static constexpr uint16_t kPwmHighClocks   = static_cast<uint16_t>(kPwmPeriodClocks / 2);
+static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
+static constexpr uint16_t kPwmInitialTop   = static_cast<uint16_t>(kPwmPeriodClocks - 1u);
+static constexpr uint16_t kPwmHighClocks   = static_cast<uint16_t>(kPwmPeriodClocks / 2u);
 
 static_assert(F_CPU == 133000000, "RF generator timer settings require a 133 MHz CPU clock");
 static_assert(kPwmHighClocks == 141, "Unexpected RP2040 RF pulse width");
@@ -39,17 +52,15 @@ static_assert(kPwmHighClocks <= kPwmInitialTop, "RF PWM must include a low inter
 // Globals
 // -----------------------------------------------------------------------------
 
-static bool    g_initialized   = false;
-static bool    g_pwmRunning    = false;
-static bool    g_dmaRunning    = false;
-static uint8_t g_currentLevel  = RFGEN_POWER_OFF;
-static uint    g_pwmSlice      = 0;
-static uint    g_pwmChannel    = 0;
-static int     g_dataDma       = -1;
-static int     g_reloadDma     = -1;
+static bool g_initialized = false;
+static bool g_pwmRunning  = false;
+static bool g_dmaRunning  = false;
+static uint g_pwmSlice    = 0;
+static uint g_pwmChannel  = 0;
+static int  g_dataDma     = -1;
+static int  g_reloadDma   = -1;
 
-alignas(16) static uint32_t g_dmaPeriods[PWR_TABLE_ROW_LENGTH];
-static uint32_t             g_dmaReadAddress = 0;
+static uint32_t g_dmaReadAddress = 0;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -57,58 +68,62 @@ static uint32_t             g_dmaReadAddress = 0;
 
 static bool initialize_hardware();
 static bool initialize_dma();
-static bool validate_row(uint8_t powerLevel);
-static void copy_row(uint8_t powerLevel);
-static void stop_output();
+static bool validate_table(const uint32_t* periodTable, uint16_t periodCount);
 static void stop_dma();
-static void start_output();
+static void start_output(const uint32_t* periodTable, uint16_t periodCount);
 
 // -----------------------------------------------------------------------------
-// Public API
+// Platform Interface
 // -----------------------------------------------------------------------------
 
-void rfgen_set(uint8_t powerLevel)
+bool rfgen_platform_start(const uint32_t* periodTable, uint16_t periodCount)
 {
-    if (powerLevel > RFGEN_POWER_MAXIMUM)
+    if (!validate_table(periodTable, periodCount))
     {
-        powerLevel = RFGEN_POWER_MAXIMUM;
-    }
-
-    if (powerLevel == g_currentLevel)
-    {
-        if (powerLevel == RFGEN_POWER_OFF)
-        {
-            stop_output();
-        }
-        return;
-    }
-
-    if (powerLevel == RFGEN_POWER_OFF)
-    {
-        stop_output();
-        g_currentLevel = RFGEN_POWER_OFF;
-        return;
-    }
-
-    // Validate the flash-resident source before disturbing a running row.
-    if (!validate_row(powerLevel))
-    {
-        stop_output();
-        g_currentLevel = RFGEN_POWER_OFF;
-        return;
+        return false;
     }
 
     if (!g_initialized && !initialize_hardware())
     {
-        g_currentLevel = RFGEN_POWER_OFF;
+        return false;
+    }
+
+    // The shared controller has already stopped the previous waveform. Keep
+    // this backend defensive if it is ever called directly.
+    rfgen_platform_stop();
+    start_output(periodTable, periodCount);
+    return true;
+}
+
+void rfgen_platform_stop(void)
+{
+    if (!g_initialized)
+    {
+        digitalWrite(RFGEN_PIN, LOW);
+        pinMode(RFGEN_PIN, OUTPUT);
         return;
     }
 
-    // Row changes are allowed to interrupt the waveform, but never while high.
-    stop_output();
-    copy_row(powerLevel);
-    start_output();
-    g_currentLevel = powerLevel;
+    if (g_pwmRunning)
+    {
+        // The compare write is double-buffered. Waiting for the next wrap
+        // guarantees the current high pulse has ended and zero is active.
+        pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
+        pwm_clear_irq(g_pwmSlice);
+        while ((pwm_hw->intr & (1ul << g_pwmSlice)) == 0u)
+        {
+        }
+        pwm_clear_irq(g_pwmSlice);
+
+        pwm_set_enabled(g_pwmSlice, false);
+        g_pwmRunning = false;
+    }
+
+    stop_dma();
+
+    // Disconnect PWM only after its active output is known low.
+    digitalWrite(RFGEN_PIN, LOW);
+    pinMode(RFGEN_PIN, OUTPUT);
 }
 
 // -----------------------------------------------------------------------------
@@ -117,7 +132,6 @@ void rfgen_set(uint8_t powerLevel)
 
 static bool initialize_hardware()
 {
-    // Load the GPIO output latch low before PWM is connected to the pad.
     digitalWrite(RFGEN_PIN, LOW);
     pinMode(RFGEN_PIN, OUTPUT);
 
@@ -161,70 +175,27 @@ static bool initialize_dma()
     return true;
 }
 
-// -----------------------------------------------------------------------------
-// Row Management
-// -----------------------------------------------------------------------------
-
-static bool validate_row(uint8_t powerLevel)
+static bool validate_table(const uint32_t* periodTable, uint16_t periodCount)
 {
-    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
-    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
+    if ((periodTable == nullptr) || (periodCount == 0u) || (periodCount > RFGEN_TABLE_CAPACITY))
     {
-        const uint32_t top = row[index];
+        return false;
+    }
+
+    for (uint16_t index = 0; index < periodCount; ++index)
+    {
+        const uint32_t top = periodTable[index];
         if ((top < kPwmHighClocks) || (top > UINT16_MAX))
         {
             return false;
         }
     }
-
     return true;
 }
 
-static void copy_row(uint8_t powerLevel)
-{
-    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
-    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
-    {
-        g_dmaPeriods[index] = row[index];
-    }
-
-    g_dmaReadAddress = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(g_dmaPeriods));
-}
-
 // -----------------------------------------------------------------------------
-// Safe Stop/Start
+// DMA and PWM Start/Stop
 // -----------------------------------------------------------------------------
-
-static void stop_output()
-{
-    if (!g_initialized)
-    {
-        digitalWrite(RFGEN_PIN, LOW);
-        pinMode(RFGEN_PIN, OUTPUT);
-        return;
-    }
-
-    if (g_pwmRunning)
-    {
-        // A compare write is double-buffered. Wait for a subsequent wrap so
-        // the zero compare is active before disabling the slice.
-        pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
-        pwm_clear_irq(g_pwmSlice);
-        while ((pwm_hw->intr & (1ul << g_pwmSlice)) == 0)
-        {
-        }
-        pwm_clear_irq(g_pwmSlice);
-
-        pwm_set_enabled(g_pwmSlice, false);
-        g_pwmRunning = false;
-    }
-
-    stop_dma();
-
-    // Disconnect PWM only after its active output is known low.
-    digitalWrite(RFGEN_PIN, LOW);
-    pinMode(RFGEN_PIN, OUTPUT);
-}
 
 static void stop_dma()
 {
@@ -234,7 +205,7 @@ static void stop_dma()
     }
 
     // Disable both channels before aborting so neither can retrigger the other
-    // while a row change is in progress.
+    // while the shared table is being replaced.
     hw_clear_bits(&dma_hw->ch[g_reloadDma].ctrl_trig, DMA_CH0_CTRL_TRIG_EN_BITS);
     hw_clear_bits(&dma_hw->ch[g_dataDma].ctrl_trig, DMA_CH0_CTRL_TRIG_EN_BITS);
     dma_channel_abort(static_cast<uint>(g_reloadDma));
@@ -242,11 +213,11 @@ static void stop_dma()
     g_dmaRunning = false;
 }
 
-static void start_output()
+static void start_output(const uint32_t* periodTable, uint16_t periodCount)
 {
-    // PWM is disabled and the pin is still a GPIO held low here.
+    // PWM is disabled and the pin remains a GPIO held low here.
     pwm_set_counter(g_pwmSlice, 0);
-    pwm_set_wrap(g_pwmSlice, static_cast<uint16_t>(g_dmaPeriods[0]));
+    pwm_set_wrap(g_pwmSlice, static_cast<uint16_t>(periodTable[0]));
     pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
 
     dma_channel_config dataConfig = dma_channel_get_default_config(static_cast<uint>(g_dataDma));
@@ -260,9 +231,14 @@ static void start_output()
     dma_channel_configure(static_cast<uint>(g_dataDma),
                           &dataConfig,
                           &pwm_hw->slice[g_pwmSlice].top,
-                          g_dmaPeriods,
-                          PWR_TABLE_ROW_LENGTH,
+                          periodTable,
+                          periodCount,
                           false);
+
+    // TRANS_COUNT automatically reloads its most recently programmed value on
+    // RP2040. The control channel therefore only restores READ_ADDR and uses
+    // the trigger alias to start the next variable-length table pass.
+    g_dmaReadAddress = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(periodTable));
 
     dma_channel_config reloadConfig = dma_channel_get_default_config(static_cast<uint>(g_reloadDma));
     channel_config_set_transfer_data_size(&reloadConfig, DMA_SIZE_32);
@@ -282,7 +258,6 @@ static void start_output()
     dma_start_channel_mask(1ul << g_dataDma);
     g_dmaRunning = true;
 
-    // Connect a known-low PWM output before starting its counter.
     gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
     pwm_set_enabled(g_pwmSlice, true);
     g_pwmRunning = true;
@@ -290,3 +265,5 @@ static void start_output()
     // The fixed pulse width becomes active at the next PWM boundary.
     pwm_set_chan_level(g_pwmSlice, g_pwmChannel, kPwmHighClocks);
 }
+
+#endif // RFGEN_MUTED_DEBUG

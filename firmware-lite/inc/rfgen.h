@@ -3,33 +3,30 @@
 #include <stdint.h>
 
 /*
- * RF power is selected by table row. Level zero explicitly disables the
- * output; levels one through six select rows zero through five.
+ * RF waveform configuration. These values are intentionally kept together so
+ * the modeled power behavior can be
+ * tuned without touching the generator.
  */
-enum
-{
-    RFGEN_POWER_OFF     = 0,
-    RFGEN_POWER_LEVEL_1 = 1,
-    RFGEN_POWER_LEVEL_2 = 2,
-    RFGEN_POWER_LEVEL_3 = 3,
-    RFGEN_POWER_LEVEL_4 = 4,
-    RFGEN_POWER_LEVEL_5 = 5,
-    RFGEN_POWER_LEVEL_6 = 6,
-
-    RFGEN_POWER_MINIMUM = RFGEN_POWER_LEVEL_1,
-    RFGEN_POWER_MEDIUM  = RFGEN_POWER_LEVEL_3,
-    RFGEN_POWER_MAXIMUM = RFGEN_POWER_LEVEL_6,
-};
-
-#define kRfFrequencyHz 470000
+#define RFGEN_MAXIMUM_POWER_PERCENT      100u
+#define RFGEN_MINIMUM_POWER_PERCENT      30u
+#define RFGEN_CONTINUOUS_POWER_PERCENT   95u
+#define RFGEN_STARTUP_POWER_PERCENT      80u
+#define RFGEN_STARTUP_PERIOD_COUNT       12u
+#define RFGEN_MINIMUM_BLANK_PERIOD_COUNT 12u
+#define RFGEN_POWER_CHANGE_PAUSE_MS      10u
+#define RFGEN_TABLE_CAPACITY             512u
+#define RFGEN_FREQUENCY_HZ               470000u
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-/* Values above level six are clamped to RFGEN_POWER_MAXIMUM. */
-void rfgen_set(uint8_t power_level);
+/* Request RF output power. Values above 100 are clamped to 100. */
+void rfgen_set(uint8_t power_percent);
+
+/* Print the currently generated DMA period table to Serial. */
+void rfgen_print_table(void);
 
 #ifdef __cplusplus
 }
