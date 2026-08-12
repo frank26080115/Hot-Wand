@@ -48,6 +48,14 @@ constexpr uint32_t kInitialSettleTimeMs = 500;
 constexpr uint32_t kChangeSettleTimeMs  = 2000;
 constexpr uint32_t kReportIntervalMs    = 1000;
 
+/*
+ * The hardware exposes three modes. Point any of these at LEVEL_1 through
+ * LEVEL_6 when evaluating the experimental table rows.
+ */
+constexpr uint8_t kEcoRfPowerLevel    = RFGEN_POWER_MINIMUM;
+constexpr uint8_t kNormalRfPowerLevel = RFGEN_POWER_MEDIUM;
+constexpr uint8_t kSportRfPowerLevel  = RFGEN_POWER_MAXIMUM;
+
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
@@ -91,7 +99,7 @@ static VoltageRange    update_voltage_range(VoltageRange currentRange, uint32_t 
 static VoltageRange    initial_voltage_range(uint32_t voltageMv);
 static void            initialize_hardware();
 static PowerMode       read_power_mode();
-static uint8_t         power_percent(PowerMode powerMode);
+static uint8_t         power_level(PowerMode powerMode);
 static blink_voltage_t blink_voltage(VoltageRange voltageRange);
 static blink_power_t   blink_power(PowerMode powerMode);
 static void            report_readings(uint32_t currentTimeMs, uint32_t voltageMv, PowerMode powerMode);
@@ -173,7 +181,7 @@ namespace
 static void apply_state()
 {
     // RF power and the visible status always change as one confirmed state.
-    rfgen_set(power_percent(g_powerMode));
+    rfgen_set(power_level(g_powerMode));
     blink_set_pattern(blink_voltage(g_voltageRange), blink_power(g_powerMode));
 
     g_appliedVoltageRange = g_voltageRange;
@@ -247,19 +255,19 @@ static PowerMode read_power_mode()
     return PowerMode::Normal;
 }
 
-static uint8_t power_percent(PowerMode powerMode)
+static uint8_t power_level(PowerMode powerMode)
 {
     switch (powerMode)
     {
     case PowerMode::Eco:
-        return 33;
+        return kEcoRfPowerLevel;
 
     case PowerMode::Sport:
-        return 100;
+        return kSportRfPowerLevel;
 
     case PowerMode::Normal:
     default:
-        return 66;
+        return kNormalRfPowerLevel;
     }
 }
 

@@ -9,7 +9,7 @@ typedef enum
     BLINK_VOLTAGE_HIGH,
 } blink_voltage_t;
 
-// Power modes refine the pattern when selectable burst levels are enabled.
+// Power modes select the Eco, Normal, and Sport status patterns.
 typedef enum
 {
     BLINK_POWER_ECO = 0,

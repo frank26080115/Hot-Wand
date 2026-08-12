@@ -2,7 +2,7 @@
  * Hot Wand Lite application entry point.
  *
  * setup() establishes safe outputs before starting USB serial.
- * loop() keeps the power manager and status indicator responsive without blocking.
+ * loop() keeps the power manager and status indicator responsive.
  *
  */
 
@@ -20,7 +20,7 @@
 void setup()
 {
     // RF must remain off until the power manager confirms the boot inputs.
-    rfgen_set(0);
+    rfgen_set(RFGEN_POWER_OFF);
     blink_init();
 
     // Serial is the XIAO's USB CDC port; the baud rate is nominal for USB.
@@ -29,9 +29,7 @@ void setup()
 
 void loop()
 {
-    // Run input management first so a newly confirmed power request can begin
-    // ramping during this same pass through the cooperative loop.
+    // Confirm power-selection inputs and update the status indication.
     pwrmgt_task();
-    rfgen_task();
     blink_task();
 }

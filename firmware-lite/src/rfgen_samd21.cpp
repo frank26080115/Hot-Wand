@@ -1,203 +1,135 @@
 /*
- * Hardware-timed 470 kHz RF carrier and burst-power control.
+ * DMA-modulated, fixed-pulse-width RF generator for SAMD21.
  *
- * TCC0 produces the carrier on PA04. TC5 schedules partial-power on/off
- * windows while TCC0's buffered compare register guarantees low-safe stops.
+ * TCC0 produces one pulse per PWM period on PA04. The compare value remains
+ * fixed while a circular DMA descriptor writes the next period to PERB after
+ * every TCC0 overflow.
  *
- * The RF generator signal must never be left high
- * as this would make the MOSFET turn on indefinitely
- * and the current would flow through the inductor and MOSFET
- * as if it were a short circuit
- *
+ * The RF output must never be left continuously high. Every table entry is
+ * validated before use, and all reconfiguration first latches a zero compare
+ * value at a PWM boundary.
  */
-
-// -----------------------------------------------------------------------------
-// Includes
-// -----------------------------------------------------------------------------
 
 #include "rfgen.h"
 
+#include <Adafruit_ZeroDMA.h>
 #include <Arduino.h>
 #include <wiring_private.h>
 
 #include "hotwandlite.h"
+#include "pwr_table.h"
 
 // -----------------------------------------------------------------------------
 // Configuration
 // -----------------------------------------------------------------------------
 
-// GCLK0 is the 48 MHz CPU clock. 102 clocks produce 470.588 kHz.
+// GCLK0 is 48 MHz. 102 clocks produce approximately 470.588 kHz.
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (kRfFrequencyHz / 2)) / kRfFrequencyHz;
-static constexpr uint32_t kPwmTop          = kPwmPeriodClocks - 1;
+static constexpr uint32_t kPwmInitialTop    = kPwmPeriodClocks - 1;
 static constexpr uint32_t kPwmHighClocks   = kPwmPeriodClocks / 2;
-
-// TC5 times the burst envelope at 46.875 kHz (21.33 us per count).
-static constexpr uint32_t kBurstTimerPrescaler = 1024;
-static constexpr uint32_t kBurstMaximumTicks   = 65536;
+static constexpr uint32_t kPwmMaximumTop   = TCC_PER_PER_Msk;
 
 static_assert(F_CPU == 48000000, "RF generator timer settings require a 48 MHz CPU clock");
-static_assert((kPwmPeriodClocks % 2) == 0, "RF PWM must have equal high and low times");
+static_assert(kPwmHighClocks == 51, "Unexpected SAMD21 RF pulse width");
+static_assert(kPwmHighClocks <= kPwmInitialTop, "RF PWM must include a low interval");
+static_assert(PWR_TABLE_ROW_LENGTH <= UINT16_MAX, "Power row does not fit a DMA descriptor");
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
-static bool              g_initialized   = false;
-static volatile bool     g_burstIsOn     = false;
-static volatile uint16_t g_burstOnTicks  = 1;
-static volatile uint16_t g_burstOffTicks = 1;
-
-static bool     g_settingInitialized = false;
-static bool     g_rampIsActive       = false;
-static uint32_t g_appliedPeriodTicks = 0;
-static uint32_t g_appliedOnTicks     = 0;
-static uint32_t g_desiredPeriodTicks = 0;
-static uint32_t g_desiredOnTicks     = 0;
-static uint32_t g_rampStartOnTicks   = 0;
-static uint32_t g_rampStartedMs      = 0;
+static bool              g_initialized  = false;
+static bool              g_dmaRunning  = false;
+static uint8_t           g_currentLevel = RFGEN_POWER_OFF;
+static Adafruit_ZeroDMA  g_periodDma;
+static DmacDescriptor*   g_periodDescriptor = nullptr;
+alignas(16) static uint32_t g_dmaPeriods[PWR_TABLE_ROW_LENGTH];
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-extern "C" void TC5_Handler();
-
-static uint32_t burst_period_to_ticks(uint32_t periodUs);
-static uint32_t power_percent_to_on_ticks(uint8_t powerPercent, uint32_t periodTicks);
-static uint32_t scale_on_ticks(uint32_t onTicks, uint32_t oldPeriodTicks, uint32_t newPeriodTicks);
-static void     rfgen_apply_ramp_ticks(uint32_t periodTicks, uint32_t onTicks);
-static void     rfgen_apply_ticks(uint32_t periodTicks, uint32_t onTicks);
-static void     rfgen_initialize();
-static void     burst_timer_start(uint16_t firstIntervalTicks);
-static void     burst_timer_stop();
-static void     burst_timer_set_interval(uint16_t ticks);
-static void     rf_pwm_set(bool enabled);
-static void     wait_for_tcc0_sync();
-static void     wait_for_tc5_sync();
+static bool initialize_hardware();
+static bool initialize_dma();
+static bool validate_row(uint8_t powerLevel);
+static void copy_row(uint8_t powerLevel);
+static void stop_output();
+static bool start_output();
+static void wait_for_tcc0_sync();
 
 // -----------------------------------------------------------------------------
-// Main Flow
+// Public API
 // -----------------------------------------------------------------------------
 
-void rfgen_set(uint8_t powerPercent, uint32_t periodUs)
+void rfgen_set(uint8_t powerLevel)
 {
-    uint32_t currentOnTicks;
-
-    // Treat out-of-range requests as full power rather than overflowing math.
-    if (powerPercent > kMaximumPowerPercent)
+    if (powerLevel > RFGEN_POWER_MAXIMUM)
     {
-        powerPercent = kMaximumPowerPercent;
+        powerLevel = RFGEN_POWER_MAXIMUM;
     }
 
-#ifndef ENABLE_POWER_BURST_LEVELS
-    // Builds without selectable burst levels treat every nonzero request as
-    // full power. The existing ramp still uses partial bursts during startup.
-    if (powerPercent > 0)
+    if (powerLevel == g_currentLevel)
     {
-        powerPercent = kMaximumPowerPercent;
-    }
-#endif
-
-    const uint32_t periodTicks = burst_period_to_ticks(periodUs);
-    const uint32_t onTicks     = power_percent_to_on_ticks(powerPercent, periodTicks);
-
-    // Repeating the same request must not restart an in-progress ramp. This is
-    // useful if a future caller refreshes its desired state every loop.
-    if (g_settingInitialized && (periodTicks == g_desiredPeriodTicks) && (onTicks == g_desiredOnTicks))
-    {
-        return;
-    }
-
-    if (!g_settingInitialized)
-    {
-        // Establish a known-low output even if the first request is nonzero.
-        // The first increase will then begin from zero in rfgen_task().
-        rfgen_apply_ticks(periodTicks, 0);
-        currentOnTicks       = 0;
-        g_settingInitialized = true;
-    }
-    else
-    {
-        // Express the currently applied duty in the new period's tick scale.
-        // This lets a simultaneous period change preserve actual power while
-        // the requested increase ramps from its present level.
-        currentOnTicks = scale_on_ticks(g_appliedOnTicks, g_appliedPeriodTicks, periodTicks);
-    }
-
-    g_desiredPeriodTicks = periodTicks;
-    g_desiredOnTicks     = onTicks;
-
-    if (onTicks <= currentOnTicks)
-    {
-        // Reductions are safety-relevant and take effect synchronously in the
-        // setter. Equality also applies a requested period change immediately.
-        g_rampIsActive = false;
-        if ((g_appliedPeriodTicks != periodTicks) || (g_appliedOnTicks != onTicks))
+        if (powerLevel == RFGEN_POWER_OFF)
         {
-            rfgen_apply_ticks(periodTicks, onTicks);
+            stop_output();
         }
         return;
     }
 
-    // Increases are deferred to rfgen_task(). The task derives the appropriate
-    // duty ticks from elapsed milliseconds, so loop frequency does not affect
-    // the one-second 0-to-100-percent ramp rate.
-    g_rampStartOnTicks = currentOnTicks;
-    g_rampStartedMs    = millis();
-    g_rampIsActive     = true;
-}
-
-void rfgen_task(void)
-{
-    if (!g_settingInitialized || !g_rampIsActive)
+    if (powerLevel == RFGEN_POWER_OFF)
     {
+        stop_output();
+        g_currentLevel = RFGEN_POWER_OFF;
         return;
     }
 
-    const uint32_t elapsedMs = static_cast<uint32_t>(millis() - g_rampStartedMs);
-    const uint64_t nextOnTicksWide =
-        g_rampStartOnTicks + ((static_cast<uint64_t>(elapsedMs) * g_desiredPeriodTicks) / kPowerRampDurationMs);
-    uint32_t nextOnTicks;
-    if (nextOnTicksWide >= g_desiredOnTicks)
+    // Validate the flash-resident source before disturbing a running row.
+    if (!validate_row(powerLevel))
     {
-        nextOnTicks    = g_desiredOnTicks;
-        g_rampIsActive = false;
-    }
-    else
-    {
-        nextOnTicks = static_cast<uint32_t>(nextOnTicksWide);
+        stop_output();
+        g_currentLevel = RFGEN_POWER_OFF;
+        return;
     }
 
-    if ((g_appliedPeriodTicks != g_desiredPeriodTicks) || (g_appliedOnTicks != nextOnTicks))
+    if (!g_initialized && !initialize_hardware())
     {
-        rfgen_apply_ramp_ticks(g_desiredPeriodTicks, nextOnTicks);
+        g_currentLevel = RFGEN_POWER_OFF;
+        return;
     }
+
+    // Row changes are allowed to interrupt the waveform, but never while high.
+    stop_output();
+    copy_row(powerLevel);
+
+    if (!start_output())
+    {
+        stop_output();
+        g_currentLevel = RFGEN_POWER_OFF;
+        return;
+    }
+
+    g_currentLevel = powerLevel;
 }
 
 // -----------------------------------------------------------------------------
-// Feature Logic
+// Hardware Setup
 // -----------------------------------------------------------------------------
 
-static void rfgen_initialize()
+static bool initialize_hardware()
 {
-    // Load the GPIO output latch low before either GPIO or TCC takes the pin.
+    // Load the GPIO output latch low before TCC0 is connected to the pad.
     digitalWrite(RFGEN_PIN, LOW);
     pinMode(RFGEN_PIN, OUTPUT);
 
-    PM->APBCMASK.reg |= PM_APBCMASK_TCC0 | PM_APBCMASK_TC5;
+    PM->APBCMASK.reg |= PM_APBCMASK_TCC0;
 
-    // Route the 48 MHz generic clock to the PWM and burst timers.
-    GCLK->CLKCTRL.reg = static_cast<uint16_t>(GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC0_TCC1);
+    GCLK->CLKCTRL.reg = static_cast<uint16_t>(GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 |
+                                              GCLK_CLKCTRL_ID_TCC0_TCC1);
     while (GCLK->STATUS.bit.SYNCBUSY != 0)
     {
     }
 
-    GCLK->CLKCTRL.reg = static_cast<uint16_t>(GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TC4_TC5);
-    while (GCLK->STATUS.bit.SYNCBUSY != 0)
-    {
-    }
-
-    // Configure TCC0 for a 50% single-slope PWM that initially remains low.
     TCC0->CTRLA.reg = TCC_CTRLA_SWRST;
     while ((TCC0->SYNCBUSY.bit.SWRST != 0) || (TCC0->CTRLA.bit.SWRST != 0))
     {
@@ -206,283 +138,172 @@ static void rfgen_initialize()
     TCC0->CTRLA.reg = TCC_CTRLA_PRESCALER_DIV1 | TCC_CTRLA_PRESCSYNC_GCLK;
     TCC0->WAVE.reg  = TCC_WAVE_WAVEGEN_NPWM;
     wait_for_tcc0_sync();
-    TCC0->PER.reg = kPwmTop;
+
+    TCC0->PER.reg = kPwmInitialTop;
     wait_for_tcc0_sync();
     TCC0->CC[0].reg = 0;
     wait_for_tcc0_sync();
+
+    if (!initialize_dma())
+    {
+        return false;
+    }
+
+    // Start TCC0 disconnected from the pin and producing a steady low level.
+    TCC0->CTRLA.bit.ENABLE = 1;
+    wait_for_tcc0_sync();
+    pinPeripheral(RFGEN_PIN, PIO_TIMER);
+
+    g_initialized = true;
+    return true;
+}
+
+static bool initialize_dma()
+{
+    g_periodDma.setTrigger(TCC0_DMAC_ID_OVF);
+    g_periodDma.setAction(DMA_TRIGGER_ACTON_BEAT);
+    g_periodDma.loop(true);
+
+    if (g_periodDma.allocate() != DMA_STATUS_OK)
+    {
+        return false;
+    }
+
+    g_periodDma.setPriority(DMA_PRIORITY_3);
+    g_periodDescriptor = g_periodDma.addDescriptor(g_dmaPeriods,
+                                                    const_cast<uint32_t*>(&TCC0->PERB.reg),
+                                                    PWR_TABLE_ROW_LENGTH,
+                                                    DMA_BEAT_SIZE_WORD,
+                                                    true,
+                                                    false);
+    if (g_periodDescriptor == nullptr)
+    {
+        g_periodDma.free();
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// Row Management
+// -----------------------------------------------------------------------------
+
+static bool validate_row(uint8_t powerLevel)
+{
+    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
+    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
+    {
+        const uint32_t top = row[index];
+        if ((top < kPwmHighClocks) || (top > kPwmMaximumTop))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static void copy_row(uint8_t powerLevel)
+{
+    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
+    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
+    {
+        g_dmaPeriods[index] = row[index];
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Safe Stop/Start
+// -----------------------------------------------------------------------------
+
+static void stop_output()
+{
+    if (!g_initialized)
+    {
+        digitalWrite(RFGEN_PIN, LOW);
+        pinMode(RFGEN_PIN, OUTPUT);
+        return;
+    }
+
+    if (TCC0->CTRLA.bit.ENABLE != 0)
+    {
+        // A buffered zero takes effect only at UPDATE. Wait for a later
+        // overflow so the current pulse has finished and zero is active.
+        while (TCC0->SYNCBUSY.bit.CCB0 != 0)
+        {
+        }
+        TCC0->CCB[0].reg = 0;
+        while (TCC0->SYNCBUSY.bit.CCB0 != 0)
+        {
+        }
+
+        TCC0->INTFLAG.reg = TCC_INTFLAG_OVF;
+        while ((TCC0->INTFLAG.reg & TCC_INTFLAG_OVF) == 0)
+        {
+        }
+        TCC0->INTFLAG.reg = TCC_INTFLAG_OVF;
+
+        TCC0->CTRLA.bit.ENABLE = 0;
+        wait_for_tcc0_sync();
+    }
+
+    if (g_dmaRunning)
+    {
+        const uint32_t channelMask = 1ul << g_periodDma.getChannel();
+        g_periodDma.abort();
+        while ((DMAC->BUSYCH.reg & channelMask) != 0)
+        {
+        }
+        g_dmaRunning = false;
+    }
+
+    // Disconnect TCC0 only after its active output is known low.
+    digitalWrite(RFGEN_PIN, LOW);
+    pinMode(RFGEN_PIN, OUTPUT);
+}
+
+static bool start_output()
+{
+    // TCC0 is disabled and the pin is still a GPIO held low here.
+    TCC0->COUNT.reg = 0;
+    wait_for_tcc0_sync();
+    TCC0->PER.reg = g_dmaPeriods[0];
+    wait_for_tcc0_sync();
+    TCC0->PERB.reg = g_dmaPeriods[0];
+    wait_for_tcc0_sync();
+    TCC0->CC[0].reg = 0;
+    wait_for_tcc0_sync();
+    TCC0->CCB[0].reg = 0;
+    wait_for_tcc0_sync();
+
+    g_periodDma.changeDescriptor(g_periodDescriptor,
+                                 g_dmaPeriods,
+                                 const_cast<uint32_t*>(&TCC0->PERB.reg),
+                                 PWR_TABLE_ROW_LENGTH);
+    if (g_periodDma.startJob() != DMA_STATUS_OK)
+    {
+        return false;
+    }
+    g_dmaRunning = true;
+
+    // Connect a known-low peripheral output before starting its counter.
+    pinPeripheral(RFGEN_PIN, PIO_TIMER);
     TCC0->CTRLA.bit.ENABLE = 1;
     wait_for_tcc0_sync();
 
-    // PA04 peripheral E is TCC0/WO[0]. Its timer output is currently low.
-    pinPeripheral(RFGEN_PIN, PIO_TIMER);
-
-    // TC5 uses match-frequency mode so each compare schedules one burst phase.
-    TC5->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
-    while ((TC5->COUNT16.STATUS.bit.SYNCBUSY != 0) || (TC5->COUNT16.CTRLA.bit.SWRST != 0))
-    {
-    }
-
-    TC5->COUNT16.CTRLA.reg =
-        TC_CTRLA_MODE_COUNT16 | TC_CTRLA_WAVEGEN_MFRQ | TC_CTRLA_PRESCALER_DIV1024 | TC_CTRLA_PRESCSYNC_GCLK;
-    wait_for_tc5_sync();
-    NVIC_SetPriority(TC5_IRQn, 3);
-
-    g_initialized = true;
-}
-
-extern "C" void TC5_Handler()
-{
-    if ((TC5->COUNT16.INTFLAG.reg & TC_INTFLAG_MC0) == 0)
-    {
-        return;
-    }
-
-    TC5->COUNT16.INTFLAG.reg = TC_INTFLAG_MC0;
-
-    // Alternate between the precomputed on and off durations.
-    if (g_burstIsOn)
-    {
-        g_burstIsOn = false;
-        rf_pwm_set(false);
-        burst_timer_set_interval(g_burstOffTicks);
-    }
-    else
-    {
-        g_burstIsOn = true;
-        rf_pwm_set(true);
-        burst_timer_set_interval(g_burstOnTicks);
-    }
-}
-
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
-
-static uint32_t burst_period_to_ticks(uint32_t periodUs)
-{
-    if (periodUs == 0)
-    {
-        periodUs = kDefaultBurstPeriodUs;
-    }
-
-    constexpr uint64_t kTicksDenominator = static_cast<uint64_t>(kBurstTimerPrescaler) * 1000000;
-    const uint64_t     roundedTicks =
-        ((static_cast<uint64_t>(periodUs) * F_CPU) + (kTicksDenominator / 2)) / kTicksDenominator;
-
-    // Partial power always needs at least one on tick and one off tick.
-    if (roundedTicks < 2)
-    {
-        return 2;
-    }
-    if (roundedTicks > kBurstMaximumTicks)
-    {
-        return kBurstMaximumTicks;
-    }
-
-    return static_cast<uint32_t>(roundedTicks);
-}
-
-static uint32_t power_percent_to_on_ticks(uint8_t powerPercent, uint32_t periodTicks)
-{
-    if (powerPercent == 0)
-    {
-        return 0;
-    }
-    if (powerPercent >= kMaximumPowerPercent)
-    {
-        return periodTicks;
-    }
-
-    uint32_t onTicks = ((periodTicks * powerPercent) + (kMaximumPowerPercent / 2)) / kMaximumPowerPercent;
-
-    // Every partial-power setting needs at least one on tick and one off tick.
-    if (onTicks == 0)
-    {
-        return 1;
-    }
-    if (onTicks >= periodTicks)
-    {
-        return periodTicks - 1;
-    }
-    return onTicks;
-}
-
-static uint32_t scale_on_ticks(uint32_t onTicks, uint32_t oldPeriodTicks, uint32_t newPeriodTicks)
-{
-    if ((onTicks == 0) || (oldPeriodTicks == 0))
-    {
-        return 0;
-    }
-    if (onTicks >= oldPeriodTicks)
-    {
-        return newPeriodTicks;
-    }
-
-    const uint64_t scaledNumerator = static_cast<uint64_t>(onTicks) * newPeriodTicks;
-    return static_cast<uint32_t>((scaledNumerator + (oldPeriodTicks / 2)) / oldPeriodTicks);
-}
-
-static void rfgen_apply_ramp_ticks(uint32_t periodTicks, uint32_t onTicks)
-{
-    const bool appliedIsPartial = (g_appliedOnTicks > 0) && (g_appliedOnTicks < g_appliedPeriodTicks);
-    const bool nextIsPartial    = (onTicks > 0) && (onTicks < periodTicks);
-
-    if (!g_initialized || !appliedIsPartial || !nextIsPartial || (g_appliedPeriodTicks != periodTicks))
-    {
-        // Entering or leaving partial power, and changing the burst period,
-        // requires a complete timer reconfiguration.
-        rfgen_apply_ticks(periodTicks, onTicks);
-        return;
-    }
-
-    /*
-     * Do not restart TC5 for each ramp tick. Ramp updates arrive more often
-     * than one burst period, so restarting would repeatedly favor the on phase
-     * and produce much more power than requested. The ISR will use these new
-     * durations at its next on/off boundary.
-     */
-    const uint32_t interruptState = __get_PRIMASK();
-    __disable_irq();
-    g_burstOnTicks  = static_cast<uint16_t>(onTicks);
-    g_burstOffTicks = static_cast<uint16_t>(periodTicks - onTicks);
-    if (interruptState == 0)
-    {
-        __enable_irq();
-    }
-
-    g_appliedPeriodTicks = periodTicks;
-    g_appliedOnTicks     = onTicks;
-}
-
-static void rfgen_apply_ticks(uint32_t periodTicks, uint32_t onTicks)
-{
-    if (onTicks > periodTicks)
-    {
-        onTicks = periodTicks;
-    }
-
-    if (!g_initialized)
-    {
-        if (onTicks == 0)
-        {
-            // A zero request must be safe without paying the timer-init cost.
-            digitalWrite(RFGEN_PIN, LOW);
-            pinMode(RFGEN_PIN, OUTPUT);
-            g_appliedPeriodTicks = periodTicks;
-            g_appliedOnTicks     = 0;
-            return;
-        }
-
-        rfgen_initialize();
-    }
-
-    /*
-     * TC5's ISR shares the burst state and timer registers with foreground
-     * control. Preserve the caller's interrupt state around reconfiguration.
-     */
-    const uint32_t interruptState = __get_PRIMASK();
-    __disable_irq();
-
-    burst_timer_stop();
-
-    if (onTicks == 0)
-    {
-        g_burstIsOn = false;
-        rf_pwm_set(false);
-    }
-    else if (onTicks >= periodTicks)
-    {
-        // Full power never schedules an off window.
-        g_burstIsOn = true;
-        rf_pwm_set(true);
-    }
-    else
-    {
-        g_burstOnTicks  = static_cast<uint16_t>(onTicks);
-        g_burstOffTicks = static_cast<uint16_t>(periodTicks - onTicks);
-        g_burstIsOn     = true;
-        rf_pwm_set(true);
-        burst_timer_start(g_burstOnTicks);
-    }
-
-    if (interruptState == 0)
-    {
-        __enable_irq();
-    }
-
-    g_appliedPeriodTicks = periodTicks;
-    g_appliedOnTicks     = onTicks;
-}
-
-static void burst_timer_start(uint16_t firstIntervalTicks)
-{
-    TC5->COUNT16.CTRLA.bit.ENABLE = 0;
-    wait_for_tc5_sync();
-
-    TC5->COUNT16.COUNT.reg = 0;
-    wait_for_tc5_sync();
-    burst_timer_set_interval(firstIntervalTicks);
-
-    TC5->COUNT16.INTFLAG.reg  = TC_INTFLAG_MC0;
-    TC5->COUNT16.INTENSET.reg = TC_INTENSET_MC0;
-    NVIC_ClearPendingIRQ(TC5_IRQn);
-    NVIC_EnableIRQ(TC5_IRQn);
-
-    TC5->COUNT16.CTRLA.bit.ENABLE = 1;
-    wait_for_tc5_sync();
-}
-
-static void burst_timer_stop()
-{
-    TC5->COUNT16.INTENCLR.reg     = TC_INTENCLR_MC0;
-    TC5->COUNT16.CTRLA.bit.ENABLE = 0;
-    wait_for_tc5_sync();
-
-    TC5->COUNT16.INTFLAG.reg = TC_INTFLAG_MC0;
-    NVIC_DisableIRQ(TC5_IRQn);
-    NVIC_ClearPendingIRQ(TC5_IRQn);
-}
-
-static void burst_timer_set_interval(uint16_t ticks)
-{
-    TC5->COUNT16.CC[0].reg = static_cast<uint16_t>(ticks - 1);
-    wait_for_tc5_sync();
-}
-
-static void rf_pwm_set(bool enabled)
-{
-    /*
-     * CCB0 transfers to CC0 only at a PWM update boundary.
-     *
-     * A zero duty cannot truncate a high
-     * pulse: the current high pulse
-     * finishes, the output goes low, and the following cycle remains low.
-     */
+    // The fixed pulse width becomes active at the next PWM boundary.
+    TCC0->CCB[0].reg = kPwmHighClocks;
     while (TCC0->SYNCBUSY.bit.CCB0 != 0)
     {
     }
 
-    TCC0->CCB[0].reg = enabled ? kPwmHighClocks : 0;
-
-    while (TCC0->SYNCBUSY.bit.CCB0 != 0)
-    {
-    }
+    return true;
 }
-
-// -----------------------------------------------------------------------------
-// Small Helpers
-// -----------------------------------------------------------------------------
 
 static void wait_for_tcc0_sync()
 {
     while (TCC0->SYNCBUSY.reg != 0)
-    {
-    }
-}
-
-static void wait_for_tc5_sync()
-{
-    while (TC5->COUNT16.STATUS.bit.SYNCBUSY != 0)
     {
     }
 }

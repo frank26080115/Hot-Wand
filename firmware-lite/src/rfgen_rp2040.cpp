@@ -1,25 +1,26 @@
 /*
- * Hardware-timed 470 kHz RF carrier and burst-power control for RP2040.
+ * DMA-modulated, fixed-pulse-width RF generator for RP2040.
  *
- * The PWM slice is left running permanently once initialized. Turning RF off
- * writes a zero compare value, which is transferred at the next PWM wrap. This
- * lets the current pulse finish normally and can never freeze the output high.
- * A hardware alarm gates the carrier for partial-power burst operation.
+ * One DMA channel writes the next PWM TOP value after every slice wrap. A
+ * second channel reloads and retriggers the data channel after each complete
+ * table row, producing an indefinite hardware-only loop.
+ *
+ * The RF output must never be left continuously high. Every table entry is
+ * validated before use, and all reconfiguration first latches a zero compare
+ * value at a PWM boundary.
  */
-
-// -----------------------------------------------------------------------------
-// Includes
-// -----------------------------------------------------------------------------
 
 #include "rfgen.h"
 
 #include <Arduino.h>
+#include <hardware/dma.h>
 #include <hardware/gpio.h>
 #include <hardware/pwm.h>
-#include <hardware/sync.h>
-#include <pico/time.h>
+#include <hardware/structs/dma.h>
+#include <hardware/structs/pwm.h>
 
 #include "hotwandlite.h"
+#include "pwr_table.h"
 
 // -----------------------------------------------------------------------------
 // Configuration
@@ -27,383 +28,265 @@
 
 // One undivided 133 MHz PWM period is 283 clocks, or about 469.965 kHz.
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (kRfFrequencyHz / 2)) / kRfFrequencyHz;
-static constexpr uint16_t kPwmTop          = static_cast<uint16_t>(kPwmPeriodClocks - 1);
+static constexpr uint16_t kPwmInitialTop    = static_cast<uint16_t>(kPwmPeriodClocks - 1);
 static constexpr uint16_t kPwmHighClocks   = static_cast<uint16_t>(kPwmPeriodClocks / 2);
 
-// Avoid an accidentally huge partial-power on window from an unreasonable
-// caller-supplied burst period. Normal operation uses the 10000 us default.
-static constexpr uint32_t kBurstMaximumPeriodUs = 1000000;
-
 static_assert(F_CPU == 133000000, "RF generator timer settings require a 133 MHz CPU clock");
-static_assert(kPwmPeriodClocks >= 2, "RF PWM period must contain a high and a low clock");
-static_assert(kPwmPeriodClocks <= 65536, "RF PWM period does not fit the RP2040 PWM counter");
-static_assert(kPwmHighClocks > 0, "RF PWM high time must not be zero");
-static_assert(kPwmHighClocks < kPwmPeriodClocks, "RF PWM must include a low interval");
+static_assert(kPwmHighClocks == 141, "Unexpected RP2040 RF pulse width");
+static_assert(kPwmHighClocks <= kPwmInitialTop, "RF PWM must include a low interval");
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
-static bool g_initialized = false;
-static uint g_pwmSlice    = 0;
+static bool    g_initialized   = false;
+static bool    g_pwmRunning    = false;
+static bool    g_dmaRunning    = false;
+static uint8_t g_currentLevel  = RFGEN_POWER_OFF;
+static uint    g_pwmSlice      = 0;
+static uint    g_pwmChannel    = 0;
+static int     g_dataDma       = -1;
+static int     g_reloadDma     = -1;
 
-static volatile bool       g_burstIsActive = false;
-static volatile bool       g_burstIsOn     = false;
-static volatile uint32_t   g_burstOnUs     = 1;
-static volatile uint32_t   g_burstOffUs    = 1;
-static volatile alarm_id_t g_burstAlarmId  = -1;
-
-static bool     g_settingInitialized = false;
-static bool     g_rampIsActive       = false;
-static uint32_t g_appliedPeriodUs    = 0;
-static uint32_t g_appliedOnUs        = 0;
-static uint32_t g_desiredPeriodUs    = 0;
-static uint32_t g_desiredOnUs        = 0;
-static uint32_t g_rampStartOnUs      = 0;
-static uint32_t g_rampStartedMs      = 0;
+alignas(16) static uint32_t g_dmaPeriods[PWR_TABLE_ROW_LENGTH];
+static uint32_t             g_dmaReadAddress = 0;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static uint32_t normalize_burst_period_us(uint32_t periodUs);
-static uint32_t power_percent_to_on_us(uint8_t powerPercent, uint32_t periodUs);
-static uint32_t scale_on_time(uint32_t onUs, uint32_t oldPeriodUs, uint32_t newPeriodUs);
-static void     restart_ramp_from_applied();
-static void     rfgen_apply_ramp_time(uint32_t periodUs, uint32_t onUs);
-static void     rfgen_apply_time(uint32_t periodUs, uint32_t onUs);
-static void     rfgen_initialize();
-static void     carrier_set(bool enabled);
-static void     burst_cancel_locked();
-static bool     burst_start_locked(uint32_t onUs, uint32_t offUs);
-static int64_t  burst_alarm_callback(alarm_id_t alarmId, void* userData);
+static bool initialize_hardware();
+static bool initialize_dma();
+static bool validate_row(uint8_t powerLevel);
+static void copy_row(uint8_t powerLevel);
+static void stop_output();
+static void stop_dma();
+static void start_output();
 
 // -----------------------------------------------------------------------------
-// Main Flow
+// Public API
 // -----------------------------------------------------------------------------
 
-void rfgen_set(uint8_t powerPercent, uint32_t periodUs)
+void rfgen_set(uint8_t powerLevel)
 {
-    uint32_t currentOnUs;
-
-    if (powerPercent > kMaximumPowerPercent)
+    if (powerLevel > RFGEN_POWER_MAXIMUM)
     {
-        powerPercent = kMaximumPowerPercent;
+        powerLevel = RFGEN_POWER_MAXIMUM;
     }
 
-#ifndef ENABLE_POWER_BURST_LEVELS
-    // Builds without selectable burst levels treat every nonzero request as
-    // full power. The existing ramp still uses partial bursts during startup.
-    if (powerPercent > 0)
+    if (powerLevel == g_currentLevel)
     {
-        powerPercent = kMaximumPowerPercent;
-    }
-#endif
-
-    periodUs            = normalize_burst_period_us(periodUs);
-    const uint32_t onUs = power_percent_to_on_us(powerPercent, periodUs);
-
-    // Repeated requests do not restart a ramp already in progress.
-    if (g_settingInitialized && (periodUs == g_desiredPeriodUs) && (onUs == g_desiredOnUs))
-    {
-        return;
-    }
-
-    if (!g_settingInitialized)
-    {
-        // Establish a known-low output before accepting any increase.
-        rfgen_apply_time(periodUs, 0);
-        currentOnUs          = 0;
-        g_settingInitialized = true;
-    }
-    else
-    {
-        // Preserve actual duty if the requested burst period changes.
-        currentOnUs = scale_on_time(g_appliedOnUs, g_appliedPeriodUs, periodUs);
-    }
-
-    g_desiredPeriodUs = periodUs;
-    g_desiredOnUs     = onUs;
-
-    if (onUs <= currentOnUs)
-    {
-        // Reductions, including off, are applied synchronously.
-        g_rampIsActive = false;
-        if ((g_appliedPeriodUs != periodUs) || (g_appliedOnUs != onUs))
+        if (powerLevel == RFGEN_POWER_OFF)
         {
-            rfgen_apply_time(periodUs, onUs);
-            if (g_appliedOnUs != onUs)
-            {
-                restart_ramp_from_applied();
-            }
+            stop_output();
         }
         return;
     }
 
-    // Increases are derived from elapsed time in rfgen_task(), so loop rate
-    // does not affect the nominal one-second 0-to-100-percent ramp.
-    g_rampStartOnUs = currentOnUs;
-    g_rampStartedMs = millis();
-    g_rampIsActive  = true;
-}
-
-void rfgen_task(void)
-{
-    if (!g_settingInitialized || !g_rampIsActive)
+    if (powerLevel == RFGEN_POWER_OFF)
     {
+        stop_output();
+        g_currentLevel = RFGEN_POWER_OFF;
         return;
     }
 
-    const uint32_t elapsedMs = static_cast<uint32_t>(millis() - g_rampStartedMs);
-    const uint64_t nextOnUsWide =
-        g_rampStartOnUs + ((static_cast<uint64_t>(elapsedMs) * g_desiredPeriodUs) / kPowerRampDurationMs);
-    uint32_t nextOnUs;
-    if (nextOnUsWide >= g_desiredOnUs)
+    // Validate the flash-resident source before disturbing a running row.
+    if (!validate_row(powerLevel))
     {
-        nextOnUs       = g_desiredOnUs;
-        g_rampIsActive = false;
-    }
-    else
-    {
-        nextOnUs = static_cast<uint32_t>(nextOnUsWide);
+        stop_output();
+        g_currentLevel = RFGEN_POWER_OFF;
+        return;
     }
 
-    if ((g_appliedPeriodUs != g_desiredPeriodUs) || (g_appliedOnUs != nextOnUs))
+    if (!g_initialized && !initialize_hardware())
     {
-        rfgen_apply_ramp_time(g_desiredPeriodUs, nextOnUs);
-        if (g_appliedOnUs != nextOnUs)
-        {
-            restart_ramp_from_applied();
-        }
+        g_currentLevel = RFGEN_POWER_OFF;
+        return;
     }
+
+    // Row changes are allowed to interrupt the waveform, but never while high.
+    stop_output();
+    copy_row(powerLevel);
+    start_output();
+    g_currentLevel = powerLevel;
 }
 
 // -----------------------------------------------------------------------------
-// Feature Logic
+// Hardware Setup
 // -----------------------------------------------------------------------------
 
-static void rfgen_initialize()
+static bool initialize_hardware()
 {
-    // Set the GPIO latch low before handing the pad to the PWM peripheral.
+    // Load the GPIO output latch low before PWM is connected to the pad.
     digitalWrite(RFGEN_PIN, LOW);
     pinMode(RFGEN_PIN, OUTPUT);
 
-    g_pwmSlice = pwm_gpio_to_slice_num(RFGEN_PIN);
+    g_pwmSlice   = pwm_gpio_to_slice_num(RFGEN_PIN);
+    g_pwmChannel = pwm_gpio_to_channel(RFGEN_PIN);
 
-    pwm_config config = pwm_get_default_config();
-    pwm_config_set_clkdiv_int(&config, 1);
-    pwm_config_set_wrap(&config, kPwmTop);
-
-    // pwm_init clears both compare channels. Start the counter before changing
-    // the pad function so the peripheral is already producing a steady low.
-    pwm_init(g_pwmSlice, &config, true);
-    pwm_set_gpio_level(RFGEN_PIN, 0);
-    gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
-
-    g_initialized = true;
-}
-
-static int64_t burst_alarm_callback(alarm_id_t alarmId, void* userData)
-{
-    (void)userData;
-
-    if (!g_burstIsActive || (alarmId != g_burstAlarmId))
+    if (!initialize_dma())
     {
-        carrier_set(false);
-        return 0;
-    }
-
-    if (g_burstIsOn)
-    {
-        // A zero compare takes effect at the next wrap, so the current high
-        // pulse finishes but can never be stretched by stopping the counter.
-        carrier_set(false);
-        g_burstIsOn = false;
-        return -static_cast<int64_t>(g_burstOffUs);
-    }
-
-    carrier_set(true);
-    g_burstIsOn = true;
-    return -static_cast<int64_t>(g_burstOnUs);
-}
-
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
-
-static uint32_t normalize_burst_period_us(uint32_t periodUs)
-{
-    if (periodUs == 0)
-    {
-        periodUs = kDefaultBurstPeriodUs;
-    }
-
-    if (periodUs > kBurstMaximumPeriodUs)
-    {
-        return kBurstMaximumPeriodUs;
-    }
-
-    return periodUs;
-}
-
-static uint32_t power_percent_to_on_us(uint8_t powerPercent, uint32_t periodUs)
-{
-    if (powerPercent == 0)
-    {
-        return 0;
-    }
-    if (powerPercent >= kMaximumPowerPercent)
-    {
-        return periodUs;
-    }
-
-    uint32_t onUs = ((periodUs * powerPercent) + (kMaximumPowerPercent / 2)) / kMaximumPowerPercent;
-
-    // Every partial setting must retain both an on and an off phase.
-    if (onUs == 0)
-    {
-        return 1;
-    }
-    if (onUs >= periodUs)
-    {
-        return periodUs - 1;
-    }
-    return onUs;
-}
-
-static uint32_t scale_on_time(uint32_t onUs, uint32_t oldPeriodUs, uint32_t newPeriodUs)
-{
-    if ((onUs == 0) || (oldPeriodUs == 0))
-    {
-        return 0;
-    }
-    if (onUs >= oldPeriodUs)
-    {
-        return newPeriodUs;
-    }
-
-    const uint64_t scaledNumerator = static_cast<uint64_t>(onUs) * newPeriodUs;
-    return static_cast<uint32_t>((scaledNumerator + (oldPeriodUs / 2)) / oldPeriodUs);
-}
-
-static void restart_ramp_from_applied()
-{
-    // A failed partial-burst alarm allocation leaves the carrier safely off.
-    // Retry later as a fresh ramp so recovery can never jump straight to the
-    // requested power.
-    g_rampStartOnUs = g_appliedOnUs;
-    g_rampStartedMs = millis();
-    g_rampIsActive  = g_appliedOnUs < g_desiredOnUs;
-}
-
-static void rfgen_apply_ramp_time(uint32_t periodUs, uint32_t onUs)
-{
-    const bool appliedIsPartial = (g_appliedOnUs > 0) && (g_appliedOnUs < g_appliedPeriodUs);
-    const bool nextIsPartial    = (onUs > 0) && (onUs < periodUs);
-
-    if (!g_initialized || !g_burstIsActive || !appliedIsPartial || !nextIsPartial || (g_appliedPeriodUs != periodUs))
-    {
-        rfgen_apply_time(periodUs, onUs);
-        return;
-    }
-
-    // Keep the current phase running. The alarm callback consumes the new
-    // durations at the following on/off boundary.
-    const uint32_t interruptState = save_and_disable_interrupts();
-    g_burstOnUs                   = onUs;
-    g_burstOffUs                  = periodUs - onUs;
-    g_appliedPeriodUs             = periodUs;
-    g_appliedOnUs                 = onUs;
-    restore_interrupts(interruptState);
-}
-
-static void rfgen_apply_time(uint32_t periodUs, uint32_t onUs)
-{
-    if (onUs > periodUs)
-    {
-        onUs = periodUs;
-    }
-
-    if (!g_initialized)
-    {
-        if (onUs == 0)
-        {
-            // The boot-time off request is safe without initializing PWM.
-            digitalWrite(RFGEN_PIN, LOW);
-            pinMode(RFGEN_PIN, OUTPUT);
-            g_appliedPeriodUs = periodUs;
-            g_appliedOnUs     = 0;
-            return;
-        }
-
-        rfgen_initialize();
-    }
-
-    const uint32_t interruptState = save_and_disable_interrupts();
-
-    // Always gate off before replacing a burst schedule. The PWM counter stays
-    // running, so zero is latched no later than the next 470 kHz wrap.
-    burst_cancel_locked();
-
-    uint32_t appliedOnUs = onUs;
-    if (onUs == 0)
-    {
-        carrier_set(false);
-    }
-    else if (onUs >= periodUs)
-    {
-        carrier_set(true);
-    }
-    else if (!burst_start_locked(onUs, periodUs - onUs))
-    {
-        // Alarm-pool exhaustion fails safe: output remains low and the next
-        // ramp task pass will retry because the applied duty remains zero.
-        appliedOnUs = 0;
-    }
-
-    g_appliedPeriodUs = periodUs;
-    g_appliedOnUs     = appliedOnUs;
-    restore_interrupts(interruptState);
-}
-
-static void burst_cancel_locked()
-{
-    g_burstIsActive = false;
-    carrier_set(false);
-
-    const alarm_id_t alarmId = g_burstAlarmId;
-    g_burstAlarmId           = -1;
-    if (alarmId > 0)
-    {
-        cancel_alarm(alarmId);
-    }
-
-    g_burstIsOn = false;
-}
-
-static bool burst_start_locked(uint32_t onUs, uint32_t offUs)
-{
-    g_burstOnUs     = onUs;
-    g_burstOffUs    = offUs;
-    g_burstIsOn     = false;
-    g_burstIsActive = true;
-
-    // Begin partial power with its off phase. This avoids an initial power
-    // overshoot and gives the zero compare ample time to reach a PWM wrap.
-    const alarm_id_t alarmId = add_alarm_in_us(offUs, burst_alarm_callback, nullptr, false);
-    if (alarmId <= 0)
-    {
-        g_burstIsActive = false;
-        g_burstAlarmId  = -1;
-        carrier_set(false);
         return false;
     }
 
-    g_burstAlarmId = alarmId;
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv_int(&config, 1);
+    pwm_config_set_wrap(&config, kPwmInitialTop);
+    pwm_init(g_pwmSlice, &config, false);
+    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
+
+    // The PWM peripheral is disabled and its selected channel is known low.
+    gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
+
+    g_initialized = true;
     return true;
 }
 
-static void carrier_set(bool enabled)
+static bool initialize_dma()
 {
-    pwm_set_gpio_level(RFGEN_PIN, enabled ? kPwmHighClocks : 0);
+    g_dataDma = dma_claim_unused_channel(false);
+    if (g_dataDma < 0)
+    {
+        return false;
+    }
+
+    g_reloadDma = dma_claim_unused_channel(false);
+    if (g_reloadDma < 0)
+    {
+        dma_channel_unclaim(static_cast<uint>(g_dataDma));
+        g_dataDma = -1;
+        return false;
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// Row Management
+// -----------------------------------------------------------------------------
+
+static bool validate_row(uint8_t powerLevel)
+{
+    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
+    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
+    {
+        const uint32_t top = row[index];
+        if ((top < kPwmHighClocks) || (top > UINT16_MAX))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static void copy_row(uint8_t powerLevel)
+{
+    const uint32_t* row = g_powerPeriodTable[powerLevel - 1];
+    for (uint32_t index = 0; index < PWR_TABLE_ROW_LENGTH; ++index)
+    {
+        g_dmaPeriods[index] = row[index];
+    }
+
+    g_dmaReadAddress = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(g_dmaPeriods));
+}
+
+// -----------------------------------------------------------------------------
+// Safe Stop/Start
+// -----------------------------------------------------------------------------
+
+static void stop_output()
+{
+    if (!g_initialized)
+    {
+        digitalWrite(RFGEN_PIN, LOW);
+        pinMode(RFGEN_PIN, OUTPUT);
+        return;
+    }
+
+    if (g_pwmRunning)
+    {
+        // A compare write is double-buffered. Wait for a subsequent wrap so
+        // the zero compare is active before disabling the slice.
+        pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
+        pwm_clear_irq(g_pwmSlice);
+        while ((pwm_hw->intr & (1ul << g_pwmSlice)) == 0)
+        {
+        }
+        pwm_clear_irq(g_pwmSlice);
+
+        pwm_set_enabled(g_pwmSlice, false);
+        g_pwmRunning = false;
+    }
+
+    stop_dma();
+
+    // Disconnect PWM only after its active output is known low.
+    digitalWrite(RFGEN_PIN, LOW);
+    pinMode(RFGEN_PIN, OUTPUT);
+}
+
+static void stop_dma()
+{
+    if (!g_dmaRunning)
+    {
+        return;
+    }
+
+    // Disable both channels before aborting so neither can retrigger the other
+    // while a row change is in progress.
+    hw_clear_bits(&dma_hw->ch[g_reloadDma].ctrl_trig, DMA_CH0_CTRL_TRIG_EN_BITS);
+    hw_clear_bits(&dma_hw->ch[g_dataDma].ctrl_trig, DMA_CH0_CTRL_TRIG_EN_BITS);
+    dma_channel_abort(static_cast<uint>(g_reloadDma));
+    dma_channel_abort(static_cast<uint>(g_dataDma));
+    g_dmaRunning = false;
+}
+
+static void start_output()
+{
+    // PWM is disabled and the pin is still a GPIO held low here.
+    pwm_set_counter(g_pwmSlice, 0);
+    pwm_set_wrap(g_pwmSlice, static_cast<uint16_t>(g_dmaPeriods[0]));
+    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
+
+    dma_channel_config dataConfig = dma_channel_get_default_config(static_cast<uint>(g_dataDma));
+    channel_config_set_transfer_data_size(&dataConfig, DMA_SIZE_32);
+    channel_config_set_read_increment(&dataConfig, true);
+    channel_config_set_write_increment(&dataConfig, false);
+    channel_config_set_dreq(&dataConfig, pwm_get_dreq(g_pwmSlice));
+    channel_config_set_chain_to(&dataConfig, static_cast<uint>(g_reloadDma));
+    channel_config_set_high_priority(&dataConfig, true);
+    channel_config_set_irq_quiet(&dataConfig, true);
+    dma_channel_configure(static_cast<uint>(g_dataDma),
+                          &dataConfig,
+                          &pwm_hw->slice[g_pwmSlice].top,
+                          g_dmaPeriods,
+                          PWR_TABLE_ROW_LENGTH,
+                          false);
+
+    dma_channel_config reloadConfig = dma_channel_get_default_config(static_cast<uint>(g_reloadDma));
+    channel_config_set_transfer_data_size(&reloadConfig, DMA_SIZE_32);
+    channel_config_set_read_increment(&reloadConfig, false);
+    channel_config_set_write_increment(&reloadConfig, false);
+    channel_config_set_high_priority(&reloadConfig, true);
+    channel_config_set_irq_quiet(&reloadConfig, true);
+    dma_channel_configure(static_cast<uint>(g_reloadDma),
+                          &reloadConfig,
+                          &dma_hw->ch[g_dataDma].al3_read_addr_trig,
+                          &g_dmaReadAddress,
+                          1,
+                          false);
+
+    // The data channel waits for the first PWM-wrap DREQ. Thereafter its
+    // completion invokes the reload channel, which retriggers it indefinitely.
+    dma_start_channel_mask(1ul << g_dataDma);
+    g_dmaRunning = true;
+
+    // Connect a known-low PWM output before starting its counter.
+    gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
+    pwm_set_enabled(g_pwmSlice, true);
+    g_pwmRunning = true;
+
+    // The fixed pulse width becomes active at the next PWM boundary.
+    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, kPwmHighClocks);
 }
