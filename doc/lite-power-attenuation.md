@@ -4,9 +4,9 @@ For the Lite 470 kHz version that is a copy of Radio Thermal's design, which is 
 
 (For the full 13.56 MHz version, reducing power is a simple matter of reducing the voltage outputted by the buck converter.)
 
-NOTE: I understand that 20V and 3A is about 60W, and RF irons like these are not efficient so we are expecting maybe 30-40W of heat. This is deemed totally acceptable. Even a 30W iron, if it is responsive, feels great to use in 90% of soldering situations.
+I understand that 20V and 3A is about 60W, and RF irons like these are not efficient so we are expecting maybe 30-40W of heat. This is deemed totally acceptable. Even a 30W iron, if it is responsive, feels great to use in 90% of soldering situations. This is about giving just a few more options to the user, they can still power it with full 5A if they choose to.
 
-## Experimentation
+## Experiments and Simulations
 
 Something different I've done from Radio Thermal's design is to use a Seeed Studio XIAO microcontroller which generates the 470 kHz, this allows DIY builders to avoid having to buy any programming equipment, as code is flashed via a USB connector.
 
