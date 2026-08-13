@@ -23029,6 +23029,10 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="GND64" library="hot-wand" deviceset="GND" device=""/>
 <part name="JP5" library="hot-wand" deviceset="M06" device="LOCK"/>
+<part name="TVS6" library="hot-wand" deviceset="TVS" device="SMA" value="SMAJ22A">
+<attribute name="JLCPCBPART" value="C41376403"/>
+</part>
+<part name="GND63" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23875,6 +23879,10 @@ curr meas</text>
 </instance>
 <instance part="GND64" gate="1" x="180.34" y="-703.58"/>
 <instance part="JP5" gate="G$1" x="187.96" y="-688.34" rot="R180"/>
+<instance part="TVS6" gate="G$1" x="259.08" y="-25.4" rot="R180">
+<attribute name="JLCPCBPART" x="259.08" y="-25.4" size="1.27" layer="96" rot="R180" display="off"/>
+</instance>
+<instance part="GND63" gate="1" x="264.16" y="-30.48"/>
 </instances>
 <busses>
 </busses>
@@ -24456,6 +24464,12 @@ curr meas</text>
 <junction x="180.34" y="-693.42"/>
 <junction x="180.34" y="-688.34"/>
 </segment>
+<segment>
+<pinref part="TVS6" gate="G$1" pin="1"/>
+<pinref part="GND63" gate="1" pin="GND"/>
+<wire x1="261.62" y1="-25.4" x2="264.16" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="264.16" y1="-25.4" x2="264.16" y2="-27.94" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="RF-OUT" class="0">
 <segment>
@@ -24851,13 +24865,17 @@ curr meas</text>
 <wire x1="248.92" y1="-20.32" x2="248.92" y2="-15.24" width="0.1524" layer="91"/>
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="241.3" y1="-30.48" x2="243.84" y2="-30.48" width="0.1524" layer="91"/>
-<wire x1="243.84" y1="-30.48" x2="243.84" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="243.84" y1="-30.48" x2="243.84" y2="-25.4" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="243.84" y1="-25.4" x2="243.84" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="241.3" y1="-40.64" x2="243.84" y2="-40.64" width="0.1524" layer="91"/>
 <wire x1="243.84" y1="-40.64" x2="243.84" y2="-30.48" width="0.1524" layer="91"/>
 <pinref part="P+1" gate="1" pin="+24V"/>
 <junction x="243.84" y="-20.32"/>
 <junction x="243.84" y="-30.48"/>
+<pinref part="TVS6" gate="G$1" pin="2"/>
+<wire x1="254" y1="-25.4" x2="243.84" y2="-25.4" width="0.1524" layer="91"/>
+<junction x="243.84" y="-25.4"/>
 </segment>
 <segment>
 <pinref part="P+9" gate="1" pin="+24V"/>
