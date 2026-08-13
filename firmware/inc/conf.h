@@ -79,34 +79,52 @@
 #define PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS 20
 #endif
 
-#ifndef PWRMGT_POWER_LOSS_FAST_DROP_MV
-#define PWRMGT_POWER_LOSS_FAST_DROP_MV 1000
+/* Power-loss protection intentionally compares raw 10-bit DC-input ADC
+ * samples. With the fixed 22K/2K2 divider
+ * and 3.3 V ADC reference, one count
+ * represents about 35.5 mV at DC-IN. These defaults approximate the former
+ *
+ * 1000 mV fast, 300 mV sustained, and 75 mV segment thresholds. */
+#ifndef PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS
+#define PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS 28
 #endif
 
 #ifndef PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT
 #define PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT 3
 #endif
 
-#ifndef PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV
-#define PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV 300
+#ifndef PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS
+#define PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS 8
 #endif
 
-#ifndef PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV
-#define PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV 75
+#ifndef PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS
+#define PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS 2
 #endif
 
 #if (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS == 0) || (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS > 1000)
 #error "PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS must be between 1 and 1000 milliseconds"
 #endif
 
-#if (PWRMGT_POWER_LOSS_FAST_DROP_MV == 0) || (PWRMGT_POWER_LOSS_FAST_DROP_MV > 65535) ||                         \
-    (PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV == 0) || (PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV > 65535) ||             \
-    (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV == 0) || (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV > 65535)
-#error "Power-loss voltage drops must fit in nonzero millivolts"
+#if (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 1023) ||                \
+    (PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS > 1023) ||      \
+    (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS > 1023)
+#error "Power-loss voltage drops must fit in nonzero 10-bit ADC counts"
 #endif
 
 #if (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT < 2) || (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT > 10)
 #error "PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT must be between 2 and 10"
+#endif
+
+/* Buck overvoltage protection compares the unfiltered 10-bit ADC sample.
+ * With the fixed 22K/2K2 divider and 3.3 V
+ * ADC reference, 648 counts is
+ * approximately 23 V at the final buck-converter output. */
+#ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS
+#define PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS 648
+#endif
+
+#if (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS == 0) || (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS > 1023)
+#error "Buck voltage-spike threshold must fit in nonzero 10-bit ADC counts"
 #endif
 
 #define DC_HIGH_POWER_MINIMUM_MV    19000

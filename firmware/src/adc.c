@@ -11,10 +11,14 @@ This file also contains some convenience functions for unit conversions.
 
 #include "adc.h"
 
+#include "conf.h"
 #include "pins.h"
+#include "rfgen.h"
 #include "stm32f0xx_hal.h"
 #include "typedefs.h"
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 // -----------------------------------------------------------------------------
@@ -25,6 +29,7 @@ This file also contains some convenience functions for unit conversions.
 #define ADC_LPF_SCALE          1024
 #define ADC_LPF_ROUNDING       (ADC_LPF_SCALE / 2)
 #define ADC_DEFAULT_LPF_ALPHA  900
+#define ADC_IRQ_PRIORITY       1
 #define ADC_ANALOG_PINS        (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | BUCK_SENS_PINn | CURR_SENS_PINn)
 #define ADC_REFERENCE_MV       3300
 #define ADC_FULL_SCALE         1023
@@ -157,8 +162,18 @@ static volatile uint16_t result[ADC_INPUT_COUNT];
 static volatile uint16_t raw[ADC_INPUT_COUNT];
 static volatile uint8_t  initialized_channels;
 static volatile uint8_t  current_idx;
+static volatile uint16_t dc_voltage_history[ADC_DC_VOLTAGE_HISTORY_COUNT];
+static volatile uint8_t  dc_voltage_history_write_idx;
+static volatile uint8_t  dc_voltage_history_count;
+static volatile uint32_t dc_voltage_history_generation;
+static volatile uint32_t completed_round_count;
+static volatile bool     adc_power_loss_shutdown;
+static volatile bool     adc_buck_voltage_spike_shutdown;
+static uint32_t          dc_voltage_accumulator;
+static uint16_t          dc_voltage_accumulator_count;
+static bool              adc_round_started;
 static volatile uint32_t system_rand_seed          = 0;
-static uint8_t           input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
+static volatile uint8_t  input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -166,6 +181,10 @@ static uint8_t           input_voltage_calibration = INPUT_VOLTAGE_CALIB_NONE;
 
 static void     adc_filter_sample(uint8_t idx, uint16_t sample);
 static void     adc_select_and_start(uint8_t idx);
+static void     adc_complete_round(void);
+static void     adc_publish_dc_voltage_average(void);
+static uint16_t adc_input_sample_to_millivolts(uint16_t sample);
+static void     adc_check_fast_power_loss(uint16_t sample);
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
@@ -197,7 +216,16 @@ void adc_init(void)
         result[idx]    = 0;
     }
 
-    initialized_channels = 0;
+    initialized_channels            = 0;
+    dc_voltage_history_write_idx    = 0;
+    dc_voltage_history_count        = 0;
+    dc_voltage_history_generation   = 0;
+    completed_round_count           = 0;
+    adc_power_loss_shutdown         = false;
+    adc_buck_voltage_spike_shutdown = false;
+    dc_voltage_accumulator          = 0;
+    dc_voltage_accumulator_count    = 0;
+    adc_round_started               = false;
     /*
      * Configuring the temperature channel through HAL enables its internal
      * path and waits for the required startup time. The ISR wraps to input 0
@@ -241,7 +269,8 @@ void adc_init(void)
     }
 
     HAL_NVIC_ClearPendingIRQ(ADC1_IRQn);
-    HAL_NVIC_SetPriority(ADC1_IRQn, 1, 0);
+    /* Tip detection uses priority 0; ADC completion is deliberately second. */
+    HAL_NVIC_SetPriority(ADC1_IRQn, ADC_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(ADC1_IRQn);
 
     if (HAL_ADC_Start_IT(&adc_handle) != HAL_OK)
@@ -293,12 +322,17 @@ void ADC1_IRQHandler_Impl(void)
     adc_handle.Instance->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
     adc_select_and_start(next_idx);
 
+    if (next_idx == 0)
+    {
+        adc_complete_round();
+    }
+
     /* Filter while the ADC is already sampling the next channel. */
     adc_filter_sample(completed_idx, sample);
 
-    /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
     if (next_idx == 0)
     {
+        /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
         system_rand_seed = (HAL_GetTick() & 0x3) | (((uint32_t)raw[0] & 0x03) << 2) | (((uint32_t)raw[1] & 0x03) << 4) |
                            (((uint32_t)raw[2] & 0x03) << 6) | (((uint32_t)raw[3] & 0x03) << 8) |
                            (((uint32_t)raw[4] & 0x03) << 10);
@@ -318,15 +352,15 @@ uint16_t adc_to_millivolts(uint8_t idx)
         return 0;
     }
 
+    if (idx == DC_SENS_IDX)
+    {
+        return adc_input_sample_to_millivolts(adc_get(idx));
+    }
+
     millivolts = (uint32_t)adc_get(idx) * ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE;
     millivolts += ADC_FULL_SCALE / 2;
 
     millivolts /= ADC_FULL_SCALE;
-
-    if (idx == DC_SENS_IDX)
-    {
-        return adc_calibrate_input_voltage((uint16_t)millivolts);
-    }
 
     return (uint16_t)millivolts;
 }
@@ -386,6 +420,66 @@ uint32_t adc_get_milliwatts(void)
 // -----------------------------------------------------------------------------
 // Getters and Setters
 // -----------------------------------------------------------------------------
+
+uint8_t adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity)
+{
+    uint32_t generation_before;
+    uint32_t generation_after;
+    uint8_t  available;
+    uint8_t  copy_count;
+    uint8_t  write_idx;
+    uint8_t  age;
+    uint8_t  idx;
+
+    if ((history == NULL) || (capacity == 0))
+    {
+        return 0;
+    }
+
+    /* The ISR publishes a generation only after its record and ring metadata
+     * are complete. Retry if publication
+     * overlaps this lock-free copy, keeping
+     * the priority-0 tip detector unblocked. */
+    do
+    {
+        generation_before = dc_voltage_history_generation;
+        available         = dc_voltage_history_count;
+        write_idx         = dc_voltage_history_write_idx;
+        copy_count        = available < capacity ? available : capacity;
+
+        for (age = 0; age < copy_count; ++age)
+        {
+            if (write_idx > age)
+            {
+                idx = (uint8_t)(write_idx - age - 1);
+            }
+            else
+            {
+                idx = (uint8_t)(ADC_DC_VOLTAGE_HISTORY_COUNT + write_idx - age - 1);
+            }
+            history[age] = dc_voltage_history[idx];
+        }
+
+        generation_after = dc_voltage_history_generation;
+    } while (generation_before != generation_after);
+
+    return copy_count;
+}
+
+uint32_t adc_get_completed_round_count(void)
+{
+    return completed_round_count;
+}
+
+bool adc_has_power_loss_shutdown(void)
+{
+    return adc_power_loss_shutdown;
+}
+
+bool adc_has_buck_voltage_spike_shutdown(void)
+{
+    return adc_buck_voltage_spike_shutdown;
+}
 
 uint16_t adc_get(uint8_t idx)
 {
@@ -454,6 +548,33 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     uint32_t         weighted_sum;
     uint16_t         new_value;
 
+    if (idx == DC_SENS_IDX)
+    {
+        /* Accumulate raw samples so each history entry represents all DC
+         * conversions in its 128-round
+         * interval, independent of the published
+         * low-pass filter. */
+        dc_voltage_accumulator += sample;
+        ++dc_voltage_accumulator_count;
+
+        /* This runs in ADC interrupt context after the next conversion has
+         * already started. A sharp collapse
+         * therefore disables RF without
+         * waiting for the foreground power-management task. */
+        adc_check_fast_power_loss(sample);
+    }
+    else if ((idx == BUCK_SENS_IDX) && !adc_buck_voltage_spike_shutdown &&
+             (sample >= PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS))
+    {
+        /* Use the raw sample so the normal low-pass filter cannot delay this
+         * terminal protection. The
+         * foreground power-management task owns the
+         * fault display, while the interrupt immediately latches
+         * RF off. */
+        adc_buck_voltage_spike_shutdown = true;
+        rfgen_emergency_stop();
+    }
+
     if ((initialized_channels & initialized_mask) == 0)
     {
         lpf_state[idx] = target;
@@ -476,6 +597,87 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     lpf_state[idx] = state;
     new_value      = (uint16_t)((state + ADC_LPF_ROUNDING) / ADC_LPF_SCALE);
     result[idx]    = new_value;
+}
+
+static void adc_complete_round(void)
+{
+    /* Initialization begins with one temperature conversion so its internal
+     * path can settle. The first wrap
+     * starts, rather than completes, a full
+     * six-channel round. */
+    if (!adc_round_started)
+    {
+        adc_round_started = true;
+        return;
+    }
+
+    ++completed_round_count;
+    if ((completed_round_count % ADC_DC_VOLTAGE_HISTORY_ROUNDS_PER_ENTRY) == 0)
+    {
+        adc_publish_dc_voltage_average();
+    }
+}
+
+static void adc_publish_dc_voltage_average(void)
+{
+    uint32_t average_sample;
+
+    if (dc_voltage_accumulator_count == 0)
+    {
+        return;
+    }
+
+    average_sample = (dc_voltage_accumulator + (dc_voltage_accumulator_count / 2)) / dc_voltage_accumulator_count;
+    dc_voltage_history[dc_voltage_history_write_idx] = (uint16_t)average_sample;
+
+    ++dc_voltage_history_write_idx;
+    if (dc_voltage_history_write_idx >= ADC_DC_VOLTAGE_HISTORY_COUNT)
+    {
+        dc_voltage_history_write_idx = 0;
+    }
+    if (dc_voltage_history_count < ADC_DC_VOLTAGE_HISTORY_COUNT)
+    {
+        ++dc_voltage_history_count;
+    }
+
+    dc_voltage_accumulator       = 0;
+    dc_voltage_accumulator_count = 0;
+
+    /* Publish last so foreground readers can detect an overlapping update. */
+    ++dc_voltage_history_generation;
+}
+
+static uint16_t adc_input_sample_to_millivolts(uint16_t sample)
+{
+    uint32_t millivolts;
+
+    millivolts = (uint32_t)sample * ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE;
+    millivolts += ADC_FULL_SCALE / 2;
+    millivolts /= ADC_FULL_SCALE;
+
+    return adc_calibrate_input_voltage((uint16_t)millivolts);
+}
+
+static void adc_check_fast_power_loss(uint16_t sample)
+{
+    uint16_t reference_sample;
+    uint8_t  newest_idx;
+
+    if (adc_power_loss_shutdown || (dc_voltage_history_count == 0))
+    {
+        return;
+    }
+
+    newest_idx       = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
+                                                         : (uint8_t)(dc_voltage_history_write_idx - 1);
+    reference_sample = dc_voltage_history[newest_idx];
+
+    if ((reference_sample > sample) &&
+        (((uint32_t)reference_sample - sample) >= PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS))
+    {
+        adc_power_loss_shutdown = true;
+        rfgen_emergency_stop();
+    }
 }
 
 static void adc_select_and_start(uint8_t idx)

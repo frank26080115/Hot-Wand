@@ -2,7 +2,7 @@
 Power Management
 This code module is responsible for managing the power levels and handling power-related logic.
 The user's preferred power level is used, but can be limited by temperature or input voltage.
-Abrupt input-power loss and sustained excessive temperature cause terminal shutdowns.
+Abrupt input-power loss, buck-output overvoltage, and sustained excessive temperature cause terminal shutdowns.
 */
 
 // -----------------------------------------------------------------------------
@@ -47,20 +47,14 @@ _Static_assert(PWRMGT_GRAPH_WIDTH_PX == (PWRMGT_HISTORY_RECORD_COUNT * 2),
 
 #define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS 300
 
-#define PWRMGT_POWER_LOSS_HISTORY_COUNT       (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT + 1)
-#define PWRMGT_POWER_LOSS_EXPECTED_WINDOW_MS                                                                    \
-    (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS * PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT)
-#define PWRMGT_POWER_LOSS_STALE_GAP_MS (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS * 2)
+#define PWRMGT_POWER_LOSS_HISTORY_STRIDE                                                                               \
+    ((PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS + ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS - 1) /                                 \
+     ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS)
+#define PWRMGT_POWER_LOSS_HISTORY_SPAN (PWRMGT_POWER_LOSS_HISTORY_STRIDE * PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT)
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-
-typedef struct
-{
-    uint16_t millivolts;
-    uint32_t timestamp_ms;
-} pwrmgt_voltage_record_t;
+_Static_assert(PWRMGT_POWER_LOSS_HISTORY_STRIDE >= 1, "power-loss sample interval is too short");
+_Static_assert(PWRMGT_POWER_LOSS_HISTORY_SPAN < ADC_DC_VOLTAGE_HISTORY_COUNT,
+               "power-loss window does not fit in the ADC DC-voltage history");
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -90,8 +84,6 @@ static uint32_t      pwrmgt_idle_started_ms;
 static uint32_t      pwrmgt_last_active_ms;
 static uint32_t      pwrmgt_idle_power_threshold_mw = 10000;
 static bool          pwrmgt_is_idle;
-static pwrmgt_voltage_record_t pwrmgt_voltage_history[PWRMGT_POWER_LOSS_HISTORY_COUNT];
-static uint8_t                  pwrmgt_voltage_history_count;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -105,13 +97,8 @@ static uint32_t pwrmgt_get_applied_limit_mw(void);
 static void     pwrmgt_temperature_shutdown_task(uint16_t highest_temperature, uint32_t now);
 static void     pwrmgt_blocked_change_task(void);
 static void     pwrmgt_clear_blocked_change(void);
-static bool     pwrmgt_power_loss_detected(uint16_t input_millivolts, uint32_t now);
-static bool     pwrmgt_drop_meets_threshold(const pwrmgt_voltage_record_t* older,
-                                            const pwrmgt_voltage_record_t* newer,
-                                            uint16_t                        minimum_drop_mv,
-                                            uint32_t                        reference_interval_ms);
-static void     pwrmgt_voltage_history_reset(uint16_t input_millivolts, uint32_t now);
-static void     pwrmgt_voltage_history_push(uint16_t input_millivolts, uint32_t now);
+static bool     pwrmgt_power_loss_detected(void);
+static bool pwrmgt_drop_meets_threshold(uint16_t older_millivolts, uint16_t newer_millivolts, uint16_t minimum_drop_mv);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -132,13 +119,24 @@ void pwrmgt_task(void)
 
     pwrmgt_blocked_change_task();
 
-    now                  = systick_get_ms();
+    now                 = systick_get_ms();
     dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
 
-    /* Detect the discharge signature before the absolute voltage checks. If
-     * an existing battery or undervoltage threshold becomes valid first, its
-     * established safety fault still takes precedence. */
-    if (pwrmgt_power_loss_detected(dc_input_millivolts, now))
+    /* The ADC interrupt has already latched RF off for this absolute raw
+     * buck-voltage fault. Give its specific
+     * diagnosis precedence over a
+     * secondary input-voltage response to the same electrical event. */
+    if (adc_has_buck_voltage_spike_shutdown())
+    {
+        show_fault("VOLT\nSPIKE\nFAULT", true);
+        return;
+    }
+
+    /* Detect the input discharge signature before the remaining absolute
+     * voltage checks. If an existing battery
+     * or undervoltage threshold becomes
+     * valid first, its established safety fault still takes precedence. */
+    if (pwrmgt_power_loss_detected())
     {
         show_fault("POWER\nLOSS\nFAULT", true);
         return;
@@ -566,71 +564,49 @@ static void pwrmgt_clear_blocked_change(void)
     pwrmgt_blocked_release_pending = false;
 }
 
-static bool pwrmgt_power_loss_detected(uint16_t input_millivolts, uint32_t now)
+static bool pwrmgt_power_loss_detected(void)
 {
-    pwrmgt_voltage_record_t        current;
-    const pwrmgt_voltage_record_t* newest;
-    uint32_t                       elapsed_ms;
-    uint8_t                        idx;
+    uint16_t voltage_history[PWRMGT_POWER_LOSS_HISTORY_SPAN + 1];
+    uint8_t  copied_count;
+    uint8_t  interval;
+    uint8_t  newer_age;
+    uint8_t  older_age;
 
-    current.millivolts   = input_millivolts;
-    current.timestamp_ms = now;
-
-    if (pwrmgt_voltage_history_count == 0)
-    {
-        pwrmgt_voltage_history_reset(input_millivolts, now);
-        return false;
-    }
-
-    newest     = &pwrmgt_voltage_history[pwrmgt_voltage_history_count - 1];
-    elapsed_ms = (uint32_t)(now - newest->timestamp_ms);
-
-    /* A stale reference cannot establish when the voltage changed. Reset it
-     * before evaluating either rate-based path. */
-    if (elapsed_ms > PWRMGT_POWER_LOSS_STALE_GAP_MS)
-    {
-        pwrmgt_voltage_history_reset(input_millivolts, now);
-        return false;
-    }
-
-    /* Check this on every supervisor pass, not only at the history cadence,
-     * so a large collapse can win before the rail reaches a static cutoff. */
-    if (pwrmgt_drop_meets_threshold(newest,
-                                    &current,
-                                    PWRMGT_POWER_LOSS_FAST_DROP_MV,
-                                    PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS))
+    /* The ADC interrupt has already stopped RF for a fast collapse. The
+     * foreground owns terminal fault
+     * presentation and reset handling. */
+    if (adc_has_power_loss_shutdown())
     {
         return true;
     }
 
-    if (elapsed_ms < PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS)
+    copied_count = adc_copy_dc_voltage_history(voltage_history, PWRMGT_POWER_LOSS_HISTORY_SPAN + 1);
+    if (copied_count <= PWRMGT_POWER_LOSS_HISTORY_SPAN)
     {
         return false;
     }
 
-    pwrmgt_voltage_history_push(input_millivolts, now);
-    if (pwrmgt_voltage_history_count < PWRMGT_POWER_LOSS_HISTORY_COUNT)
-    {
-        return false;
-    }
-
-    if (!pwrmgt_drop_meets_threshold(&pwrmgt_voltage_history[0],
-                                     &pwrmgt_voltage_history[PWRMGT_POWER_LOSS_HISTORY_COUNT - 1],
-                                     PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV,
-                                     PWRMGT_POWER_LOSS_EXPECTED_WINDOW_MS))
+    /* Records are newest-first. Their timestamps are inferred from the fixed
+     * 128-round publication cadence
+     * rather than sampled from SysTick. */
+    if (!pwrmgt_drop_meets_threshold(voltage_history[PWRMGT_POWER_LOSS_HISTORY_SPAN],
+                                     voltage_history[0],
+                                     PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS))
     {
         return false;
     }
 
     /* A genuine reservoir-capacitor discharge keeps falling. Requiring every
-     * segment to decline rejects a one-time load step that settles at a new
+     * segment to decline rejects a
+     * one-time load step that settles at a new
      * voltage before the complete observation window elapses. */
-    for (idx = 1; idx < PWRMGT_POWER_LOSS_HISTORY_COUNT; ++idx)
+    for (interval = 0; interval < PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT; ++interval)
     {
-        if (!pwrmgt_drop_meets_threshold(&pwrmgt_voltage_history[idx - 1],
-                                         &pwrmgt_voltage_history[idx],
-                                         PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV,
-                                         PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS))
+        newer_age = (uint8_t)(interval * PWRMGT_POWER_LOSS_HISTORY_STRIDE);
+        older_age = (uint8_t)(newer_age + PWRMGT_POWER_LOSS_HISTORY_STRIDE);
+        if (!pwrmgt_drop_meets_threshold(voltage_history[older_age],
+                                         voltage_history[newer_age],
+                                         PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS))
         {
             return false;
         }
@@ -639,56 +615,12 @@ static bool pwrmgt_power_loss_detected(uint16_t input_millivolts, uint32_t now)
     return true;
 }
 
-static bool pwrmgt_drop_meets_threshold(const pwrmgt_voltage_record_t* older,
-                                        const pwrmgt_voltage_record_t* newer,
-                                        uint16_t                        minimum_drop_mv,
-                                        uint32_t                        reference_interval_ms)
+static bool pwrmgt_drop_meets_threshold(uint16_t older_millivolts, uint16_t newer_millivolts, uint16_t minimum_drop_mv)
 {
-    uint32_t actual_interval_ms;
-    uint32_t drop_mv;
-
-    actual_interval_ms = (uint32_t)(newer->timestamp_ms - older->timestamp_ms);
-    if ((actual_interval_ms == 0) || (older->millivolts <= newer->millivolts))
+    if (older_millivolts <= newer_millivolts)
     {
         return false;
     }
 
-    drop_mv = (uint32_t)older->millivolts - newer->millivolts;
-    if (drop_mv < minimum_drop_mv)
-    {
-        return false;
-    }
-
-    /* Compare rates without division so rounding cannot move the threshold.
-     * Configuration limits and stale-gap handling keep both products within
-     * uint32_t. */
-    return (drop_mv * reference_interval_ms) >= ((uint32_t)minimum_drop_mv * actual_interval_ms);
-}
-
-static void pwrmgt_voltage_history_reset(uint16_t input_millivolts, uint32_t now)
-{
-    pwrmgt_voltage_history[0].millivolts   = input_millivolts;
-    pwrmgt_voltage_history[0].timestamp_ms = now;
-    pwrmgt_voltage_history_count           = 1;
-}
-
-static void pwrmgt_voltage_history_push(uint16_t input_millivolts, uint32_t now)
-{
-    uint8_t idx;
-
-    if (pwrmgt_voltage_history_count < PWRMGT_POWER_LOSS_HISTORY_COUNT)
-    {
-        idx = pwrmgt_voltage_history_count++;
-    }
-    else
-    {
-        for (idx = 1; idx < PWRMGT_POWER_LOSS_HISTORY_COUNT; ++idx)
-        {
-            pwrmgt_voltage_history[idx - 1] = pwrmgt_voltage_history[idx];
-        }
-        idx = PWRMGT_POWER_LOSS_HISTORY_COUNT - 1;
-    }
-
-    pwrmgt_voltage_history[idx].millivolts   = input_millivolts;
-    pwrmgt_voltage_history[idx].timestamp_ms = now;
+    return ((uint32_t)older_millivolts - newer_millivolts) >= minimum_drop_mv;
 }

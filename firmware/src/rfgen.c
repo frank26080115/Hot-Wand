@@ -32,7 +32,8 @@ _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ, "RF generator requires a 27.12 MHz e
 // Globals
 // -----------------------------------------------------------------------------
 
-static volatile bool rfgen_fault_logged;
+static volatile bool rfgen_clock_fault_logged;
+static volatile bool rfgen_emergency_stop_latched;
 static volatile bool rfgen_active;
 
 // -----------------------------------------------------------------------------
@@ -104,17 +105,11 @@ void rfgen_start(void)
     GPIO_InitTypeDef gpio_cfg = {0};
     uint32_t         interrupt_state;
 
-    if (rfgen_has_fault())
-    {
-        rfgen_stop();
-        return;
-    }
-
-    /*
-     * The tip detector powers up fail-closed.  This also means tipdetect_init()
-     * must confirm a connected tip before the RF generator can be started.
-     */
-    if (!rfgen_tip_allows_start())
+    /* The tip detector and emergency-stop latch independently inhibit RF.
+     * Recheck both at the final
+     *
+     * hardware-enable boundary below. */
+    if (rfgen_has_fault() || !rfgen_tip_allows_start())
     {
         rfgen_stop();
         return;
@@ -179,7 +174,7 @@ void rfgen_start(void)
      */
     interrupt_state = __get_PRIMASK();
     __disable_irq();
-    if (!rfgen_tip_allows_start())
+    if (rfgen_has_fault() || !rfgen_tip_allows_start())
     {
         rfgen_stop();
         if (interrupt_state == 0)
@@ -225,13 +220,37 @@ void rfgen_stop(void)
     }
 }
 
+void rfgen_emergency_stop(void)
+{
+    /* Disable the timer output before doing the slower GPIO ownership
+     * handoff. The latch is checked at both
+     * RF-start gates, so an interrupted
+     * or later start cannot undo this safety shutdown. */
+    rfgen_emergency_stop_latched = true;
+    rfgen_active                 = false;
+
+    if (__HAL_RCC_TIM1_IS_CLK_ENABLED())
+    {
+        CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+        CLEAR_BIT(TIM1->CCER, TIM_CCER_CC3E | TIM_CCER_CC3NE);
+        CLEAR_BIT(TIM1->CR1, TIM_CR1_CEN);
+    }
+
+    rfgen_pin_low();
+}
+
 // -----------------------------------------------------------------------------
 // Getters and Setters
 // -----------------------------------------------------------------------------
 
 bool rfgen_has_fault(void)
 {
-    return rfgen_fault_logged;
+    return rfgen_clock_fault_logged || rfgen_emergency_stop_latched;
+}
+
+bool rfgen_has_clock_fault(void)
+{
+    return rfgen_clock_fault_logged;
 }
 
 bool rfgen_is_active(void)
@@ -303,8 +322,8 @@ static void rfgen_pin_low(void)
 
 static void rfgen_fault(void)
 {
-    rfgen_fault_logged = true;
-    rfgen_stop();
+    rfgen_clock_fault_logged = true;
+    rfgen_emergency_stop();
 }
 
 /*

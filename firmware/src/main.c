@@ -174,13 +174,14 @@ int main(void)
         {
             show_fault("TIP\nFAULT", true);
         }
-        if (rfgen_has_fault())
+        if (rfgen_has_clock_fault())
         {
             show_fault("CLOCK\nFAULT", true);
         }
 
         // Central runtime output supervisor:
-        // - Checks the configured battery cutoff, terminal input undervoltage, and sustained overtemperature shutdown.
+        // - Checks the configured battery cutoff, input-power loss, buck-output overvoltage, terminal input
+        //   undervoltage, and sustained overtemperature shutdown.
         // - Applies temperature and input-voltage derating with hysteresis.
         // - Selects the effective power level and advances PWM attenuation.
         // - Enforces current and short-circuit limits in the lower-level task.

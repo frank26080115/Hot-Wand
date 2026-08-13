@@ -33,7 +33,7 @@ confirmed to be removed, and it latches the fault until the user resets it.
 #define TIPDETECT_TIMER_PERIOD    (TIPDETECT_TIMER_TICKS - 1)
 
 #define TIPDETECT_TIMER_IRQ_PRIORITY 0
-#define TIPDETECT_EXTI_IRQ_PRIORITY  3
+#define TIPDETECT_EXTI_IRQ_PRIORITY  0
 #define TIPDETECT_EXTI4_15_MASK      0xFFF0
 
 // -----------------------------------------------------------------------------

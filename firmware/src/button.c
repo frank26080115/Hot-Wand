@@ -22,7 +22,9 @@ It uses interrupts and also
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define BTN_EXTI_IRQ_PRIORITY 3
+/* EXTI4_15 contains the safety-critical tip detector, so every user of the
+ * shared IRQ must preserve the tip detector's highest maskable priority. */
+#define BTN_EXTI_IRQ_PRIORITY 0
 
 // -----------------------------------------------------------------------------
 // Globals
