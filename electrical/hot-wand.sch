@@ -22375,8 +22375,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C15849"/>
 </part>
 <part name="GND13" library="hot-wand" deviceset="GND" device=""/>
-<part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22Ω">
-<attribute name="JLCPARTNUM" value="C23345"/>
+<part name="R21" library="hot-wand" deviceset="RESISTOR" device="2512" value="22Ω">
+<attribute name="JLCPARTNUM" value="C5204054"/>
 </part>
 <part name="L9" library="hot-wand" deviceset="L-US" device="TFI0410" value="22uH">
 <attribute name="JLC-DNP" value="1"/>
@@ -23052,7 +23052,7 @@ Class E</text>
 <text x="299.72" y="-137.16" size="1.27" layer="97">current transformer</text>
 <text x="307.34" y="-187.96" size="1.27" layer="97" align="top-left">the current flowing into
 the soldering iron cartridge
-controls the buck converter
+influences the buck converter
 output voltage</text>
 <text x="254" y="-226.06" size="5.08" layer="97">Tip Detection</text>
 <text x="35.56" y="-414.02" size="5.08" layer="97">Secondary Power
