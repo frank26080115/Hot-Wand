@@ -1,5 +1,7 @@
 #include <unity.h>
 
+#include <stdio.h>
+
 #include "rfgen_internal.h"
 
 namespace
@@ -138,6 +140,45 @@ void test_blank_buffer_exhaustion_uses_longest_available_chunks()
     TEST_ASSERT_EQUAL_UINT32(kMaximumTop, table[1]);
 }
 
+void test_print_samd21_tables_in_five_percent_steps()
+{
+    constexpr uint32_t kPeriodClocks = 102;
+    uint32_t           table[RFGEN_TABLE_CAPACITY];
+
+    for (uint16_t requestedPower = 0; requestedPower <= RFGEN_MAXIMUM_POWER_PERCENT; requestedPower += 5)
+    {
+        const uint8_t normalizedPower = rfgen_normalize_power_percent(static_cast<uint8_t>(requestedPower));
+        uint16_t      count           = 0;
+
+        TEST_ASSERT_TRUE(rfgen_generate_period_table(normalizedPower,
+                                                     kPeriodClocks,
+                                                     0xFFFFFFu,
+                                                     table,
+                                                     RFGEN_TABLE_CAPACITY,
+                                                     &count));
+
+        printf("\nRFGEN TABLE requested=%u%%, normalized=%u%%, entries=%u\n",
+               static_cast<unsigned>(requestedPower),
+               static_cast<unsigned>(normalizedPower),
+               static_cast<unsigned>(count));
+
+        if (count == 0)
+        {
+            printf("  (off; empty table)\n");
+        }
+
+        for (uint16_t index = 0; index < count; ++index)
+        {
+            const uint32_t top            = table[index];
+            const uint32_t carrierPeriods = (top + 1u) / kPeriodClocks;
+            printf("  %u: TOP=%lu, periods=%lu\n",
+                   static_cast<unsigned>(index),
+                   static_cast<unsigned long>(top),
+                   static_cast<unsigned long>(carrierPeriods));
+        }
+    }
+}
+
 void test_runtime_transition_order_and_repetition()
 {
     reset_fixture();
@@ -240,6 +281,7 @@ int main(int, char**)
     RUN_TEST(test_rp2040_entries_fit_counter);
     RUN_TEST(test_blank_chunking_balances_legal_chunks);
     RUN_TEST(test_blank_buffer_exhaustion_uses_longest_available_chunks);
+    RUN_TEST(test_print_samd21_tables_in_five_percent_steps);
     RUN_TEST(test_runtime_transition_order_and_repetition);
 #ifndef RFGEN_MUTED_DEBUG
     RUN_TEST(test_platform_start_failure_returns_to_off);
