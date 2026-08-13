@@ -2,7 +2,7 @@
 Power Management
 This code module is responsible for managing the power levels and handling power-related logic.
 The user's preferred power level is used, but can be limited by temperature or input voltage.
-Sustained excessive temperature causes a terminal shutdown.
+Abrupt input-power loss and sustained excessive temperature cause terminal shutdowns.
 */
 
 // -----------------------------------------------------------------------------
@@ -47,6 +47,21 @@ _Static_assert(PWRMGT_GRAPH_WIDTH_PX == (PWRMGT_HISTORY_RECORD_COUNT * 2),
 
 #define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS 300
 
+#define PWRMGT_POWER_LOSS_HISTORY_COUNT       (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT + 1)
+#define PWRMGT_POWER_LOSS_EXPECTED_WINDOW_MS                                                                    \
+    (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS * PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT)
+#define PWRMGT_POWER_LOSS_STALE_GAP_MS (PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS * 2)
+
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
+typedef struct
+{
+    uint16_t millivolts;
+    uint32_t timestamp_ms;
+} pwrmgt_voltage_record_t;
+
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
@@ -75,6 +90,8 @@ static uint32_t      pwrmgt_idle_started_ms;
 static uint32_t      pwrmgt_last_active_ms;
 static uint32_t      pwrmgt_idle_power_threshold_mw = 10000;
 static bool          pwrmgt_is_idle;
+static pwrmgt_voltage_record_t pwrmgt_voltage_history[PWRMGT_POWER_LOSS_HISTORY_COUNT];
+static uint8_t                  pwrmgt_voltage_history_count;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -88,6 +105,13 @@ static uint32_t pwrmgt_get_applied_limit_mw(void);
 static void     pwrmgt_temperature_shutdown_task(uint16_t highest_temperature, uint32_t now);
 static void     pwrmgt_blocked_change_task(void);
 static void     pwrmgt_clear_blocked_change(void);
+static bool     pwrmgt_power_loss_detected(uint16_t input_millivolts, uint32_t now);
+static bool     pwrmgt_drop_meets_threshold(const pwrmgt_voltage_record_t* older,
+                                            const pwrmgt_voltage_record_t* newer,
+                                            uint16_t                        minimum_drop_mv,
+                                            uint32_t                        reference_interval_ms);
+static void     pwrmgt_voltage_history_reset(uint16_t input_millivolts, uint32_t now);
+static void     pwrmgt_voltage_history_push(uint16_t input_millivolts, uint32_t now);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -108,6 +132,18 @@ void pwrmgt_task(void)
 
     pwrmgt_blocked_change_task();
 
+    now                  = systick_get_ms();
+    dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
+
+    /* Detect the discharge signature before the absolute voltage checks. If
+     * an existing battery or undervoltage threshold becomes valid first, its
+     * established safety fault still takes precedence. */
+    if (pwrmgt_power_loss_detected(dc_input_millivolts, now))
+    {
+        show_fault("POWER\nLOSS\nFAULT", true);
+        return;
+    }
+
     /* This task is the sole owner of periodic battery supervision.  Keep the
      * battery_check()/battery_show_fault() pair here rather than adding a
      * second check to main or another task. */
@@ -119,7 +155,7 @@ void pwrmgt_task(void)
 
     /* This terminal hardware lockout is distinct from the recoverable
      * high-power derating below DC_HIGH_POWER_MINIMUM_MV. */
-    if (adc_to_millivolts(DC_SENS_IDX) < DC_UNDERVOLTAGE_FAULT_MV)
+    if (dc_input_millivolts < DC_UNDERVOLTAGE_FAULT_MV)
     {
         show_fault("LOW\nVOLT\nFAULT", true);
         return;
@@ -137,14 +173,12 @@ void pwrmgt_task(void)
 
     /* Qualify the terminal threshold separately from the recoverable Eco-mode
      * derating. A terminal fault blocks in show_fault() until reset. */
-    now = systick_get_ms();
     pwrmgt_temperature_shutdown_task(highest_temperature, now);
 
     temperature_limit = pwrmgt_temperature_limited ? (TEMPERATURE_HOT_WARNING_THRESH_C - TEMPERATURE_HYSTERYSIS_C)
                                                    : TEMPERATURE_HOT_WARNING_THRESH_C;
     pwrmgt_temperature_limited = highest_temperature > temperature_limit;
 
-    dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
     dc_limit =
         pwrmgt_low_dc_limited ? (DC_HIGH_POWER_MINIMUM_MV + DC_HIGH_POWER_HYSTERESIS_MV) : DC_HIGH_POWER_MINIMUM_MV;
     pwrmgt_low_dc_limited = dc_input_millivolts < dc_limit;
@@ -530,4 +564,131 @@ static void pwrmgt_clear_blocked_change(void)
 {
     pwrmgt_pending_blocked_message = NULL;
     pwrmgt_blocked_release_pending = false;
+}
+
+static bool pwrmgt_power_loss_detected(uint16_t input_millivolts, uint32_t now)
+{
+    pwrmgt_voltage_record_t        current;
+    const pwrmgt_voltage_record_t* newest;
+    uint32_t                       elapsed_ms;
+    uint8_t                        idx;
+
+    current.millivolts   = input_millivolts;
+    current.timestamp_ms = now;
+
+    if (pwrmgt_voltage_history_count == 0)
+    {
+        pwrmgt_voltage_history_reset(input_millivolts, now);
+        return false;
+    }
+
+    newest     = &pwrmgt_voltage_history[pwrmgt_voltage_history_count - 1];
+    elapsed_ms = (uint32_t)(now - newest->timestamp_ms);
+
+    /* A stale reference cannot establish when the voltage changed. Reset it
+     * before evaluating either rate-based path. */
+    if (elapsed_ms > PWRMGT_POWER_LOSS_STALE_GAP_MS)
+    {
+        pwrmgt_voltage_history_reset(input_millivolts, now);
+        return false;
+    }
+
+    /* Check this on every supervisor pass, not only at the history cadence,
+     * so a large collapse can win before the rail reaches a static cutoff. */
+    if (pwrmgt_drop_meets_threshold(newest,
+                                    &current,
+                                    PWRMGT_POWER_LOSS_FAST_DROP_MV,
+                                    PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS))
+    {
+        return true;
+    }
+
+    if (elapsed_ms < PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS)
+    {
+        return false;
+    }
+
+    pwrmgt_voltage_history_push(input_millivolts, now);
+    if (pwrmgt_voltage_history_count < PWRMGT_POWER_LOSS_HISTORY_COUNT)
+    {
+        return false;
+    }
+
+    if (!pwrmgt_drop_meets_threshold(&pwrmgt_voltage_history[0],
+                                     &pwrmgt_voltage_history[PWRMGT_POWER_LOSS_HISTORY_COUNT - 1],
+                                     PWRMGT_POWER_LOSS_SUSTAINED_DROP_MV,
+                                     PWRMGT_POWER_LOSS_EXPECTED_WINDOW_MS))
+    {
+        return false;
+    }
+
+    /* A genuine reservoir-capacitor discharge keeps falling. Requiring every
+     * segment to decline rejects a one-time load step that settles at a new
+     * voltage before the complete observation window elapses. */
+    for (idx = 1; idx < PWRMGT_POWER_LOSS_HISTORY_COUNT; ++idx)
+    {
+        if (!pwrmgt_drop_meets_threshold(&pwrmgt_voltage_history[idx - 1],
+                                         &pwrmgt_voltage_history[idx],
+                                         PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_MV,
+                                         PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool pwrmgt_drop_meets_threshold(const pwrmgt_voltage_record_t* older,
+                                        const pwrmgt_voltage_record_t* newer,
+                                        uint16_t                        minimum_drop_mv,
+                                        uint32_t                        reference_interval_ms)
+{
+    uint32_t actual_interval_ms;
+    uint32_t drop_mv;
+
+    actual_interval_ms = (uint32_t)(newer->timestamp_ms - older->timestamp_ms);
+    if ((actual_interval_ms == 0) || (older->millivolts <= newer->millivolts))
+    {
+        return false;
+    }
+
+    drop_mv = (uint32_t)older->millivolts - newer->millivolts;
+    if (drop_mv < minimum_drop_mv)
+    {
+        return false;
+    }
+
+    /* Compare rates without division so rounding cannot move the threshold.
+     * Configuration limits and stale-gap handling keep both products within
+     * uint32_t. */
+    return (drop_mv * reference_interval_ms) >= ((uint32_t)minimum_drop_mv * actual_interval_ms);
+}
+
+static void pwrmgt_voltage_history_reset(uint16_t input_millivolts, uint32_t now)
+{
+    pwrmgt_voltage_history[0].millivolts   = input_millivolts;
+    pwrmgt_voltage_history[0].timestamp_ms = now;
+    pwrmgt_voltage_history_count           = 1;
+}
+
+static void pwrmgt_voltage_history_push(uint16_t input_millivolts, uint32_t now)
+{
+    uint8_t idx;
+
+    if (pwrmgt_voltage_history_count < PWRMGT_POWER_LOSS_HISTORY_COUNT)
+    {
+        idx = pwrmgt_voltage_history_count++;
+    }
+    else
+    {
+        for (idx = 1; idx < PWRMGT_POWER_LOSS_HISTORY_COUNT; ++idx)
+        {
+            pwrmgt_voltage_history[idx - 1] = pwrmgt_voltage_history[idx];
+        }
+        idx = PWRMGT_POWER_LOSS_HISTORY_COUNT - 1;
+    }
+
+    pwrmgt_voltage_history[idx].millivolts   = input_millivolts;
+    pwrmgt_voltage_history[idx].timestamp_ms = now;
 }
