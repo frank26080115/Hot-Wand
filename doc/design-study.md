@@ -115,7 +115,7 @@ In my own design, I had plenty of PCB space and physical space to spare, so I ad
 
 First, if you were reading SergeyMax's post and confused as to where he put instructions for winding the custom inductors, the actual instructions are inside the schematic file, you must open it with DipTrace first, you can get a free view-only version to do so.
 
-The instructions for the K16x8x6 9uH inductors (2 of them) are to use 22 AWG wire with 15 turns. The toroid core SergeyMax actually used only existed in Russia. The closest match I found on Digi-Key is Fair-Rite 5961004901, but the target is now around 10 or 11 turns instead of 15.
+The instructions for the K16x8x6 9uH inductors (2 of them) are to use 22 AWG wire with 15 turns. The toroid core SergeyMax actually used only existed in Russia. The closest match I found on Digi-Key is Fair-Rite 5961004901, but the target is now around 10 or 11 turns instead of 15. Other builders of the design have stated that landing on something 10uH is totally fine and might even work better. One community member experienced an overheating core and suspects it was because it was made of iron powder instead of ferrite.
 
 For the current transformer that's supposed to use the same toroid core, no change is needed. Although, I did add an adjustment potentiometer just in case I need to tune the output of the feedback signal from this current transformer.
 
@@ -130,6 +130,25 @@ For 16.9 uH: 22 to 24 turns (choose 23 if no measurement)
 For 11.5 uH: 18 to 20 turns (choose 19 if no measurement)
 
 They ask that you use 22 AWG wire or thicker, and use a VNA or LCR meter to verify the results.
+
+### Additional Protections
+
+There are online discussions about SergeyMax's design, some other people have tried to build it and ran into problems.
+
+One person reported that the 22 ohm resistor (it's a 0805 footprint in SergeyMax's layout) "failed enthusiastically" when the tip was disconnected while the circuit was running. So in my design, I put a 2W rated resistor (2512 footprint) in it's position.
+
+Note that a lot of builders did what I did, replace the AC converter circuit with a DC input. Note that SergeyMax designed his AC input for 220V and not American 120V, hence why so many people did that.
+
+One person claimed that the buck converter or one of the MOSFETs can fail if the input power is removed suddenly (which is less of a problem if the input is AC). I had enough board space and firmware memory left to approach this problem from multiple angles:
+
+ * Added a TVS diode at the output of the buck converter where it supplies the RF amplifier. The amplifier itself already has a TVS protecting it above 150V, the new TVS diode is on the input side starting protection from 22V.
+ * Added a output-to-input diode to the buck converter, providing an additional path parallel to the internal MOSFET body diode, when there's backward current.
+ * Firmware is set to halt RF generation immediately when a sharp input voltage drop is detected
+ * Firmware is set to halt RF generation immediately when an output voltage exceeds 23V
+
+Both the 12V and 3.3V auxiliary power regulators (they are buck converters too but can also be replaced with linear regulators) also have diodes that protect from reverse current.
+
+The battery input is always protected by an ideal-diode implementation. The AP53781 USB PD negotiator has sensing for bus voltage and the over-voltage protection (trips at 120% of expected voltage) can shutdown the input FETs. Plus, there's a 20x5mm glass fuse that will blow during over-current. The upstream shouldn't explode.
 
 ### Lite Version, Reducing Power
 
