@@ -32,6 +32,8 @@ When using the "automatic" option for requesting current from the USB host witho
 
 If you find that the Hot-Wand simply does not power up, first, choose "automatic" for current. If that doesn't help, then choose 20V instead of 28V. If the 20V and automatic current option does not work, something is seriously wrong and that particular USB host cannot work with Hot-Wand.
 
+If you find that the Hot-Wand will function, but suddently, power is cut by the USB host, then you should try lowering the power limit by using one of the lower power limit modes.
+
 If the USB host is delivering 15V instead of 20V (some chargers will split power when multiple devices are plugged in), the Hot-Wand will not work very well. Below 14V the Hot-Wand will not function at all.
 
 ## Setup Menu
