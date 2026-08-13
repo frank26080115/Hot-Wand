@@ -23033,6 +23033,10 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPCBPART" value="C41376403"/>
 </part>
 <part name="GND63" library="hot-wand" deviceset="GND" device=""/>
+<part name="D13" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD123FL" value="2A 60V">
+<attribute name="JLCPARTNUM" value="C53340922"/>
+<attribute name="PARTNUM" value="STPS2L60ZFY"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -23048,7 +23052,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 x16.4 RL gain
 0.547V/A
 6.04A max</text>
-<text x="68.58" y="-10.16" size="5.08" layer="97">Main Power Buck Converter</text>
+<text x="68.58" y="-2.54" size="5.08" layer="97">Main Power Buck Converter</text>
 <text x="101.6" y="-502.92" size="5.08" layer="97">Power Sensing</text>
 <text x="43.18" y="-279.4" size="5.08" layer="97">RF Amp Gate Driver</text>
 <text x="63.5" y="-116.84" size="5.08" layer="97" align="top-left">Main RF Power Amplifier
@@ -23883,6 +23887,10 @@ curr meas</text>
 <attribute name="JLCPCBPART" x="259.08" y="-25.4" size="1.27" layer="96" rot="R180" display="off"/>
 </instance>
 <instance part="GND63" gate="1" x="264.16" y="-30.48"/>
+<instance part="D13" gate="G$1" x="114.3" y="-10.16" rot="R180">
+<attribute name="JLCPARTNUM" x="114.3" y="-10.16" size="1.27" layer="96" rot="R180" display="off"/>
+<attribute name="PARTNUM" x="114.3" y="-10.16" size="1.27" layer="96" rot="R180" display="off"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -25039,7 +25047,8 @@ curr meas</text>
 <wire x1="53.34" y1="-20.32" x2="60.96" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="-20.32" x2="63.5" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="63.5" y1="-20.32" x2="73.66" y2="-20.32" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="-20.32" x2="91.44" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="-20.32" x2="86.36" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="-20.32" x2="91.44" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="-20.32" x2="60.96" y2="-12.7" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="-12.7" x2="55.88" y2="-12.7" width="0.1524" layer="91"/>
 <label x="55.88" y="-12.7" size="1.778" layer="95" rot="R180" xref="yes"/>
@@ -25051,6 +25060,10 @@ curr meas</text>
 <junction x="63.5" y="-20.32"/>
 <junction x="73.66" y="-20.32"/>
 <pinref part="F1" gate="G$1" pin="2"/>
+<pinref part="D13" gate="G$1" pin="C"/>
+<wire x1="111.76" y1="-10.16" x2="86.36" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="86.36" y1="-10.16" x2="86.36" y2="-20.32" width="0.1524" layer="91"/>
+<junction x="86.36" y="-20.32"/>
 </segment>
 <segment>
 <pinref part="R26" gate="G$1" pin="2"/>
@@ -25120,8 +25133,9 @@ curr meas</text>
 <pinref part="U1" gate="G$1" pin="SW"/>
 <wire x1="127" y1="-27.94" x2="139.7" y2="-27.94" width="0.1524" layer="91"/>
 <wire x1="139.7" y1="-27.94" x2="139.7" y2="-20.32" width="0.1524" layer="91"/>
-<wire x1="139.7" y1="-20.32" x2="144.78" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="-20.32" x2="142.24" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="2"/>
+<wire x1="142.24" y1="-20.32" x2="144.78" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="137.16" y1="-20.32" x2="139.7" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="D1" gate="G$1" pin="C"/>
 <wire x1="139.7" y1="-27.94" x2="147.32" y2="-27.94" width="0.1524" layer="91"/>
@@ -25129,6 +25143,10 @@ curr meas</text>
 <junction x="139.7" y="-27.94"/>
 <junction x="139.7" y="-20.32"/>
 <pinref part="L1" gate="G$1" pin="1"/>
+<pinref part="D13" gate="G$1" pin="A"/>
+<wire x1="116.84" y1="-10.16" x2="142.24" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="-10.16" x2="142.24" y2="-20.32" width="0.1524" layer="91"/>
+<junction x="142.24" y="-20.32"/>
 </segment>
 </net>
 <net name="N$24" class="0">
