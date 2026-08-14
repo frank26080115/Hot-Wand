@@ -43,6 +43,8 @@ The feedback from the current transformer is for stability. If the iron draws mo
 
 You might have noticed that the buck converter circuit has a second LC stage before the current sensor and RF amplifier. This is simply a filter stage to isolate the buck converter's domain from the RF domain, the first is switching at 450 kHz and the latter is switching at 13.56 Mhz and SergeyMax picked 450 kHz and added the filter stage so these two domains don't interact or beat with each other.
 
+Important: another builder pointed out that the 6.8kohm resistor on the buck converter feedback network is the wrong value, and will only allow for about 14V maximum output. He swapped it for a 22kohm and so did I. The original design had a 22V zener beside this resistor in the feedback network that would've capped the voltage at 22V, I upped this zener to 24V as well. My design might be considered a bit "overclocked", but you don't have to actually tune it that high. Later in this document I discuss more protection mechanisms placed around this buck converter. (in other good news, 24V zeners and TVS diodes are wayyy more common anyways, a win for DFM)
+
 ### Gate Driver
 
 SergeyMax's design has two big MOSFETs instead of just one. One of them is the main RF class E amplifier's MOSFET, the other one is part of another smaller RF class E amplifier that drives the gate of the bigger one. The difference is that, we are now playing at 13.56 Mhz not 470 kHz. Driving a MOSFET gate at this high frequency means the charges at the MOSFET gate are moving back and forth through the gate driver much frequently. At 470 kHz, moving these charges from the positive supply into the gate, and then out of the gate into ground, at 4A, is not problematic.
@@ -143,7 +145,7 @@ Note that a lot of builders did what I did, replace the AC converter circuit wit
 
 One person claimed that the buck converter or one of the MOSFETs can fail if the input power is removed suddenly (which is less of a problem if the input is AC). I had enough board space and firmware memory left to approach this problem from multiple angles:
 
- * Added a TVS diode at the output of the buck converter where it supplies the RF amplifier. The amplifier itself already has a TVS protecting it above 150V, the new TVS diode is on the input side starting protection from 22V.
+ * Added a TVS diode at the output of the buck converter where it supplies the RF amplifier. The amplifier itself already has a TVS protecting it above 150V, the new TVS diode is on the input side starting protection from 24V.
  * Added a output-to-input diode to the buck converter, providing an additional path parallel to the internal MOSFET body diode, when there's backward current.
  * Firmware is set to halt RF generation immediately when a sharp input voltage drop is detected
  * Firmware is set to halt RF generation immediately when an output voltage exceeds 23V
