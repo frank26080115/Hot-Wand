@@ -115,7 +115,9 @@ In my own design, I had plenty of PCB space and physical space to spare, so I ad
 
 First, if you were reading SergeyMax's post and confused as to where he put instructions for winding the custom inductors, the actual instructions are inside the schematic file, you must open it with DipTrace first, you can get a free view-only version to do so.
 
-The instructions for the K16x8x6 9uH inductors (2 of them) are to use 22 AWG wire with 15 turns. The toroid core SergeyMax actually used only existed in Russia. The closest match I found on Digi-Key is Fair-Rite 5961004901, but the target is now around 10 or 11 turns instead of 15. Other builders of the design have stated that landing on something 10uH is totally fine and might even work better. One community member experienced an overheating core and suspects it was because it was made of iron powder instead of ferrite.
+The instructions for the K16x8x6 9uH inductors (2 of them) are to use 22 AWG wire with 15 turns. The toroid core SergeyMax actually used only existed in Russia. The closest match I found on Digi-Key is Fair-Rite 5961004901, but the target is now around 10 or 11 turns instead of 15.
+
+Other builders of the design have stated that landing on something 10uH is totally fine and might even work better. One community member experienced an overheating core and suspects it was because it was made of iron powder instead of ferrite.
 
 For the current transformer that's supposed to use the same toroid core, no change is needed. Although, I did add an adjustment potentiometer just in case I need to tune the output of the feedback signal from this current transformer.
 
