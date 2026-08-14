@@ -31,9 +31,6 @@ This file also contains some convenience functions for unit conversions.
 #define ADC_DEFAULT_LPF_ALPHA  900
 #define ADC_IRQ_PRIORITY       1
 #define ADC_ANALOG_PINS        (DC_SENS_PINn | THERM_1_PINn | THERM_2_PINn | BUCK_SENS_PINn | CURR_SENS_PINn)
-#define ADC_REFERENCE_MV       3300
-#define ADC_FULL_SCALE         1023
-#define VOLTAGE_DIVIDER_SCALE  11
 #define CURRENT_FULL_SCALE_MA  6037
 #define INPUT_V_CALIB_SCALE    1024
 #define INPUT_V_CALIB_ROUNDING (INPUT_V_CALIB_SCALE / 2)

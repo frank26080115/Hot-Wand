@@ -1992,10 +1992,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="105.157" y="10.684" size="0.8128" layer="28" font="vector" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C4190" x="103.9" y="8.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="R4" library="hot-wand" package="0603-RES" value="6K8" x="48.8" y="51.6" smashed="yes" rot="MR270">
+<element name="R4" library="hot-wand" package="0603-RES" value="22K" x="48.8" y="51.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="49.238" y="50.089" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="48.043" y="50.416" size="0.8128" layer="28" font="vector" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C23212" x="48.8" y="51.6" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C31850" x="48.8" y="51.6" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="VR1" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="10K" x="48.8" y="56.7" smashed="yes" rot="R90">
 <attribute name="PARTNUM" value="TC33X-2-103E" x="48.8" y="56.7" size="1.778" layer="27" rot="R90" display="off"/>
@@ -2558,10 +2558,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="3.878" y="9.87" size="0.8128" layer="25" font="vector" rot="R270"/>
 <attribute name="VALUE" x="-1.102" y="21.67" size="1.27" layer="27" font="vector" rot="R270"/>
 </element>
-<element name="TVS6" library="hot-wand" package="SMA" value="SMAJ22A" x="65.2" y="51.5" smashed="yes" rot="MR90">
+<element name="TVS6" library="hot-wand" package="SMA" value="SMAJ24CA" x="65.2" y="51.5" smashed="yes" rot="MR90">
 <attribute name="NAME" x="67.5" y="49.25" size="0.8128" layer="26" ratio="10" rot="MR90"/>
 <attribute name="VALUE" x="68.5" y="49.25" size="0.8128" layer="28" ratio="10" rot="MR90"/>
-<attribute name="JLCPCBPART" value="C41376403" x="65.2" y="51.5" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="JLCPCBPART" value="C148223" x="65.2" y="51.5" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="D13" library="hot-wand" package="SOD123FL" value="2A 60V" x="31.9" y="55.3" smashed="yes" rot="MR180">
 <attribute name="JLCPARTNUM" value="C53340922" x="31.9" y="55.3" size="1.778" layer="28" rot="MR180" display="off"/>

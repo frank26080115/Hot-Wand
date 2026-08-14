@@ -40,6 +40,13 @@
 // Power and Thermal Limits
 // -----------------------------------------------------------------------------
 
+#define ADC_REFERENCE_MV      3300UL
+#define ADC_FULL_SCALE        1023UL
+#define VOLTAGE_DIVIDER_SCALE 11UL
+#define ADC_VOLTAGE_TO_COUNTS(millivolts)                                                        \
+    (((millivolts) * ADC_FULL_SCALE + (ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE) - 1UL) /        \
+     (ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE))
+
 #define TEMPERATURE_FAN_THRESHOLD_LOW_C  50
 #define TEMPERATURE_FAN_THRESHOLD_HIGH_C 80
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
@@ -116,15 +123,17 @@
 #endif
 
 /* Buck overvoltage protection compares the unfiltered 10-bit ADC sample.
- * With the fixed 22K/2K2 divider and 3.3 V
- * ADC reference, 648 counts is
- * approximately 23 V at the final buck-converter output. */
-#ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS
-#define PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS 648
+ * With the fixed 22K/2K2 divider and 3.3 V ADC reference */
+#ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_MV
+#define PWRMGT_BUCK_VOLTAGE_SPIKE_MV 25000UL
 #endif
 
-#if (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS == 0) || (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS > 1023)
-#error "Buck voltage-spike threshold must fit in nonzero 10-bit ADC counts"
+#ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS
+#define PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS ADC_VOLTAGE_TO_COUNTS(PWRMGT_BUCK_VOLTAGE_SPIKE_MV)
+#endif
+
+#if (PWRMGT_BUCK_VOLTAGE_SPIKE_MV == 0) || (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS > ADC_FULL_SCALE)
+#error "Buck voltage-spike threshold must be nonzero and fit in the ADC input range"
 #endif
 
 #define DC_HIGH_POWER_MINIMUM_MV    19000
