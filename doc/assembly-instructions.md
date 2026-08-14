@@ -92,7 +92,7 @@ Cut a strip of 2mm or 3mm thick thermal padding, stick it to the back of the hea
 
 Attach the cooling fan to the PCB with hot glue or epoxy or VHB tape first. Then use insulated solid core 22 AWG wire, or similar, to solder the fan to the PCB through the mounting holes. Then add more hot glue around these holes
 
-## Finaly Assembly
+## Final Assembly
 
 With the brass standoffs already attached to the PCB (see previous step), attach the PCB to the enclosure lid with more screws, maybe countersink the holes and use countersink screws if you are able to.
 

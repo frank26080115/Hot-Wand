@@ -22753,8 +22753,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C845027"/>
 <attribute name="PARTNUM" value="IHLP2525CZER4R7M11"/>
 </part>
-<part name="D2" library="hot-wand" deviceset="DIODE-ZENER" device="SOD123FL" value="BZT52C22">
-<attribute name="JLCPARTNUM" value="C173423"/>
+<part name="D2" library="hot-wand" deviceset="DIODE-ZENER" device="SOD123FL" value="BZT52C24">
+<attribute name="JLCPARTNUM" value="C2109"/>
 </part>
 <part name="JP3" library="hot-wand" deviceset="XT-CONNECTOR" device="-XT30PW">
 <attribute name="JLC-DNP" value="1"/>
@@ -23116,11 +23116,11 @@ or excessive power draw</text>
 <text x="171.45" y="-57.15" size="0.6096" layer="97" rot="R90">tune for unloaded voltage
 10K for maximum voltage</text>
 <text x="161.798" y="-15.748" size="0.6096" layer="97" rot="R180" align="top-left">Wurth 744750460220 (22uH)</text>
-<text x="203.2" y="-83.82" size="1.27" layer="97">maximum output is about 22V
+<text x="203.2" y="-83.82" size="1.27" layer="97">output is about 22V
 MCU can lower this to about 9V
 (using the 2K2 resistor)</text>
 <text x="203.708" y="-26.162" size="0.8128" layer="97" rot="R270">cause instant voltage cut
-when voltage exceeds 22V</text>
+when voltage exceeds 24V</text>
 <text x="121.158" y="-34.036" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
 <text x="161.798" y="-14.478" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
 <text x="297.18" y="-415.544" size="0.8128" layer="97" rot="R180" align="top-left">MS2006H12D-RSR</text>
@@ -23883,8 +23883,10 @@ curr meas</text>
 </instance>
 <instance part="GND64" gate="1" x="180.34" y="-703.58"/>
 <instance part="JP5" gate="G$1" x="187.96" y="-688.34" rot="R180"/>
-<instance part="TVS6" gate="G$1" x="259.08" y="-25.4" rot="R180">
+<instance part="TVS6" gate="G$1" x="259.08" y="-25.4" smashed="yes" rot="R180">
 <attribute name="JLCPCBPART" x="259.08" y="-25.4" size="1.27" layer="96" rot="R180" display="off"/>
+<attribute name="NAME" x="260.35" y="-27.305" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="256.032" y="-23.241" size="1.778" layer="96"/>
 </instance>
 <instance part="GND63" gate="1" x="264.16" y="-30.48"/>
 <instance part="D13" gate="G$1" x="114.3" y="-10.16" rot="R180">

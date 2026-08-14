@@ -2163,9 +2163,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="51.4234" y="37.535" size="0.8128" layer="28" font="vector" ratio="6" rot="SMR180"/>
 <attribute name="JLCPARTNUM" value="C845027" x="55" y="41.4" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="D2" library="hot-wand" package="SOD123FL" value="BZT52C22" x="53.1" y="52.4" smashed="yes" rot="MR90">
+<element name="D2" library="hot-wand" package="SOD123FL" value="BZT52C24" x="53.1" y="52.4" smashed="yes" rot="MR90">
 <attribute name="NAME" x="53.5" y="50.1" size="0.8128" layer="26" font="vector" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C173423" x="53.1" y="52.4" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="JLCPARTNUM" value="C2109" x="53.1" y="52.4" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="JP3" library="hot-wand" package="XT30PW" value="XT-CONNECTOR-XT30PW" x="2" y="53" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="2" y="53" size="1.778" layer="27" rot="R90" display="off"/>
