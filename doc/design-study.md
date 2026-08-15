@@ -39,7 +39,7 @@ The buck converter in SergeyMax's design implements a feedback network with an a
 
 For my own design, I really wanted to have adjustable power levels. The best way to accomplish this is to have a microcontroller interface with the feedback signal of the buck converter. So I kept it in my design.
 
-The feedback from the current transformer is for stability. If the iron draws more current, naturally the voltage will sag, the buck converter will boost the output in response, which could possibly cause even more current to be drawn. This will result in instability. The signal from the current transformer prevents this as it will cause the feedback voltage to rise with current, and so the actual output voltage will not be boosted.
+The feedback from the current transformer is kind of a power saving feature for added efficiency. It is a power factor detector that tells the buck converter to chill out if the iron tip is already hot. I have a [page written about it here](design-study-current-transformer.md)
 
 You might have noticed that the buck converter circuit has a second LC stage before the current sensor and RF amplifier. This is simply a filter stage to isolate the buck converter's domain from the RF domain, the first is switching at 450 kHz and the latter is switching at 13.56 Mhz and SergeyMax picked 450 kHz and added the filter stage so these two domains don't interact or beat with each other.
 
