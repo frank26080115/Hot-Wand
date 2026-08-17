@@ -1,8 +1,10 @@
 /*
- * Input monitoring and confirmed power-state management.
+ * Input monitoring and power-state management.
  *
- * The task tracks voltage-range and jumper changes immediately, but delays
- * their effect until the inputs have remained stable for the required time.
+ * RF remains off for at least 500 ms after boot. After the initial
+ * state is
+ * applied, voltage-range and jumper changes must remain stable before taking
+ * effect.
  */
 
 // -----------------------------------------------------------------------------
@@ -44,9 +46,9 @@ constexpr uint32_t kVoltageHysteresisMv  = 500;
 constexpr uint32_t kLowToHighThresholdMv = kVoltageThresholdMv + (kVoltageHysteresisMv / 2);
 constexpr uint32_t kHighToLowThresholdMv = kVoltageThresholdMv - (kVoltageHysteresisMv / 2);
 
-constexpr uint32_t kInitialSettleTimeMs = 500;
-constexpr uint32_t kChangeSettleTimeMs  = 2000;
-constexpr uint32_t kReportIntervalMs    = 1000;
+constexpr uint32_t kMinimumRfStartDelayMs = 500;
+constexpr uint32_t kChangeSettleTimeMs    = 2000;
+constexpr uint32_t kReportIntervalMs      = 1000;
 
 /* Hardware-mode mappings are kept here for easy product tuning. */
 constexpr uint8_t kEcoRfPowerPercent    = 50;
@@ -119,38 +121,49 @@ void pwrmgt_task(void)
 
     if (!g_inputStateInitialized)
     {
-        // Boot starts a confirmation window; it does not apply this first sample.
         g_voltageRange          = initial_voltage_range(voltageMv);
         g_powerMode             = powerMode;
         g_voltageChangedMs      = currentTimeMs;
         g_powerChangedMs        = currentTimeMs;
         g_inputStateInitialized = true;
+    }
+    else
+    {
+        const VoltageRange voltageRange = update_voltage_range(g_voltageRange, voltageMv);
+        if (voltageRange != g_voltageRange)
+        {
+            g_voltageRange     = voltageRange;
+            g_voltageChangedMs = currentTimeMs;
+        }
+
+        if (powerMode != g_powerMode)
+        {
+            g_powerMode      = powerMode;
+            g_powerChangedMs = currentTimeMs;
+        }
+    }
+
+    if (!g_appliedStateValid)
+    {
+        // millis() is measured from boot, so this is an RF-start interlock rather
+        // than a debounce interval for the initial input readings.
+        if (currentTimeMs < kMinimumRfStartDelayMs)
+        {
+            return;
+        }
+
+        apply_state();
         return;
     }
 
-    const VoltageRange voltageRange = update_voltage_range(g_voltageRange, voltageMv);
-    if (voltageRange != g_voltageRange)
-    {
-        g_voltageRange     = voltageRange;
-        g_voltageChangedMs = currentTimeMs;
-    }
-
-    if (powerMode != g_powerMode)
-    {
-        g_powerMode      = powerMode;
-        g_powerChangedMs = currentTimeMs;
-    }
-
-    // The first configuration confirms quickly; later physical changes debounce longer.
-    const uint32_t settleTimeMs    = g_appliedStateValid ? kChangeSettleTimeMs : kInitialSettleTimeMs;
-    const bool     voltageIsStable = static_cast<uint32_t>(currentTimeMs - g_voltageChangedMs) >= settleTimeMs;
-    const bool     powerIsStable   = static_cast<uint32_t>(currentTimeMs - g_powerChangedMs) >= settleTimeMs;
+    const bool voltageIsStable = static_cast<uint32_t>(currentTimeMs - g_voltageChangedMs) >= kChangeSettleTimeMs;
+    const bool powerIsStable   = static_cast<uint32_t>(currentTimeMs - g_powerChangedMs) >= kChangeSettleTimeMs;
     if (!voltageIsStable || !powerIsStable)
     {
         return;
     }
 
-    if (!g_appliedStateValid || (g_voltageRange != g_appliedVoltageRange) || (g_powerMode != g_appliedPowerMode))
+    if ((g_voltageRange != g_appliedVoltageRange) || (g_powerMode != g_appliedPowerMode))
     {
         apply_state();
     }

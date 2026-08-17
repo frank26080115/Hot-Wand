@@ -19,7 +19,7 @@
 
 void setup()
 {
-    // RF must remain off until the power manager confirms the boot inputs.
+    // RF must remain off until the power manager's startup delay expires.
     rfgen_set(0);
     blink_init();
 
@@ -29,7 +29,7 @@ void setup()
 
 void loop()
 {
-    // Confirm power-selection inputs and update the status indication.
+    // Apply power-selection inputs and update the status indication.
     pwrmgt_task();
     blink_task();
 }

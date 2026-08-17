@@ -93,7 +93,7 @@ static void led_off();
 
 void blink_init(void)
 {
-    // Keep both LEDs dark until power management confirms the initial status.
+    // Keep both LEDs dark until power management applies the initial status.
     digitalWrite(BLINK_LED_PIN, LOW);
     digitalWrite(BLINK_XIAOBUILTIN_LED_PIN, HIGH);
     pinMode(BLINK_LED_PIN, OUTPUT);
@@ -108,7 +108,7 @@ void blink_init(void)
 
 void blink_task(void)
 {
-    // No pattern is valid until pwrmgt_task() confirms the boot inputs.
+    // No pattern is valid until pwrmgt_task() applies the boot inputs.
     if (!g_initialized || !g_patternSelected)
     {
         return;
