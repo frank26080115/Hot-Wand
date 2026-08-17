@@ -15,6 +15,7 @@ This file also contains some convenience functions for unit conversions.
 #include "pins.h"
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
+#include "stm32f0xx_ll_adc.h"
 #include "typedefs.h"
 
 #include <stdbool.h>
@@ -26,6 +27,8 @@ This file also contains some convenience functions for unit conversions.
 // -----------------------------------------------------------------------------
 
 #define ADC_INPUT_COUNT        6
+#define ADC_VREFINT_IDX        ADC_INPUT_COUNT
+#define ADC_TABLE_ENTRY_COUNT  (ADC_INPUT_COUNT + 1)
 #define ADC_LPF_SCALE          1024
 #define ADC_LPF_ROUNDING       (ADC_LPF_SCALE / 2)
 #define ADC_DEFAULT_LPF_ALPHA  900
@@ -71,7 +74,7 @@ typedef struct
  * The high and low values allow different filtering rates for rising and
  * falling inputs. They are currently equal, as requested.
  */
-static const adc_cfg_t lpf_cfg_table[ADC_INPUT_COUNT] = {
+static const adc_cfg_t lpf_cfg_table[ADC_TABLE_ENTRY_COUNT] = {
     [DC_SENS_IDX] =
         {
                        .channel        = DC_SENS_ADCCHANn,
@@ -105,6 +108,12 @@ static const adc_cfg_t lpf_cfg_table[ADC_INPUT_COUNT] = {
     [THERM_2_IDX] =
         {
                        .channel        = THERM_2_ADCCHANn,
+                       .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
+                       .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
+                       },
+    [ADC_VREFINT_IDX] =
+        {
+                       .channel        = ADC_CHANNEL_VREFINT,
                        .lpf_alpha_high = ADC_DEFAULT_LPF_ALPHA,
                        .lpf_alpha_low  = ADC_DEFAULT_LPF_ALPHA,
                        },
@@ -154,11 +163,12 @@ _Static_assert((sizeof(input_voltage_calib_table) / sizeof(input_voltage_calib_t
                "Input-voltage calibration table is incomplete");
 
 static ADC_HandleTypeDef adc_handle;
-static uint32_t          lpf_state[ADC_INPUT_COUNT];
-static volatile uint16_t result[ADC_INPUT_COUNT];
-static volatile uint16_t raw[ADC_INPUT_COUNT];
+static uint32_t          lpf_state[ADC_TABLE_ENTRY_COUNT];
+static volatile uint16_t result[ADC_TABLE_ENTRY_COUNT];
+static volatile uint16_t raw[ADC_TABLE_ENTRY_COUNT];
 static volatile uint8_t  initialized_channels;
 static volatile uint8_t  current_idx;
+static volatile uint16_t adc_reference_mv;
 static volatile uint16_t dc_voltage_history[ADC_DC_VOLTAGE_HISTORY_COUNT];
 static volatile uint8_t  dc_voltage_history_write_idx;
 static volatile uint8_t  dc_voltage_history_count;
@@ -182,6 +192,7 @@ static void     adc_complete_round(void);
 static void     adc_publish_dc_voltage_average(void);
 static uint16_t adc_input_sample_to_millivolts(uint16_t sample);
 static void     adc_check_fast_power_loss(uint16_t sample);
+static void     adc_update_reference_voltage(uint16_t sample);
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
@@ -207,7 +218,7 @@ void adc_init(void)
     gpio_cfg.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &gpio_cfg);
 
-    for (idx = 0; idx < ADC_INPUT_COUNT; ++idx)
+    for (idx = 0; idx < ADC_TABLE_ENTRY_COUNT; ++idx)
     {
         lpf_state[idx] = 0;
         result[idx]    = 0;
@@ -218,16 +229,14 @@ void adc_init(void)
     dc_voltage_history_count        = 0;
     dc_voltage_history_generation   = 0;
     completed_round_count           = 0;
+    adc_reference_mv                = ADC_REFERENCE_MV;
     adc_power_loss_shutdown         = false;
     adc_buck_voltage_spike_shutdown = false;
     dc_voltage_accumulator          = 0;
     dc_voltage_accumulator_count    = 0;
     adc_round_started               = false;
-    /*
-     * Configuring the temperature channel through HAL enables its internal
-     * path and waits for the required startup time. The ISR wraps to input 0
-     * after this first conversion.
-     */
+    /* Start with the internal temperature channel so HAL can enable and
+     * stabilize it before the normal external-input rounds begin. */
     current_idx = MCU_TEMP_IDX;
 
     adc_handle.Instance                   = ADC1;
@@ -256,6 +265,8 @@ void adc_init(void)
         adc_fault();
     }
 
+    /* Enable both internal measurement paths through HAL. The round-robin
+     * sequencer below still selects exactly one channel at a time. */
     channel_cfg.Channel      = lpf_cfg_table[current_idx].channel;
     channel_cfg.Rank         = ADC_RANK_CHANNEL_NUMBER;
     channel_cfg.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
@@ -264,6 +275,14 @@ void adc_init(void)
     {
         adc_fault();
     }
+
+    channel_cfg.Channel = lpf_cfg_table[ADC_VREFINT_IDX].channel;
+    if (HAL_ADC_ConfigChannel(&adc_handle, &channel_cfg) != HAL_OK)
+    {
+        adc_fault();
+    }
+
+    adc_handle.Instance->CHSELR = 1UL << lpf_cfg_table[current_idx].channel;
 
     HAL_NVIC_ClearPendingIRQ(ADC1_IRQn);
     /* Tip detection uses priority 0; ADC completion is deliberately second. */
@@ -305,7 +324,9 @@ void ADC1_IRQHandler_Impl(void)
     raw[completed_idx] = sample;
 
     next_idx = (uint8_t)(completed_idx + 1);
-    if (next_idx >= ADC_INPUT_COUNT)
+    if (((next_idx >= ADC_INPUT_COUNT) &&
+         ((completed_round_count % ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS) != 0)) ||
+        (next_idx > ADC_VREFINT_IDX))
     {
         next_idx = 0;
     }
@@ -326,6 +347,10 @@ void ADC1_IRQHandler_Impl(void)
 
     /* Filter while the ADC is already sampling the next channel. */
     adc_filter_sample(completed_idx, sample);
+    if (completed_idx == ADC_VREFINT_IDX)
+    {
+        adc_update_reference_voltage(result[ADC_VREFINT_IDX]);
+    }
 
     if (next_idx == 0)
     {
@@ -343,6 +368,7 @@ void ADC1_IRQHandler_Impl(void)
 uint16_t adc_to_millivolts(uint8_t idx)
 {
     uint32_t millivolts;
+    uint16_t reference_mv;
 
     if ((idx != DC_SENS_IDX) && (idx != BUCK_SENS_IDX))
     {
@@ -354,7 +380,8 @@ uint16_t adc_to_millivolts(uint8_t idx)
         return adc_input_sample_to_millivolts(adc_get(idx));
     }
 
-    millivolts = (uint32_t)adc_get(idx) * ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE;
+    reference_mv = adc_reference_mv;
+    millivolts   = (uint32_t)adc_get(idx) * reference_mv * VOLTAGE_DIVIDER_SCALE;
     millivolts += ADC_FULL_SCALE / 2;
 
     millivolts /= ADC_FULL_SCALE;
@@ -364,14 +391,20 @@ uint16_t adc_to_millivolts(uint8_t idx)
 
 uint16_t adc_to_milliamps(uint8_t idx)
 {
+    uint32_t full_scale_ma;
     uint32_t milliamps;
+    uint16_t reference_mv;
 
     if (idx != CURR_SENS_IDX)
     {
         return 0;
     }
 
-    milliamps = (uint32_t)adc_get(idx) * CURRENT_FULL_SCALE_MA;
+    reference_mv = adc_reference_mv;
+    full_scale_ma =
+        ((uint32_t)CURRENT_FULL_SCALE_MA * reference_mv + (ADC_REFERENCE_MV / 2)) / ADC_REFERENCE_MV;
+
+    milliamps = (uint32_t)adc_get(idx) * full_scale_ma;
     milliamps += ADC_FULL_SCALE / 2;
 
     return (uint16_t)(milliamps / ADC_FULL_SCALE);
@@ -647,8 +680,10 @@ static void adc_publish_dc_voltage_average(void)
 static uint16_t adc_input_sample_to_millivolts(uint16_t sample)
 {
     uint32_t millivolts;
+    uint16_t reference_mv;
 
-    millivolts = (uint32_t)sample * ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE;
+    reference_mv = adc_reference_mv;
+    millivolts   = (uint32_t)sample * reference_mv * VOLTAGE_DIVIDER_SCALE;
     millivolts += ADC_FULL_SCALE / 2;
     millivolts /= ADC_FULL_SCALE;
 
@@ -675,6 +710,24 @@ static void adc_check_fast_power_loss(uint16_t sample)
         adc_power_loss_shutdown = true;
         rfgen_emergency_stop();
     }
+}
+
+static void adc_update_reference_voltage(uint16_t sample)
+{
+    uint32_t reference_mv;
+
+    if (sample == 0)
+    {
+        return;
+    }
+
+    reference_mv = __LL_ADC_CALC_VREFANALOG_VOLTAGE(sample, LL_ADC_RESOLUTION_10B);
+    if ((reference_mv == 0) || (reference_mv > UINT16_MAX))
+    {
+        return;
+    }
+
+    adc_reference_mv = (uint16_t)reference_mv;
 }
 
 static void adc_select_and_start(uint8_t idx)
@@ -717,9 +770,16 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
     const uint16_t calibration = *(const uint16_t*)MCU_TEMP_CAL1_ADDRESS;
     int32_t        delta;
     int32_t        temperature;
+    uint32_t       normalized_sample;
     uint32_t       rounded_delta;
+    uint16_t       reference_mv;
 
-    delta = (int32_t)calibration - ((int32_t)sample << 2);
+    reference_mv      = adc_reference_mv;
+    normalized_sample = ((uint32_t)sample << 2) * reference_mv;
+    normalized_sample += ADC_REFERENCE_MV / 2;
+    normalized_sample /= ADC_REFERENCE_MV;
+
+    delta = (int32_t)calibration - (int32_t)normalized_sample;
     delta *= (int32_t)(ADC_REFERENCE_MV * 10);
 
     if (delta >= 0)
