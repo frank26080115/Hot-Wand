@@ -51,13 +51,21 @@ SergeyMax's design has two big MOSFETs instead of just one. One of them is the m
 
 The dilemma is that, the RF amplifier needs a big beefy MOSFET that can survive high currents and high voltages (the reverse engineered unit had a MOSFET rated for 500V), but big silicon means big gates, which means big gate capacitance.
 
+![](imgs/gate_amp_without.png)
+
 At 13.56 MHz, this becomes upwards of 11W of heat being wasted.
 
 The solution is to use a first stage with a MOSFET chosen to have a very very small gate capacitance, and it can be small because this amplifier only needs to generate about 12V with almost no real current. This MOSFET, along with the inductors and capacitors around it, form another smaller class E amplifier with a resonant tank. This resonant tank is resonanting at 13.56 MHz, bouncing the charges in and out of the gate of the much bigger MOSFET. The charges are being recycled, instead of going in a DC circuit from positive to negative.
 
 This is not easy to get right, the instructions from SergeyMax basically says... make a coreless coil with wire, 10 loops of wire about 6mm in diameter and 10mm wide, you need to stretch or compress this until you tune the resonance correctly.
 
-I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 200mA at 12V, so 2W vs 11W, not bad? If you go overboard with stretching the coil then you end up with an output waveform either not low enough or not high enough. The wave form must at least reach 0V or else the next MOSFET won't actually ever turn off, which would essentially cause a short circuit event.
+I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 100mA at 12V, so 1.2W vs 11W, not bad?
+
+![](imgs/gate_amp_tune_1.png)
+
+If you go overboard with stretching the coil then you end up with an output waveform either not low enough or not high enough. The wave form must at least reach 0V or else the next MOSFET won't actually ever turn off, which would essentially cause a short circuit event.
+
+![](imgs/gate_amp_tune_2.png)
 
 ### Protections
 
