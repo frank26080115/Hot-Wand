@@ -33,9 +33,10 @@ The boot/setup screens and terminal fault screen use their own explicit loops. T
 Interrupts are reserved for events that cannot depend on foreground loop latency:
 
 - SysTick maintains the HAL millisecond counter used by the cooperative state machines.
-- The ADC completion interrupt advances continuous round-robin sampling and updates the filtered readings.
-- EXTI and TIM17 qualify tip-presence edges with a hardware-timed debounce interval.
+- The ADC completion interrupt advances continuous round-robin sampling, updates the filtered readings, and maintains a high-granularity DC-input-voltage history.
+- EXTI and TIM17 qualify tip-presence edges with a hardware-timed debounce interval. (highest priority)
 - The clock security system uses the NMI path to shut down RF if the external crystal fails.
+- The user button press is using an interrupt edge trrigger sharing EXTI.
 
 The startup vector table supplied by STM32Cube uses weak handlers. `interrupt_vectors.S` provides strong, non-LTO shims that retain and dispatch to the firmware's C implementations even with the GCC 7 link-time optimizer enabled.
 
@@ -53,7 +54,7 @@ RF startup independently repeats these checks. It refuses to start while the tip
 
 The RF carrier depends on the 27.12 MHz external crystal. TIM1 divides that clock by two to produce the 13.56 MHz, 50 percent duty-cycle waveform. Startup verifies that HSE is ready and is actually the system clock before enabling the RF output. The clock security system remains enabled afterward; an HSE failure enters the NMI handler, latches a clock fault, and stops the generator. Internal lockup and SRAM-parity fault signals are also routed to TIM1's hardware break input, whose configured run and idle off-states hold the RF output inactive.
 
-RF shutdown does not rely on simply stopping a timer and hoping the pin assumes a safe state. `rfgen_stop()` first marks the generator inactive, preloads the GPIO output latch low, and changes the RF pin from TIM1 alternate-function control to a push-pull GPIO output. The pin is therefore actively held low rather than left floating or dependent on a disabled timer. TIM1's main-output enable, complementary channel, and counter are then disabled.
+RF shutdown does not rely on simply stopping a timer and hoping the pin assumes a safe state. Normal `rfgen_stop()` marks the generator inactive, preloads the GPIO output latch low, changes the RF pin from TIM1 alternate-function control to a push-pull GPIO output, and disables TIM1. `rfgen_emergency_stop()` reverses that order for minimum latency: it first clears TIM1's main-output enable, channel enable, and counter, then performs the same GPIO-low handoff. Emergency stop also latches an RF-driver fault that both start gates enforce until MCU reset.
 
 Startup uses the reverse discipline. The timer is completely configured while its main output remains disabled, the inactive timer state owns the pin first, and only the final guarded sequence enables the timer and RF output. If a tip or clock fault is observed during that sequence, shutdown runs again immediately.
 
@@ -61,4 +62,6 @@ Startup uses the reverse discipline. The timer is completely configured while it
 
 Fault handling is deliberately terminal. Entering `show_fault()` immediately stops RF generation, forces the buck-converter attenuation output to its minimum-power state, and stops the fan before attempting to draw or animate an error message. If the display is unavailable, the firmware remains in the safe terminal loop anyway. Faults are never cleared automatically; recovery requires the explicit reset path allowed for that fault.
 
-This gives the firmware layered protection. Foreground supervision handles normal voltage, temperature, current, and power decisions; time-critical tip and clock failures have interrupt-level shutdown paths; TIM1 has hardware break inputs for internal MCU faults; and terminal fault presentation independently reapplies safe output states before doing any UI work.
+Some faults are triggered from the interrupt context. `rfgen_emergency_stop()` will be called from within the interrupt for minimal latency, and then a fault flag is set for the main thread to show the terminal `show_fault()`.
+
+This gives the firmware layered protection. Foreground supervision handles normal voltage, temperature, current, and power decisions; time-critical failures (tip detector, crystal clock, voltage dips/spikes) have interrupt-level shutdown paths; TIM1 has hardware break inputs for internal MCU faults; and terminal fault presentation independently reapplies safe output states before doing any UI work.
