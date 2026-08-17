@@ -16,7 +16,7 @@ The issue with that idea is that the current will probably still spike to 5A any
 
 Realistically, the over-current protection doesn't trigger immediately, it takes a few microseconds to trigger, they are usually tolerant of things like the device having a large input capacitor that causes a brief in-rush, plus, they also have their own output capacitor.
 
-Doing long periods like 10ms or even 1ms is easy for the microcontroller. I don't really want to use any periods that can cause an audiable tone, and once you get down into the microseconds, the interrupt execution times become a problem.
+Doing long periods like 10ms or even 1ms is easy for the microcontroller. I don't really want to use any periods that can cause an audible tone, and once you get down into the microseconds, the interrupt execution times become a problem.
 
 The firmware design was changed, I switched to using a DMA to feed each individual pulse into the PWM generator. Each power level corresponded to a pattern stored in a table. A PWM pattern like `101010101010` would be 100% power, and I can do things like `101000101000` to reduce the power consumed, that was the idea, kind of a pulse-density modulation. The hope was that the very short period of high consumption, now on the scale of microseconds, would be masked by the capacitor and skip being detected as over-current by the USB host.
 

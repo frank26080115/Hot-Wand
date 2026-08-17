@@ -2,7 +2,7 @@
 
 When powered up, the soldering iron does not really need any interaction. It just works, much like a Metcal soldering station.
 
-The GUI will display the DC input voltage, and a graph representing power draw. The voltage helps users determine battery voltage or USB host delivered voltage. The power graph show how much power is being consumed by the soldering iron cartidge.
+The GUI will display the DC input voltage, and a graph representing power draw. The voltage helps users determine battery voltage or USB host delivered voltage. The power graph show how much power is being consumed by the soldering iron cartridge.
 
 Remember, this is a RF soldering iron, there is no need (and no way) to adjust temperature. The temperature is just magically always correct. Since you are using one and knows it's worth like $1000, I assume this is why you are using one.
 
@@ -14,7 +14,7 @@ Pressing and holding the button for a few seconds will place the Hot-Wand into s
 
 If any internal sensors detect a fault, the fault will be displayed. Some faults can be dismissed by pressing the button, some cannot.
 
-Swapping the tip (removing the cartidge) will cause a fault. Finish swapping the tip, and press the button to reboot the device to use the new tip.
+Swapping the tip (removing the cartridge) will cause a fault. Finish swapping the tip, and press the button to reboot the device to use the new tip.
 
 A low battery fault can show up if you've configured a battery protection mode. This fault will cause the system to power down, but it can be overridden and continue to power back up if you press and hold the button. Do this at your own risk, I'm not your mom.
 
@@ -32,7 +32,7 @@ When using the "automatic" option for requesting current from the USB host witho
 
 If you find that the Hot-Wand simply does not power up, first, choose "automatic" for current. If that doesn't help, then choose 20V instead of 28V. If the 20V and automatic current option does not work, something is seriously wrong and that particular USB host cannot work with Hot-Wand.
 
-If you find that the Hot-Wand will function, but suddently, power is cut by the USB host, then you should try lowering the power limit by using one of the lower power limit modes.
+If you find that the Hot-Wand will function, but suddenly, power is cut by the USB host, then you should try lowering the power limit by using one of the lower power limit modes.
 
 If the USB host is delivering 15V instead of 20V (some chargers will split power when multiple devices are plugged in), the Hot-Wand will not work very well. Below 14V the Hot-Wand will not function at all.
 
@@ -50,7 +50,7 @@ If you want to discard your changes, then press the button until the screen read
 
 In the setup menu, you can choose a battery mode. This let's you pick between three supported battery chemistries: Li-Po (regular lithium polymer), Li-HV (higher voltage lithium polymer), and Li-Fe (LiFePO4). For each option, there is also a "safer" mode.
 
-The system will automatically determine how many cells your battery has based on your selected battery chemisty, and then determine the appropriate safe low battery cutoff voltage. If you've chosen the "safer" mode of that chemistry, then the cutoff voltage is just slightly higher.
+The system will automatically determine how many cells your battery has based on your selected battery chemistry, and then determine the appropriate safe low battery cutoff voltage. If you've chosen the "safer" mode of that chemistry, then the cutoff voltage is just slightly higher.
 
 This feature only works correctly if the input voltage calibration is correct. If you cannot calibrate the input voltage reading, then I would suggest you do not use the battery mode feature at all.
 
