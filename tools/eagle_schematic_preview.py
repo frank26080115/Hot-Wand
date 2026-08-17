@@ -25,7 +25,8 @@ DEFAULT_EAGLECON_EXE = Path(
     r"C:\ProgramFiles\EAGLE-7.6.0\bin\eaglecon.exe"
 )
 DEFAULT_DPI = 400
-DEFAULT_DIVIDER_THICKNESS_PX = 20
+DEFAULT_DIVIDER_THICKNESS_PX = 50
+MINIMUM_VIRTUAL_PAGE_HEIGHT_PX = 100
 CONTENT_PADDING_PX = 60
 FRAME_THICKNESS_PX = 3
 PAGE_LABEL_FONT_SIZE_PX = 30
@@ -104,6 +105,11 @@ def parse_args() -> argparse.Namespace:
             "minimum number of consecutive white rows required for a page "
             f"break (default: {DEFAULT_DIVIDER_THICKNESS_PX})"
         ),
+    )
+    parser.add_argument(
+        "--keep-temp",
+        action="store_true",
+        help="keep generated PNG/JPEG files and print their temporary directory",
     )
     return parser.parse_args()
 
@@ -205,7 +211,7 @@ def find_content_chunks(
     image: Image.Image,
     minimum_divider_thickness: int,
 ) -> list[tuple[int, int]]:
-    """Return Y ranges split only by sufficiently thick all-white bands."""
+    """Return content ranges separated by valid, sufficiently spaced dividers."""
     difference = nonwhite_mask(image)
     _x_projection, y_projection = difference.getprojection()
     difference.close()
@@ -225,13 +231,29 @@ def find_content_chunks(
         return []
 
     chunks = [raw_chunks[0]]
+    next_divider_search_y = raw_chunks[0][0] + MINIMUM_VIRTUAL_PAGE_HEIGHT_PX
     for top, bottom in raw_chunks[1:]:
         previous_top, previous_bottom = chunks[-1]
         divider_thickness = top - previous_bottom
-        if divider_thickness < minimum_divider_thickness:
+        if (
+            divider_thickness < minimum_divider_thickness
+            or previous_bottom < next_divider_search_y
+        ):
             chunks[-1] = (previous_top, bottom)
         else:
             chunks.append((top, bottom))
+            next_divider_search_y = top + MINIMUM_VIRTUAL_PAGE_HEIGHT_PX
+
+    # A divider near the bottom can leave a final undersized page because no
+    # later divider exists to reject it. Fold that tail into its predecessor.
+    if (
+        len(chunks) > 1
+        and (chunks[-1][1] - chunks[-1][0]) < MINIMUM_VIRTUAL_PAGE_HEIGHT_PX
+    ):
+        previous_top, _previous_bottom = chunks[-2]
+        _last_top, last_bottom = chunks[-1]
+        chunks[-2:] = [(previous_top, last_bottom)]
+
     return chunks
 
 
@@ -509,13 +531,24 @@ def write_pdf_atomic(pages: list[JpegPage], output: Path) -> None:
 def main() -> int:
     args = parse_args()
     framed_images: list[Image.Image] = []
+    temporary_directory: tempfile.TemporaryDirectory[str] | None = None
     try:
         schematic, output, eaglecon = resolve_paths(args)
         if schematic == output:
             raise ValueError("The output path must differ from the schematic path")
 
-        with tempfile.TemporaryDirectory(prefix="eagle-schematic-preview-") as temp_dir:
-            temp_path = Path(temp_dir)
+        if args.keep_temp:
+            temp_path = Path(
+                tempfile.mkdtemp(prefix="eagle-schematic-preview-")
+            ).resolve()
+            print(f"Temporary files: {temp_path}")
+        else:
+            temporary_directory = tempfile.TemporaryDirectory(
+                prefix="eagle-schematic-preview-"
+            )
+            temp_path = Path(temporary_directory.name).resolve()
+
+        try:
             png_path = temp_path / "schematic.png"
             export_png(eaglecon, schematic, png_path, args.dpi)
 
@@ -537,6 +570,9 @@ def main() -> int:
                 image.close()
 
             write_pdf_atomic(jpeg_pages, output)
+        finally:
+            if temporary_directory is not None:
+                temporary_directory.cleanup()
 
         print(
             f"Created {output} ({len(jpeg_pages)} US Letter page"

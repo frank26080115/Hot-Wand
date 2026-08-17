@@ -23055,7 +23055,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 x16.4 RL gain
 0.547V/A
 6.04A max</text>
-<text x="68.58" y="-2.54" size="5.08" layer="97">Main Power Buck Converter</text>
+<text x="68.58" y="-5.08" size="5.08" layer="97">Main Power Buck Converter</text>
 <text x="101.6" y="-502.92" size="5.08" layer="97">Power Sensing</text>
 <text x="43.18" y="-279.4" size="5.08" layer="97">RF Amp Gate Driver</text>
 <text x="63.5" y="-116.84" size="5.08" layer="97" align="top-left">Main RF Power Amplifier
