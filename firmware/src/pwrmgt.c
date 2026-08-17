@@ -1,9 +1,11 @@
 /*
-Power Management
-This code module is responsible for managing the power levels and handling power-related logic.
-The user's preferred power level is used, but can be limited by temperature or input voltage.
-Abrupt input-power loss, buck-output overvoltage, and sustained excessive temperature cause terminal shutdowns.
-*/
+ * Power Management
+ *
+ * This module manages power levels and related safety logic. The user's
+ * preferred power level can be limited by temperature or input voltage. Abrupt
+ * input-power loss, buck-output overvoltage, and sustained excessive
+ * temperature cause terminal shutdowns.
+ */
 
 // -----------------------------------------------------------------------------
 // Includes
@@ -46,6 +48,10 @@ _Static_assert(PWRMGT_GRAPH_WIDTH_PX == (PWRMGT_HISTORY_RECORD_COUNT * 2),
 #define PWRMGT_POWER_100W_MW 100000
 
 #define PWRMGT_BLOCKED_CHANGE_MESSAGE_MS 300
+
+#define PWRMGT_VREFINT_TOLERANCE_PERCENT 25UL
+#define PWRMGT_VREFINT_MIN_MV            ((ADC_REFERENCE_MV * (100UL - PWRMGT_VREFINT_TOLERANCE_PERCENT)) / 100UL)
+#define PWRMGT_VREFINT_MAX_MV            ((ADC_REFERENCE_MV * (100UL + PWRMGT_VREFINT_TOLERANCE_PERCENT)) / 100UL)
 
 #define PWRMGT_POWER_LOSS_HISTORY_STRIDE                                                                               \
     ((PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS + ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS - 1) /                                 \
@@ -111,6 +117,7 @@ void pwrmgt_task(void)
     uint16_t      highest_temperature;
     uint16_t      temperature;
     uint16_t      temperature_limit;
+    uint16_t      reference_millivolts;
     uint16_t      dc_limit;
     uint8_t       adc_idx;
     uint8_t       reasons = PWRMGT_ATTENUATION_NONE;
@@ -123,8 +130,7 @@ void pwrmgt_task(void)
     dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
 
     /* The ADC interrupt has already latched RF off for this absolute raw
-     * buck-voltage fault. Give its specific
-     * diagnosis precedence over a
+     * buck-voltage fault. Give its specific diagnosis precedence over a
      * secondary input-voltage response to the same electrical event. */
     if (adc_has_buck_voltage_spike_shutdown())
     {
@@ -133,8 +139,7 @@ void pwrmgt_task(void)
     }
 
     /* Detect the input discharge signature before the remaining absolute
-     * voltage checks. If an existing battery
-     * or undervoltage threshold becomes
+     * voltage checks. If an existing battery or undervoltage threshold becomes
      * valid first, its established safety fault still takes precedence. */
     if (pwrmgt_power_loss_detected())
     {
@@ -142,7 +147,7 @@ void pwrmgt_task(void)
         return;
     }
 
-    /* This task is the sole owner of periodic battery supervision.  Keep the
+    /* This task is the sole owner of periodic battery supervision. Keep the
      * battery_check()/battery_show_fault() pair here rather than adding a
      * second check to main or another task. */
     if (!battery_check())
@@ -177,6 +182,13 @@ void pwrmgt_task(void)
                                                    : TEMPERATURE_HOT_WARNING_THRESH_C;
     pwrmgt_temperature_limited = highest_temperature > temperature_limit;
 
+    if (adc_get_reference_millivolts(&reference_millivolts) &&
+        ((reference_millivolts < PWRMGT_VREFINT_MIN_MV) || (reference_millivolts > PWRMGT_VREFINT_MAX_MV)))
+    {
+        show_fault("VOLT\nREF\nFAULT", true);
+        return;
+    }
+
     dc_limit =
         pwrmgt_low_dc_limited ? (DC_HIGH_POWER_MINIMUM_MV + DC_HIGH_POWER_HYSTERESIS_MV) : DC_HIGH_POWER_MINIMUM_MV;
     pwrmgt_low_dc_limited = dc_input_millivolts < dc_limit;
@@ -195,7 +207,7 @@ void pwrmgt_task(void)
         reasons |= PWRMGT_ATTENUATION_LOW_DC_INPUT;
     }
 
-    /* Low input voltage may not recover while the tool remains loaded.  The
+    /* Low input voltage may not recover while the tool remains loaded. The
      * buck converter's current ceiling also naturally caps the power that a
      * low input voltage can provide; this explicit 50 W cap is intentional. */
     if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited)
@@ -267,20 +279,18 @@ void pwrmgt_render_graph(u8g2_t* graphics)
     u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
 
     /* The center pair is sampled at display-render time, so it follows the
-     * fixed fast frame rate instead of
-     * showing the current segment's peak. */
+     * fixed fast frame rate instead of showing the current segment's peak. */
     pwrmgt_draw_power_pair(graphics, 0, adc_get_milliwatts());
 
-    /* Completed peak segments run backward in time from the center.  Each
-     * value is mirrored so the oldest
-     * retained segment reaches both edges. */
+    /* Completed peak segments run backward in time from the center. Each value
+     * is mirrored so the oldest retained segment reaches both edges. */
     for (age = 1; age < PWRMGT_HISTORY_RECORD_COUNT; ++age)
     {
         pwrmgt_draw_power_pair(graphics, age, pwrmgt_history_peek(age));
     }
 
     /* The dotted XOR line represents the specified ceiling, whether selected
-     * by the user or imposed by temperature or input voltage.  The unrestricted
+     * by the user or imposed by temperature or input voltage. The unrestricted
      * 100 W mode has no line; the 75 W and 50 W modes always do. */
     if (pwrmgt_applied_power_level != PWRLVL_MODE_100_PERCENT)
     {
@@ -573,8 +583,7 @@ static bool pwrmgt_power_loss_detected(void)
     uint8_t  older_age;
 
     /* The ADC interrupt has already stopped RF for a fast collapse. The
-     * foreground owns terminal fault
-     * presentation and reset handling. */
+     * foreground owns terminal fault presentation and reset handling. */
     if (adc_has_power_loss_shutdown())
     {
         return true;
@@ -587,8 +596,7 @@ static bool pwrmgt_power_loss_detected(void)
     }
 
     /* Records are newest-first. Their timestamps are inferred from the fixed
-     * 128-round publication cadence
-     * rather than sampled from SysTick. */
+     * 128-round publication cadence rather than sampled from SysTick. */
     if (!pwrmgt_drop_meets_threshold(voltage_history[PWRMGT_POWER_LOSS_HISTORY_SPAN],
                                      voltage_history[0],
                                      PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS))
@@ -597,8 +605,7 @@ static bool pwrmgt_power_loss_detected(void)
     }
 
     /* A genuine reservoir-capacitor discharge keeps falling. Requiring every
-     * segment to decline rejects a
-     * one-time load step that settles at a new
+     * segment to decline rejects a one-time load step that settles at a new
      * voltage before the complete observation window elapses. */
     for (interval = 0; interval < PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT; ++interval)
     {

@@ -169,6 +169,8 @@ static volatile uint16_t raw[ADC_TABLE_ENTRY_COUNT];
 static volatile uint8_t  initialized_channels;
 static volatile uint8_t  current_idx;
 static volatile uint16_t adc_reference_mv;
+static volatile uint16_t adc_reference_result_mv;
+static volatile bool     adc_reference_result_valid;
 static volatile uint16_t dc_voltage_history[ADC_DC_VOLTAGE_HISTORY_COUNT];
 static volatile uint8_t  dc_voltage_history_write_idx;
 static volatile uint8_t  dc_voltage_history_count;
@@ -230,6 +232,8 @@ void adc_init(void)
     dc_voltage_history_generation   = 0;
     completed_round_count           = 0;
     adc_reference_mv                = ADC_REFERENCE_MV;
+    adc_reference_result_mv         = 0;
+    adc_reference_result_valid      = false;
     adc_power_loss_shutdown         = false;
     adc_buck_voltage_spike_shutdown = false;
     dc_voltage_accumulator          = 0;
@@ -297,8 +301,7 @@ void adc_init(void)
 
 /*
  * Implementation target for the strong vector shim in interrupt_vectors.S.
- * It is intentionally not part of
- * adc.h's public API.
+ * It is intentionally not part of adc.h's public API.
  */
 void ADC1_IRQHandler_Impl(void)
 {
@@ -324,8 +327,7 @@ void ADC1_IRQHandler_Impl(void)
     raw[completed_idx] = sample;
 
     next_idx = (uint8_t)(completed_idx + 1);
-    if (((next_idx >= ADC_INPUT_COUNT) &&
-         ((completed_round_count % ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS) != 0)) ||
+    if (((next_idx >= ADC_INPUT_COUNT) && ((completed_round_count % ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS) != 0)) ||
         (next_idx > ADC_VREFINT_IDX))
     {
         next_idx = 0;
@@ -334,8 +336,7 @@ void ADC1_IRQHandler_Impl(void)
 
     /*
      * Clear the completed conversion before starting the next one. No flags
-     * are cleared after ADSTART, so
-     * a fast next conversion cannot be lost.
+     * are cleared after ADSTART, so a fast next conversion cannot be lost.
      */
     adc_handle.Instance->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
     adc_select_and_start(next_idx);
@@ -400,9 +401,8 @@ uint16_t adc_to_milliamps(uint8_t idx)
         return 0;
     }
 
-    reference_mv = adc_reference_mv;
-    full_scale_ma =
-        ((uint32_t)CURRENT_FULL_SCALE_MA * reference_mv + (ADC_REFERENCE_MV / 2)) / ADC_REFERENCE_MV;
+    reference_mv  = adc_reference_mv;
+    full_scale_ma = ((uint32_t)CURRENT_FULL_SCALE_MA * reference_mv + (ADC_REFERENCE_MV / 2)) / ADC_REFERENCE_MV;
 
     milliamps = (uint32_t)adc_get(idx) * full_scale_ma;
     milliamps += ADC_FULL_SCALE / 2;
@@ -467,8 +467,7 @@ uint8_t adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity)
     }
 
     /* The ISR publishes a generation only after its record and ring metadata
-     * are complete. Retry if publication
-     * overlaps this lock-free copy, keeping
+     * are complete. Retry if publication overlaps this lock-free copy, keeping
      * the priority-0 tip detector unblocked. */
     do
     {
@@ -499,6 +498,17 @@ uint8_t adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity)
 uint32_t adc_get_completed_round_count(void)
 {
     return completed_round_count;
+}
+
+bool adc_get_reference_millivolts(uint16_t* millivolts)
+{
+    if ((millivolts == NULL) || !adc_reference_result_valid)
+    {
+        return false;
+    }
+
+    *millivolts = adc_reference_result_mv;
+    return true;
 }
 
 bool adc_has_power_loss_shutdown(void)
@@ -581,15 +591,13 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     if (idx == DC_SENS_IDX)
     {
         /* Accumulate raw samples so each history entry represents all DC
-         * conversions in its 128-round
-         * interval, independent of the published
+         * conversions in its 128-round interval, independent of the published
          * low-pass filter. */
         dc_voltage_accumulator += sample;
         ++dc_voltage_accumulator_count;
 
         /* This runs in ADC interrupt context after the next conversion has
-         * already started. A sharp collapse
-         * therefore disables RF without
+         * already started. A sharp collapse therefore disables RF without
          * waiting for the foreground power-management task. */
         adc_check_fast_power_loss(sample);
     }
@@ -597,10 +605,8 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
              (sample >= PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS))
     {
         /* Use the raw sample so the normal low-pass filter cannot delay this
-         * terminal protection. The
-         * foreground power-management task owns the
-         * fault display, while the interrupt immediately latches
-         * RF off. */
+         * terminal protection. The foreground power-management task owns the
+         * fault display, while the interrupt immediately latches RF off. */
         adc_buck_voltage_spike_shutdown = true;
         rfgen_emergency_stop();
     }
@@ -632,8 +638,7 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
 static void adc_complete_round(void)
 {
     /* Initialization begins with one temperature conversion so its internal
-     * path can settle. The first wrap
-     * starts, rather than completes, a full
+     * path can settle. The first wrap starts, rather than completes, a full
      * six-channel round. */
     if (!adc_round_started)
     {
@@ -718,16 +723,22 @@ static void adc_update_reference_voltage(uint16_t sample)
 
     if (sample == 0)
     {
+        adc_reference_result_mv    = 0;
+        adc_reference_result_valid = true;
         return;
     }
 
     reference_mv = __LL_ADC_CALC_VREFANALOG_VOLTAGE(sample, LL_ADC_RESOLUTION_10B);
-    if ((reference_mv == 0) || (reference_mv > UINT16_MAX))
+    if (reference_mv > UINT16_MAX)
     {
+        adc_reference_result_mv    = UINT16_MAX;
+        adc_reference_result_valid = true;
         return;
     }
 
-    adc_reference_mv = (uint16_t)reference_mv;
+    adc_reference_result_mv    = (uint16_t)reference_mv;
+    adc_reference_result_valid = true;
+    adc_reference_mv           = (uint16_t)reference_mv;
 }
 
 static void adc_select_and_start(uint8_t idx)
@@ -813,18 +824,18 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
 static void adc_fault(void)
 {
     /*
-    Under the present boot sequence, all these preconditions are controlled:
-
-    adc_handle starts zero-initialized; The ADC clock is explicitly enabled; Calibration runs while the ADC is disabled;
-    Channel configuration happens before conversion starts; adc_init() is called only once;
-
-    Therefore, on healthy hardware and uncorrupted firmware, adc_fault() should effectively never happen. Realistic
-    causes would be:
-
-    Damaged or malfunctioning ADC peripheral; ADC clock-domain failure; Severe undervoltage or clock instability during
-    startup; RAM/register corruption; Calling adc_init() again while conversions are running; A future
-    initialization-order regression;
-    */
+     * Under the present boot sequence, all these preconditions are controlled:
+     * adc_handle starts zero-initialized; the ADC clock is explicitly enabled;
+     * calibration runs while the ADC is disabled; channel configuration happens
+     * before conversion starts; and adc_init() is called only once.
+     *
+     * Therefore, on healthy hardware and uncorrupted firmware, adc_fault()
+     * should effectively never happen. Realistic causes would be a damaged or
+     * malfunctioning ADC peripheral, ADC clock-domain failure, severe
+     * undervoltage or clock instability during startup, RAM/register corruption,
+     * calling adc_init() again while conversions are running, or a future
+     * initialization-order regression.
+     */
     HAL_NVIC_DisableIRQ(ADC1_IRQn);
 
     for (;;)

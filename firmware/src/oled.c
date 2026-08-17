@@ -122,11 +122,8 @@ bool OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c)
                                               OLED_GPIOAndDelayCallback);
     u8g2_SetUserPtr(&oled->graphics, oled);
 
-    /*
-     * U8g2 and STM32 HAL both use the left-shifted form of a 7-bit I2C
-     * address here. The SSD1306 address
-     * 0x3C is therefore passed as 0x78.
-     */
+    /* U8g2 and STM32 HAL both use the left-shifted form of a 7-bit I2C address
+     * here. The SSD1306 address 0x3C is therefore passed as 0x78. */
     u8g2_SetI2CAddress(&oled->graphics, OLED_I2C_ADDRESS_U8G2);
 
     u8g2_InitDisplay(&oled->graphics);
@@ -247,9 +244,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* handle)
     /*
      * STM32F030F4P6 / STM32F042F6P6 TSSOP-20:
      *   PA9  (pin 17) -> I2C1_SCL
-     *   PA10 (pin 18) ->
-
-     * * I2C1_SDA
+     *   PA10 (pin 18) -> I2C1_SDA
      * External or OLED-module pull-up resistors are required.
      */
     gpio.Pin       = GPIO_PIN_9 | GPIO_PIN_10;
@@ -338,12 +333,9 @@ static uint8_t OLED_GPIOAndDelayCallback(u8x8_t* u8x8, uint8_t message, uint8_t 
         HAL_Delay(argument);
         return 1;
 
-    /*
-     * This four-pin OLED module has no reset connection. U8g2's logical
-     * reset toggles are intentionally
-     * ignored; its millisecond delays still
-     * provide the controller's required power-on settling time.
-     */
+    /* This four-pin OLED module has no reset connection. U8g2's logical reset
+     * toggles are intentionally ignored; its millisecond delays still provide
+     * the controller's required power-on settling time. */
     case U8X8_MSG_GPIO_RESET:
         return 1;
 

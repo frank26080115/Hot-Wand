@@ -167,8 +167,7 @@ bool nvm_save(const hotwand_setup_nvm_t* settings)
 bool nvm_factory_reset(void)
 {
     /* Permit factory reset to be used independently of normal startup while
-     * retaining the same reserved-page
-     * layout validation. */
+     * retaining the same reserved-page layout validation. */
     nvm_init();
     if (!nvm_initialized)
     {
@@ -496,11 +495,8 @@ static bool nvm_program_record(uint16_t slot, const hotwand_setup_nvm_t* record)
         return false;
     }
 
-    /*
-     * Program the magic-containing halfword last.  Until that succeeds, a
-     * reset can leave only an
-     * invalid, consumed journal slot.
-     */
+    /* Program the magic-containing halfword last. Until that succeeds, a reset
+     * can leave only an invalid, consumed journal slot. */
     for (offset = 2; offset < NVM_SLOT_SIZE_BYTES; offset += 2)
     {
         halfword = (uint16_t)bytes[offset] | ((uint16_t)bytes[offset + 1] << 8);

@@ -1,9 +1,7 @@
 /*
-Handles button presses
-Detects button press, button release, and long-hold presses
-It uses interrupts and also
- * features debouncing
-*/
+ * Handles button presses and detects press, release, and long-hold events using
+ * interrupts and debouncing.
+ */
 
 // -----------------------------------------------------------------------------
 // Includes
@@ -71,12 +69,8 @@ void btn_init(void)
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    /*
-     * SW1 shorts PA7 to ground.  The schematic has no external pull-up, so
-     * use the MCU pull-up and
-     *
-     * interrupt on both press and release edges.
-     */
+    /* SW1 shorts PA7 to ground. The schematic has no external pull-up, so use
+     * the MCU pull-up and interrupt on both press and release edges. */
     gpio_cfg.Pin   = BTN_PINn;
     gpio_cfg.Mode  = GPIO_MODE_IT_RISING_FALLING;
     gpio_cfg.Pull  = GPIO_PULLUP;
@@ -97,12 +91,8 @@ void btn_init(void)
     btn_consecutive_presses = 0;
     btn_initialized         = true;
 
-    /*
-     * PA7 shares EXTI4_15 with tip detection.  Use the same priority and do
-     * not clear the shared NVIC
-
-     * * pending bit, which could discard a tip edge.
-     */
+    /* PA7 shares EXTI4_15 with tip detection. Use the same priority and do not
+     * clear the shared NVIC pending bit, which could discard a tip edge. */
     HAL_NVIC_SetPriority(EXTI4_15_IRQn, BTN_EXTI_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
@@ -133,16 +123,10 @@ void btn_task(void)
     {
         if (pin_is_down)
         {
-            /*
-             * The falling-edge callback may still be pending while this task
-             * owns the
-
-             * * critical section. Preserve a new press if the high
-             * interval already qualified as a real
-
-             * * release; otherwise cancel
-             * it as bounce.
-             */
+            /* The falling-edge callback may still be pending while this task
+             * owns the critical section. Preserve a new press if the high
+             * interval already qualified as a real release; otherwise cancel
+             * it as bounce. */
             if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
             {
                 btn_accept_release();
@@ -173,12 +157,8 @@ void btn_task(void)
     }
 }
 
-/*
- * The EXTI4_15 handler implementation lives in tipdetect.c because PA5 and
- * PA7 share that vector. Its non-tip
- *
- * dispatch calls this standard HAL hook.
- */
+/* The EXTI4_15 handler implementation lives in tipdetect.c because PA5 and PA7
+ * share that vector. Its non-tip dispatch calls this standard HAL hook. */
 void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 {
     bool     pin_is_down;
@@ -200,13 +180,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
         }
         else if (btn_release_pending)
         {
-            /*
-             * If the high interval was long enough, it was a real release and
-             * this is a
-
-             * * new press.  Otherwise it was contact bounce belonging
-             * to the existing hold.
- */
+            /* If the high interval was long enough, it was a real release and
+             * this is a new press. Otherwise it was contact bounce belonging
+             * to the existing hold. */
             if ((uint32_t)(now - btn_release_since_ms) >= BTN_DEBOUNCE_MS)
             {
                 btn_accept_release();

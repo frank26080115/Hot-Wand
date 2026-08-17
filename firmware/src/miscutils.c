@@ -64,11 +64,8 @@ char* int_to_str(int value, char* str, int base, size_t* length)
     magnitude = (unsigned int)value;
     if (negative)
     {
-        /*
-         * Unsigned arithmetic is intentional: it obtains the magnitude of
-         * INT_MIN without overflowing a
-         * signed int.
-         */
+        /* Unsigned arithmetic is intentional: it obtains the magnitude of
+         * INT_MIN without overflowing a signed int. */
         magnitude = 0 - magnitude;
     }
 
@@ -199,11 +196,8 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
         }
     }
 
-    /*
-     * UINT32_MAX mill-units has a whole part of only 4294967, so this cast
-     * remains within the range accepted by
-     * int_to_str().
-     */
+    /* UINT32_MAX mill-units has a whole part of only 4294967, so this cast
+     * remains within the range accepted by int_to_str(). */
     int_to_str((int)whole, str, 10, &whole_length);
 
     if (decimal_places == 0)

@@ -43,8 +43,8 @@
 #define ADC_REFERENCE_MV      3300UL
 #define ADC_FULL_SCALE        1023UL
 #define VOLTAGE_DIVIDER_SCALE 11UL
-#define ADC_VOLTAGE_TO_COUNTS(millivolts)                                                        \
-    (((millivolts) * ADC_FULL_SCALE + (ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE) - 1UL) /        \
+#define ADC_VOLTAGE_TO_COUNTS(millivolts)                                                                              \
+    (((millivolts) * ADC_FULL_SCALE + (ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE) - 1UL) /                              \
      (ADC_REFERENCE_MV * VOLTAGE_DIVIDER_SCALE))
 
 #ifndef ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS
@@ -95,10 +95,8 @@
 #endif
 
 /* Power-loss protection intentionally compares raw 10-bit DC-input ADC
- * samples. With the fixed 22K/2K2 divider
- * and 3.3 V ADC reference, one count
+ * samples. With the fixed 22K/2K2 divider and 3.3 V ADC reference, one count
  * represents about 35.5 mV at DC-IN. These defaults approximate the former
- *
  * 1000 mV fast, 300 mV sustained, and 75 mV segment thresholds. */
 #ifndef PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS
 #define PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS 28

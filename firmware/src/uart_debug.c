@@ -1,7 +1,8 @@
 /*
-The UART is only used to debug the device, and it is not required for normal operation.
-The UART debug output is disabled by default, and only activated if the button is held down during power-on.
-*/
+ * The UART is used only to debug the device and is not required for normal
+ * operation. Debug output is disabled by default and is activated only when
+ * the button is held during power-on.
+ */
 
 // -----------------------------------------------------------------------------
 // Includes
@@ -75,6 +76,7 @@ void UART_debug_task(void)
 {
     char     timestamp[12];
     char     value[UART_DEBUG_VALUE_CAPACITY];
+    uint16_t reference_millivolts;
     uint32_t now;
 
     if (!uart_allowed)
@@ -100,6 +102,18 @@ void UART_debug_task(void)
     millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), value, 1, NULL);
     UART_Write(value);
     UART_Write("V ");
+
+    UART_Write("VREFINT=");
+    if (adc_get_reference_millivolts(&reference_millivolts))
+    {
+        millivolts_to_str(reference_millivolts, value, 2, NULL);
+        UART_Write(value);
+        UART_Write("V ");
+    }
+    else
+    {
+        UART_Write("NA ");
+    }
 
     milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), value, 2, NULL);
     UART_Write(value);

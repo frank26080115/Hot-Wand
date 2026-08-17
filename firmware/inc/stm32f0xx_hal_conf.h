@@ -1,52 +1,37 @@
 /**
-  ******************************************************************************
-  * @file    stm32f0xx_hal_conf.h
-
- * * @brief   HAL configuration file.
-  ******************************************************************************
-
- * * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
-  *
-  * Redistribution and
- * use in source and binary forms, with or without modification,
-  * are permitted provided that the following
- * conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this
- * list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above
- * copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or
- * other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its
- * contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific
- * prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    stm32f0xx_hal_conf.h
+ * @brief   HAL configuration file.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; COPYRIGHT(c) 2018 STMicroelectronics</center></h2>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *   1. Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *   2. Redistributions in binary form must reproduce the above copyright
+ *      notice, this list of conditions and the following disclaimer in the
+ *      documentation and/or other materials provided with the distribution.
+ *   3. Neither the name of STMicroelectronics nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F0xx_HAL_CONF_H
@@ -100,39 +85,32 @@ extern "C"
 
 /* ########################## HSE/HSI Values adaptation ##################### */
 /**
- * @brief Adjust the value of External High Speed oscillator (HSE) used in your application.
- *        This value
- * is used by the RCC HAL module to compute the system frequency
- *        (when HSE is used as system clock source,
- * directly or through the PLL).
+ * @brief Adjust the External High Speed oscillator (HSE) value used by the
+ *        application. The RCC HAL module uses it to compute the system
+ *        frequency when HSE is used directly or through the PLL.
  */
 #if !defined(HSE_VALUE)
 #define HSE_VALUE ((uint32_t)27120000) /*!< Value of the External oscillator in Hz */
 #endif                                 /* HSE_VALUE */
 
 /**
-  * @brief In the following line adjust the External High Speed oscillator (HSE) Startup
-  *        Timeout value
-
+ * @brief External High Speed oscillator (HSE) startup timeout value.
  */
 #if !defined(HSE_STARTUP_TIMEOUT)
 #define HSE_STARTUP_TIMEOUT ((uint32_t)100) /*!< Time out for HSE start up, in ms */
 #endif                                      /* HSE_STARTUP_TIMEOUT */
 
 /**
- * @brief Internal High Speed oscillator (HSI) value.
- *        This value is used by the RCC HAL module to
- * compute the system frequency
- *        (when HSI is used as system clock source, directly or through the PLL).
+ * @brief Internal High Speed oscillator (HSI) value. The RCC HAL module uses
+ *        it to compute the system frequency when HSI is used directly or
+ *        through the PLL.
  */
 #if !defined(HSI_VALUE)
 #define HSI_VALUE ((uint32_t)8000000) /*!< Value of the Internal oscillator in Hz*/
 #endif                                /* HSI_VALUE */
 
 /**
-  * @brief In the following line adjust the Internal High Speed oscillator (HSI) Startup
-  *        Timeout value
-
+ * @brief Internal High Speed oscillator (HSI) startup timeout value.
  */
 #if !defined(HSI_STARTUP_TIMEOUT)
 #define HSI_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for HSI start up */
@@ -142,35 +120,22 @@ extern "C"
  * @brief Internal High Speed oscillator for ADC (HSI14) value.
  */
 #if !defined(HSI14_VALUE)
-#define HSI14_VALUE                                                                                                    \
-    ((uint32_t)14000000) /*!< Value of the Internal High Speed oscillator for ADC in Hz.                               \
- The real value may vary                                                                                               \
-                            depending on the variations                                                                \
-                                             in voltage and                                                            \
-                            temperature.  */
-#endif                   /* HSI14_VALUE */
+#define HSI14_VALUE ((uint32_t)14000000) /*!< Nominal ADC oscillator frequency; varies with voltage and temperature. */
+#endif                                  /* HSI14_VALUE */
 
 /**
  * @brief Internal High Speed oscillator for USB (HSI48) value.
  */
 #if !defined(HSI48_VALUE)
-#define HSI48_VALUE                                                                                                    \
-    ((uint32_t)48000000) /*!< Value of the Internal High Speed oscillator for USB in Hz.                               \
- The real value may vary                                                                                               \
-                            depending on the variations                                                                \
-                                             in voltage and                                                            \
-                            temperature.  */
-#endif                   /* HSI48_VALUE */
+#define HSI48_VALUE ((uint32_t)48000000) /*!< Nominal USB oscillator frequency; varies with voltage and temperature. */
+#endif                                  /* HSI48_VALUE */
 
 /**
  * @brief Internal Low Speed oscillator (LSI) value.
  */
 #if !defined(LSI_VALUE)
-#define LSI_VALUE ((uint32_t)40000)
-#endif /* LSI_VALUE */ /*!< Value of the Internal Low Speed oscillator in Hz                                           \
- The real value may vary depending on the                                                                              \
-                          variations                                                                                   \
-                                             in voltage and temperature.  */
+#define LSI_VALUE ((uint32_t)40000) /*!< Nominal LSI frequency; varies with voltage and temperature. */
+#endif                              /* LSI_VALUE */
 /**
  * @brief External Low Speed oscillator (LSI) value.
  */
@@ -182,9 +147,8 @@ extern "C"
 #define LSE_STARTUP_TIMEOUT ((uint32_t)5000) /*!< Time out for LSE start up, in ms */
 #endif                                       /* LSE_STARTUP_TIMEOUT */
 
-/* Tip: To avoid modifying this file each time you need to use different HSE,
-   ===  you can define the HSE value in
- * your toolchain compiler preprocessor. */
+/* To use a different HSE without modifying this file, define HSE_VALUE in the
+ * toolchain preprocessor settings. */
 
 /* ########################### System Configuration ######################### */
 /**
@@ -200,7 +164,7 @@ extern "C"
 #define DATA_CACHE_ENABLE        0
 /* ########################## Assert Selection ############################## */
 /**
- * @brief Uncomment the line below to expanse the "assert_param" macro in the
+ * @brief Uncomment the line below to expand the "assert_param" macro in the
  *        HAL drivers code
  */
 /* #define USE_FULL_ASSERT   1 */
@@ -327,13 +291,9 @@ extern "C"
 /* Exported macro ------------------------------------------------------------*/
 #ifdef USE_FULL_ASSERT
 /**
- * @brief  The assert_param macro is used for function's parameters check.
- * @param  expr: If expr is false,
- * it calls assert_failed function
- *         which reports the name of the source file and the source
- * line
- * number of the call that failed.
- *         If expr is true, it returns no value.
+ * @brief The assert_param macro checks function parameters.
+ * @param expr If false, calls assert_failed() with the source filename and
+ *             line number. If true, returns no value.
  * @retval None
  */
 #define assert_param(expr) ((expr) ? (void)0 : assert_failed((uint8_t*)__FILE__, __LINE__))

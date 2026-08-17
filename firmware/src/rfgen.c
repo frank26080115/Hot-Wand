@@ -106,9 +106,7 @@ void rfgen_start(void)
     uint32_t         interrupt_state;
 
     /* The tip detector and emergency-stop latch independently inhibit RF.
-     * Recheck both at the final
-     *
-     * hardware-enable boundary below. */
+     * Recheck both at the final hardware-enable boundary below. */
     if (rfgen_has_fault() || !rfgen_tip_allows_start())
     {
         rfgen_stop();
@@ -188,9 +186,8 @@ void rfgen_start(void)
     SET_BIT(TIM1->CR1, TIM_CR1_CEN);
     rfgen_active = true;
 
-    /* PRIMASK blocks the tip interrupt but cannot block CSS's NMI.  Catch a
-     * clock fault that arrived during the
-     * final timer-enable sequence. */
+    /* PRIMASK blocks the tip interrupt but cannot block CSS's NMI. Catch a
+     * clock fault that arrived during the final timer-enable sequence. */
     if (rfgen_has_fault())
     {
         rfgen_stop();
@@ -222,10 +219,9 @@ void rfgen_stop(void)
 
 void rfgen_emergency_stop(void)
 {
-    /* Disable the timer output before doing the slower GPIO ownership
-     * handoff. The latch is checked at both
-     * RF-start gates, so an interrupted
-     * or later start cannot undo this safety shutdown. */
+    /* Disable the timer output before doing the slower GPIO ownership handoff.
+     * The latch is checked at both RF-start gates, so an interrupted or later
+     * start cannot undo this safety shutdown. */
     rfgen_emergency_stop_latched = true;
     rfgen_active                 = false;
 
@@ -266,32 +262,22 @@ bool rfgen_tip_allows_start(void)
 {
     /*
      * TIM_DIER_UIE is the update-interrupt-enable bit, not the pending flag.
-     * tipdetect_arm_timer() sets
-     * it together with TIM_CR1_CEN after either
-     * edge on TIP_DET.  While it is set, TIM17 is timing the 300 us
-     * debounce
-     * interval, or its update interrupt is pending but has not run yet.
-     * TIM17_IRQHandler_Impl()
-     * clears UIE and CEN before sampling the settled
+     * tipdetect_arm_timer() sets it together with TIM_CR1_CEN after either edge
+     * on TIP_DET. While it is set, TIM17 is timing the 300 us debounce interval,
+     * or its update interrupt is pending but has not run yet.
+     * TIM17_IRQHandler_Impl() clears UIE and CEN before sampling the settled
      * pin and unmasking the next TIP_DET edge.
      *
-     *
      * Refusing to start during that interval prevents RF from being enabled
-     * while tip presence is uncertain.  It
-     * also prevents rfgen_clock_init()
+     * while tip presence is uncertain. It also prevents rfgen_clock_init()
      * from changing the timer clock partway through the qualification delay.
-
-     * * The main loop retries after UIE clears, so the normal lockout lasts only
-     * the debounce interval plus any
-     * interrupt latency.
+     * The main loop retries after UIE clears, so the normal lockout lasts only
+     * the debounce interval plus any interrupt latency.
      *
      * This is deliberately fail-closed: if TIM17 stops counting, its IRQ is
-     *
      * disabled, or its handler never runs while UIE remains set, RF restart is
-     * blocked indefinitely.  The
-     * current timer ISR and tip-detect failure path
-     * both clear UIE and CEN together; future changes must
-     * preserve that
+     * blocked indefinitely. The current timer ISR and tip-detect failure path
+     * both clear UIE and CEN together; future changes must preserve that
      * invariant or add an explicit timeout/recovery fault.
      */
     if (tipdetect_has_triggered() || ((TIM17->DIER & TIM_DIER_UIE) != 0))
@@ -328,8 +314,7 @@ static void rfgen_fault(void)
 
 /*
  * Implementation target for the strong vector shim in interrupt_vectors.S.
- * It is intentionally not part of the
- * public rfgen interface.
+ * It is intentionally not part of the public rfgen interface.
  */
 void NMI_Handler_Impl(void)
 {

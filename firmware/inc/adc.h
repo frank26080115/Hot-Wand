@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 /* One averaged DC-input record is published after this many complete ADC
- * round-robin passes.  At the configured ADC
- * cadence this is about 10 ms. */
+ * round-robin passes.  At the configured ADC cadence this is about 10 ms. */
 #define ADC_DC_VOLTAGE_HISTORY_COUNT            64
 #define ADC_DC_VOLTAGE_HISTORY_ROUNDS_PER_ENTRY 128
 #define ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS      10
@@ -26,11 +25,10 @@ uint16_t adc_to_millivolts(uint8_t idx);
 uint16_t adc_to_milliamps(uint8_t idx);
 uint16_t adc_to_celcius(uint8_t idx);
 uint32_t adc_get_milliwatts(void);
+bool     adc_get_reference_millivolts(uint16_t* millivolts);
 
 /* Copies newest-first averaged raw DC-input ADC records.  The ADC interrupt
- * may keep writing while this takes a
- *
- * coherent snapshot. */
+ * may keep writing while this takes a coherent snapshot. */
 uint8_t  adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity);
 uint32_t adc_get_completed_round_count(void);
 bool     adc_has_power_loss_shutdown(void);

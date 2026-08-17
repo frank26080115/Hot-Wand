@@ -3,12 +3,9 @@
 #include "hotwand.h"
 #include <stdbool.h>
 
-/*
- * Time to wait after a TIP_DET edge before sampling the new pin level.
- * The legacy PSC = 0, ARR = 8135 setup
- * at 27.12 MHz was exactly 300 us.
- * Override this with a compiler definition if a different debounce is needed.
- */
+/* Time to wait after a TIP_DET edge before sampling the new pin level. The
+ * legacy PSC = 0, ARR = 8135 setup at 27.12 MHz was exactly 300 us. Override
+ * this with a compiler definition if a different debounce is needed. */
 #ifndef TIPDETECT_DEBOUNCE_US
 #define TIPDETECT_DEBOUNCE_US 300
 #endif

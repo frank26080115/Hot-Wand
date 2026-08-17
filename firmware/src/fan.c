@@ -139,8 +139,7 @@ void ntc_task(void)
 
     ntc_check_complete = true;
     /* The ADC temperature conversion returns zero for an unavailable or
-     * disconnected external NTC. By this point
-     * every ADC input has had ample
+     * disconnected external NTC. By this point every ADC input has had ample
      * time to initialize. */
     if ((adc_to_celcius(THERM_1_IDX) == 0) || (adc_to_celcius(THERM_2_IDX) == 0))
     {
@@ -233,8 +232,7 @@ static bool fan_should_run(void)
     }
 
     /* Automatic modes turn on above their selected threshold, then remain on
-     * until every monitored temperature
-     * falls by the configured hysteresis. */
+     * until every monitored temperature falls by the configured hysteresis. */
     temperature_limit_c = fan_running ? (turn_on_temperature_c - TEMPERATURE_HYSTERYSIS_C) : turn_on_temperature_c;
     return fan_any_temperature_exceeds(temperature_limit_c);
 }

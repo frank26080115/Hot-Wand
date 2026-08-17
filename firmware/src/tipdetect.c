@@ -101,11 +101,8 @@ void tipdetect_init(void)
     __HAL_TIM_DISABLE_IT(&tipdetect_timer, TIM_IT_UPDATE);
     __HAL_TIM_CLEAR_FLAG(&tipdetect_timer, TIM_FLAG_UPDATE);
 
-    /*
-     * The detector has an external pull-up.  A high level means that the tip
-     * is present; a low level
-     * means that it has disconnected.
-     */
+    /* The detector has an external pull-up. A high level means that the tip is
+     * present; a low level means that it has disconnected. */
     gpio_cfg.Pin   = TIP_DET_PINn;
     gpio_cfg.Mode  = GPIO_MODE_IT_RISING_FALLING;
     gpio_cfg.Pull  = GPIO_NOPULL;
@@ -132,13 +129,9 @@ void tipdetect_init(void)
 
 void tipdetect_task(void)
 {
-    /*
-     * Edge qualification and fault latching are interrupt-driven. This hook
-     * is retained so tip detection
-     * fits the main-loop task interface. The
-     * explicit latched-reset API replaces the legacy automatic RF
-     * restart.
-     */
+    /* Edge qualification and fault latching are interrupt-driven. This hook is
+     * retained so tip detection fits the main-loop task interface. The explicit
+     * latched-reset API replaces the legacy automatic RF restart. */
 }
 
 void tipdetect_reset(void)
@@ -153,12 +146,9 @@ void tipdetect_reset(void)
     interrupt_state = __get_PRIMASK();
     __disable_irq();
 
-    /*
-     * Never clear the latch while the last debounced state or the current
-     * electrical state says that the
-     * tip is absent, or while an edge is still
-     * being qualified by TIM17.
-     */
+    /* Never clear the latch while the last debounced state or the current
+     * electrical state says that the tip is absent, or while an edge is still
+     * being qualified by TIM17. */
     if (((TIM17->DIER & TIM_DIER_UIE) == 0) && tipdetect_tip_present &&
         (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET))
     {
@@ -194,12 +184,9 @@ void EXTI4_15_IRQHandler_Impl(void)
         }
     }
 
-    /*
-     * EXTI4_15 is shared.  Route any other enabled line through the standard
-     * HAL callback so a future
-     * button or peripheral cannot cause an
-     * unhandled-interrupt storm.
-     */
+    /* EXTI4_15 is shared. Route any other enabled line through the standard HAL
+     * callback so a future button or peripheral cannot cause an
+     * unhandled-interrupt storm. */
     for (pin = GPIO_PIN_4; pin <= GPIO_PIN_15; pin <<= 1)
     {
         if ((pending & pin) != 0)
@@ -222,13 +209,9 @@ void TIM17_IRQHandler_Impl(void)
     CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
     CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
 
-    /*
-     * Discard edges accumulated during the debounce window, then sample.
-     * Any edge racing with or
-     * following the sample remains pending and starts
-     * another complete debounce interval when EXTI is unmasked.
-
-     */
+    /* Discard edges accumulated during the debounce window, then sample. Any
+     * edge racing with or following the sample remains pending and starts
+     * another complete debounce interval when EXTI is unmasked. */
     __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
     tip_present           = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
     tipdetect_tip_present = tip_present;

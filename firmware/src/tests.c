@@ -72,9 +72,8 @@ static void      test_battery_guess_write_row(uint8_t                battery_mod
 // -----------------------------------------------------------------------------
 
 /*
- * PA14 is shared by UART TX and SWCLK.  Each UART test leaves UART disabled
- * until a physical button action
- * explicitly opts in and sacrifices SWD.
+ * PA14 is shared by UART TX and SWCLK. Each UART test leaves UART disabled
+ * until a physical button action explicitly opts in and sacrifices SWD.
  */
 void test_run(void)
 {
@@ -251,8 +250,7 @@ void test_rfgen(void)
         if (button_down && !enabled)
         {
             /* The first RF-enable press permanently opts in to UART for the
-             * remainder of this
-             * non-returning test. */
+             * remainder of this non-returning test. */
             UART_SetAllowed(true);
             rfgen_start();
             enabled = true;
@@ -338,9 +336,8 @@ void test_nvm_simple(void)
             UART_SetAllowed(true);
             UART_Write("\r\nNVM SIMPLE TEST\r\n");
 
-            /* nvm_save() deliberately skips unchanged settings.  Advance
-             * past a matching existing record
-             * so every press programs flash. */
+            /* nvm_save() deliberately skips unchanged settings. Advance past a
+             * matching existing record so every press programs flash. */
             test_nvm_make_settings(sequence, &next);
             if (nvm_read(&current) && test_nvm_settings_equal(&current, &next))
             {
@@ -639,8 +636,7 @@ static bool test_nvm_erase_is_expected(void)
         else if (erased_slot_seen)
         {
             /* This is the interrupted-journal pattern nvm_scan_page() marks
-             * for erasure before the next
-             * save. */
+             * for erasure before the next save. */
             return true;
         }
     }
