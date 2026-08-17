@@ -12,8 +12,6 @@ SergeyMax's efforts stemmed from tearing down an actual Metcal soldering station
 
 (for personal reasons, I wanted to build a 13.56 MHz version, hence why the extra effort, these reasons may not be totally right in hindsight but that's what I did lol)
 
-SergeyMax's schematic is a bit hard to decode as it is drawn to fit everything onto one sheet of paper and also does not use net flags. Drawing it out again into logical blocks help.
-
 In SergeyMax's design, there are the major sections:
 
  * AC power input, which provides the DC input to the main buck converter and also has a tapped 10V-ish for the gate driver
@@ -27,19 +25,29 @@ In SergeyMax's design, there are the major sections:
  * linear regulators for the microcontroller
  * microcontroller and LCD screen
 
+[![SergeyMax schematic](imgs/sergeymax_schematic.png)](https://habrastorage.org/webt/re/41/zc/re41zcn7fyp0lb9axbbr8i0vbn0.png)
+
+SergeyMax's schematic is a bit hard to decode as it is drawn to fit everything onto one sheet of paper and also does not use net flags. Drawing it out again into logical blocks help.
+
+[![Hot Wand schematic preview](imgs/sch_preview_thumb.jpg)](../electrical/hot-wand.sch_preview.pdf)
+
 ### Input Power
 
-I can blow away the AC power input section and replace it with a DC power input quite easily. I don't want to play with wall AC power and would rather delegate that to off-the-shelf USB-PD chargers and power banks.
+I can blow away the AC power input section and replace it with a DC power input quite easily (most other builders of his design also removed his AC power input, because it's designed for Russia's 220V AC). I don't want to play with wall AC power and would rather delegate that to off-the-shelf USB-PD chargers and power banks.
 
 The Radio Thermal design does not use a buck converter so the RF power input is the unconditioned DC power input. SergeyMax's design uses a buck converter, his design is wall powered so it's gotta have something to take AC power from a transformer and turn it into steady DC. You can't just rectify it and pray. The output from a transformer, even if rectified, is unregulated, with substantial ripple and a voltage that varies with load because of the transformer's finite source impedance.
 
-I was debating whether or not to keep the buck converter in my own design, and I choose to keep it.
+The buck converter in SergeyMax's design implements a feedback network with an adjustable pot and also has a feedback from the current transformer. The adjustment pot sets the "typical" output voltage of the buck converter, while the microcontroller and the current transformer are able to influence the output voltage further.
 
-The buck converter in SergeyMax's design implements a feedback network with an adjustable pot and also has a feedback from the current transformer. The adjustment pot is simply for convenience, for lowering the power for testing.
+For my own design, I really wanted to have adjustable power levels. The best way to accomplish this is to have a microcontroller interface with the feedback signal of the buck converter. So I kept it in my design (I was debating whether I can simplify it away).
 
-For my own design, I really wanted to have adjustable power levels. The best way to accomplish this is to have a microcontroller interface with the feedback signal of the buck converter. So I kept it in my design.
+The feedback from the current transformer is kind of a power saving feature for added efficiency. It is a power factor detector that tells the buck converter to chill out if the iron tip is already hot. I have a [page written about it here](design-study-current-transformer.md).
 
-The feedback from the current transformer is kind of a power saving feature for added efficiency. It is a power factor detector that tells the buck converter to chill out if the iron tip is already hot. I have a [page written about it here](design-study-current-transformer.md)
+<a href="design-study-current-transformer.md">
+  <img src="imgs/current_transformer_plots/animation.apng"
+       alt="Current-transformer phase detector animation"
+       width="360">
+</a>
 
 You might have noticed that the buck converter circuit has a second LC stage before the current sensor and RF amplifier. This is simply a filter stage to isolate the buck converter's domain from the RF domain, the first is switching at 450 kHz and the latter is switching at 13.56 Mhz and SergeyMax picked 450 kHz and added the filter stage so these two domains don't interact or beat with each other.
 
@@ -51,13 +59,25 @@ SergeyMax's design has two big MOSFETs instead of just one. One of them is the m
 
 The dilemma is that, the RF amplifier needs a big beefy MOSFET that can survive high currents and high voltages (the reverse engineered unit had a MOSFET rated for 500V), but big silicon means big gates, which means big gate capacitance.
 
+This simulation below is representing an ordinary push-pull driver at 12V, driving into a 800 pF capacitor pretending to be a MOSFET gate:
+
 ![](imgs/gate_amp_without.png)
 
 At 13.56 MHz, this becomes upwards of 11W of heat being wasted.
 
 The solution is to use a first stage with a MOSFET chosen to have a very very small gate capacitance, and it can be small because this amplifier only needs to generate about 12V with almost no real current. This MOSFET, along with the inductors and capacitors around it, form another smaller class E amplifier with a resonant tank. This resonant tank is resonanting at 13.56 MHz, bouncing the charges in and out of the gate of the much bigger MOSFET. The charges are being recycled, instead of going in a DC circuit from positive to negative.
 
-This is not easy to get right, the instructions from SergeyMax basically says... make a coreless coil with wire, 10 loops of wire about 6mm in diameter and 10mm wide, you need to stretch or compress this until you tune the resonance correctly.
+There is an inductor in the design to tune the resonance of this circuit. The instructions from SergeyMax basically says: make a coreless coil with wire, 10 loops of wire about 5mm in diameter and 10mm wide, you need to stretch or compress this until you tune the resonance correctly.
+
+| Coil Width | Napkin Math Inductance |
+|-----------:|:-----------------------|
+| 5 mm       | 375 nH                 |
+| 10 mm      | 224 nH                 |
+| 15 mm      | 160 nH                 |
+
+You might want to start off with 15 mm wide and then compress it until it is tuned, because it is harder to stretch it when it is on a PCB.
+
+![](imgs/metcal_aircore_inductor.png)
 
 I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 100mA at 12V, so 1.2W vs 11W, not bad?
 
