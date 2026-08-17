@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.1" altunitdist="mm" altunit="mm"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -6088,12 +6088,12 @@ metal electrode face (MELF)</description>
 <rectangle x1="-0.8636" y1="-0.7874" x2="-0.254" y2="0.7874" layer="21"/>
 </package>
 <package name="XFORMER-K16X8X6-1:14:14">
-<pad name="P1" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="P2" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="3" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="4" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="1" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="2" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="P2" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
+<pad name="P1" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
+<pad name="S2A" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S1B" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S1A" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S2B" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
 <wire x1="-9" y1="3" x2="-9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="3" x2="9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="-3" x2="7" y2="-3" width="0.127" layer="21"/>
@@ -18229,8 +18229,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="-2.54" y1="0" x2="-2.54" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="0" y1="0" x2="0" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="-7.62" y1="0" x2="-7.62" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="1" x="-7.62" y="-2.54" visible="pad" length="point"/>
-<pin name="2" x="10.16" y="-2.54" visible="pad" length="point"/>
+<pin name="1" x="-7.62" y="-2.54" visible="off" length="point"/>
+<pin name="2" x="10.16" y="-2.54" visible="off" length="point"/>
 <wire x1="2.54" y1="0" x2="5.08" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="5.08" y1="0" x2="7.62" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="7.62" y1="0" x2="10.16" y2="0" width="0.1778" layer="94" curve="-180"/>
@@ -18238,10 +18238,13 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="7.62" y1="0" x2="7.62" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="10.16" y1="0" x2="10.16" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="2.54" y1="0" x2="2.54" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="3" x="2.54" y="-2.54" visible="pad" length="point"/>
-<pin name="4" x="0" y="-2.54" visible="pad" length="point"/>
+<pin name="3" x="2.54" y="-2.54" visible="off" length="point"/>
+<pin name="4" x="0" y="-2.54" visible="off" length="point"/>
 <text x="-7.62" y="10.16" size="1.778" layer="95" font="fixed">&gt;NAME</text>
 <text x="-7.62" y="12.7" size="1.778" layer="96" font="fixed">&gt;VALUE</text>
+<circle x="-2.286" y="6.35" radius="0.508" width="0" layer="94"/>
+<circle x="0.254" y="1.524" radius="0.508" width="0" layer="94"/>
+<circle x="10.414" y="1.524" radius="0.508" width="0" layer="94"/>
 </symbol>
 <symbol name="+12V">
 <wire x1="1.27" y1="-1.905" x2="0" y2="0" width="0.254" layer="94"/>
@@ -30383,12 +30386,12 @@ Standard 150mA LDO voltage regulator in SOT-23 layout. Micrel part MIC5205. BP (
 <devices>
 <device name="" package="XFORMER-K16X8X6-1:14:14">
 <connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-<connect gate="G$1" pin="3" pad="3"/>
-<connect gate="G$1" pin="4" pad="4"/>
-<connect gate="G$1" pin="P1" pad="P1"/>
-<connect gate="G$1" pin="P2" pad="P2"/>
+<connect gate="G$1" pin="1" pad="S1A"/>
+<connect gate="G$1" pin="2" pad="S2B"/>
+<connect gate="G$1" pin="3" pad="S2A"/>
+<connect gate="G$1" pin="4" pad="S1B"/>
+<connect gate="G$1" pin="P1" pad="P2"/>
+<connect gate="G$1" pin="P2" pad="P1"/>
 </connects>
 <technologies>
 <technology name=""/>

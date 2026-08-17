@@ -508,12 +508,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <pad name="2" x="2.54" y="0" drill="1.1" diameter="1.9"/>
 </package>
 <package name="XFORMER-K16X8X6-1:14:14">
-<pad name="P1" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="P2" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
-<pad name="3" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="4" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="1" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
-<pad name="2" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="P2" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
+<pad name="P1" x="0" y="-3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
+<pad name="S2A" x="-7.6" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S1B" x="-5" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S1A" x="-5" y="4" drill="1" diameter="1.9304" shape="octagon"/>
+<pad name="S2B" x="-7.6" y="-4" drill="1" diameter="1.9304" shape="octagon"/>
 <wire x1="-9" y1="3" x2="-9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="3" x2="9" y2="-3" width="0.127" layer="21"/>
 <wire x1="9" y1="-3" x2="7" y2="-3" width="0.127" layer="21"/>
@@ -10277,8 +10277,8 @@ Max Component Height - 25.57mm</description>
 <wire x1="-2.54" y1="0" x2="-2.54" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="0" y1="0" x2="0" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="-7.62" y1="0" x2="-7.62" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="1" x="-7.62" y="-2.54" visible="pad" length="point"/>
-<pin name="2" x="10.16" y="-2.54" visible="pad" length="point"/>
+<pin name="1" x="-7.62" y="-2.54" visible="off" length="point"/>
+<pin name="2" x="10.16" y="-2.54" visible="off" length="point"/>
 <wire x1="2.54" y1="0" x2="5.08" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="5.08" y1="0" x2="7.62" y2="0" width="0.1778" layer="94" curve="-180"/>
 <wire x1="7.62" y1="0" x2="10.16" y2="0" width="0.1778" layer="94" curve="-180"/>
@@ -10286,10 +10286,13 @@ Max Component Height - 25.57mm</description>
 <wire x1="7.62" y1="0" x2="7.62" y2="-1.27" width="0.1778" layer="94"/>
 <wire x1="10.16" y1="0" x2="10.16" y2="-2.54" width="0.1778" layer="94"/>
 <wire x1="2.54" y1="0" x2="2.54" y2="-2.54" width="0.1778" layer="94"/>
-<pin name="3" x="2.54" y="-2.54" visible="pad" length="point"/>
-<pin name="4" x="0" y="-2.54" visible="pad" length="point"/>
+<pin name="3" x="2.54" y="-2.54" visible="off" length="point"/>
+<pin name="4" x="0" y="-2.54" visible="off" length="point"/>
 <text x="-7.62" y="10.16" size="1.778" layer="95" font="fixed">&gt;NAME</text>
 <text x="-7.62" y="12.7" size="1.778" layer="96" font="fixed">&gt;VALUE</text>
+<circle x="-2.286" y="6.35" radius="0.508" width="0" layer="94"/>
+<circle x="0.254" y="1.524" radius="0.508" width="0" layer="94"/>
+<circle x="10.414" y="1.524" radius="0.508" width="0" layer="94"/>
 </symbol>
 <symbol name="CAP">
 <wire x1="0" y1="2.54" x2="0" y2="2.032" width="0.1524" layer="94"/>
@@ -11118,12 +11121,12 @@ Standard 2-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <devices>
 <device name="" package="XFORMER-K16X8X6-1:14:14">
 <connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-<connect gate="G$1" pin="3" pad="3"/>
-<connect gate="G$1" pin="4" pad="4"/>
-<connect gate="G$1" pin="P1" pad="P1"/>
-<connect gate="G$1" pin="P2" pad="P2"/>
+<connect gate="G$1" pin="1" pad="S1A"/>
+<connect gate="G$1" pin="2" pad="S2B"/>
+<connect gate="G$1" pin="3" pad="S2A"/>
+<connect gate="G$1" pin="4" pad="S1B"/>
+<connect gate="G$1" pin="P1" pad="P2"/>
+<connect gate="G$1" pin="P2" pad="P1"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -23058,10 +23061,9 @@ x16.4 RL gain
 <text x="63.5" y="-116.84" size="5.08" layer="97" align="top-left">Main RF Power Amplifier
 Class E</text>
 <text x="299.72" y="-137.16" size="1.27" layer="97">current transformer</text>
-<text x="307.34" y="-187.96" size="1.27" layer="97" align="top-left">the current flowing into
-the soldering iron cartridge
-influences the buck converter
-output voltage</text>
+<text x="309.88" y="-187.96" size="1.27" layer="97" align="top-left">power factor meter
+influences buck-
+converter voltage</text>
 <text x="254" y="-226.06" size="5.08" layer="97">Tip Detection</text>
 <text x="35.56" y="-414.02" size="5.08" layer="97">Secondary Power
 Buck Converters</text>
@@ -23079,7 +23081,6 @@ used to lower output voltage</text>
 16 AWG/1.25mm</text>
 <text x="294.64" y="-134.62" size="1.016" layer="97">K16x8x6
 1:14:14
-(wind as 1T:28T with center tap)
 22 AWG/0.6mm</text>
 <text x="53.34" y="-134.62" size="1.27" layer="97" rot="R90">K16x8x6
 15 turns
