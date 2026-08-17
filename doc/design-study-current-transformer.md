@@ -59,6 +59,18 @@ The builder told me that he didn't get the current transformer to work with any 
 
 The rule of thumb is that for a transformer application, a different AL doesn't mean I have to change the winding ratios, it's a ratio after all.
 
+The toroid core I picked is a Fair-Rite 5961004901. The material is "61", the AL is supposedly higher than the one SergeyMax used, and the datasheet claims that it is a "high frequency NiZn ferrite material developed for a range of inductive applications up to 25 MHz".
+
+I planned out the winding in 3D with consideration for my transformer PCB footprint. All wires are to be 22 AWG (SergeyMax used 0.6mm)
+
+![](imgs/current_transformer_winding_3d.png)
+
+![](imgs/current_transformer_winding_3d_nocore.png)
+
+It's possible and even beneficial to make this winding in a bifilar fashion. (it is a pain to 3D model in such a way)
+
+Also, it's hard to get the directions wrong, because the directions for the current flow (the primary current must be in the opposite direction of the secondaries) are actually dictated by the PCB design, not the winding direction. You can wind it clockwise or counterclockwise and it is theoretically going to do the same thing physically. But, do not criss-cross at the bottom!
+
 ## Iron Tip Model
 
 For simulations, it is useful to know how to model the iron tip as if it was a complex load.

@@ -22360,17 +22360,17 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C6629873"/>
 <attribute name="PARTNUM" value="QCCT102Q100J1GV001E"/>
 </part>
-<part name="D7" library="hot-wand" deviceset="DIODE" device="SOD123FL" value="4148">
-<attribute name="JLCPARTNUM" value="C917030"/>
+<part name="D7" library="hot-wand" deviceset="DIODE" device="SOD123FL" value="1N4148W">
+<attribute name="JLCPARTNUM" value="C84367"/>
 </part>
 <part name="D5" library="hot-wand" deviceset="DIODE" device="SOD123FL" value="4148">
-<attribute name="JLCPARTNUM" value="C917030"/>
+<attribute name="JLCPARTNUM" value="C84367"/>
 </part>
 <part name="D6" library="hot-wand" deviceset="DIODE" device="SOD123FL" value="4148">
-<attribute name="JLCPARTNUM" value="C917030"/>
+<attribute name="JLCPARTNUM" value="C84367"/>
 </part>
 <part name="D8" library="hot-wand" deviceset="DIODE" device="SOD123FL" value="4148">
-<attribute name="JLCPARTNUM" value="C917030"/>
+<attribute name="JLCPARTNUM" value="C84367"/>
 </part>
 <part name="GND14" library="hot-wand" deviceset="GND" device=""/>
 <part name="R10" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω"/>
@@ -23160,7 +23160,7 @@ curr meas</text>
 </instance>
 <instance part="D7" gate="G$1" x="299.72" y="-180.34" smashed="yes" rot="R90">
 <attribute name="NAME" x="297.9674" y="-181.61" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="301.4726" y="-176.784" size="1.778" layer="96" rot="R270"/>
+<attribute name="VALUE" x="295.656" y="-177.0126" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="D5" gate="G$1" x="299.72" y="-170.18" smashed="yes" rot="R90">
 <attribute name="NAME" x="297.9674" y="-171.45" size="1.778" layer="95" rot="R90"/>

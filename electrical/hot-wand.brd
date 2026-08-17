@@ -1613,21 +1613,21 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PARTNUM" value="QCCT102Q100J1GV001E" x="90.6" y="6.1" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="JLC-DNP" value="2" x="90.6" y="6.1" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="D7" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="3.2" smashed="yes" rot="MR90">
+<element name="D7" library="hot-wand" package="SOD123FL" value="1N4148W" x="96.2" y="3.2" smashed="yes" rot="MR90">
 <attribute name="NAME" x="95.2" y="5.5" size="0.8128" layer="26" font="vector" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C917030" x="96.2" y="3.2" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="JLCPARTNUM" value="C84367" x="96.2" y="3.2" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="D5" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="3.2" smashed="yes" rot="MR270">
 <attribute name="NAME" x="99.5" y="1" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="JLCPARTNUM" value="C917030" x="98.5" y="3.2" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C84367" x="98.5" y="3.2" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="D6" library="hot-wand" package="SOD123FL" value="4148" x="98.5" y="9" smashed="yes" rot="MR270">
 <attribute name="NAME" x="95.2" y="9.1" size="0.8128" layer="26" font="vector" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C917030" x="98.5" y="9" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C84367" x="98.5" y="9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="D8" library="hot-wand" package="SOD123FL" value="4148" x="96.2" y="9" smashed="yes" rot="MR90">
 <attribute name="NAME" x="99.4" y="7.4" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="JLCPARTNUM" value="C917030" x="96.2" y="9" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="JLCPARTNUM" value="C84367" x="96.2" y="9" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="R10" library="hot-wand" package="0603-RES" value="100Ω" x="99.4" y="6.1" smashed="yes" rot="MR180">
 <attribute name="NAME" x="100.938" y="5.489" size="0.8128" layer="26" font="vector" rot="MR270"/>
@@ -2813,7 +2813,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="90" y="8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="89" y="8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="89" y="9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="87" y="7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="87" y="7.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="84" y="10" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="32.4" y="52.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.5" y="54.8" extent="1-16" drill="0.3" shape="octagon"/>
@@ -4950,48 +4950,51 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <approved hash="19,16,69904c963646ec13"/>
 <approved hash="19,16,77a645572171f291"/>
 <approved hash="5,16,de9e0febf9e8d08c"/>
+<approved hash="19,16,558143ed47c7ad64"/>
+<approved hash="19,16,22a2aa9eaa3e2202"/>
+<approved hash="20,16,d724d7245c785c78"/>
+<approved hash="20,16,3b173911d8bac3d0"/>
+<approved hash="20,16,3c8f375dd686c4d8"/>
 <approved hash="19,1,7ada46e646127a2e"/>
 <approved hash="19,16,46da6ae66a12462e"/>
-<approved hash="19,16,2a5fa663a6022a3e"/>
 <approved hash="19,16,2aa3a69fa6022a3e"/>
+<approved hash="19,16,2a5fa663a6022a3e"/>
 <approved hash="19,16,2f83a3bfa3c22ffe"/>
-<approved hash="19,16,3aa2069e06003a3c"/>
 <approved hash="19,16,3a5e066206003a3c"/>
+<approved hash="19,16,3aa2069e06003a3c"/>
 <approved hash="19,16,3f8203be03c03ffc"/>
 <approved hash="19,16,2adda6e1a67e2a42"/>
 <approved hash="19,16,2a21a61da67e2a42"/>
 <approved hash="19,16,2ffda3c1a3be2f82"/>
-<approved hash="19,16,558143ed47c7ad64"/>
 <approved hash="19,16,2e6aa656a6262e1a"/>
-<approved hash="19,16,22a2aa9eaa3e2202"/>
 <approved hash="19,16,2eaaa696a6062e3a"/>
-<approved hash="19,16,179e194756369da8"/>
 <approved hash="19,16,751b4f1a0417fb29"/>
+<approved hash="19,16,179e194756369da8"/>
 <approved hash="19,16,99041768290b489d"/>
 <approved hash="19,16,593c2754010f20a4"/>
 <approved hash="19,16,9907d7539932f89f"/>
+<approved hash="19,16,713e42a4af541987"/>
 <approved hash="19,16,127015ccbcb03e3d"/>
 <approved hash="19,16,6fd038d5b3051dd3"/>
-<approved hash="19,16,713e42a4af541987"/>
-<approved hash="19,16,0c33677fb113238c"/>
 <approved hash="19,16,338e0d71ac0e27b9"/>
+<approved hash="19,16,0c33677fb113238c"/>
 <approved hash="19,16,610a6b22be210139"/>
 <approved hash="19,16,51052f408f23a29d"/>
 <approved hash="19,16,a10dcf4c07277a95"/>
 <approved hash="19,16,91058f48ff2b529d"/>
-<approved hash="19,16,fe70092b8aa8c83d"/>
 <approved hash="19,16,6d3eaebc59b32f87"/>
+<approved hash="19,16,fe70092b8aa8c83d"/>
 <approved hash="5,16,411295e2d895f384"/>
-<approved hash="19,16,7311a0d52ed6da25"/>
 <approved hash="19,16,901269c0023bd95e"/>
-<approved hash="5,16,611e4f90a2069e88"/>
+<approved hash="19,16,7311a0d52ed6da25"/>
 <approved hash="5,16,86bf8292bee2a8cf"/>
-<approved hash="19,16,fab05d8e25768d7d"/>
-<approved hash="19,16,69da444d3e7bec9d"/>
+<approved hash="5,16,611e4f90a2069e88"/>
 <approved hash="19,16,6980595e22beec93"/>
+<approved hash="19,16,69da444d3e7bec9d"/>
 <approved hash="19,16,6f984b1437b0ea13"/>
-<approved hash="19,16,65924e2139dfe0ed"/>
 <approved hash="19,16,5372dfd86b58ed47"/>
+<approved hash="19,16,fab05d8e25768d7d"/>
+<approved hash="19,16,65924e2139dfe0ed"/>
 <approved hash="5,16,df980fd7f81cd7b2"/>
 <approved hash="6,16,e1c44de068702847"/>
 <approved hash="6,16,a9ac21df1fdf7bbf"/>
@@ -5001,12 +5004,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <approved hash="6,16,bd182f0c50a44c3a"/>
 <approved hash="6,16,e1c44de068702847"/>
 <approved hash="6,16,a9ac21df1fdf7bbf"/>
-<approved hash="20,16,d724d7245c785c78"/>
 <approved hash="20,16,c33771024e0245c9"/>
 <approved hash="20,16,c33777a288903cc9"/>
 <approved hash="20,16,36cb344dca86cea4"/>
-<approved hash="20,16,3b173911d8bac3d0"/>
-<approved hash="20,16,3c8f375dd686c4d8"/>
 </errors>
 </board>
 </drawing>
