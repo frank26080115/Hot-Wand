@@ -14,17 +14,45 @@ The 22uH axial inductor needs to be raised slightly above the PCB.
 
 There are several LED indicators on the top side of the board, they simply indicate if a particular power bus actually has power, they are not required.
 
-The following solder jumpers must be shorted out (soldered over) by you (unless you need them open for tuning):
+#### Solder Jumpers and Tuning Parts
 
- * TODO
+VR1 and R37: Responsible for main buck converter output voltage. If the best value for VR1 is known, VR1 can be omitted and R37 used in its place as a permanent setting.
+
+R12 and R13 dissipates gate charge to Q1. R13 is to be identical as R12 but only placed if required. Otherwise leave DNP.
+
+SJ6 is a 0R01 measurement resistor for current through Q1. Short it out with solder for normal builds.
+
+R11 and VR4 are used to set the sensitivity of the current transformer power factor detector. If you need VR4 for tuning, then hort out SJ2, and maybe remove R11 depending on if you want it in parallel or not.
+
+SJ5 is a measurement resistor for the 12V bus. It is used when tuning L8 (the custom coreless inductor). During normal builds, short out SJ5 with solder.
+
+VR2 and VR3 are used to tune the sensitivity of the tip-detector. VR2 with R19 (and sometimes R20) sets the constant DC bias into Q3's base. VR3 and R22 sets the sensitivity to AC for Q3's base. The resistors can be exchanged for other values when the final resistance is determined, and the potentiometers can be bypassed with a solder jump.
+
+SJ1 is connected between the microcontroller's BOOT0 pin and ground. It should be shorted out with solder in all normal situations. It can be used to put the microcontroller in a bootloader mode if a wire is used to bridge BOOT0 to VCC.
+
+SJ3 connects the fan control MOSFET to the microcontroller's SWDIO pin. You must short this out with solder but only after the firmware has been flashed to the microcontroller. Otherwise the fan will go wild during firmware flashing.
+
+SJ4 should be left open. Shorting it out will leave the fan permanently spinning with no control.
+
+R46 should be a 0 ohm resistor (or short it out with solder). You can choose to replace it with a particular value if you need to negotiate a certain current limit with the USB-PD host.
 
 ## Custom Inductors
 
 Make sure you are familiar with how to use enamel coated magnet wire correctly, how to prepare the ends of the wires for soldering, etc.
 
+Remember that, one "turn" is defined as passing through the center of the toroid once. It doesn't have to be a complete loop.
+
 #### 9 uH choke
 
-10 turns of 22 AWG wire around the Fair-Rite 5961004901 toroid core. If you actually managed to get a `K16x8x6`, then use 15 turns.
+Both small custom inductors use the Fair-Rite 5961004901 toroid core, and 22 AWG solid core enamel coated wire (aka magnet wire).
+
+For the 9uH choke, use 10 turns.
+
+Equation for wire length: `(2 * 10) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.644) * 1.05`
+
+10 turns should be 242 mm of wire.
+
+If you actually managed to get a `K16x8x6`, then use 15 turns.
 
 #### current transformer
 
@@ -34,7 +62,25 @@ Uses the Fair-Rite 5961004901 toroid core and 22 AWG wire.
 
 The primary (the 1 in 1:14:14) is just a single wire crossing the inside of the toroid once. No crossing on the bottom/outside of the toroid.
 
-The two secondaries can be done using a single pair of wires, wrapping the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+The two secondaries can be done using a single pair of wires (bifilar), wrapping the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+
+![](imgs/current_transformer_winding_3d.png)
+
+![](imgs/current_transformer_winding_3d_nocore.png)
+
+The wire length of each primary should be about 331 mm.
+
+#### large inductors
+
+The three large inductors are using the Amidon T130-6 toroid cores and 16 AWG solid core enamel coated wire.
+
+Equation for wire length: `(2 * 10) + T * (2 * ((33 - 19.8) / 2 + 11.1) + pi * 1.29) * 1.05`
+
+180 uH -> 4 turns -> 186 mm
+
+400 uH -> 6 turns -> 269 mm
+
+540 uH -> 7 turns -> 310 mm
 
 ## Enclosure Cutouts
 

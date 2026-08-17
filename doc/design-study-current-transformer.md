@@ -51,7 +51,15 @@ I have represented this with an animation
 
 ![](imgs/current_transformer_plots/animation.apng)
 
+![](imgs/current_transformer_plots/tiled_3x3.png)
+
 If you wish to see the individual frames, [click here for all the frame files](imgs/current_transformer_plots/)
+
+For the three examples of tip temperature states and their resulting waveform:
+
+![](imgs/current_transformer_plots/three_states.png)
+
+The numbers used in this model are in this document at the bottom.
 
 ## My Own Implementation
 
@@ -61,7 +69,9 @@ The rule of thumb is that for a transformer application, a different AL doesn't 
 
 The toroid core I picked is a Fair-Rite 5961004901. The material is "61", the AL is supposedly higher than the one SergeyMax used, and the datasheet claims that it is a "high frequency NiZn ferrite material developed for a range of inductive applications up to 25 MHz".
 
-I planned out the winding in 3D with consideration for my transformer PCB footprint. All wires are to be 22 AWG (SergeyMax used 0.6mm)
+On paper, this current transformer is behaving almost like a digital component because of the way the diodes clamp the voltage. The current transformer and the 10pF capacitor really just need to provide enough signal strength to actually cause the diodes to conduct. So this means the Fair-Rite substitute should work better, in a sense. But the concern is that the different material causes a phase delay from primary to secondary, which would obviously ruin the whole thing as the whole point is to measure the phase difference between voltage and current.
+
+I planned out the winding in 3D with consideration for my transformer PCB footprint. All wires are to be 22 AWG (SergeyMax used 0.6mm). There isn't many photos of this component so I thought a 3D model would help a ton.
 
 ![](imgs/current_transformer_winding_3d.png)
 
@@ -79,10 +89,8 @@ I got these measurements from http://randomfunprojects.co.uk/metcal.html
 
 Measurements at 13.56 MHz of a STTC-147 tip
 
-|  | R | X | Equiv X | SWR | S11 |
-| --- | --- | --- | --- | --- | --- |
-| Cold: | 42.3 | +13j | 153 nH | 1.4 | -16dB |
-| Warm
-(but below Curie temp): | 55 | -16j | 730pF | 1.1 | -23 dB |
-| Hot
-(above Curie temp): | 12 | +24j | 280 nH | 5.1 | -3.4 dB |
+| Tip state | Resistance, R (Ω) | Reactance, X (Ω) | Equiv. component | SWR  | S11  |
+| --------- | ----------------: | ---------------: | ---------------: | ---: | ---: |
+| Cold                                | 42.3 | +j13 |     153 nH      | 1.4 |  -16 dB |
+| Warm<br />(below Curie temperature) | 55   | -j16 |     730 pF      | 1.1 |  -23 dB |
+| Hot<br />(above Curie temperature)  | 12   | +j24 |     280 nH      | 5.1 | -3.4 dB |
