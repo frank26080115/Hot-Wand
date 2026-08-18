@@ -414,9 +414,10 @@ static void boot_wait_for_power_stable(void)
 
 static void main_render_display(void)
 {
-    char    voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
-    size_t  voltage_length;
-    u8g2_t* graphics = OLED_GetGraphics(&oled);
+    char     voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
+    size_t   voltage_length;
+    uint16_t input_millivolts;
+    u8g2_t*  graphics = OLED_GetGraphics(&oled);
 
 #ifdef SHOW_SPLASH
     if (splash_visible)
@@ -435,7 +436,8 @@ static void main_render_display(void)
         return;
     }
 
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    input_millivolts = adc_to_millivolts(DC_SENS_IDX);
+    millivolts_to_str(input_millivolts, voltage, 1, &voltage_length);
     voltage[voltage_length++] = 'V';
     voltage[voltage_length]   = '\0';
 
@@ -443,6 +445,7 @@ static void main_render_display(void)
     u8g2_SetFont(graphics, u8g2_font_6x10_tr);
     u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y), voltage);
     pwrmgt_render_graph(graphics);
+    pwrmgt_render_high_voltage_warning(graphics, input_millivolts);
     OLED_SendBuffer(&oled);
 }
 

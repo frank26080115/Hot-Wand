@@ -28,6 +28,7 @@ void pwrmgt_change_pwr_lvl(void);
 void pwrmgt_task(void);
 /* Draws only the graph region; the caller owns the text and buffer send. */
 void          pwrmgt_render_graph(u8g2_t* graphics);
+void          pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivolts);
 pwrlvl_mode_t pwrmgt_get_applied_power_level(void);
 uint8_t       pwrmgt_get_attenuation_reasons(void);
 

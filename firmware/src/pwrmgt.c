@@ -40,6 +40,11 @@ _Static_assert((THERM_2_IDX == (THERM_1_IDX + 1)) && (MCU_TEMP_IDX == (THERM_2_I
 #define PWRMGT_GRAPH_CENTER_LEFT_X    ((PWRMGT_GRAPH_WIDTH_PX / 2) - 1)
 #define PWRMGT_GRAPH_CENTER_RIGHT_X   (PWRMGT_GRAPH_WIDTH_PX / 2)
 
+#define PWRMGT_HIGH_VOLTAGE_WARNING_MV     29000
+#define PWRMGT_HIGH_VOLTAGE_FLASH_PHASE_MS 500
+#define PWRMGT_HIGH_VOLTAGE_LINE_COUNT     3
+#define PWRMGT_HIGH_VOLTAGE_OVERLAY_HEIGHT (PWRMGT_HIGH_VOLTAGE_LINE_COUNT * OLED_TEXT_LINE_HEIGHT)
+
 _Static_assert(PWRMGT_GRAPH_WIDTH_PX == (PWRMGT_HISTORY_RECORD_COUNT * 2),
                "each power-history record must map to one mirrored column pair");
 
@@ -70,6 +75,17 @@ static const char pwrmgt_low_voltage_message[]      = "CAN'T\nLOW\nVOLT";
 static const char pwrmgt_too_hot_message[]          = "CAN'T\nTOO\nHOT";
 static const char pwrmgt_repeated_attempt_message[] = "NOT\nNOW\nDUMB-\nASS";
 
+static const char* const pwrmgt_high_voltage_warning_messages[][PWRMGT_HIGH_VOLTAGE_LINE_COUNT] = {
+    {"WARN", "HIGH", "VOLT"},
+    {"WARN", "HIGH", "INPUT"},
+    {"WARN", "VOLT", "HURTS"},
+    {" WHY ", "DEREK", " WHY?"},
+    {"WARN", "V TOO", "HIGH"},
+    {"WARN", "V TOO", "MUCH"},
+    {"WARN", "INPUT", "HIGH"},
+    {"WARN", "BATT", "2 BIG"},
+};
+
 static pwrlvl_mode_t pwrmgt_desired_power_level = PWRLVL_MODE_100_PERCENT;
 static pwrlvl_mode_t pwrmgt_applied_power_level = PWRLVL_MODE_100_PERCENT;
 static uint8_t       pwrmgt_attenuation_reasons;
@@ -90,6 +106,10 @@ static uint32_t      pwrmgt_idle_started_ms;
 static uint32_t      pwrmgt_last_active_ms;
 static uint32_t      pwrmgt_idle_power_threshold_mw = 10000;
 static bool          pwrmgt_is_idle;
+static uint32_t      pwrmgt_high_voltage_phase_started_ms;
+static uint8_t       pwrmgt_high_voltage_message_index;
+static bool          pwrmgt_high_voltage_warning_active;
+static bool          pwrmgt_high_voltage_warning_visible;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -305,6 +325,79 @@ void pwrmgt_render_graph(u8g2_t* graphics)
             }
             u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
         }
+    }
+}
+
+void pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivolts)
+{
+    if (graphics == NULL)
+    {
+        return;
+    }
+
+    if (input_millivolts >= PWRMGT_HIGH_VOLTAGE_WARNING_MV)
+    {
+        uint32_t now = systick_get_ms();
+
+        if (!pwrmgt_high_voltage_warning_active)
+        {
+            pwrmgt_high_voltage_warning_active   = true;
+            pwrmgt_high_voltage_warning_visible  = true;
+            pwrmgt_high_voltage_phase_started_ms = now;
+            pwrmgt_high_voltage_message_index =
+                (uint8_t)(hotwand_rand() % (sizeof(pwrmgt_high_voltage_warning_messages) /
+                                             sizeof(pwrmgt_high_voltage_warning_messages[0])));
+        }
+        else
+        {
+            uint32_t elapsed_ms       = (uint32_t)(now - pwrmgt_high_voltage_phase_started_ms);
+            uint32_t completed_phases = elapsed_ms / PWRMGT_HIGH_VOLTAGE_FLASH_PHASE_MS;
+
+            if (completed_phases != 0)
+            {
+                pwrmgt_high_voltage_phase_started_ms += completed_phases * PWRMGT_HIGH_VOLTAGE_FLASH_PHASE_MS;
+
+                if ((completed_phases & 1U) != 0)
+                {
+                    pwrmgt_high_voltage_warning_visible = !pwrmgt_high_voltage_warning_visible;
+                }
+
+                if (pwrmgt_high_voltage_warning_visible)
+                {
+                    pwrmgt_high_voltage_message_index =
+                        (uint8_t)(hotwand_rand() % (sizeof(pwrmgt_high_voltage_warning_messages) /
+                                                   sizeof(pwrmgt_high_voltage_warning_messages[0])));
+                }
+            }
+        }
+
+        if (pwrmgt_high_voltage_warning_visible)
+        {
+            u8g2_uint_t overlay_y = u8g2_GetDisplayHeight(graphics) - PWRMGT_HIGH_VOLTAGE_OVERLAY_HEIGHT;
+            uint8_t     line;
+
+            u8g2_SetDrawColor(graphics, U8G2_DRAW_CLEAR);
+            u8g2_DrawBox(graphics,
+                         0,
+                         overlay_y,
+                         u8g2_GetDisplayWidth(graphics),
+                         PWRMGT_HIGH_VOLTAGE_OVERLAY_HEIGHT);
+            u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
+            u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+
+            for (line = 0; line < PWRMGT_HIGH_VOLTAGE_LINE_COUNT; ++line)
+            {
+                u8g2_DrawStr(graphics,
+                             1,
+                             (u8g2_uint_t)(overlay_y + OLED_FIRST_TEXT_BASELINE + (line * OLED_TEXT_LINE_HEIGHT)),
+                             pwrmgt_high_voltage_warning_messages[pwrmgt_high_voltage_message_index][line]);
+            }
+        }
+    }
+    else
+    {
+        pwrmgt_high_voltage_warning_active  = false;
+        pwrmgt_high_voltage_warning_visible = false;
     }
 }
 
