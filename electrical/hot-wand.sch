@@ -23257,7 +23257,7 @@ curr meas</text>
 </instance>
 <instance part="GND23" gate="1" x="314.96" y="-274.32"/>
 <instance part="C41" gate="G$1" x="327.66" y="-259.08"/>
-<instance part="R18" gate="G$1" x="314.96" y="-228.6" rot="R90"/>
+<instance part="R18" gate="G$1" x="314.96" y="-236.22" rot="R90"/>
 <instance part="P+5" gate="G$1" x="314.96" y="-220.98"/>
 <instance part="R20" gate="G$1" x="279.4" y="-246.38" smashed="yes" rot="R180">
 <attribute name="NAME" x="277.368" y="-246.8626" size="1.778" layer="95" rot="R180"/>
@@ -23823,9 +23823,9 @@ curr meas</text>
 </instance>
 <instance part="P+14" gate="G$1" x="223.52" y="-345.44"/>
 <instance part="R37" gate="G$1" x="182.88" y="-43.18" rot="R90"/>
-<instance part="VR2" gate="G$1" x="299.72" y="-246.38" smashed="yes" rot="R90">
-<attribute name="NAME" x="298.958" y="-241.3" size="1.778" layer="95" rot="R180"/>
-<attribute name="VALUE" x="302.006" y="-242.316" size="1.778" layer="95"/>
+<instance part="VR2" gate="G$1" x="299.72" y="-233.68" smashed="yes" rot="MR270">
+<attribute name="NAME" x="298.958" y="-238.76" size="1.778" layer="95" rot="MR0"/>
+<attribute name="VALUE" x="302.006" y="-237.744" size="1.778" layer="95" rot="MR180"/>
 </instance>
 <instance part="C58" gate="G$1" x="175.26" y="-76.2" smashed="yes" rot="R180">
 <attribute name="NAME" x="170.561" y="-75.184" size="1.778" layer="95" rot="R270"/>
@@ -24656,11 +24656,8 @@ curr meas</text>
 <pinref part="R18" gate="G$1" pin="1"/>
 <junction x="314.96" y="-243.84"/>
 <junction x="327.66" y="-243.84"/>
-<wire x1="314.96" y1="-233.68" x2="314.96" y2="-246.38" width="0.1524" layer="91"/>
+<wire x1="314.96" y1="-241.3" x2="314.96" y2="-243.84" width="0.1524" layer="91"/>
 <wire x1="314.96" y1="-246.38" x2="314.96" y2="-243.84" width="0.1524" layer="91"/>
-<pinref part="VR2" gate="G$1" pin="A"/>
-<wire x1="307.34" y1="-246.38" x2="314.96" y2="-246.38" width="0.1524" layer="91"/>
-<junction x="314.96" y="-246.38"/>
 </segment>
 <segment>
 <pinref part="U7" gate="G$1" pin="PA5/ADC_IN5"/>
@@ -24672,7 +24669,13 @@ curr meas</text>
 <segment>
 <pinref part="R18" gate="G$1" pin="2"/>
 <pinref part="P+5" gate="G$1" pin="3.3V"/>
-<wire x1="314.96" y1="-223.52" x2="314.96" y2="-220.98" width="0.1524" layer="91"/>
+<wire x1="314.96" y1="-231.14" x2="314.96" y2="-228.6" width="0.1524" layer="91"/>
+<pinref part="VR2" gate="G$1" pin="A"/>
+<wire x1="314.96" y1="-228.6" x2="314.96" y2="-220.98" width="0.1524" layer="91"/>
+<wire x1="307.34" y1="-233.68" x2="309.88" y2="-233.68" width="0.1524" layer="91"/>
+<wire x1="309.88" y1="-233.68" x2="309.88" y2="-228.6" width="0.1524" layer="91"/>
+<wire x1="309.88" y1="-228.6" x2="314.96" y2="-228.6" width="0.1524" layer="91"/>
+<junction x="314.96" y="-228.6"/>
 </segment>
 <segment>
 <pinref part="P+7" gate="G$1" pin="3.3V"/>
@@ -25772,13 +25775,13 @@ curr meas</text>
 <pinref part="R19" gate="G$1" pin="1"/>
 <wire x1="284.48" y1="-241.3" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
 <pinref part="VR2" gate="G$1" pin="S"/>
-<wire x1="299.72" y1="-241.3" x2="299.72" y2="-238.76" width="0.1524" layer="91"/>
-<wire x1="299.72" y1="-238.76" x2="287.02" y2="-238.76" width="0.1524" layer="91"/>
-<wire x1="287.02" y1="-238.76" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
+<wire x1="299.72" y1="-238.76" x2="299.72" y2="-246.38" width="0.1524" layer="91"/>
+<wire x1="299.72" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
 <junction x="287.02" y="-241.3"/>
 <pinref part="VR2" gate="G$1" pin="E"/>
-<wire x1="287.02" y1="-246.38" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
-<wire x1="292.1" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
+<wire x1="292.1" y1="-233.68" x2="287.02" y2="-233.68" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="-233.68" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="-241.3" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
 <junction x="287.02" y="-246.38"/>
 </segment>
 </net>
