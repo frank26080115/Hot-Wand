@@ -1816,11 +1816,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C5182461" x="83.3" y="58.9" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01" x="83.3" y="58.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="D4" library="hot-wand" package="SMA-DIODE" value="ES1J" x="88" y="63" smashed="yes" rot="MR180">
-<attribute name="NAME" x="84.886" y="62.951" size="0.8128" layer="26" font="vector" rot="MR0"/>
-<attribute name="VALUE" x="84.946" y="61.951" size="0.8128" layer="28" font="vector" rot="MR0"/>
-<attribute name="JLCPARTNUM" value="C64879" x="88" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC_ROTATION" value="180" x="88" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
+<element name="D4" library="hot-wand" package="SMA-DIODE" value="ES1J" x="89" y="63" smashed="yes" rot="MR180">
+<attribute name="NAME" x="85.886" y="62.951" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="85.946" y="61.951" size="0.8128" layer="28" font="vector" rot="MR0"/>
+<attribute name="JLCPARTNUM" value="C64879" x="89" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="JLC_ROTATION" value="180" x="89" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="TVS1" library="hot-wand" package="SMC" value="SM15T150CA" x="101.2" y="61.3" smashed="yes" rot="MR180">
 <attribute name="NAME" x="97.741" y="57.941" size="0.8128" layer="26" font="vector" rot="MR180"/>
@@ -3400,8 +3400,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="39.3" y="54.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="77" y="62.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="75" y="62.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="73" y="61.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="71" y="59.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="73.3" y="61.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="71.4" y="59.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="29" y="7.4" extent="1-16" drill="0.3" shape="octagon"/>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no">
 <vertex x="93.2" y="65.6"/>
@@ -3480,6 +3480,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="65.2" y="52" extent="1-16" drill="0.3" shape="octagon"/>
 <wire x1="64.2" y1="14.5" x2="65.8" y2="14.5" width="0.6096" layer="16"/>
 <wire x1="65.8" y1="14.5" x2="66.9" y2="13.4" width="0.6096" layer="16"/>
+<via x="62.2" y="15.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="62.2" y="18" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="RF-OUT">
 <contactref element="T1" pad="P2"/>
@@ -3498,7 +3500,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="87.7" y="2.8"/>
 <vertex x="87.7" y="1.881021875"/>
 <vertex x="86.918978125" y="1.1"/>
-<vertex x="78" y="1.1"/>
+<vertex x="86" y="1.1"/>
+<vertex x="85" y="2.1"/>
+<vertex x="76.9" y="2.1"/>
 </polygon>
 <wire x1="86.5" y1="2.3" x2="89.7" y2="5.5" width="0.6" layer="16"/>
 <wire x1="89.7" y1="5.5" x2="89.7" y2="6.1" width="0.6" layer="16"/>
@@ -3750,12 +3754,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="Q1" pad="2"/>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.8" rank="2">
 <vertex x="85.2" y="67.1"/>
-<vertex x="85.2" y="64.4"/>
-<vertex x="82.8" y="62"/>
+<vertex x="85.2" y="65"/>
+<vertex x="82.8" y="62.6"/>
 <vertex x="82.8" y="59.7"/>
 <vertex x="89.8" y="59.7"/>
-<vertex x="89.8" y="60.3"/>
-<vertex x="86.8" y="63.3"/>
+<vertex x="89.8" y="62.1"/>
+<vertex x="86.8" y="65.1"/>
 <vertex x="86.8" y="67.1"/>
 </polygon>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.8" rank="2">
@@ -3765,8 +3769,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="81.9" y="58.9"/>
 <vertex x="82.7" y="59.7"/>
 <vertex x="85.9" y="59.7"/>
-<vertex x="85.9" y="62"/>
-<vertex x="82" y="62"/>
+<vertex x="85.9" y="62.6"/>
+<vertex x="82.6" y="62.6"/>
 <vertex x="71.6" y="51.6"/>
 <vertex x="71.6" y="46.5"/>
 </polygon>
@@ -3783,10 +3787,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="TVS1" pad="C"/>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.8" thermals="no" rank="2">
 <vertex x="96.3" y="61.2"/>
-<vertex x="91.9" y="61.2"/>
-<vertex x="90.6" y="62.4"/>
-<vertex x="89.7" y="62.4"/>
-<vertex x="89.7" y="63.6"/>
+<vertex x="92.9" y="61.2"/>
+<vertex x="91.6" y="62.4"/>
+<vertex x="90.7" y="62.4"/>
+<vertex x="90.7" y="63.6"/>
 <vertex x="95.817159375" y="63.6"/>
 <vertex x="96.3" y="63.117159375"/>
 </polygon>
@@ -3835,16 +3839,13 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="65.3" y="59.5"/>
 <vertex x="65.3" y="63.3"/>
 <vertex x="67" y="65"/>
-<vertex x="68.4" y="65"/>
 <vertex x="80.1" y="65"/>
-<vertex x="80.9" y="65.8"/>
 <vertex x="83" y="67.9"/>
 <vertex x="84.2" y="67.9"/>
 <vertex x="84.2" y="65.7"/>
-<vertex x="82.6" y="64.1"/>
 <vertex x="81.9" y="63.4"/>
-<vertex x="73.4" y="63.4"/>
-<vertex x="68.8" y="58.8"/>
+<vertex x="73.6" y="63.4"/>
+<vertex x="69" y="58.8"/>
 <vertex x="66" y="58.8"/>
 </polygon>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.2032" thermals="no" rank="3">
@@ -3860,6 +3861,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="70" y1="64.9" x2="79.6" y2="64.9" width="0.3048" layer="16"/>
 <wire x1="72.8" y1="63.4" x2="72.8" y2="62.9" width="0.3048" layer="16"/>
 <wire x1="70.6" y1="63.4" x2="70.6" y2="62.9" width="0.3048" layer="16"/>
+<via x="68.5" y="60" extent="1-16" drill="1" diameter="2.5" shape="octagon" alwaysstop="yes"/>
 </signal>
 <signal name="N$14">
 <contactref element="U2" pad="2"/>
