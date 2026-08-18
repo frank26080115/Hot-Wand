@@ -23150,7 +23150,7 @@ used to lower output voltage</text>
 22 AWG/0.6mm</text>
 <text x="177.8" y="-251.46" size="1.27" layer="97" align="top-center">coreless
 10 turns
-10mm long x 6mm dia
+10mm wide x 5mm dia
 22 AWG/0.6mm</text>
 <text x="231.394" y="-25.908" size="1.27" layer="97">1/2W each</text>
 <text x="56.896" y="-169.164" size="1.016" layer="97" align="bottom-right">Ciss 800pF
@@ -23171,7 +23171,7 @@ thresh 2.1V</text>
 <text x="351.79" y="-186.69" size="1.016" layer="97" align="top-left">tune for voltage under load
 if temperature unstable
 or excessive power draw</text>
-<text x="287.528" y="-250.698" size="1.27" layer="97" align="center-left">tune for sensitivity</text>
+<text x="287.528" y="-266.7" size="1.27" layer="97" align="center-left">useless, short</text>
 <text x="262.89" y="-261.366" size="1.016" layer="97" rot="R180">LFP @ 187kHz</text>
 <text x="74.93" y="-67.31" size="1.27" layer="97" rot="R90">sw freq 450kHz</text>
 <text x="171.45" y="-57.15" size="0.6096" layer="97" rot="R90">tune for unloaded voltage
@@ -23209,6 +23209,7 @@ curr meas</text>
 <text x="173.99" y="-726.948" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V
 (26K eqv)</text>
 <text x="83.312" y="-672.084" size="1.27" layer="97" rot="R90">VCC1/2 rated 31V max</text>
+<text x="284.988" y="-231.14" size="1.27" layer="97" align="center-left">changes test current</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="289.56" y="-30.48"/>
