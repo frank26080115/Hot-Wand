@@ -36,8 +36,8 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
@@ -118,8 +118,6 @@
 <board>
 <plain>
 <wire x1="18.4" y1="38.2" x2="18.4" y2="42.6" width="0" layer="41"/>
-<wire x1="15.8" y1="52.7" x2="15.8" y2="52.9" width="0" layer="41"/>
-<wire x1="15.8" y1="52.9" x2="18" y2="52.9" width="0" layer="41"/>
 <polygon width="0.1524" layer="29" spacing="0.2032">
 <vertex x="37" y="72"/>
 <vertex x="37" y="59.3"/>
@@ -1421,28 +1419,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-2" y="-2" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
 <text x="-2" y="-3" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
-<package name="SMB-DIODE">
-<description>&lt;b&gt;Diode&lt;/b&gt;&lt;p&gt;
-Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</description>
-<wire x1="-3.973" y1="1.983" x2="3.973" y2="1.983" width="0.0508" layer="39"/>
-<wire x1="3.973" y1="-1.983" x2="-3.973" y2="-1.983" width="0.0508" layer="39"/>
-<wire x1="-3.973" y1="-1.983" x2="-3.973" y2="1.983" width="0.0508" layer="39"/>
-<wire x1="3.973" y1="1.983" x2="3.973" y2="-1.983" width="0.0508" layer="39"/>
-<wire x1="-2.2606" y1="1.905" x2="2.2606" y2="1.905" width="0.1016" layer="21"/>
-<wire x1="-2.2606" y1="-1.905" x2="2.2606" y2="-1.905" width="0.1016" layer="21"/>
-<wire x1="-2.261" y1="-1.905" x2="-2.261" y2="1.905" width="0.1016" layer="51"/>
-<wire x1="2.261" y1="-1.905" x2="2.261" y2="1.905" width="0.1016" layer="51"/>
-<wire x1="0.643" y1="1" x2="-0.73" y2="0" width="0.2032" layer="21"/>
-<wire x1="-0.73" y1="0" x2="0.643" y2="-1" width="0.2032" layer="21"/>
-<wire x1="0.643" y1="-1" x2="0.643" y2="1" width="0.2032" layer="21"/>
-<wire x1="-0.73" y1="1" x2="-0.73" y2="-1" width="0.2032" layer="21"/>
-<smd name="C" x="-2.2" y="0" dx="2.4" dy="2.4" layer="1"/>
-<smd name="A" x="2.2" y="0" dx="2.4" dy="2.4" layer="1"/>
-<text x="-2.159" y="2.159" size="1.27" layer="25">&gt;NAME</text>
-<text x="-1.905" y="-3.429" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="-2.794" y1="-1.0922" x2="-2.2606" y2="1.0922" layer="51"/>
-<rectangle x1="2.2606" y1="-1.0922" x2="2.794" y2="1.0922" layer="51"/>
-</package>
 </packages>
 </library>
 </libraries>
@@ -2263,8 +2239,8 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <attribute name="JLC-DNP" value="1" x="15" y="40" size="1.778" layer="27" display="off"/>
 </element>
 <element name="R30" library="hot-wand" package="0603-RES" value="4K3" x="13.4" y="34.9" smashed="yes" rot="MR270">
-<attribute name="NAME" x="12.962" y="33.611" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="VALUE" x="13.057" y="33.584" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<attribute name="NAME" x="14.262" y="33.611" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="15.357" y="33.584" size="0.8128" layer="28" font="vector" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C17667" x="13.4" y="34.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="R31" library="hot-wand" package="0805" value="100Ω" x="10.8" y="34.5" smashed="yes" rot="MR180">
@@ -2595,23 +2571,9 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <attribute name="PARTNUM" value="STPS2L60ZFY" x="31.9" y="55.3" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="NAME" x="33.3" y="56.3" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="D14" library="hot-wand" package="SMB-DIODE" value="30V 2W" x="3.3" y="30.4" smashed="yes" rot="MR270">
-<attribute name="NAME" x="2.341" y="26.641" size="0.8128" layer="26" rot="MR180"/>
-<attribute name="VALUE" x="2.095" y="33.729" size="0.254" layer="28" rot="MR180"/>
-<attribute name="JLCPCBPART" value="C151812" x="3.3" y="30.4" size="1.778" layer="28" rot="MR270" display="off"/>
-</element>
-<element name="R50" library="hot-wand" package="0805" value="100Ω 0.5W" x="13.2" y="38.9" smashed="yes" rot="MR90">
-<attribute name="JLCPARTNUM" value="C441975" x="13.2" y="38.9" size="1.778" layer="28" rot="MR90" display="off"/>
-<attribute name="NAME" x="12.862" y="40.611" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="VALUE" x="13.357" y="37.584" size="0.254" layer="28" font="vector" rot="MR90"/>
-</element>
-<element name="D15" library="hot-wand" package="SMB-DIODE" value="30V 2W" x="16.4" y="36.5" smashed="yes" rot="MR270">
-<attribute name="NAME" x="17.459" y="40.259" size="0.8128" layer="26" rot="MR0"/>
-<attribute name="VALUE" x="17.129" y="39.505" size="0.254" layer="28" rot="MR270"/>
-<attribute name="JLCPCBPART" value="C151812" x="16.4" y="36.5" size="1.778" layer="28" rot="MR270" display="off"/>
-</element>
 <element name="Q7" library="hot-wand" package="POWERPAK-1212-8" value="SIS862ADN-T1-GE3" x="19.6" y="45.5" smashed="yes" rot="R90">
 <attribute name="NAME" x="17.5" y="45.765" size="0.8128" layer="25" rot="R270" align="center"/>
+<attribute name="JLC-DNP" value="1" x="19.6" y="45.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 </elements>
 <signals>
@@ -2890,7 +2852,7 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <via x="17.02" y="53.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="23.88" y="45.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="23" y="43.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="21.12" y="43.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="21.12" y="43.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.12" y="41.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.12" y="39.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20.02" y="37.6" extent="1-16" drill="0.3" shape="octagon"/>
@@ -3508,22 +3470,15 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <wire x1="65.8" y1="14.5" x2="66.9" y2="13.4" width="0.6096" layer="16"/>
 <via x="62.2" y="15.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="62.2" y="18" extent="1-16" drill="0.3" shape="octagon"/>
-<contactref element="D14" pad="A"/>
-<contactref element="D15" pad="A"/>
-<via x="17.42" y="32.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="16.42" y="32.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="15.42" y="32.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="17.42" y="36" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="16.42" y="36" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="15.42" y="36" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="3.32" y="26.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="5.02" y="28.2" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="3.32" y="29.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="1.62" y="28.2" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="2.62" y="29.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="4.02" y="29.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="2.62" y="26.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="4.02" y="26.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="19" y="35" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="19" y="36.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="17.3" y="36.6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="17.4" y="35" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="17" y="32" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="18" y="31" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="15" y="36" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="4" y="30" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="11" y="33.3" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="RF-OUT">
 <contactref element="T1" pad="P2"/>
@@ -4513,8 +4468,9 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <wire x1="12.9" y1="37.3" x2="12.9" y2="38.095" width="0.2032" layer="1"/>
 <wire x1="13.4" y1="35.75" x2="13.4" y2="36.8" width="0.4064" layer="16"/>
 <contactref element="Q7" pad="4"/>
-<wire x1="20.59" y1="45.5" x2="20.59" y2="43.2" width="0.2032" layer="1"/>
-<wire x1="20.59" y1="43.2" x2="15" y2="43.2" width="0.2032" layer="1"/>
+<wire x1="20.59" y1="45.5" x2="20.59" y2="43.700096875" width="0.2032" layer="1"/>
+<wire x1="20.59" y1="43.700096875" x2="20.089903125" y2="43.2" width="0.2032" layer="1"/>
+<wire x1="20.089903125" y1="43.2" x2="15" y2="43.2" width="0.2032" layer="1"/>
 <wire x1="15" y1="43.2" x2="14" y2="43.2" width="0.1524" layer="1"/>
 <wire x1="14" y1="43.2" x2="13.38" y2="42.58" width="0.1524" layer="1"/>
 <wire x1="13.38" y1="42.58" x2="13.38" y2="40.635" width="0.1524" layer="1"/>
@@ -4580,19 +4536,17 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 </polygon>
 <wire x1="17.795" y1="38.095" x2="17.2" y2="38.095" width="0.2032" layer="1"/>
 <wire x1="17.2" y1="38.095" x2="17.2" y2="39.365" width="0.2032" layer="1"/>
-<contactref element="R50" pad="2"/>
-<via x="14.3" y="40.8" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="13.2" y1="39.8" x2="13.4" y2="39.9" width="0.4064" layer="16"/>
-<wire x1="13.4" y1="39.9" x2="14.3" y2="40.8" width="0.4064" layer="16"/>
+<contactref element="U5" pad="16"/>
+<wire x1="14.2" y1="32.15" x2="14.2" y2="32.3" width="0.2032" layer="16"/>
+<wire x1="14.2" y1="32.3" x2="14.3" y2="32.4" width="0.2032" layer="16"/>
+<wire x1="14.3" y1="32.4" x2="14.3" y2="38.4" width="0.2032" layer="16"/>
+<via x="14.3" y="38.4" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="N$40">
 <contactref element="U5" pad="14"/>
 <contactref element="R31" pad="2"/>
-<contactref element="D14" pad="C"/>
-<wire x1="3.3" y1="33.5" x2="12.01690625" y2="33.5" width="0.2032" layer="16"/>
 <wire x1="12.01690625" y1="33.5" x2="12.6" y2="32.91690625" width="0.2032" layer="16"/>
 <wire x1="12.6" y1="32.91690625" x2="12.6" y2="32.15" width="0.2032" layer="16"/>
-<wire x1="3.3" y1="33.5" x2="3.3" y2="32.6" width="0.2032" layer="16"/>
 <wire x1="11.7" y1="34.5" x2="12.01690625" y2="34.5" width="0.2032" layer="16"/>
 <wire x1="12.01690625" y1="34.5" x2="12.01690625" y2="33.5" width="0.2032" layer="16"/>
 </signal>
@@ -4971,18 +4925,6 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <wire x1="4.1" y1="20.1" x2="4.1" y2="15.034" width="0.4064" layer="16"/>
 <wire x1="4.1" y1="15.034" x2="1.846" y2="12.78" width="0.4064" layer="16"/>
 </signal>
-<signal name="N$62">
-<contactref element="R50" pad="1"/>
-<contactref element="U5" pad="16"/>
-<contactref element="D15" pad="C"/>
-<wire x1="14.2" y1="32.15" x2="14.2" y2="32.3" width="0.2032" layer="16"/>
-<wire x1="14.2" y1="32.3" x2="14.3" y2="32.4" width="0.2032" layer="16"/>
-<wire x1="14.3" y1="32.4" x2="14.3" y2="37.7" width="0.2032" layer="16"/>
-<wire x1="14.3" y1="37.7" x2="13.4" y2="37.7" width="0.2032" layer="16"/>
-<wire x1="13.4" y1="37.7" x2="13.2" y2="38" width="0.2032" layer="16"/>
-<wire x1="16.4" y1="38.7" x2="15.4" y2="37.7" width="0.2032" layer="16"/>
-<wire x1="15.4" y1="37.7" x2="14.3" y2="37.7" width="0.2032" layer="16"/>
-</signal>
 <signal name="N$63">
 <contactref element="Q6" pad="1"/>
 <contactref element="R32" pad="1"/>
@@ -5002,10 +4944,12 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <contactref element="Q7" pad="3"/>
 <polygon width="0.2032" layer="1" spacing="0.2032" isolate="0.2032" thermals="no" rank="3">
 <vertex x="10.8" y="41.7"/>
-<vertex x="10.8" y="45.8"/>
+<vertex x="10.8" y="45.3"/>
+<vertex x="11.3" y="45.8"/>
 <vertex x="20" y="45.8"/>
 <vertex x="20" y="43.7"/>
-<vertex x="12.8" y="43.7"/>
+<vertex x="13.3" y="43.7"/>
+<vertex x="12.8" y="43.2"/>
 <vertex x="12.8" y="41.7"/>
 </polygon>
 </signal>
