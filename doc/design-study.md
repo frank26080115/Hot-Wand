@@ -63,9 +63,11 @@ This simulation below is representing an ordinary push-pull driver at 12V, drivi
 
 ![](imgs/gate_amp_without.png)
 
-At 13.56 MHz, this becomes upwards of 11W of heat being wasted.
+At 13.56 MHz, this becomes upwards of 4W of heat being wasted, by very small parts.
 
 The solution is to use a first stage with a MOSFET chosen to have a very very small gate capacitance, and it can be small because this amplifier only needs to generate about 12V with almost no real current. This MOSFET, along with the inductors and capacitors around it, form another smaller class E amplifier with a resonant tank. This resonant tank is resonanting at 13.56 MHz, bouncing the charges in and out of the gate of the much bigger MOSFET. The charges are being recycled, instead of going in a DC circuit from positive to negative.
+
+[Click here for a more in-depth study of the power consumption comparisons](gate-driver-method-comparison.md)
 
 There is an inductor in the design to tune the resonance of this circuit. The instructions from SergeyMax basically says: make a coreless coil with wire, 10 loops of wire about 5mm in diameter and 10mm wide, you need to stretch or compress this until you tune the resonance correctly.
 
@@ -79,7 +81,7 @@ You might want to start off with 15 mm wide and then compress it until it is tun
 
 ![](imgs/metcal_aircore_inductor.png)
 
-I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 100mA at 12V, so 1.2W vs 11W, not bad?
+I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 100mA at 12V. 1.2W vs 4W, and moving the heat away from the small parts. Not bad.
 
 ![](imgs/gate_amp_tune_1.png)
 
@@ -209,4 +211,4 @@ I threw in some TVS diodes around the XT30 input, the USB input, and the tactile
 
 For the Lite 470 kHz version that is a copy of Radio Thermal's design, which is asking for a 20V 5A power supply, this is a little tricky. The problem is that, the premise of the project is to add USB-PD as a power input, but, only the USB-C cables with a E-marker inside are capable of 5A. This is very annoying and I'd like to implement a reduced power mode just so it would work with 3A instead, which can make it work with normal USB-C cables and 65W USB-C chargers. The constraint is that we cannot add a buck converter into the design.
 
-To overcome all this... this topic deserves [its own page](lite-power-attenuation.md)
+To overcome all this... this topic deserves [its own page, please click here](lite-power-attenuation.md)
