@@ -87,9 +87,24 @@ If you go overboard with stretching the coil then you end up with an output wave
 
 ![](imgs/gate_amp_tune_2.png)
 
+The MOSFET STP19NF20 datasheet says it has a C_iss of 800 pF. The calculation for this L becomes `L = 1 / ((2 * pi * 13.56e6) ^ 2 * 800e-12)` which is `= 172 nH`. The schematic rounded this as 180 nH. The reactance from L8 nearly cancels out the reactance of the Q1 gate
+
+`X(L8)       = 2 * pi * 13.56e6 * 180e-9         = 15.34 ohms`
+
+`X(Q1 gate)  = 1 / (2 * pi * 13.56e6 * 800e-12)  = 14.67 ohms`
+
+If we choose a different MOSFET wit ha different C_iss, then the tuning will change.
+
+### Impedance Matching Networks
+
+Analysis on how the impedance matching networks work are written in these two pages:
+
+ * [For the Hot-Wand 13.56 MHz](impedance-matching-13.56MHz.md)
+ * [For the Hot-Wand-Lite 470 kHz](impedance-matching-470kHz.md)
+
 ### Protections
 
-SergeyMax's design has a ton of TVS diodes and Zener diodes protecting these MOSFETs. He did explicitly say that the Metcal unit used a 500V rated MOSFET, but... keeping in mind his blog post is from 2019... he found that MOSFET to be too expensive and found a smaller one rated 200V, and just added more 150V TVS diodes. I looked up that bigger MOSFET today... $20 each, so I feel him.
+SergeyMax's design has a ton of TVS diodes and Zener diodes protecting these MOSFETs. He did explicitly say that the Metcal unit used a 500V rated MOSFET, but keeping in mind his blog post is from 2019, he found that MOSFET to be too expensive and found a smaller one rated 200V, and just added more 150V TVS diodes. I looked up that bigger MOSFET today... $20 each, so I feel him.
 
 But why did the Metcal use a 500V rated MOSFET and SergeyMax decide that 150V is enough? The circuit isn't actually supposed to let that V_DS voltage get that high in normal operation, when a proper RF soldering iron cartidge is installed, the output impedance is matched and there is a place for all the energy to go. When you unplug the iron cartridge, the output is open circuit and there's nowhere for the energy, stored as magnetic fields in the inductors, to go. The inductors will spike the voltage to hundreds of volts.
 
@@ -97,7 +112,9 @@ Even if you had a detector for disconnection of the cartridge, your MOSFET must 
 
 ### Tip Detector
 
-There is a NPN transistor and some surrounding circuitry that is triggered by a very high voltage on the RF output, and signals to the microcontroller. This is supposed to be caused by a disconnected iron tip. The microcontroller's job is to stop the generation of the RF wave signal if the tip is detected to be disconnected. SergeyMax's firmware will retry to see if the tip reconnected automatically after a few seconds, which is similar to what actual Metcal stations do. My firmware does not and requires the user to press the button to confirm the tip swap has been completed.
+There is a NPN transistor and some surrounding circuitry that is triggered by the disconnection of the iron cartridge, and signals to the microcontroller. The microcontroller's job is to stop the generation of the RF wave signal if the tip is detected to be disconnected. SergeyMax's firmware will retry to see if the tip reconnected automatically after a few seconds, which is similar to what actual Metcal stations do. My firmware does not and requires the user to press the button to confirm the tip swap has been completed.
+
+The way it works is that a tiny DC current is constantly fed into the iron tip, diverting it to ground. If the tip is not there, that current builds up a charge in a capacitor and then goes through the transistor base instead. [A full study on how this works is available by clicking here](tip-detector.md)
 
 ### Microcontroller
 
@@ -169,18 +186,24 @@ There are online discussions about SergeyMax's design, some other people have tr
 
 One person reported that the 22 ohm resistor (it's a 0805 footprint in SergeyMax's layout) "failed enthusiastically" when the tip was disconnected while the circuit was running. So in my design, I put a 2W rated resistor (2512 footprint) in it's position.
 
-Note that a lot of builders did what I did, replace the AC converter circuit with a DC input. Note that SergeyMax designed his AC input for 220V and not American 120V, hence why so many people did that.
+Note that a lot of builders did what I did, replace the AC converter circuit with a DC input. Note that SergeyMax designed his AC input for Russian 220V and not American 120V, hence why so many people did that.
 
 One person claimed that the buck converter or one of the MOSFETs can fail if the input power is removed suddenly (which is less of a problem if the input is AC). I had enough board space and firmware memory left to approach this problem from multiple angles:
 
  * Added a TVS diode at the output of the buck converter where it supplies the RF amplifier. The amplifier itself already has a TVS protecting it above 150V, the new TVS diode is on the input side starting protection from 24V.
  * Added a output-to-input diode to the buck converter, providing an additional path parallel to the internal MOSFET body diode, when there's backward current.
  * Firmware is set to halt RF generation immediately when a sharp input voltage drop is detected
- * Firmware is set to halt RF generation immediately when an output voltage exceeds 23V
+ * Firmware is set to halt RF generation immediately when an output voltage exceeds 25V
 
 Both the 12V and 3.3V auxiliary power regulators (they are buck converters too but can also be replaced with linear regulators) also have diodes that protect from reverse current.
 
-The battery input is always protected by an ideal-diode implementation. The AP53781 USB PD negotiator has sensing for bus voltage and the over-voltage protection (trips at 120% of expected voltage) can shutdown the input FETs. Plus, there's a 20x5mm glass fuse that will blow during over-current. The upstream shouldn't explode.
+The battery input is always protected by an ideal-diode implementation, so that even if the user mistakenly connects both the battery and the USB port, the battery doesn't explode.
+
+An additional MOSFET protects the AP53781 from high battery voltage, the rating for AP53781 is 31V and the battery might be as high as 35V. This MOSFET is driven by the AP53781 itself so the AP53781 is acting like the ideal-diode controller. The additional gate capacitance being driven by a current limited gate driver means all of the MOSFETs will turn on slower, which slows down in-rush current into the big bulk capacitor, which is actually a good side effect.
+
+Plus, there's a 20x5mm glass fuse that will blow during over-current. The upstream shouldn't explode.
+
+I threw in some TVS diodes around the XT30 input, the USB input, and the tactile button, as protection against static electricity.
 
 ### Lite Version, Reducing Power
 

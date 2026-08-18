@@ -10,19 +10,33 @@ Pressing the button quickly will cycle between the three power limit modes. The 
 
 Pressing and holding the button for a few seconds will place the Hot-Wand into sleep mode, it is essentially powered off. Pressing the button again will wake it back up.
 
+## Swapping Tips
+
+Swapping the tip (removing the cartridge) should ideally be done when the iron is off, which is less stressful on the electrical components. Swapping tips while the unit is on causes a large build-up of stored RF energy and causes a voltage spike, which will trigger a fault.
+
 ## Operating Faults
 
 If any internal sensors detect a fault, the fault will be displayed. Some faults can be dismissed by pressing the button, some cannot.
 
-Swapping the tip (removing the cartridge) will cause a fault. Finish swapping the tip, and press the button to reboot the device to use the new tip.
+Swapping the tip (removing the cartridge) while the iron is powered will cause a fault. Finish swapping the tip, and press the button to reboot the device to use the new tip. It is highly recommended that you shut down the iron yourself before swapping the tip, it is less stressful on the electrical components this way.
 
 A low battery fault can show up if you've configured a battery protection mode. This fault will cause the system to power down, but it can be overridden and continue to power back up if you press and hold the button. Do this at your own risk, I'm not your mom.
 
 If overheating is detected, the power limiter will automatically go into Eco mode and you cannot change the power limit while the temperature is still too hot.
 
-## USB-PD
+## Power Input
 
-Only USB-C chargers delivering 65W or more will work with Hot-Wand. Only USB-C chargers delivering 140W or more will deliver the maximum amount of power that Hot-Wand is capable of delivering. If you want a cheaper way of using the maximum power output, consider using the XT-30 connector along with a dedicated DC power supply capable of 24V and 5A, or more.
+### Battery
+
+If you want to use a battery with the XT30 connector, you can use up to a 8S Li-HV, 8S Li-Po, or 8S LiFePO4 battery pack. Although I strongly recommend not using 8S and stick with 6S.
+
+### Desktop
+
+If you want to power from a AC power supply, the best way is to add a XT30 connector on a AC-to-DC converter capable of 24V 5A, 28V 5A will also work and maybe better. Pushing above 28V is unneccessary.
+
+### USB-PD
+
+Only USB-C PD chargers delivering 65W or more will work with Hot-Wand. Only USB-C chargers delivering 140W or more will deliver the maximum amount of power that Hot-Wand is capable of delivering. If you want a cheaper way of using the maximum power output, consider using the XT30 connector along with a dedicated DC power supply.
 
 The voltage and current requested from a USB-PD host can be configured using jumper shunt blocks. The voltage requested is 20V by default without the jumper, and 28V when the jumper is installed. Some USB hosts can still provide 20V even if 28V is requested.
 
@@ -30,7 +44,7 @@ The current requested is "automatic" without the jumper, and 5A when the jumper 
 
 When using the "automatic" option for requesting current from the USB host without the special cable, it is likely the limit is 3A, if using a 65W, 80W, or 100W charger.
 
-If you find that the Hot-Wand simply does not power up, first, choose "automatic" for current. If that doesn't help, then choose 20V instead of 28V. If the 20V and automatic current option does not work, something is seriously wrong and that particular USB host cannot work with Hot-Wand.
+If you find that the Hot-Wand simply does not power up through USB, first, choose "automatic" for current. If that doesn't help, then choose 20V instead of 28V. If the 20V and automatic current option does not work, something is seriously wrong and that particular USB host cannot work with Hot-Wand.
 
 If you find that the Hot-Wand will function, but suddenly, power is cut by the USB host, then you should try lowering the power limit by using one of the lower power limit modes.
 
@@ -53,6 +67,8 @@ In the setup menu, you can choose a battery mode. This let's you pick between th
 The system will automatically determine how many cells your battery has based on your selected battery chemistry, and then determine the appropriate safe low battery cutoff voltage. If you've chosen the "safer" mode of that chemistry, then the cutoff voltage is just slightly higher.
 
 This feature only works correctly if the input voltage calibration is correct. If you cannot calibrate the input voltage reading, then I would suggest you do not use the battery mode feature at all.
+
+This feature does not account for cell imbalance! If you have an unhealthy out-of-balanace battery pack, it is possible that one cell is over-discharged but not trigger a warrning.
 
 ## Input Voltage Calibration
 

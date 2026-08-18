@@ -68,7 +68,7 @@ The two secondaries can be done using a single pair of wires (bifilar), wrapping
 
 ![](imgs/current_transformer_winding_3d_nocore.png)
 
-The wire length of each primary should be about 331 mm.
+The wire length of each secondary should be about 331 mm.
 
 #### large inductors
 
@@ -81,6 +81,32 @@ Equation for wire length: `(2 * 10) + T * (2 * ((33 - 19.8) / 2 + 11.1) + pi * 1
 400 uH -> 6 turns -> 269 mm
 
 540 uH -> 7 turns -> 310 mm
+
+#### coreless inductor L8
+
+Use 10 turns of 22 AWG wire, wound around a 5 mm dowel or similar mandrel. Make the coil approximately 10 mm wide, then squeeze or stretch it during tuning.
+
+Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm leads, and 5% extra wire for winding tolerance, the approximate cut length in millimeters is:
+
+`(2 * 10) + 10 * sqrt((pi * (5 + 0.644))^2 + (10 / 10)^2) * 1.05`
+
+This gives approximately 207 mm, so cut about 210 mm of wire before winding.
+
+#### Total wire used
+
+The totals below use the rounded cut lengths given above. The values calculated directly from the equations are within about 5 mm of these totals.
+
+For 22 AWG:
+
+`210 + 242 + 242 + 331 + 331 = 1356 mm = 1.356 m = 4.45 ft`
+
+This includes L8, both 9 uH chokes, and both current-transformer secondaries. It does not include the current transformer's short one-turn primary; reserve at least another 50 mm for it. The resulting planned requirement is approximately 1.41 m or 4.62 ft.
+
+For 16 AWG:
+
+`186 + 269 + 310 = 765 mm = 0.765 m = 2.51 ft`
+
+For one complete unit, the practical minimum purchase is 1.5 m (5 ft) of 22 AWG and 1 m (3.3 ft) of 16 AWG. To leave enough wire for trimming mistakes or rewinding an inductor, buy approximately 3 m (10 ft) of 22 AWG and 1.5 m (5 ft) of 16 AWG.
 
 ## Enclosure Cutouts
 
@@ -160,6 +186,6 @@ You can also put a large schottky diode over the MOSFET footprint and keep the p
 
 ### 3.3V Regulator
 
-If you don't want to pay for a `R-78K3.3` buck converter for the 3.3V power bus, you can install a linear voltage regulator instead. The PCB layout supports the `LM1117T-3.3` or `LD1117V33` footprint by providing an extra pad beside the original `R-78K3.3` footprint. (this only saves about $2)
+If you don't want to pay for a `R-78K3.3` buck converter for the 3.3V power bus, you can install a linear voltage regulator instead. The PCB layout supports the `LM1117T-3.3` or `LD1117V33` footprint by providing an extra pad beside the original `R-78K3.3` footprint. (this only saves about $2, and will result in more internal heat)
 
 If you perform this substitution, when the input voltage reaches below about 14V, instead of providing a warning, the whole device will simply shut down abruptly.
