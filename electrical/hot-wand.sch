@@ -23192,8 +23192,8 @@ when voltage exceeds 24V</text>
 14V UVLO</text>
 <text x="76.2" y="-455.168" size="0.8128" layer="97" rot="R180">rated 36V max</text>
 <text x="20.32" y="-27.432" size="1.016" layer="97">lowest voltage rating
-on this bus is 31V</text>
-<text x="136.144" y="-585.216" size="1.27" layer="97" rot="R180" align="top-left">rated 80V max</text>
+on this bus is 36V</text>
+<text x="136.144" y="-585.216" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>
 <text x="113.792" y="-600.964" size="0.8128" layer="97" rot="R180" align="top-left">rated 65V max</text>
 <text x="156.464" y="-633.476" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>
 <text x="27.94" y="-583.946" size="1.016" layer="97">theoretically handles 8S
