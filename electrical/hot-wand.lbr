@@ -11897,6 +11897,7 @@ Source: www.st.com, BAT60J.pdf</description>
 <smd name="7" x="2.795" y="0.635" dx="1.02" dy="0.61" layer="1"/>
 <smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
 <smd name="9" x="0.69" y="0" dx="3.81" dy="3.91" layer="1"/>
+<wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
 </package>
 <package name="POWERPAK-SO8-X2">
 <wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="51"/>
