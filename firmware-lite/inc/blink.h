@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 // Voltage ranges always select distinct low- and high-voltage patterns.
@@ -27,6 +28,9 @@ void blink_init(void);
 
 // Advance non-blocking pattern playback; call once per application loop.
 void blink_task(void);
+
+// Force both LEDs off while disabled; restart the selected pattern when enabled.
+void blink_set_enabled(bool enabled);
 
 // Select and immediately restart the pattern for a confirmed system state.
 void blink_set_pattern(blink_voltage_t voltage, blink_power_t power);

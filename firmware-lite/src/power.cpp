@@ -49,6 +49,7 @@ constexpr uint32_t kHighToLowThresholdMv = kVoltageThresholdMv - (kVoltageHyster
 constexpr uint32_t kMinimumRfStartDelayMs = 500;
 constexpr uint32_t kChangeSettleTimeMs    = 2000;
 constexpr uint32_t kReportIntervalMs      = 1000;
+constexpr uint32_t kPowerSwitchSampleMs   = 100;
 
 /*
  * RF power mappings are kept here for easy product tuning. Normal mode uses
@@ -112,6 +113,9 @@ enum class PowerMode : uint8_t
 bool g_hardwareInitialized   = false;
 bool g_inputStateInitialized = false;
 bool g_appliedStateValid     = false;
+bool g_powerSwitchSampled    = false;
+bool g_shutdownRequested     = false;
+bool g_shutdownApplied       = false;
 
 VoltageRange g_voltageRange        = VoltageRange::Low;
 VoltageRange g_appliedVoltageRange = VoltageRange::Low;
@@ -121,6 +125,7 @@ PowerMode    g_appliedPowerMode    = PowerMode::Normal;
 uint32_t g_voltageChangedMs = 0;
 uint32_t g_powerChangedMs   = 0;
 uint32_t g_lastReportMs     = 0;
+uint32_t g_lastPowerSwitchSampleMs = 0;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -130,6 +135,7 @@ static void            apply_state(uint32_t voltageMv);
 static VoltageRange    update_voltage_range(VoltageRange currentRange, uint32_t voltageMv);
 static VoltageRange    initial_voltage_range(uint32_t voltageMv);
 static void            initialize_hardware();
+static void            sample_power_switch(uint32_t currentTimeMs);
 static PowerMode       read_power_mode();
 static uint8_t         power_percent(PowerMode powerMode, uint32_t voltageMv);
 static blink_voltage_t blink_voltage(VoltageRange voltageRange);
@@ -147,6 +153,24 @@ void pwrmgt_task(void)
     initialize_hardware();
 
     const uint32_t  currentTimeMs = millis();
+    sample_power_switch(currentTimeMs);
+    if (g_shutdownRequested)
+    {
+        if (!g_shutdownApplied)
+        {
+            rfgen_set(0);
+            blink_set_enabled(false);
+            g_shutdownApplied = true;
+        }
+        return;
+    }
+
+    if (g_shutdownApplied)
+    {
+        blink_set_enabled(true);
+        g_shutdownApplied = false;
+    }
+
     const uint32_t  voltageMv     = pwrmgt_read_voltage_mv();
     const PowerMode powerMode     = read_power_mode();
 
@@ -275,6 +299,9 @@ static void initialize_hardware()
     pinMode(SEL2_PIN, INPUT_PULLUP);
     pinMode(SEL3_PIN, INPUT_PULLUP);
 
+    // The power switch grounds this input to request shutdown.
+    pinMode(POWER_SWITCH_PIN, INPUT_PULLUP);
+
     // The PCB connects two alternative module pads to the voltage-sense net.
     // Only ADC_PIN may interact with it. INPUT disables the other pad's output
     // driver, and writing LOW while it is an input explicitly disables any
@@ -295,6 +322,19 @@ static void initialize_hardware()
     analogReadResolution(12);
 
     g_hardwareInitialized = true;
+}
+
+static void sample_power_switch(uint32_t currentTimeMs)
+{
+    if (g_powerSwitchSampled &&
+        (static_cast<uint32_t>(currentTimeMs - g_lastPowerSwitchSampleMs) < kPowerSwitchSampleMs))
+    {
+        return;
+    }
+
+    g_lastPowerSwitchSampleMs = currentTimeMs;
+    g_shutdownRequested       = (digitalRead(POWER_SWITCH_PIN) == LOW);
+    g_powerSwitchSampled      = true;
 }
 
 static PowerMode read_power_mode()

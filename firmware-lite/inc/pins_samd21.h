@@ -17,6 +17,9 @@
 #define SEL2_PIN D5 // XIAO D5/A5, SAMD21 PA09.
 #define SEL3_PIN D4 // XIAO D4/A4, SAMD21 PA08.
 
+// Active-low power switch: XIAO D9/A9, SAMD21 PA05.
+#define POWER_SWITCH_PIN D9
+
 // Both footprint pads are connected to the voltage-sense net. This target uses
 // XIAO D8/A8 (SAMD21 PA07) for ADC and must leave D2 high-impedance.
 #define ADC_PIN D8

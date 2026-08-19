@@ -70,6 +70,7 @@ constexpr BlinkPattern kPatterns[kPatternCount] = {
 // -----------------------------------------------------------------------------
 
 bool          g_initialized       = false;
+bool          g_enabled           = true;
 bool          g_patternSelected   = false;
 uint8_t       g_patternIndex      = 0;
 uint8_t       g_playbackIndex     = 0;
@@ -113,7 +114,7 @@ void blink_init(void)
 void blink_task(void)
 {
     // No pattern is valid until pwrmgt_task() applies the boot inputs.
-    if (!g_initialized || !g_patternSelected)
+    if (!g_initialized || !g_enabled || !g_patternSelected)
     {
         return;
     }
@@ -143,6 +144,31 @@ void blink_task(void)
     }
 
     start_next_command(currentTimeMs);
+}
+
+void blink_set_enabled(bool enabled)
+{
+    if (enabled == g_enabled)
+    {
+        return;
+    }
+
+    g_enabled = enabled;
+    if (!g_initialized)
+    {
+        return;
+    }
+
+    if (!g_enabled)
+    {
+        led_off();
+        return;
+    }
+
+    if (g_patternSelected)
+    {
+        restart_pattern();
+    }
 }
 
 void blink_set_pattern(blink_voltage_t voltage, blink_power_t power)

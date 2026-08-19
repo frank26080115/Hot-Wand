@@ -16,6 +16,9 @@
 #define SEL2_PIN D5
 #define SEL3_PIN D4
 
+// Active-low power switch: XIAO D9 is RP2040 GPIO4.
+#define POWER_SWITCH_PIN D9
+
 // Both footprint pads are connected to the voltage-sense net. This target uses
 // XIAO D2 for ADC and must leave D8 high-impedance.
 #define ADC_PIN D2
@@ -35,5 +38,8 @@
 // Power-selection jumpers: names match their connector pin numbers.
 #define SEL2_PIN 5
 #define SEL3_PIN 4
+
+// Active-low power switch.
+#define POWER_SWITCH_PIN 28
 
 #endif
