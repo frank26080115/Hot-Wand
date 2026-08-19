@@ -8953,6 +8953,7 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
 <smd name="10" x="0.69" y="1.15" dx="3.81" dy="1.7" layer="1"/>
 <smd name="9" x="0.69" y="-1.15" dx="3.81" dy="1.7" layer="1"/>
+<wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
 </package>
 <package name="HEATSINK-ATS-PCB1046">
 <wire x1="-11.9" y1="0" x2="11.9" y2="0" width="1.2" layer="151"/>
@@ -10242,23 +10243,14 @@ Max Component Height - 25.57mm</description>
 <wire x1="2.96" y1="-1.525" x2="2.96" y2="1.525" width="0.1" layer="51"/>
 <wire x1="2.96" y1="1.525" x2="-0.09" y2="1.525" width="0.1" layer="51"/>
 <wire x1="-0.09" y1="1.525" x2="-0.09" y2="-1.525" width="0.1" layer="51"/>
-<wire x1="0.743" y1="1.525" x2="2.243" y2="1.525" width="0.2" layer="21"/>
-<wire x1="2.243" y1="1.525" x2="2.243" y2="1.525" width="0.2" layer="21"/>
 <wire x1="2.243" y1="1.525" x2="0.743" y2="1.525" width="0.2" layer="21"/>
-<wire x1="0.743" y1="1.525" x2="0.743" y2="1.525" width="0.2" layer="21"/>
-<wire x1="0.493" y1="-1.525" x2="2.493" y2="-1.525" width="0.2" layer="21"/>
-<wire x1="2.493" y1="-1.525" x2="2.493" y2="-1.525" width="0.2" layer="21"/>
 <wire x1="2.493" y1="-1.525" x2="0.493" y2="-1.525" width="0.2" layer="21"/>
-<wire x1="0.493" y1="-1.525" x2="0.493" y2="-1.525" width="0.2" layer="21"/>
 <wire x1="-1.495" y1="2.525" x2="4.365" y2="2.525" width="0.1" layer="51"/>
 <wire x1="4.365" y1="2.525" x2="4.365" y2="-2.525" width="0.1" layer="51"/>
 <wire x1="4.365" y1="-2.525" x2="-1.495" y2="-2.525" width="0.1" layer="51"/>
 <wire x1="-1.495" y1="-2.525" x2="-1.495" y2="2.525" width="0.1" layer="51"/>
-<wire x1="-1.307" y1="1" x2="-1.307" y2="1" width="0.2" layer="21"/>
 <wire x1="-1.307" y1="1" x2="-1.107" y2="1" width="0.2" layer="21" curve="180"/>
-<wire x1="-1.107" y1="1" x2="-1.107" y2="1" width="0.2" layer="21"/>
 <wire x1="-1.107" y1="1" x2="-1.307" y2="1" width="0.2" layer="21" curve="180"/>
-<wire x1="-1.307" y1="1" x2="-1.307" y2="1" width="0.2" layer="21"/>
 <wire x1="-1.307" y1="1" x2="-1.107" y2="1" width="0.2" layer="21" curve="180"/>
 <smd name="1" x="0" y="0.99" dx="0.99" dy="0.405" layer="1"/>
 <smd name="2" x="0" y="0.33" dx="0.99" dy="0.405" layer="1"/>
@@ -10269,6 +10261,7 @@ Max Component Height - 25.57mm</description>
 <smd name="7" x="2.985" y="0.33" dx="0.76" dy="0.405" layer="1"/>
 <smd name="8" x="2.985" y="0.99" dx="0.76" dy="0.405" layer="1"/>
 <smd name="9" x="1.993" y="0" dx="1.725" dy="2.235" layer="1"/>
+<wire x1="0.8" y1="1.3" x2="0.8" y2="-1.3" width="0.2" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -22755,8 +22748,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="GND33" library="hot-wand" deviceset="GND" device=""/>
-<part name="R14" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100Ω">
-<attribute name="JLCPARTNUM" value="C22775"/>
+<part name="R14" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
+<attribute name="JLCPARTNUM" value="C441975"/>
 </part>
 <part name="IC1" library="hot-wand" deviceset="V_REG_78XX" device="-BUCK" value="12V R-78K12-2.0">
 <attribute name="JLC-DNP" value="1"/>
@@ -23100,6 +23093,11 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="Q7" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
 </part>
+<part name="D14" library="hot-wand" deviceset="DIODE-ZENER" device="-BZT52" value="3V6">
+<attribute name="JLCPARTNUM" value="C840638"/>
+<attribute name="PARTNUM" value="ESDLC3V3D3B-TP;CDSOD323-T03SC;SD03LCC"/>
+</part>
+<part name="GND65" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -23961,6 +23959,12 @@ curr meas</text>
 <attribute name="VALUE" x="180.848" y="-633.984" size="1.778" layer="96" rot="MR180"/>
 <attribute name="JLC-DNP" x="193.04" y="-640.08" size="1.778" layer="96" rot="MR90" display="off"/>
 </instance>
+<instance part="D14" gate="G$1" x="101.6" y="-462.28" smashed="yes" rot="R90">
+<attribute name="NAME" x="99.5934" y="-464.566" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="97.3074" y="-464.566" size="1.778" layer="96" rot="R90"/>
+<attribute name="JLCPARTNUM" x="101.6" y="-462.28" size="1.778" layer="96" rot="R90" display="off"/>
+</instance>
+<instance part="GND65" gate="1" x="101.6" y="-469.9"/>
 </instances>
 <busses>
 </busses>
@@ -24548,6 +24552,11 @@ curr meas</text>
 <wire x1="261.62" y1="-25.4" x2="264.16" y2="-25.4" width="0.1524" layer="91"/>
 <wire x1="264.16" y1="-25.4" x2="264.16" y2="-27.94" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="D14" gate="G$1" pin="A"/>
+<pinref part="GND65" gate="1" pin="GND"/>
+<wire x1="101.6" y1="-464.82" x2="101.6" y2="-467.36" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="RF-OUT" class="0">
 <segment>
@@ -24688,9 +24697,13 @@ curr meas</text>
 <wire x1="96.52" y1="-444.5" x2="96.52" y2="-454.66" width="0.1524" layer="91"/>
 <pinref part="IC2" gate="G$1" pin="OUT"/>
 <wire x1="96.52" y1="-454.66" x2="91.44" y2="-454.66" width="0.1524" layer="91"/>
-<wire x1="96.52" y1="-454.66" x2="111.76" y2="-454.66" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="-454.66" x2="101.6" y2="-454.66" width="0.1524" layer="91"/>
 <junction x="96.52" y="-454.66"/>
 <junction x="111.76" y="-454.66"/>
+<pinref part="D14" gate="G$1" pin="C"/>
+<wire x1="101.6" y1="-454.66" x2="111.76" y2="-454.66" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="-459.74" x2="101.6" y2="-454.66" width="0.1524" layer="91"/>
+<junction x="101.6" y="-454.66"/>
 </segment>
 <segment>
 <pinref part="P+11" gate="G$1" pin="3.3V"/>
