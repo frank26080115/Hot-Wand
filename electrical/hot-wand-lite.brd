@@ -179,6 +179,7 @@
 </polygon>
 <wire x1="18.1" y1="46.2" x2="18.1" y2="45.3" width="0" layer="41"/>
 <wire x1="21.1" y1="46.5" x2="21.1" y2="45.5" width="0" layer="41"/>
+<text x="101.6" y="45.4" size="1.016" layer="25" rot="R90">PWR-DIS</text>
 </plain>
 <libraries>
 <library name="hot-wand">
@@ -932,6 +933,10 @@ Max Component Height - 1.45mm</description>
 <rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
 <rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
 </package>
+<package name="1X02_LONGPADS">
+<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+</package>
 </packages>
 </library>
 </libraries>
@@ -1535,6 +1540,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLC-DNP" value="1" x="19.6" y="46.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="17.4" y="46.3" size="0.8128" layer="25" rot="R90" align="center"/>
 </element>
+<element name="JP4" library="hot-wand" package="1X02_LONGPADS" value="" x="104" y="47" rot="R90"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1981,6 +1987,11 @@ Max Component Height - 1.45mm</description>
 <via x="44" y="40.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="42" y="40.9" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.2" y="16.7" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="JP4" pad="1"/>
+<via x="98" y="48.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="94" y="48.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="90" y="48.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="85" y="49" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -2779,6 +2790,13 @@ Max Component Height - 1.45mm</description>
 <wire x1="10.6" y1="37.5" x2="11.3" y2="36.8" width="0.2032" layer="16"/>
 <wire x1="11.3" y1="36.8" x2="11.3" y2="36.1" width="0.2032" layer="16"/>
 <wire x1="11.3" y1="36.1" x2="11.6" y2="36.1" width="0.2032" layer="16"/>
+</signal>
+<signal name="PWR-DIS">
+<contactref element="U1" pad="10"/>
+<contactref element="JP4" pad="2"/>
+<wire x1="104" y1="49.54" x2="86.26" y2="49.54" width="0.4064" layer="16"/>
+<wire x1="86.26" y1="49.54" x2="85.46" y2="50.34" width="0.4064" layer="16"/>
+<wire x1="85.46" y1="50.34" x2="85.46" y2="54.68" width="0.4064" layer="16"/>
 </signal>
 </signals>
 </board>
