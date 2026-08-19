@@ -1946,8 +1946,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-1.27" y="1.27" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
 <package name="1X02_LONGPADS">
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="1" x="0" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
 </package>
 <package name="1X02_NO_SILK">
 <pad name="1" x="0" y="0" drill="1.016" diameter="1.8796" rot="R90"/>

@@ -14429,6 +14429,8 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
 </part>
+<part name="JP4" library="hot-wand" deviceset="M02" device="PTH3"/>
+<part name="GND10" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14818,6 +14820,8 @@ for measurement</text>
 <attribute name="NAME" x="175.006" y="-524.764" size="1.778" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="187.706" y="-521.97" size="1.778" layer="96" rot="MR0"/>
 </instance>
+<instance part="JP4" gate="G$1" x="226.06" y="-325.12"/>
+<instance part="GND10" gate="1" x="236.22" y="-330.2"/>
 </instances>
 <busses>
 </busses>
@@ -15097,6 +15101,12 @@ for measurement</text>
 <pinref part="JP5" gate="G$1" pin="7"/>
 <wire x1="228.6" y1="-589.28" x2="226.06" y2="-589.28" width="0.1524" layer="91"/>
 <label x="226.06" y="-589.28" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="JP4" gate="G$1" pin="1"/>
+<pinref part="GND10" gate="1" pin="GND"/>
+<wire x1="233.68" y1="-325.12" x2="236.22" y2="-325.12" width="0.1524" layer="91"/>
+<wire x1="236.22" y1="-325.12" x2="236.22" y2="-327.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+24V" class="0">
@@ -15773,6 +15783,18 @@ for measurement</text>
 <pinref part="Q5" gate="G$1" pin="S"/>
 <wire x1="172.72" y1="-525.78" x2="167.64" y2="-525.78" width="0.1524" layer="91"/>
 <junction x="167.64" y="-525.78"/>
+</segment>
+</net>
+<net name="PWR-DIS" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="PA5_A9_D9_MISO"/>
+<wire x1="106.68" y1="-332.74" x2="109.22" y2="-332.74" width="0.1524" layer="91"/>
+<label x="109.22" y="-332.74" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="JP4" gate="G$1" pin="2"/>
+<wire x1="233.68" y1="-322.58" x2="238.76" y2="-322.58" width="0.1524" layer="91"/>
+<label x="238.76" y="-322.58" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
