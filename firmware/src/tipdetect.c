@@ -12,9 +12,11 @@ confirmed to be removed, and it latches the fault until the user resets it.
 
 #include "tipdetect.h"
 
+#include "fault.h"
 #include "pins.h"
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
+#include "systick.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -35,6 +37,8 @@ confirmed to be removed, and it latches the fault until the user resets it.
 #define TIPDETECT_TIMER_IRQ_PRIORITY 0
 #define TIPDETECT_EXTI_IRQ_PRIORITY  0
 #define TIPDETECT_EXTI4_15_MASK      0xFFF0
+#define TIPDETECT_EDGE_DECAY_MS      100
+#define TIPDETECT_EDGE_FAULT_COUNT   10
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -44,6 +48,8 @@ static TIM_HandleTypeDef tipdetect_timer;
 static volatile bool     tipdetect_initialized;
 static volatile bool     tipdetect_tip_present;
 static volatile bool     tipdetect_triggered = true;
+static volatile uint32_t tipdetect_edge_count;
+static uint32_t          tipdetect_edge_decay_ms;
 
 _Static_assert((HSE_VALUE % 10000) == 0, "HSE frequency must be an exact multiple of 10 kHz");
 _Static_assert((TIPDETECT_TIMER_DIVIDER >= 1) && (TIPDETECT_TIMER_DIVIDER <= TIPDETECT_COUNTS_PER_PERIOD),
@@ -112,9 +118,11 @@ void tipdetect_init(void)
     __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
     HAL_NVIC_ClearPendingIRQ(TIM17_IRQn);
 
-    tipdetect_tip_present = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
-    tipdetect_triggered   = !tipdetect_tip_present;
-    tipdetect_initialized = true;
+    tipdetect_tip_present   = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
+    tipdetect_triggered     = !tipdetect_tip_present;
+    tipdetect_edge_count    = 0;
+    tipdetect_edge_decay_ms = systick_get_ms();
+    tipdetect_initialized   = true;
 
     HAL_NVIC_SetPriority(TIM17_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(TIM17_IRQn);
@@ -129,9 +137,33 @@ void tipdetect_init(void)
 
 void tipdetect_task(void)
 {
-    /* Edge qualification and fault latching are interrupt-driven. This hook is
-     * retained so tip detection fits the main-loop task interface. The explicit
-     * latched-reset API replaces the legacy automatic RF restart. */
+    uint32_t edge_count;
+    uint32_t interrupt_state;
+    uint32_t now;
+
+    now             = systick_get_ms();
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+
+    edge_count = tipdetect_edge_count;
+    if ((uint32_t)(now - tipdetect_edge_decay_ms) >= TIPDETECT_EDGE_DECAY_MS)
+    {
+        tipdetect_edge_decay_ms = now;
+        if (tipdetect_edge_count > 0)
+        {
+            tipdetect_edge_count--;
+        }
+    }
+
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+
+    if (edge_count > TIPDETECT_EDGE_FAULT_COUNT)
+    {
+        show_fault("TIP\nDETEC\nMALFU", true);
+    }
 }
 
 void tipdetect_reset(void)
@@ -170,6 +202,7 @@ void EXTI4_15_IRQHandler_Impl(void)
 
     if ((pending & TIP_DET_PINn) != 0)
     {
+        tipdetect_edge_count++;
         CLEAR_BIT(EXTI->IMR, TIP_DET_PINn);
         __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
         pending &= ~TIP_DET_PINn;
