@@ -7,10 +7,9 @@
  * channel,
  * producing an indefinite hardware-only loop of the generated table.
  *
- * The RF output must never be left
- * continuously high. Reconfiguration first
- * latches a zero compare at a PWM boundary, then disconnects a known-low
- * pin.
+ * Live reconfiguration lets the active DMA table finish and arms the next one
+ * while PWM remains enabled. Explicit stop requests still latch a zero compare
+ * before disconnecting the PWM pin.
  */
 
 #include "rfgen_internal.h"
@@ -21,12 +20,18 @@
 #include <hardware/pwm.h>
 #include <hardware/structs/dma.h>
 #include <hardware/structs/pwm.h>
+#include <hardware/sync.h>
 
 #include "hotwandlite.h"
 
 #ifdef RFGEN_MUTED_DEBUG
 
 bool rfgen_platform_start(const uint32_t*, uint16_t)
+{
+    return false;
+}
+
+bool rfgen_platform_change(const uint32_t*, uint16_t)
 {
     return false;
 }
@@ -70,7 +75,9 @@ static bool initialize_hardware();
 static bool initialize_dma();
 static bool validate_table(const uint32_t* periodTable, uint16_t periodCount);
 static void stop_dma();
+static void configure_dma_loop(const uint32_t* periodTable, uint16_t periodCount);
 static void start_output(const uint32_t* periodTable, uint16_t periodCount);
+static void change_output(const uint32_t* periodTable, uint16_t periodCount);
 
 // -----------------------------------------------------------------------------
 // Platform Interface
@@ -92,6 +99,17 @@ bool rfgen_platform_start(const uint32_t* periodTable, uint16_t periodCount)
     // this backend defensive if it is ever called directly.
     rfgen_platform_stop();
     start_output(periodTable, periodCount);
+    return true;
+}
+
+bool rfgen_platform_change(const uint32_t* periodTable, uint16_t periodCount)
+{
+    if (!validate_table(periodTable, periodCount) || !g_pwmRunning || !g_dmaRunning)
+    {
+        return false;
+    }
+
+    change_output(periodTable, periodCount);
     return true;
 }
 
@@ -220,6 +238,23 @@ static void start_output(const uint32_t* periodTable, uint16_t periodCount)
     pwm_set_wrap(g_pwmSlice, static_cast<uint16_t>(periodTable[0]));
     pwm_set_chan_level(g_pwmSlice, g_pwmChannel, 0);
 
+    configure_dma_loop(periodTable, periodCount);
+
+    // The data channel waits for the first PWM-wrap DREQ. Thereafter its
+    // completion invokes the reload channel, which retriggers it indefinitely.
+    dma_start_channel_mask(1ul << g_dataDma);
+    g_dmaRunning = true;
+
+    gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
+    pwm_set_enabled(g_pwmSlice, true);
+    g_pwmRunning = true;
+
+    // The fixed pulse width becomes active at the next PWM boundary.
+    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, kPwmHighClocks);
+}
+
+static void configure_dma_loop(const uint32_t* periodTable, uint16_t periodCount)
+{
     dma_channel_config dataConfig = dma_channel_get_default_config(static_cast<uint>(g_dataDma));
     channel_config_set_transfer_data_size(&dataConfig, DMA_SIZE_32);
     channel_config_set_read_increment(&dataConfig, true);
@@ -252,18 +287,26 @@ static void start_output(const uint32_t* periodTable, uint16_t periodCount)
                           &g_dmaReadAddress,
                           1,
                           false);
+}
 
-    // The data channel waits for the first PWM-wrap DREQ. Thereafter its
-    // completion invokes the reload channel, which retriggers it indefinitely.
+static void change_output(const uint32_t* periodTable, uint16_t periodCount)
+{
+    /*
+     * Prevent another reload, then let the current table reach its final
+     * entry. PWM and its fixed compare remain enabled throughout. Interrupts
+     * are masked only during this sub-millisecond handoff so the next DMA block
+     * is armed before the old final period expires.
+     */
+    const uint32_t interruptState = save_and_disable_interrupts();
+    hw_clear_bits(&dma_hw->ch[g_reloadDma].ctrl_trig, DMA_CH0_CTRL_TRIG_EN_BITS);
+    dma_channel_abort(static_cast<uint>(g_reloadDma));
+    while (dma_channel_is_busy(static_cast<uint>(g_dataDma)))
+    {
+    }
+
+    configure_dma_loop(periodTable, periodCount);
     dma_start_channel_mask(1ul << g_dataDma);
-    g_dmaRunning = true;
-
-    gpio_set_function(RFGEN_PIN, GPIO_FUNC_PWM);
-    pwm_set_enabled(g_pwmSlice, true);
-    g_pwmRunning = true;
-
-    // The fixed pulse width becomes active at the next PWM boundary.
-    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, kPwmHighClocks);
+    restore_interrupts(interruptState);
 }
 
 #endif // RFGEN_MUTED_DEBUG

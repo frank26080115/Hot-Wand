@@ -50,10 +50,43 @@ constexpr uint32_t kMinimumRfStartDelayMs = 500;
 constexpr uint32_t kChangeSettleTimeMs    = 2000;
 constexpr uint32_t kReportIntervalMs      = 1000;
 
-/* Hardware-mode mappings are kept here for easy product tuning. */
-constexpr uint8_t kEcoRfPowerPercent    = 50;
-constexpr uint8_t kNormalRfPowerPercent = 75;
-constexpr uint8_t kSportRfPowerPercent  = 100;
+/*
+ * RF power mappings are kept here for easy product tuning. Normal mode uses
+ * the two voltage/power points to define its linear slope.
+ */
+constexpr uint8_t  kEcoRfPowerPercent              = 70;
+constexpr uint8_t  kSportRfPowerPercent            = 100;
+constexpr uint32_t kNormalFullPowerVoltageMv       = 21000;
+constexpr uint8_t  kNormalFullPowerPercent         = 100;
+constexpr uint32_t kNormalReferenceVoltageMv       = 36000;
+constexpr uint8_t  kNormalReferencePowerPercent    = 56;
+
+static_assert(kNormalFullPowerVoltageMv < kNormalReferenceVoltageMv, "Normal power voltage range is invalid");
+static_assert(kNormalFullPowerPercent > kNormalReferencePowerPercent, "Normal power must fall as voltage rises");
+static_assert(kNormalReferencePowerPercent >= RFGEN_MINIMUM_POWER_PERCENT, "Normal reference power is below RF minimum");
+
+constexpr uint32_t normal_power_drop(uint32_t voltageMv)
+{
+    return static_cast<uint32_t>(
+        (static_cast<uint64_t>(voltageMv - kNormalFullPowerVoltageMv) *
+             (kNormalFullPowerPercent - kNormalReferencePowerPercent) +
+         ((kNormalReferenceVoltageMv - kNormalFullPowerVoltageMv) / 2u)) /
+        (kNormalReferenceVoltageMv - kNormalFullPowerVoltageMv));
+}
+
+constexpr uint8_t normal_power_percent(uint32_t voltageMv)
+{
+    return (voltageMv <= kNormalFullPowerVoltageMv)
+               ? kNormalFullPowerPercent
+               : ((normal_power_drop(voltageMv) >= (kNormalFullPowerPercent - RFGEN_MINIMUM_POWER_PERCENT))
+                      ? RFGEN_MINIMUM_POWER_PERCENT
+                      : static_cast<uint8_t>(kNormalFullPowerPercent - normal_power_drop(voltageMv)));
+}
+
+static_assert(normal_power_percent(21000) == 100, "Normal mode must be full power at 21 V");
+static_assert(normal_power_percent(28500) == 78, "Normal mode midpoint is incorrect");
+static_assert(normal_power_percent(36000) == 56, "Normal mode must be 56 percent at 36 V");
+static_assert(normal_power_percent(40000) == 44, "Normal mode must remain linear above 36 V");
 
 // -----------------------------------------------------------------------------
 // Types
@@ -93,12 +126,12 @@ uint32_t g_lastReportMs     = 0;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void            apply_state();
+static void            apply_state(uint32_t voltageMv);
 static VoltageRange    update_voltage_range(VoltageRange currentRange, uint32_t voltageMv);
 static VoltageRange    initial_voltage_range(uint32_t voltageMv);
 static void            initialize_hardware();
 static PowerMode       read_power_mode();
-static uint8_t         power_percent(PowerMode powerMode);
+static uint8_t         power_percent(PowerMode powerMode, uint32_t voltageMv);
 static blink_voltage_t blink_voltage(VoltageRange voltageRange);
 static blink_power_t   blink_power(PowerMode powerMode);
 static void            report_readings(uint32_t currentTimeMs, uint32_t voltageMv, PowerMode powerMode);
@@ -152,12 +185,20 @@ void pwrmgt_task(void)
             return;
         }
 
-        apply_state();
+        apply_state(voltageMv);
         return;
     }
 
     const bool voltageIsStable = static_cast<uint32_t>(currentTimeMs - g_voltageChangedMs) >= kChangeSettleTimeMs;
     const bool powerIsStable   = static_cast<uint32_t>(currentTimeMs - g_powerChangedMs) >= kChangeSettleTimeMs;
+
+    // Once a selected mode is confirmed, its RF target may follow voltage
+    // without changing any of the independently debounced LED state.
+    if (powerIsStable && (g_powerMode == g_appliedPowerMode))
+    {
+        rfgen_set(power_percent(g_powerMode, voltageMv));
+    }
+
     if (!voltageIsStable || !powerIsStable)
     {
         return;
@@ -165,7 +206,7 @@ void pwrmgt_task(void)
 
     if ((g_voltageRange != g_appliedVoltageRange) || (g_powerMode != g_appliedPowerMode))
     {
-        apply_state();
+        apply_state(voltageMv);
     }
 }
 
@@ -188,10 +229,9 @@ uint32_t pwrmgt_read_voltage_mv(void)
 
 namespace
 {
-static void apply_state()
+static void apply_state(uint32_t voltageMv)
 {
-    // RF power and the visible status always change as one confirmed state.
-    rfgen_set(power_percent(g_powerMode));
+    rfgen_set(power_percent(g_powerMode, voltageMv));
     blink_set_pattern(blink_voltage(g_voltageRange), blink_power(g_powerMode));
 
     g_appliedVoltageRange = g_voltageRange;
@@ -234,12 +274,19 @@ static void initialize_hardware()
     // Open jumpers read HIGH; a fitted jumper pulls its selector input LOW.
     pinMode(SEL2_PIN, INPUT_PULLUP);
     pinMode(SEL3_PIN, INPUT_PULLUP);
+
+    // The PCB connects two alternative module pads to the voltage-sense net.
+    // Only ADC_PIN may interact with it. INPUT disables the other pad's output
+    // driver, and writing LOW while it is an input explicitly disables any
+    // Arduino-style internal pull-up that may previously have been enabled.
+    pinMode(ADC_UNUSED_PIN, INPUT);
+    digitalWrite(ADC_UNUSED_PIN, LOW);
     pinMode(ADC_PIN, INPUT);
 
 #if defined(HOT_WAND_TARGET_XIAO_SAMD21)
     // The SAMD21 core requires an explicit selection of its 3.3 V supply.
     analogReference(AR_DEFAULT);
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040)
+#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
     // RP2040 ADC reference selection is fixed in hardware; this Arduino core
     // intentionally has no analogReference() API.
 #else
@@ -265,7 +312,7 @@ static PowerMode read_power_mode()
     return PowerMode::Normal;
 }
 
-static uint8_t power_percent(PowerMode powerMode)
+static uint8_t power_percent(PowerMode powerMode, uint32_t voltageMv)
 {
     switch (powerMode)
     {
@@ -277,7 +324,7 @@ static uint8_t power_percent(PowerMode powerMode)
 
     case PowerMode::Normal:
     default:
-        return kNormalRfPowerPercent;
+        return normal_power_percent(voltageMv);
     }
 }
 

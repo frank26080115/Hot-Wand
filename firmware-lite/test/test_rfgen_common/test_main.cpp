@@ -9,16 +9,17 @@ namespace
 enum class Event : uint8_t
 {
     Stop,
-    Delay,
     Start,
+    Change,
     ForceLow,
 };
 
-Event    g_events[8];
-uint8_t  g_eventCount     = 0;
-uint32_t g_lastDelayMs    = 0;
-bool     g_outputIsLow    = true;
-bool     g_platformStarts = true;
+Event           g_events[8];
+uint8_t         g_eventCount      = 0;
+bool            g_outputIsLow     = true;
+bool            g_platformStarts  = true;
+bool            g_platformChanges = true;
+const uint32_t* g_platformTable   = nullptr;
 
 void record_event(Event event)
 {
@@ -29,10 +30,11 @@ void record_event(Event event)
 void reset_fixture()
 {
     rfgen_test_reset_state();
-    g_eventCount     = 0;
-    g_lastDelayMs    = 0;
-    g_outputIsLow    = true;
-    g_platformStarts = true;
+    g_eventCount      = 0;
+    g_outputIsLow     = true;
+    g_platformStarts  = true;
+    g_platformChanges = true;
+    g_platformTable   = nullptr;
 }
 
 void assert_full_prefix(const uint32_t* table, uint16_t count, uint32_t pwmTop)
@@ -78,7 +80,7 @@ void test_representative_samd21_tables()
         {75,  47,  kMinimumBlankTop          },
         {80,  61,  kMinimumBlankTop          },
         {94,  229, kMinimumBlankTop          },
-        {95,  12,  kPwmTop                   },
+        {95,  277, kMinimumBlankTop          },
         {100, 12,  kPwmTop                   },
     };
 
@@ -188,11 +190,8 @@ void test_runtime_transition_order_and_repetition()
     TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
     TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::ForceLow), static_cast<int>(g_events[0]));
 #else
-    TEST_ASSERT_EQUAL_UINT8(3, g_eventCount);
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[0]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Delay), static_cast<int>(g_events[1]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[2]));
-    TEST_ASSERT_EQUAL_UINT32(RFGEN_POWER_CHANGE_PAUSE_MS, g_lastDelayMs);
+    TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[0]));
 #endif
     TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
 
@@ -205,10 +204,8 @@ void test_runtime_transition_order_and_repetition()
     TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
     TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::ForceLow), static_cast<int>(g_events[0]));
 #else
-    TEST_ASSERT_EQUAL_UINT8(3, g_eventCount);
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[0]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Delay), static_cast<int>(g_events[1]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[2]));
+    TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Change), static_cast<int>(g_events[0]));
 #endif
     TEST_ASSERT_EQUAL_UINT16(47, g_rfgenPeriodCount);
 
@@ -231,36 +228,59 @@ void test_platform_start_failure_returns_to_off()
     g_platformStarts = false;
     rfgen_set(75);
 
-    TEST_ASSERT_EQUAL_UINT8(4, g_eventCount);
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[0]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Delay), static_cast<int>(g_events[1]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[2]));
-    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[3]));
+    TEST_ASSERT_EQUAL_UINT8(2, g_eventCount);
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[0]));
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[1]));
     TEST_ASSERT_EQUAL_UINT16(0, g_rfgenPeriodCount);
     TEST_ASSERT_TRUE(g_outputIsLow);
+}
+
+void test_platform_change_failure_keeps_previous_waveform()
+{
+    reset_fixture();
+    rfgen_set(50);
+    TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
+
+    g_eventCount      = 0;
+    g_platformChanges = false;
+    rfgen_set(75);
+
+    TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Change), static_cast<int>(g_events[0]));
+    TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
+    TEST_ASSERT_FALSE(g_outputIsLow);
 }
 #endif
 } // namespace
 
-bool rfgen_platform_start(const uint32_t*, uint16_t)
+bool rfgen_platform_start(const uint32_t* periodTable, uint16_t)
 {
     record_event(Event::Start);
     TEST_ASSERT_TRUE(g_outputIsLow);
     g_outputIsLow = !g_platformStarts;
+    if (g_platformStarts)
+    {
+        g_platformTable = periodTable;
+    }
     return g_platformStarts;
+}
+
+bool rfgen_platform_change(const uint32_t* periodTable, uint16_t)
+{
+    record_event(Event::Change);
+    TEST_ASSERT_FALSE(g_outputIsLow);
+    TEST_ASSERT_NOT_EQUAL(g_platformTable, periodTable);
+    if (g_platformChanges)
+    {
+        g_platformTable = periodTable;
+    }
+    return g_platformChanges;
 }
 
 void rfgen_platform_stop(void)
 {
     record_event(Event::Stop);
     g_outputIsLow = true;
-}
-
-void rfgen_test_delay_ms(uint32_t delayMs)
-{
-    record_event(Event::Delay);
-    TEST_ASSERT_TRUE(g_outputIsLow);
-    g_lastDelayMs = delayMs;
 }
 
 void rfgen_test_force_output_low(void)
@@ -285,6 +305,7 @@ int main(int, char**)
     RUN_TEST(test_runtime_transition_order_and_repetition);
 #ifndef RFGEN_MUTED_DEBUG
     RUN_TEST(test_platform_start_failure_returns_to_off);
+    RUN_TEST(test_platform_change_failure_keeps_previous_waveform);
 #endif
     return UNITY_END();
 }

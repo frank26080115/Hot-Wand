@@ -7,9 +7,9 @@
  * PERB after
  * every TCC0 overflow.
  *
- * The RF output must never be left continuously high. Reconfiguration first
- * latches a
- * zero compare at a PWM boundary, then disconnects a known-low pin.
+ * Live reconfiguration stages a new circular descriptor and lets the active
+ * table finish before DMA selects it. Explicit stop requests still latch a
+ * zero compare before disconnecting the timer pin.
  */
 
 #include "rfgen_internal.h"
@@ -23,6 +23,11 @@
 #ifdef RFGEN_MUTED_DEBUG
 
 bool rfgen_platform_start(const uint32_t*, uint16_t)
+{
+    return false;
+}
+
+bool rfgen_platform_change(const uint32_t*, uint16_t)
 {
     return false;
 }
@@ -63,6 +68,7 @@ static bool initialize_hardware(const uint32_t* periodTable, uint16_t periodCoun
 static bool initialize_dma(const uint32_t* periodTable, uint16_t periodCount);
 static bool validate_table(const uint32_t* periodTable, uint16_t periodCount);
 static bool start_output(const uint32_t* periodTable, uint16_t periodCount);
+static void change_output(const uint32_t* periodTable, uint16_t periodCount);
 static void wait_for_tcc0_sync();
 
 // -----------------------------------------------------------------------------
@@ -85,6 +91,17 @@ bool rfgen_platform_start(const uint32_t* periodTable, uint16_t periodCount)
     // this backend defensive if it is ever called directly.
     rfgen_platform_stop();
     return start_output(periodTable, periodCount);
+}
+
+bool rfgen_platform_change(const uint32_t* periodTable, uint16_t periodCount)
+{
+    if (!validate_table(periodTable, periodCount) || !g_dmaRunning || (TCC0->CTRLA.bit.ENABLE == 0u))
+    {
+        return false;
+    }
+
+    change_output(periodTable, periodCount);
+    return true;
 }
 
 void rfgen_platform_stop(void)
@@ -261,6 +278,57 @@ static bool start_output(const uint32_t* periodTable, uint16_t periodCount)
     }
 
     return true;
+}
+
+static void change_output(const uint32_t* periodTable, uint16_t periodCount)
+{
+    const uint8_t channel = g_periodDma.getChannel();
+    volatile DmacDescriptor* const writebackDescriptors =
+        reinterpret_cast<volatile DmacDescriptor*>(DMAC->WRBADDR.reg);
+    volatile DmacDescriptor& writeback = writebackDescriptors[channel];
+
+    /*
+     * The active descriptor runs from the DMAC writeback area, leaving the
+     * circular base descriptor free to stage the next table. Reserve several
+     * carrier periods for the descriptor writes, then wait for the old block's
+     * completion flag. TCC0 and its fixed compare never stop.
+     */
+    uint32_t interruptState = 0;
+    for (;;)
+    {
+        while (writeback.BTCNT.reg <= 4u)
+        {
+        }
+
+        interruptState = __get_PRIMASK();
+        __disable_irq();
+        if (writeback.BTCNT.reg > 4u)
+        {
+            break;
+        }
+        if (interruptState == 0u)
+        {
+            __enable_irq();
+        }
+    }
+
+    DMAC->CHID.bit.ID     = channel;
+    DMAC->CHINTFLAG.reg   = DMAC_CHINTFLAG_TCMPL;
+    g_periodDma.changeDescriptor(g_periodDescriptor,
+                                 const_cast<uint32_t*>(periodTable),
+                                 const_cast<uint32_t*>(&TCC0->PERB.reg),
+                                 periodCount);
+    __DMB();
+    if (interruptState == 0u)
+    {
+        __enable_irq();
+    }
+
+    do
+    {
+        DMAC->CHID.bit.ID = channel;
+    } while ((DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL) == 0u);
+    DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
 }
 
 static void wait_for_tcc0_sync()

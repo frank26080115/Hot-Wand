@@ -26,10 +26,10 @@
 #ifdef RFGEN_UNIT_TEST
 static constexpr uint32_t kPwmPeriodClocks = 102u;
 static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
-#elif defined(HOT_WAND_TARGET_XIAO_SAMD21) && !defined(HOT_WAND_TARGET_XIAO_RP2040)
+#elif defined(HOT_WAND_TARGET_XIAO_SAMD21)
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040) && !defined(HOT_WAND_TARGET_XIAO_SAMD21)
+#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint32_t kMaximumPwmTop   = UINT16_MAX;
 #else
@@ -54,14 +54,17 @@ static_assert(kPwmTop <= kMaximumPwmTop, "RF PWM period does not fit the target 
 // Shared waveform and state
 // -----------------------------------------------------------------------------
 
-alignas(16) uint32_t g_rfgenPeriodTable[RFGEN_TABLE_CAPACITY];
 uint16_t g_rfgenPeriodCount = 0;
 
 namespace
 {
+alignas(16) uint32_t g_primaryPeriodTable[RFGEN_TABLE_CAPACITY];
+alignas(16) uint32_t g_alternatePeriodTable[RFGEN_TABLE_CAPACITY];
+
 uint8_t g_requestedPowerPercent  = 0;
 uint8_t g_normalizedPowerPercent = 0;
 uint8_t g_appliedPowerPercent    = 0;
+const uint32_t* g_activePeriodTable = nullptr;
 
 static uint64_t absolute_difference(uint64_t left, uint64_t right);
 static bool     candidate_is_better(uint64_t candidateNumerator,
@@ -79,10 +82,8 @@ static bool append_blank(uint32_t* periodTable,
                          uint64_t  blankPeriodCount,
                          uint32_t  pwmPeriodClocks,
                          uint32_t  maximumPwmTop);
+static uint32_t* inactive_period_table();
 static void force_output_low();
-#ifndef RFGEN_MUTED_DEBUG
-static void transition_delay();
-#endif
 } // namespace
 
 // -----------------------------------------------------------------------------
@@ -105,6 +106,7 @@ void rfgen_set(uint8_t powerPercent)
 #endif
         g_rfgenPeriodCount    = 0;
         g_appliedPowerPercent = 0;
+        g_activePeriodTable   = nullptr;
         return;
     }
 
@@ -113,42 +115,49 @@ void rfgen_set(uint8_t powerPercent)
         return;
     }
 
-#ifdef RFGEN_MUTED_DEBUG
-    // Muted builds retain the generated data for inspection but never touch a
-    // timer or DMA peripheral and do not simulate the hardware transition wait.
-    force_output_low();
-#else
-    // Each platform stop routine waits until the active compare is zero before
-    // disabling or disconnecting the peripheral. The delay therefore begins
-    // only after the RF pin is known to be low.
-    rfgen_platform_stop();
-    transition_delay();
-#endif
-
+    uint32_t* nextPeriodTable = inactive_period_table();
+    uint16_t  nextPeriodCount = 0;
     if (!rfgen_generate_period_table(normalizedPowerPercent,
                                      kPwmPeriodClocks,
                                      kMaximumPwmTop,
-                                     g_rfgenPeriodTable,
+                                     nextPeriodTable,
                                      RFGEN_TABLE_CAPACITY,
-                                     &g_rfgenPeriodCount))
+                                     &nextPeriodCount))
     {
-        g_rfgenPeriodCount    = 0;
-        g_appliedPowerPercent = 0;
-        force_output_low();
+        if (g_appliedPowerPercent == 0u)
+        {
+            g_rfgenPeriodCount = 0;
+            force_output_low();
+        }
         return;
     }
 
 #ifdef RFGEN_MUTED_DEBUG
+    // Muted builds retain the generated data for inspection but never touch a
+    // timer or DMA peripheral.
+    force_output_low();
+    g_activePeriodTable   = nextPeriodTable;
+    g_rfgenPeriodCount    = nextPeriodCount;
     g_appliedPowerPercent = normalizedPowerPercent;
 #else
-    if (!rfgen_platform_start(g_rfgenPeriodTable, g_rfgenPeriodCount))
+    const bool platformSucceeded = (g_appliedPowerPercent == 0u)
+                                       ? rfgen_platform_start(nextPeriodTable, nextPeriodCount)
+                                       : rfgen_platform_change(nextPeriodTable, nextPeriodCount);
+    if (!platformSucceeded)
     {
-        rfgen_platform_stop();
-        g_rfgenPeriodCount    = 0;
-        g_appliedPowerPercent = 0;
+        // A failed initial start returns to the safe off state. A failed live
+        // handoff leaves the previous waveform running and its buffer intact.
+        if (g_appliedPowerPercent == 0u)
+        {
+            rfgen_platform_stop();
+            g_rfgenPeriodCount  = 0;
+            g_activePeriodTable = nullptr;
+        }
         return;
     }
 
+    g_activePeriodTable   = nextPeriodTable;
+    g_rfgenPeriodCount    = nextPeriodCount;
     g_appliedPowerPercent = normalizedPowerPercent;
 #endif
 }
@@ -167,7 +176,7 @@ void rfgen_print_table(void)
 
     for (uint16_t index = 0; index < g_rfgenPeriodCount; ++index)
     {
-        const uint32_t top            = g_rfgenPeriodTable[index];
+        const uint32_t top            = g_activePeriodTable[index];
         const uint32_t carrierPeriods = (top + 1u) / kPwmPeriodClocks;
 
         Serial.print(index);
@@ -436,6 +445,11 @@ static bool append_blank(uint32_t* periodTable,
     return true;
 }
 
+static uint32_t* inactive_period_table()
+{
+    return (g_activePeriodTable == g_primaryPeriodTable) ? g_alternatePeriodTable : g_primaryPeriodTable;
+}
+
 static void force_output_low()
 {
 #ifdef RFGEN_UNIT_TEST
@@ -446,16 +460,6 @@ static void force_output_low()
 #endif
 }
 
-#ifndef RFGEN_MUTED_DEBUG
-static void transition_delay()
-{
-#ifdef RFGEN_UNIT_TEST
-    rfgen_test_delay_ms(RFGEN_POWER_CHANGE_PAUSE_MS);
-#else
-    delay(RFGEN_POWER_CHANGE_PAUSE_MS);
-#endif
-}
-#endif
 } // namespace
 
 #ifdef RFGEN_UNIT_TEST
@@ -465,6 +469,7 @@ void rfgen_test_reset_state(void)
     g_normalizedPowerPercent = 0;
     g_appliedPowerPercent    = 0;
     g_rfgenPeriodCount       = 0;
+    g_activePeriodTable      = nullptr;
 }
 
 bool rfgen_test_append_blank(uint32_t* periodTable,
