@@ -16677,7 +16677,9 @@ Max Component Height - 25.57mm</description>
 <package name="MODULE_102010388_LOCKING">
 <wire x1="-8.9" y1="-10.5" x2="8.9" y2="-10.5" width="0.127" layer="21"/>
 <wire x1="-8.9" y1="10.5" x2="-8.9" y2="-10.5" width="0.127" layer="21"/>
-<wire x1="8.9" y1="10.5" x2="-8.9" y2="10.5" width="0.127" layer="21"/>
+<wire x1="8.9" y1="10.5" x2="4.5" y2="10.5" width="0.127" layer="21"/>
+<wire x1="4.5" y1="10.5" x2="-4.5" y2="10.5" width="0.127" layer="21"/>
+<wire x1="-4.5" y1="10.5" x2="-8.9" y2="10.5" width="0.127" layer="21"/>
 <wire x1="8.9" y1="-10.5" x2="8.9" y2="10.5" width="0.127" layer="21"/>
 <wire x1="8.9" y1="10.5" x2="8.9" y2="-10.5" width="0.127" layer="51"/>
 <wire x1="-8.9" y1="-10.5" x2="8.9" y2="-10.5" width="0.127" layer="51"/>
@@ -16710,6 +16712,9 @@ Max Component Height - 25.57mm</description>
 <pad name="12" x="7.32" y="2.54" drill="1"/>
 <pad name="13" x="7.92" y="5.08" drill="1"/>
 <pad name="14" x="7.32" y="7.62" drill="1"/>
+<wire x1="4.5" y1="10.5" x2="4.5" y2="11.9" width="0.127" layer="21"/>
+<wire x1="4.5" y1="11.9" x2="-4.5" y2="11.9" width="0.127" layer="21"/>
+<wire x1="-4.5" y1="11.9" x2="-4.5" y2="10.5" width="0.127" layer="21"/>
 </package>
 <package name="MOLEX-1X3">
 <wire x1="-1.27" y1="3.048" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
