@@ -42,8 +42,12 @@ static_assert(RFGEN_STARTUP_PERIOD_COUNT > 0u, "RF startup run must not be empty
 static_assert(RFGEN_STARTUP_PERIOD_COUNT < RFGEN_TABLE_CAPACITY, "RF table must leave room for a blank");
 static_assert(RFGEN_STARTUP_POWER_PERCENT <= RFGEN_MAXIMUM_POWER_PERCENT, "Invalid RF startup power");
 static_assert(RFGEN_MINIMUM_POWER_PERCENT > 0u, "Minimum nonzero RF power must be positive");
-static_assert(RFGEN_MINIMUM_POWER_PERCENT <= 40u, "Low-power waveform crossover must remain reachable");
-static_assert(RFGEN_CONTINUOUS_POWER_PERCENT > 40u, "Continuous RF threshold must exceed the crossover");
+static_assert((RFGEN_MINIMUM_POWER_PERCENT * (RFGEN_STARTUP_PERIOD_COUNT + RFGEN_MINIMUM_BLANK_PERIOD_COUNT)) <=
+                  (RFGEN_STARTUP_PERIOD_COUNT * RFGEN_STARTUP_POWER_PERCENT),
+              "Low-power waveform crossover must remain reachable");
+static_assert((RFGEN_CONTINUOUS_POWER_PERCENT * (RFGEN_STARTUP_PERIOD_COUNT + RFGEN_MINIMUM_BLANK_PERIOD_COUNT)) >
+                  (RFGEN_STARTUP_PERIOD_COUNT * RFGEN_STARTUP_POWER_PERCENT),
+              "Continuous RF threshold must exceed the crossover");
 static_assert(RFGEN_CONTINUOUS_POWER_PERCENT <= RFGEN_MAXIMUM_POWER_PERCENT,
               "Continuous RF threshold exceeds the public range");
 static_assert(RFGEN_TABLE_CAPACITY <= UINT16_MAX, "RF DMA table count does not fit uint16_t");
@@ -244,7 +248,9 @@ bool rfgen_generate_period_table(uint8_t   normalizedPowerPercent,
     }
 
     uint64_t blankPeriodCount = RFGEN_MINIMUM_BLANK_PERIOD_COUNT;
-    if (normalizedPowerPercent <= 40u)
+    constexpr uint32_t kStartupPowerUnits = RFGEN_STARTUP_PERIOD_COUNT * RFGEN_STARTUP_POWER_PERCENT;
+    constexpr uint32_t kBaseTotalPeriods  = RFGEN_STARTUP_PERIOD_COUNT + RFGEN_MINIMUM_BLANK_PERIOD_COUNT;
+    if ((static_cast<uint32_t>(normalizedPowerPercent) * kBaseTotalPeriods) <= kStartupPowerUnits)
     {
         blankPeriodCount = choose_low_power_blank(normalizedPowerPercent);
     }

@@ -74,13 +74,15 @@ void test_representative_samd21_tables()
     const Expectation expectations[] = {
         {30,  13,  (20u * kPeriodClocks) - 1u},
         {31,  13,  (19u * kPeriodClocks) - 1u},
-        {40,  13,  kMinimumBlankTop          },
-        {41,  13,  kMinimumBlankTop          },
-        {50,  18,  kMinimumBlankTop          },
-        {75,  47,  kMinimumBlankTop          },
-        {80,  61,  kMinimumBlankTop          },
-        {94,  229, kMinimumBlankTop          },
-        {95,  277, kMinimumBlankTop          },
+        {40,  13,  (12u * kPeriodClocks) - 1u},
+        {41,  13,  (11u * kPeriodClocks) - 1u},
+        {48,  13,  kMinimumBlankTop          },
+        {49,  13,  kMinimumBlankTop          },
+        {50,  14,  kMinimumBlankTop          },
+        {75,  35,  kMinimumBlankTop          },
+        {80,  45,  kMinimumBlankTop          },
+        {94,  166, kMinimumBlankTop          },
+        {95,  201, kMinimumBlankTop          },
         {100, 12,  kPwmTop                   },
     };
 
@@ -166,7 +168,30 @@ void test_print_samd21_tables_in_five_percent_steps()
 
         if (count == 0)
         {
-            printf("  (off; empty table)\n");
+            printf("  SUMMARY: (off; empty table)\n");
+        }
+        else
+        {
+            printf("  SUMMARY: ");
+            uint16_t runStart = 0;
+            while (runStart < count)
+            {
+                uint16_t runEnd = runStart + 1u;
+                while ((runEnd < count) && (table[runEnd] == table[runStart]))
+                {
+                    ++runEnd;
+                }
+
+                if (runStart > 0u)
+                {
+                    printf(" ; ");
+                }
+                printf("%lux%u",
+                       static_cast<unsigned long>(table[runStart] + 1u),
+                       static_cast<unsigned>(runEnd - runStart));
+                runStart = runEnd;
+            }
+            printf("\n");
         }
 
         for (uint16_t index = 0; index < count; ++index)
@@ -193,7 +218,7 @@ void test_runtime_transition_order_and_repetition()
     TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
     TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[0]));
 #endif
-    TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
+    TEST_ASSERT_EQUAL_UINT16(14, g_rfgenPeriodCount);
 
     g_eventCount = 0;
     rfgen_set(50);
@@ -207,7 +232,7 @@ void test_runtime_transition_order_and_repetition()
     TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
     TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Change), static_cast<int>(g_events[0]));
 #endif
-    TEST_ASSERT_EQUAL_UINT16(47, g_rfgenPeriodCount);
+    TEST_ASSERT_EQUAL_UINT16(35, g_rfgenPeriodCount);
 
     g_eventCount = 0;
     rfgen_set(0);
@@ -239,7 +264,7 @@ void test_platform_change_failure_keeps_previous_waveform()
 {
     reset_fixture();
     rfgen_set(50);
-    TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
+    TEST_ASSERT_EQUAL_UINT16(14, g_rfgenPeriodCount);
 
     g_eventCount      = 0;
     g_platformChanges = false;
@@ -247,7 +272,7 @@ void test_platform_change_failure_keeps_previous_waveform()
 
     TEST_ASSERT_EQUAL_UINT8(1, g_eventCount);
     TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Change), static_cast<int>(g_events[0]));
-    TEST_ASSERT_EQUAL_UINT16(18, g_rfgenPeriodCount);
+    TEST_ASSERT_EQUAL_UINT16(14, g_rfgenPeriodCount);
     TEST_ASSERT_FALSE(g_outputIsLow);
 }
 #endif
