@@ -367,10 +367,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-1.27" y="2.54" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-1.27" y="1.27" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
-<package name="1X02_LONGPADS">
-<pad name="1" x="0" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-<pad name="2" x="2.54" y="0" drill="1.1176" diameter="1.8796" shape="long" rot="R90"/>
-</package>
 <package name="1X02_NO_SILK">
 <pad name="1" x="0" y="0" drill="1.016" diameter="1.8796" rot="R90"/>
 <pad name="2" x="2.54" y="0" drill="1.016" diameter="1.8796" rot="R90"/>
@@ -8684,35 +8680,6 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="5" x="1.255" y="0" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 <smd name="4" x="1.255" y="-0.95" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 </package>
-<package name="POWERPAK-SO8-X1">
-<wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="51"/>
-<wire x1="3.075" y1="2.575" x2="3.075" y2="-2.575" width="0.127" layer="51"/>
-<wire x1="3.075" y1="-2.575" x2="-3.075" y2="-2.575" width="0.127" layer="51"/>
-<wire x1="-3.075" y1="-2.575" x2="-3.075" y2="2.575" width="0.127" layer="51"/>
-<wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="21"/>
-<wire x1="3.075" y1="-2.575" x2="-3.075" y2="-2.575" width="0.127" layer="21"/>
-<wire x1="-3.075" y1="2.575" x2="-3.075" y2="2.46" width="0.127" layer="21"/>
-<wire x1="3.075" y1="2.575" x2="3.075" y2="2.46" width="0.127" layer="21"/>
-<wire x1="-3.075" y1="-2.575" x2="-3.075" y2="-2.46" width="0.127" layer="21"/>
-<wire x1="3.075" y1="-2.575" x2="3.075" y2="-2.46" width="0.127" layer="21"/>
-<circle x="-4" y="1.905" radius="0.1" width="0.2" layer="21"/>
-<circle x="-2.5" y="1.905" radius="0.1" width="0.2" layer="51"/>
-<wire x1="-3.555" y1="2.88" x2="3.555" y2="2.88" width="0.05" layer="39"/>
-<wire x1="3.555" y1="2.88" x2="3.555" y2="-2.88" width="0.05" layer="39"/>
-<wire x1="3.555" y1="-2.88" x2="-3.555" y2="-2.88" width="0.05" layer="39"/>
-<wire x1="-3.555" y1="-2.88" x2="-3.555" y2="2.88" width="0.05" layer="39"/>
-<text x="-3.5054" y="3.00463125" size="1.271959375" layer="25">&gt;NAME</text>
-<text x="-3.503690625" y="-4.25446875" size="1.271340625" layer="27">&gt;VALUE</text>
-<smd name="1" x="-2.67" y="1.905" dx="1.27" dy="0.61" layer="1"/>
-<smd name="2" x="-2.67" y="0.635" dx="1.27" dy="0.61" layer="1"/>
-<smd name="3" x="-2.67" y="-0.635" dx="1.27" dy="0.61" layer="1"/>
-<smd name="4" x="-2.67" y="-1.905" dx="1.27" dy="0.61" layer="1"/>
-<smd name="5" x="2.795" y="-1.905" dx="1.02" dy="0.61" layer="1"/>
-<smd name="6" x="2.795" y="-0.635" dx="1.02" dy="0.61" layer="1"/>
-<smd name="7" x="2.795" y="0.635" dx="1.02" dy="0.61" layer="1"/>
-<smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
-<smd name="9" x="0.69" y="0" dx="3.81" dy="3.91" layer="1"/>
-</package>
 <package name="QFN-16">
 <wire x1="-2.932" y1="2.9066" x2="-2.3986" y2="2.9066" width="0.2032" layer="21"/>
 <wire x1="-2.932" y1="2.9066" x2="-2.932" y2="2.2462" width="0.2032" layer="21"/>
@@ -10045,7 +10012,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="9.5" y1="2" x2="9.5" y2="-2" width="0" layer="41"/>
 <wire x1="9.5" y1="-2" x2="-10" y2="-2" width="0" layer="41"/>
 <wire x1="-10" y1="-2" x2="-10" y2="2" width="0" layer="41"/>
-<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
 <package name="TRIM_TC33X-2-103E">
 <description>&lt;b&gt;TC33X-2&lt;/b&gt;&lt;br&gt;
@@ -10262,6 +10229,40 @@ Max Component Height - 25.57mm</description>
 <smd name="8" x="1.55" y="0.99" dx="0.76" dy="0.405" layer="1"/>
 <smd name="9" x="0.558" y="0" dx="1.725" dy="2.235" layer="1"/>
 <wire x1="-0.635" y1="1.3" x2="-0.635" y2="-1.3" width="0.2" layer="21"/>
+</package>
+<package name="1X02_LONGPADS">
+<pad name="1" x="0" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
+<pad name="2" x="2.54" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
+</package>
+<package name="POWERPAK-SO8-X1">
+<wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="51"/>
+<wire x1="3.075" y1="2.575" x2="3.075" y2="-2.575" width="0.127" layer="51"/>
+<wire x1="3.075" y1="-2.575" x2="-3.075" y2="-2.575" width="0.127" layer="51"/>
+<wire x1="-3.075" y1="-2.575" x2="-3.075" y2="2.575" width="0.127" layer="51"/>
+<wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="21"/>
+<wire x1="3.075" y1="-2.575" x2="-3.075" y2="-2.575" width="0.127" layer="21"/>
+<wire x1="-3.075" y1="2.575" x2="-3.075" y2="2.46" width="0.127" layer="21"/>
+<wire x1="3.075" y1="2.575" x2="3.075" y2="2.46" width="0.127" layer="21"/>
+<wire x1="-3.075" y1="-2.575" x2="-3.075" y2="-2.46" width="0.127" layer="21"/>
+<wire x1="3.075" y1="-2.575" x2="3.075" y2="-2.46" width="0.127" layer="21"/>
+<circle x="-4" y="1.905" radius="0.1" width="0.2" layer="21"/>
+<circle x="-2.5" y="1.905" radius="0.1" width="0.2" layer="51"/>
+<wire x1="-3.555" y1="2.88" x2="3.555" y2="2.88" width="0.05" layer="39"/>
+<wire x1="3.555" y1="2.88" x2="3.555" y2="-2.88" width="0.05" layer="39"/>
+<wire x1="3.555" y1="-2.88" x2="-3.555" y2="-2.88" width="0.05" layer="39"/>
+<wire x1="-3.555" y1="-2.88" x2="-3.555" y2="2.88" width="0.05" layer="39"/>
+<text x="-3.5054" y="3.00463125" size="1.271959375" layer="25">&gt;NAME</text>
+<text x="-3.503690625" y="-4.25446875" size="1.271340625" layer="27">&gt;VALUE</text>
+<smd name="1" x="-2.67" y="1.905" dx="1.27" dy="0.61" layer="1"/>
+<smd name="2" x="-2.67" y="0.635" dx="1.27" dy="0.61" layer="1"/>
+<smd name="3" x="-2.67" y="-0.635" dx="1.27" dy="0.61" layer="1"/>
+<smd name="4" x="-2.67" y="-1.905" dx="1.27" dy="0.61" layer="1"/>
+<smd name="5" x="2.795" y="-1.905" dx="1.02" dy="0.61" layer="1"/>
+<smd name="6" x="2.795" y="-0.635" dx="1.02" dy="0.61" layer="1"/>
+<smd name="7" x="2.795" y="0.635" dx="1.02" dy="0.61" layer="1"/>
+<smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
+<smd name="9" x="0.69" y="0" dx="3.81" dy="3.91" layer="1"/>
+<wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -10882,7 +10883,7 @@ Max Component Height - 25.57mm</description>
 </symbol>
 <symbol name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND</text>
-<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260820A</text>
 <wire x1="-10.16" y1="2.54" x2="10.16" y2="2.54" width="0.254" layer="94"/>
 <wire x1="10.16" y1="2.54" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>

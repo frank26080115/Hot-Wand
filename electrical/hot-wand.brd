@@ -1394,7 +1394,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="9.5" y1="2" x2="9.5" y2="-2" width="0" layer="41"/>
 <wire x1="9.5" y1="-2" x2="-10" y2="-2" width="0" layer="41"/>
 <wire x1="-10" y1="-2" x2="-10" y2="2" width="0" layer="41"/>
-<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-9" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
 <package name="STANDOFF-M2.5-4.5MMHEX">
 <pad name="1" x="0" y="0" drill="2.5" diameter="5.2" thermals="no"/>

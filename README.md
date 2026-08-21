@@ -24,6 +24,7 @@ I implemented a rather fancy GUI, fancier than what is available on a Metcal sol
  * user triggered sleep mode (basically, the power switch)
  * idle detection for automatic screen dimming and sleep
  * various fault detection
+ * easter eggs! try and find them
 
 The XT-30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
@@ -42,7 +43,7 @@ While this is a DIY project and not a commercial product, it is a difficult proj
 In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz handpieces. This is the inexpensive version. It is a clone of the [Radio Thermal](https://radiothermal.com/), but with modifications
 
  * layout to fit in a Hammond MFG enclosure
- * uses battery XT-30 connector or USB-PD (with negotiation for 28V) for input
+ * uses battery XT-30 connector or USB-PD for input
  * uses a Seeed Studio XIAO SAMD21 microcontroller
  * user selectable power levels via externally pluggable jumpers
  * internal glass fuse

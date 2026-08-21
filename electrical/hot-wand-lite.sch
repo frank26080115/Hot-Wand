@@ -6882,7 +6882,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="11.8" y1="2" x2="11.8" y2="-2" width="0" layer="41"/>
 <wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
-<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
 <package name="TO247-COMBO">
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
@@ -7632,7 +7632,7 @@ Max Component Height - 25.57mm</description>
 </symbol>
 <symbol name="PCB-ART-VERSION-LITE">
 <text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND LITE</text>
-<text x="-12.7" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-12.7" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260820A</text>
 <wire x1="-16.51" y1="2.54" x2="15.24" y2="2.54" width="0.254" layer="94"/>
 <wire x1="15.24" y1="2.54" x2="15.24" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="15.24" y1="-5.08" x2="-16.51" y2="-5.08" width="0.254" layer="94"/>

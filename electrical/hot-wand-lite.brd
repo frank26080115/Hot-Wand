@@ -865,7 +865,7 @@ Max Component Height - 1.45mm</description>
 <wire x1="11.8" y1="2" x2="11.8" y2="-2" width="0" layer="41"/>
 <wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
-<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260727A</text>
+<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
 <package name="1206-SJ">
 <smd name="1" x="-1.2" y="0" dx="2" dy="1.8" layer="1"/>
