@@ -7241,6 +7241,23 @@ Max Component Height - 25.57mm</description>
 <wire x1="-1.8" y1="1.1" x2="-1.8" y2="1.6" width="0.127" layer="21"/>
 <wire x1="-2" y1="1.1" x2="-2" y2="1.6" width="0.127" layer="21"/>
 </package>
+<package name="SWITCH-SLW-864574-5A-RA-N-D">
+<pad name="C" x="0" y="0" drill="0.8" shape="octagon"/>
+<pad name="R" x="2" y="0" drill="0.8" shape="octagon"/>
+<pad name="L" x="-2" y="0" drill="0.8" shape="octagon"/>
+<pad name="M2" x="4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
+<pad name="M1" x="-4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
+<wire x1="-4.3" y1="2.3" x2="-2" y2="2.3" width="0.127" layer="21"/>
+<wire x1="-2" y1="2.3" x2="2" y2="2.3" width="0.127" layer="21"/>
+<wire x1="2" y1="2.3" x2="4.3" y2="2.3" width="0.127" layer="21"/>
+<wire x1="4.3" y1="2.3" x2="4.3" y2="-2.3" width="0.127" layer="21"/>
+<wire x1="4.3" y1="-2.3" x2="-4.3" y2="-2.3" width="0.127" layer="21"/>
+<wire x1="-4.3" y1="-2.3" x2="-4.3" y2="2.3" width="0.127" layer="21"/>
+<wire x1="-2" y1="7.2" x2="2" y2="7.2" width="0.127" layer="21"/>
+<wire x1="-2" y1="7.2" x2="-2" y2="2.3" width="0.127" layer="21"/>
+<wire x1="2" y1="7.2" x2="2" y2="2.3" width="0.127" layer="21"/>
+<text x="-4" y="-4" size="0.8128" layer="25">&gt;NAME</text>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -7677,6 +7694,24 @@ Max Component Height - 25.57mm</description>
 <pin name="5" x="5.08" y="5.08" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
 <pin name="6" x="5.08" y="7.62" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
 <pin name="7" x="5.08" y="10.16" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
+</symbol>
+<symbol name="TOGGLE">
+<wire x1="0" y1="0" x2="2.54" y2="1.27" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-2.54" x2="3.175" y2="-2.54" width="0.127" layer="94"/>
+<wire x1="2.54" y1="2.54" x2="3.175" y2="2.54" width="0.1524" layer="94"/>
+<circle x="2.54" y="2.54" radius="0.3592" width="0.2032" layer="94"/>
+<circle x="2.54" y="-2.54" radius="0.3592" width="0.2032" layer="94"/>
+<circle x="0" y="0" radius="0.3592" width="0.2032" layer="94"/>
+<text x="-1.905" y="-6.35" size="1.778" layer="95">&gt;NAME</text>
+<text x="-2.54" y="3.81" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="P" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+<pin name="S" x="5.08" y="-2.54" visible="off" length="short" direction="pas" rot="R180"/>
+<pin name="O" x="5.08" y="2.54" visible="off" length="short" direction="pas" rot="R180"/>
+</symbol>
+<symbol name="MNT-2X">
+<pin name="MNT1" x="-2.54" y="-2.54" visible="off" length="short" rot="R90"/>
+<pin name="MNT2" x="2.54" y="-2.54" visible="off" length="short" rot="R90"/>
+<wire x1="-5.08" y1="0" x2="5.08" y2="0" width="0.254" layer="94" style="shortdash"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -14128,6 +14163,26 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 </device>
 </devices>
 </deviceset>
+<deviceset name="SWITCH-SPDT-2MNT" prefix="SW">
+<gates>
+<gate name="S" symbol="TOGGLE" x="0" y="0"/>
+<gate name="M" symbol="MNT-2X" x="0" y="-10.16"/>
+</gates>
+<devices>
+<device name="-SLW-864574-5A-RA-N-D" package="SWITCH-SLW-864574-5A-RA-N-D">
+<connects>
+<connect gate="M" pin="MNT1" pad="M1"/>
+<connect gate="M" pin="MNT2" pad="M2"/>
+<connect gate="S" pin="O" pad="L"/>
+<connect gate="S" pin="P" pad="C"/>
+<connect gate="S" pin="S" pad="R"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -14471,6 +14526,11 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
 <attribute name="JLCPARTNUM" value="C23179"/>
 </part>
+<part name="SW1" library="hot-wand" deviceset="SWITCH-SPDT-2MNT" device="-SLW-864574-5A-RA-N-D" value="">
+<attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="SLW-864574-5A-RA-N-D"/>
+</part>
+<part name="GND35" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14515,6 +14575,8 @@ if 1 core
 for measurement</text>
 <text x="199.644" y="-598.424" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V
 (26K eqv)</text>
+<text x="185.42" y="-314.96" size="1.27" layer="97" rot="R90">mess with these resistors
+if LEDs are too dim</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">
@@ -14873,10 +14935,10 @@ for measurement</text>
 <attribute name="NAME" x="175.006" y="-524.764" size="1.778" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="187.706" y="-521.97" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="JP4" gate="G$1" x="157.48" y="-335.28" rot="MR0">
-<attribute name="JLC-DNP" x="157.48" y="-335.28" size="1.778" layer="96" rot="MR0" display="off"/>
+<instance part="JP4" gate="G$1" x="162.56" y="-350.52" rot="MR0">
+<attribute name="JLC-DNP" x="162.56" y="-350.52" size="1.778" layer="96" rot="MR0" display="off"/>
 </instance>
-<instance part="GND10" gate="1" x="139.7" y="-340.36" rot="MR0"/>
+<instance part="GND10" gate="1" x="139.7" y="-355.6" rot="MR0"/>
 <instance part="TVS4" gate="G$1" x="236.22" y="-325.12" rot="R90">
 <attribute name="JLCPARTNUM" x="236.22" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
 </instance>
@@ -14897,11 +14959,17 @@ for measurement</text>
 <attribute name="VALUE" x="138.43" y="-314.198" size="1.778" layer="96" rot="MR180"/>
 <attribute name="JLCPARTNUM" x="142.24" y="-307.34" size="1.778" layer="96" rot="MR180" display="off"/>
 </instance>
-<instance part="R25" gate="G$1" x="142.24" y="-332.74" smashed="yes" rot="MR180">
-<attribute name="NAME" x="146.05" y="-331.2414" size="1.778" layer="95" rot="MR0"/>
-<attribute name="VALUE" x="146.05" y="-328.422" size="1.778" layer="96" rot="MR0"/>
-<attribute name="JLCPARTNUM" x="142.24" y="-332.74" size="1.778" layer="96" rot="MR180" display="off"/>
+<instance part="R25" gate="G$1" x="132.08" y="-347.98" smashed="yes" rot="MR180">
+<attribute name="NAME" x="135.89" y="-346.4814" size="1.778" layer="95" rot="MR0"/>
+<attribute name="VALUE" x="135.89" y="-343.662" size="1.778" layer="96" rot="MR0"/>
+<attribute name="JLCPARTNUM" x="132.08" y="-347.98" size="1.778" layer="96" rot="MR180" display="off"/>
 </instance>
+<instance part="SW1" gate="S" x="149.86" y="-325.12">
+<attribute name="JLC-DNP" x="149.86" y="-325.12" size="1.27" layer="96" display="off"/>
+<attribute name="PARTNUM" x="149.86" y="-325.12" size="1.27" layer="96" display="off"/>
+</instance>
+<instance part="SW1" gate="M" x="149.86" y="-332.74"/>
+<instance part="GND35" gate="1" x="157.48" y="-340.36"/>
 </instances>
 <busses>
 </busses>
@@ -15185,8 +15253,8 @@ for measurement</text>
 <segment>
 <pinref part="JP4" gate="G$1" pin="1"/>
 <pinref part="GND10" gate="1" pin="GND"/>
-<wire x1="149.86" y1="-335.28" x2="139.7" y2="-335.28" width="0.1524" layer="91"/>
-<wire x1="139.7" y1="-335.28" x2="139.7" y2="-337.82" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="-350.52" x2="139.7" y2="-350.52" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="-350.52" x2="139.7" y2="-353.06" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND12" gate="1" pin="GND"/>
@@ -15201,6 +15269,20 @@ for measurement</text>
 <wire x1="256.54" y1="-330.2" x2="256.54" y2="-327.66" width="0.1524" layer="91"/>
 <junction x="236.22" y="-330.2"/>
 <junction x="246.38" y="-330.2"/>
+</segment>
+<segment>
+<pinref part="SW1" gate="S" pin="S"/>
+<wire x1="154.94" y1="-327.66" x2="157.48" y2="-327.66" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="-327.66" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
+<pinref part="GND35" gate="1" pin="GND"/>
+<pinref part="SW1" gate="M" pin="MNT1"/>
+<pinref part="SW1" gate="M" pin="MNT2"/>
+<wire x1="157.48" y1="-335.28" x2="157.48" y2="-337.82" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="-335.28" x2="152.4" y2="-335.28" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="-335.28" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
+<junction x="152.4" y="-335.28"/>
+<junction x="147.32" y="-335.28"/>
+<junction x="157.48" y="-335.28"/>
 </segment>
 </net>
 <net name="+24V" class="0">
@@ -15905,8 +15987,8 @@ for measurement</text>
 </segment>
 <segment>
 <pinref part="R25" gate="G$1" pin="1"/>
-<wire x1="137.16" y1="-332.74" x2="134.62" y2="-332.74" width="0.1524" layer="91"/>
-<label x="134.62" y="-332.74" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="127" y1="-347.98" x2="124.46" y2="-347.98" width="0.1524" layer="91"/>
+<label x="124.46" y="-347.98" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -15927,7 +16009,12 @@ for measurement</text>
 <segment>
 <pinref part="JP4" gate="G$1" pin="2"/>
 <pinref part="R25" gate="G$1" pin="2"/>
-<wire x1="149.86" y1="-332.74" x2="147.32" y2="-332.74" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="-347.98" x2="139.7" y2="-347.98" width="0.1524" layer="91"/>
+<pinref part="SW1" gate="S" pin="P"/>
+<wire x1="139.7" y1="-347.98" x2="137.16" y2="-347.98" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="-325.12" x2="139.7" y2="-325.12" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="-325.12" x2="139.7" y2="-347.98" width="0.1524" layer="91"/>
+<junction x="139.7" y="-347.98"/>
 </segment>
 </net>
 </nets>
