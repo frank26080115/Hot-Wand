@@ -28,13 +28,14 @@ namespace
 /*
  * The schematic uses 4.7 kOhm above the ADC node and 470 Ohm below it, giving
  * an exact 11:1 input-to-ADC ratio.
- * Both XIAO boards use their nominal 3.3 V analog supply as the ADC full
- * scale. The per-board initialization below requests a 12-bit result.
+ * The SAMD21 and RP2040 targets use their nominal 3.3 V analog supply as the
+ * ADC full scale. ESP32 targets use the core's calibrated millivolt reading.
+ * The per-board initialization below requests a 12-bit result.
  */
 constexpr uint32_t kAdcReferenceMv    = 3300;
 constexpr uint32_t kAdcMaximumReading = 4095;
-constexpr uint32_t kDividerUpperOhms  = 4700;
-constexpr uint32_t kDividerLowerOhms  = 470;
+constexpr uint32_t kDividerUpperOhms  = 100000;
+constexpr uint32_t kDividerLowerOhms  = 4700;
 
 /*
  * A centered 500 mV hysteresis band prevents chatter around the nominal 22 V
@@ -46,10 +47,13 @@ constexpr uint32_t kVoltageHysteresisMv  = 500;
 constexpr uint32_t kLowToHighThresholdMv = kVoltageThresholdMv + (kVoltageHysteresisMv / 2);
 constexpr uint32_t kHighToLowThresholdMv = kVoltageThresholdMv - (kVoltageHysteresisMv / 2);
 
-constexpr uint32_t kMinimumRfStartDelayMs = 500;
-constexpr uint32_t kChangeSettleTimeMs    = 2000;
-constexpr uint32_t kReportIntervalMs      = 1000;
-constexpr uint32_t kPowerSwitchSampleMs   = 100;
+constexpr uint32_t kMinimumRfStartDelayMs      = 500;
+constexpr uint32_t kChangeSettleTimeMs         = 2000;
+constexpr uint32_t kReportIntervalMs           = 1000;
+constexpr uint32_t kPowerSwitchSampleMs        = 100;
+constexpr uint32_t kVoltageSampleIntervalMs    = 50;
+constexpr uint32_t kVoltageFilterDivisor       = 8;
+constexpr uint32_t kNormalRfTrackingIntervalMs = 5000;
 
 /*
  * RF power mappings are kept here for easy product tuning. Normal mode uses
@@ -110,28 +114,32 @@ enum class PowerMode : uint8_t
 // Globals
 // -----------------------------------------------------------------------------
 
-bool g_hardwareInitialized   = false;
-bool g_inputStateInitialized = false;
-bool g_appliedStateValid     = false;
-bool g_powerSwitchSampled    = false;
-bool g_shutdownRequested     = false;
-bool g_shutdownApplied       = false;
+bool g_hardwareInitialized      = false;
+bool g_inputStateInitialized    = false;
+bool g_appliedStateValid        = false;
+bool g_powerSwitchSampled       = false;
+bool g_voltageFilterInitialized = false;
+bool g_shutdownRequested        = false;
+bool g_shutdownApplied          = false;
 
 VoltageRange g_voltageRange        = VoltageRange::Low;
 VoltageRange g_appliedVoltageRange = VoltageRange::Low;
 PowerMode    g_powerMode           = PowerMode::Normal;
 PowerMode    g_appliedPowerMode    = PowerMode::Normal;
 
-uint32_t g_voltageChangedMs = 0;
-uint32_t g_powerChangedMs   = 0;
-uint32_t g_lastReportMs     = 0;
+uint32_t g_voltageChangedMs         = 0;
+uint32_t g_powerChangedMs           = 0;
+uint32_t g_lastReportMs             = 0;
 uint32_t g_lastPowerSwitchSampleMs = 0;
+uint32_t g_lastVoltageSampleMs      = 0;
+uint32_t g_filteredVoltageMv        = 0;
+uint32_t g_lastNormalRfTrackingMs   = 0;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void            apply_state(uint32_t voltageMv);
+static void            apply_state(uint32_t currentTimeMs, uint32_t voltageMv);
 static VoltageRange    update_voltage_range(VoltageRange currentRange, uint32_t voltageMv);
 static VoltageRange    initial_voltage_range(uint32_t voltageMv);
 static void            initialize_hardware();
@@ -160,6 +168,7 @@ void pwrmgt_task(void)
         {
             rfgen_set(0);
             blink_set_enabled(false);
+            g_appliedStateValid = false;
             g_shutdownApplied = true;
         }
         return;
@@ -209,18 +218,21 @@ void pwrmgt_task(void)
             return;
         }
 
-        apply_state(voltageMv);
+        apply_state(currentTimeMs, voltageMv);
         return;
     }
 
     const bool voltageIsStable = static_cast<uint32_t>(currentTimeMs - g_voltageChangedMs) >= kChangeSettleTimeMs;
     const bool powerIsStable   = static_cast<uint32_t>(currentTimeMs - g_powerChangedMs) >= kChangeSettleTimeMs;
 
-    // Once a selected mode is confirmed, its RF target may follow voltage
-    // without changing any of the independently debounced LED state.
-    if (powerIsStable && (g_powerMode == g_appliedPowerMode))
+    // In Normal mode the RF target follows the filtered battery voltage, but
+    // no faster than the battery can realistically require. Mode changes and
+    // initial startup are still applied immediately by apply_state().
+    if (powerIsStable && (g_powerMode == PowerMode::Normal) && (g_powerMode == g_appliedPowerMode) &&
+        (static_cast<uint32_t>(currentTimeMs - g_lastNormalRfTrackingMs) >= kNormalRfTrackingIntervalMs))
     {
         rfgen_set(power_percent(g_powerMode, voltageMv));
+        g_lastNormalRfTrackingMs = currentTimeMs;
     }
 
     if (!voltageIsStable || !powerIsStable)
@@ -230,7 +242,7 @@ void pwrmgt_task(void)
 
     if ((g_voltageRange != g_appliedVoltageRange) || (g_powerMode != g_appliedPowerMode))
     {
-        apply_state(voltageMv);
+        apply_state(currentTimeMs, voltageMv);
     }
 }
 
@@ -238,13 +250,46 @@ uint32_t pwrmgt_read_voltage_mv(void)
 {
     initialize_hardware();
 
-    const uint32_t     adcReading             = static_cast<uint32_t>(analogRead(ADC_PIN));
+    const uint32_t currentTimeMs = millis();
+    if (g_voltageFilterInitialized &&
+        (static_cast<uint32_t>(currentTimeMs - g_lastVoltageSampleMs) < kVoltageSampleIntervalMs))
+    {
+        return g_filteredVoltageMv;
+    }
+
     constexpr uint32_t kDividerTotalOhms      = kDividerUpperOhms + kDividerLowerOhms;
+#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+    const uint32_t     adcVoltageMv          = static_cast<uint32_t>(analogReadMilliVolts(ADC_PIN));
+    const uint64_t     conversionNumerator   = static_cast<uint64_t>(adcVoltageMv) * kDividerTotalOhms;
+    constexpr uint32_t kConversionDenominator = kDividerLowerOhms;
+#else
+    const uint32_t     adcReading             = static_cast<uint32_t>(analogRead(ADC_PIN));
     constexpr uint32_t kConversionDenominator = kAdcMaximumReading * kDividerLowerOhms;
     const uint64_t     conversionNumerator    = static_cast<uint64_t>(adcReading) * kAdcReferenceMv * kDividerTotalOhms;
+#endif
 
     // Add half the denominator so the integer conversion rounds to nearest mV.
-    return static_cast<uint32_t>((conversionNumerator + (kConversionDenominator / 2)) / kConversionDenominator);
+    const uint32_t rawVoltageMv =
+        static_cast<uint32_t>((conversionNumerator + (kConversionDenominator / 2)) / kConversionDenominator);
+
+    g_lastVoltageSampleMs = currentTimeMs;
+    if (!g_voltageFilterInitialized)
+    {
+        // Seed from the first reading so the startup interlock is not spent
+        // waiting for a filter initialized at zero to charge.
+        g_filteredVoltageMv        = rawVoltageMv;
+        g_voltageFilterInitialized = true;
+    }
+    else
+    {
+        // Light first-order low-pass filter: 7/8 previous + 1/8 new.
+        const uint64_t filteredNumerator =
+            (static_cast<uint64_t>(g_filteredVoltageMv) * (kVoltageFilterDivisor - 1u)) + rawVoltageMv;
+        g_filteredVoltageMv =
+            static_cast<uint32_t>((filteredNumerator + (kVoltageFilterDivisor / 2u)) / kVoltageFilterDivisor);
+    }
+
+    return g_filteredVoltageMv;
 }
 
 // -----------------------------------------------------------------------------
@@ -253,9 +298,18 @@ uint32_t pwrmgt_read_voltage_mv(void)
 
 namespace
 {
-static void apply_state(uint32_t voltageMv)
+static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
 {
-    rfgen_set(power_percent(g_powerMode, voltageMv));
+    // A voltage-range-only change affects the status indication immediately,
+    // but Normal-mode RF voltage tracking remains on its five-second cadence.
+    if (!g_appliedStateValid || (g_powerMode != g_appliedPowerMode))
+    {
+        rfgen_set(power_percent(g_powerMode, voltageMv));
+        if (g_powerMode == PowerMode::Normal)
+        {
+            g_lastNormalRfTrackingMs = currentTimeMs;
+        }
+    }
     blink_set_pattern(blink_voltage(g_voltageRange), blink_power(g_powerMode));
 
     g_appliedVoltageRange = g_voltageRange;
@@ -316,10 +370,16 @@ static void initialize_hardware()
 #elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
     // RP2040 ADC reference selection is fixed in hardware; this Arduino core
     // intentionally has no analogReference() API.
+#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+    // Arduino-ESP32 supplies calibrated millivolt readings. Maximum attenuation
+    // is required because the existing divider approaches the 3.3 V rail.
 #else
 #error "Unsupported target for power-management ADC setup"
 #endif
     analogReadResolution(12);
+#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+    analogSetPinAttenuation(ADC_PIN, ADC_11db);
+#endif
 
     g_hardwareInitialized = true;
 }
