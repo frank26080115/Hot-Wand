@@ -14404,11 +14404,11 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND13" library="hot-wand" deviceset="GND" device=""/>
-<part name="R22" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
-<attribute name="JLCPARTNUM" value="C23179"/>
-</part>
-<part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
+<part name="R22" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
 <attribute name="JLCPARTNUM" value="C23162"/>
+</part>
+<part name="R21" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="100K">
+<attribute name="JLCPARTNUM" value="C25803"/>
 </part>
 <part name="GND37" library="hot-wand" deviceset="GND" device=""/>
 <part name="SUPPLY4" library="hot-wand" deviceset="24V" device=""/>

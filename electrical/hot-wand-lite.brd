@@ -1484,13 +1484,13 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLC-DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="R22" library="hot-wand" package="0603-RES" value="470Ω" x="63.5" y="50.7" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C23179" x="63.5" y="50.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
+<element name="R22" library="hot-wand" package="0603-RES" value="4K7" x="63.5" y="50.7" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C23162" x="63.5" y="50.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
 <attribute name="NAME" x="65.111" y="51.538" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="65.084" y="50.443" size="0.8128" layer="28" font="fixed" rot="MR180"/>
 </element>
-<element name="R21" library="hot-wand" package="0603-RES" value="4K7" x="63.5" y="48.7" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C23162" x="63.5" y="48.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
+<element name="R21" library="hot-wand" package="0603-RES" value="100K" x="63.5" y="48.7" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C25803" x="63.5" y="48.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
 <attribute name="NAME" x="62.211" y="47.838" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="65.084" y="48.543" size="0.8128" layer="28" font="fixed" rot="MR180"/>
 </element>
