@@ -1391,6 +1391,8 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="44.657" y="63.07" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 <attribute name="VALUE" x="43.524" y="63.097" size="0.8128" layer="28" rot="MR270"/>
 <attribute name="JLCPARTNUM" value="C3858208" x="46" y="62" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="PARTNUM" value="C3216C0G2E153J160AA" x="46" y="62" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLC-DNP" value="2" x="46" y="62" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C2" library="hot-wand" package="1206" value="22n" x="36.1" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="35.743" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
@@ -1406,41 +1408,50 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="30.243" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="31.376" y="40.103" size="0.8128" layer="28" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C3862155" x="31.1" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="PARTNUM" value="GCM31C5C2E223JX03L" x="31.1" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C5" library="hot-wand" package="1206" value="15n" x="28.6" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="27.643" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
 <attribute name="VALUE" x="28.776" y="40.103" size="0.8128" layer="28" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C3858208" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="PARTNUM" value="C3216C0G2E153J160AA" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLC-DNP" value="2" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C6" library="hot-wand" package="1206" value="10n" x="59.3" y="27.3" smashed="yes" rot="MR0">
 <attribute name="NAME" x="56.67" y="26.343" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="56.697" y="27.476" size="0.8128" layer="28" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="GRM31B5C2E103JWA1L" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C7" library="hot-wand" package="1206" value="10n" x="59.3" y="29.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.73" y="30.857" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="61.703" y="29.724" size="0.8128" layer="28" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="GRM31B5C2E103JWA1L" x="59.3" y="29.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C8" library="hot-wand" package="1206" value="10n" x="59.3" y="24.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.73" y="25.857" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="61.703" y="24.724" size="0.8128" layer="28" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="24.8" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="GRM31B5C2E103JWA1L" x="59.3" y="24.8" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C9" library="hot-wand" package="1206" value="6n8" x="69" y="27.3" smashed="yes" rot="MR180">
 <attribute name="NAME" x="68.13" y="26.057" size="0.8128" layer="26" font="fixed" rot="MR180"/>
 <attribute name="VALUE" x="68.103" y="25.024" size="0.8128" layer="28" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C2182121" x="69" y="27.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="PARTNUM" value="C1206C682JCGACAUTO" x="69" y="27.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C10" library="hot-wand" package="1206" value="6n8" x="103.8" y="36" smashed="yes" rot="MR0">
 <attribute name="NAME" x="101.27" y="36.143" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="101.297" y="35.076" size="0.8128" layer="28" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C2182121" x="103.8" y="36" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="C1206C682JCGACAUTO" x="103.8" y="36" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C11" library="hot-wand" package="1206" value="1n" x="103.8" y="33.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="101.27" y="33.443" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="101.197" y="32.276" size="0.8128" layer="28" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C3859218" x="103.8" y="33.5" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="GCM31C5C3A102FX03L" x="103.8" y="33.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C12" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="470u" x="59.2" y="45.5" smashed="yes" rot="R90">
 <attribute name="VALUE" x="64.982" y="46.105" size="0.8128" layer="27" rot="R270"/>
