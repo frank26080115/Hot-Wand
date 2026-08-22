@@ -47,7 +47,7 @@ later
 > So in essence this is not as dependent on the magnitude of output current and voltage, and much more on the relative phase, which makes sense.
 > 
 
-I have represented this with an animation
+I read what he said, and it was difficult to get a nice graphic out of a simulator to represent it, so I came up with this theoretical signal animation instead:
 
 ![](imgs/current_transformer_plots/animation.apng)
 
