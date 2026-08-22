@@ -8679,38 +8679,8 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="6" x="1.255" y="0.95" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 <smd name="5" x="1.255" y="0" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 <smd name="4" x="1.255" y="-0.95" dx="1.21" dy="0.58" layer="1" roundness="25"/>
-</package>
-<package name="QFN-16">
-<wire x1="-2.932" y1="2.9066" x2="-2.3986" y2="2.9066" width="0.2032" layer="21"/>
-<wire x1="-2.932" y1="2.9066" x2="-2.932" y2="2.2462" width="0.2032" layer="21"/>
-<wire x1="2.3986" y1="2.9066" x2="2.932" y2="2.9066" width="0.2032" layer="21"/>
-<wire x1="2.932" y1="2.9066" x2="2.932" y2="2.2462" width="0.2032" layer="21"/>
-<wire x1="-2.424" y1="-2.932" x2="-2.9574" y2="-2.932" width="0.2032" layer="21"/>
-<wire x1="-2.9574" y1="-2.932" x2="-2.9574" y2="-2.2716" width="0.2032" layer="21"/>
-<wire x1="2.9574" y1="-2.932" x2="2.424" y2="-2.932" width="0.2032" layer="21"/>
-<wire x1="2.9574" y1="-2.932" x2="2.9574" y2="-2.2716" width="0.2032" layer="21"/>
-<smd name="1" x="-2.35" y="1.2" dx="0.8" dy="0.4" layer="1"/>
-<smd name="2" x="-2.35" y="0.4" dx="0.8" dy="0.4" layer="1"/>
-<smd name="3" x="-2.35" y="-0.4" dx="0.8" dy="0.4" layer="1"/>
-<smd name="4" x="-2.35" y="-1.2" dx="0.8" dy="0.4" layer="1"/>
-<smd name="5" x="-1.2" y="-2.35" dx="0.8" dy="0.35" layer="1" rot="R90"/>
-<smd name="6" x="-0.4" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="7" x="0.4" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="8" x="1.2" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="9" x="2.35" y="-1.2" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="10" x="2.35" y="-0.4" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="11" x="2.35" y="0.4" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="12" x="2.35" y="1.2" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="13" x="1.2" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="14" x="0.4" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="15" x="-0.4" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="16" x="-1.2" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="EXP" x="0" y="0" dx="3.19" dy="3.19" layer="1" stop="no" cream="no"/>
-<text x="-1.95" y="3.3" size="0.4064" layer="25">&gt;NAME</text>
-<text x="-1.9516" y="-3.6634" size="0.4064" layer="27">&gt;VALUE</text>
-<rectangle x1="-1.7" y1="-1.7" x2="1.7" y2="1.7" layer="29"/>
-<rectangle x1="-1.6" y1="-1.6" x2="1.6" y2="1.6" layer="31"/>
-<rectangle x1="-2.85" y1="2.375" x2="-2.425" y2="2.825" layer="21"/>
+<wire x1="-2.5" y1="0.9" x2="-2.5" y2="1.8" width="0.3048" layer="21"/>
+<wire x1="-2.5" y1="1.8" x2="-1.3" y2="1.8" width="0.3048" layer="21"/>
 </package>
 <package name="SAMESKY_UJC-H-G-SMT-2-P6-TR">
 <text x="-4.5" y="6.5" size="1.27" layer="25">&gt;NAME</text>
@@ -10263,6 +10233,37 @@ Max Component Height - 25.57mm</description>
 <smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
 <smd name="9" x="0.69" y="0" dx="3.81" dy="3.91" layer="1"/>
 <wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
+</package>
+<package name="QFN3030-16">
+<smd name="1" x="-1.5" y="0.75" dx="0.7" dy="0.3" layer="1"/>
+<smd name="2" x="-1.5" y="0.25" dx="0.7" dy="0.3" layer="1"/>
+<smd name="3" x="-1.5" y="-0.25" dx="0.7" dy="0.3" layer="1"/>
+<smd name="4" x="-1.5" y="-0.75" dx="0.7" dy="0.3" layer="1"/>
+<smd name="5" x="-0.75" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="6" x="-0.25" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="7" x="0.25" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="8" x="0.75" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="9" x="1.5" y="-0.75" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="10" x="1.5" y="-0.25" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="11" x="1.5" y="0.25" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="12" x="1.5" y="0.75" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="13" x="0.75" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="14" x="0.25" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="15" x="-0.25" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="16" x="-0.75" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="EXP" x="0" y="0" dx="1.7" dy="1.7" layer="1"/>
+<text x="-1.95" y="2.3" size="0.8128" layer="25">&gt;NAME</text>
+<text x="-1.9516" y="3.3366" size="0.8128" layer="27">&gt;VALUE</text>
+<wire x1="-1.6" y1="1.1" x2="-1.6" y2="1.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="1.6" x2="-1.1" y2="1.6" width="0.127" layer="21"/>
+<wire x1="1.1" y1="1.6" x2="1.6" y2="1.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="1.6" x2="1.6" y2="1.1" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-1.1" x2="1.6" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-1.6" x2="1.1" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="-1.1" y1="-1.6" x2="-1.6" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="-1.6" x2="-1.6" y2="-1.1" width="0.127" layer="21"/>
+<wire x1="-1.8" y1="1.1" x2="-1.8" y2="1.6" width="0.127" layer="21"/>
+<wire x1="-2" y1="1.1" x2="-2" y2="1.6" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -19979,7 +19980,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <gate name="A" symbol="AP53781" x="0" y="0"/>
 </gates>
 <devices>
-<device name="-QFN16" package="QFN-16">
+<device name="-QFN3030-16" package="QFN3030-16">
 <connects>
 <connect gate="A" pin="CC1" pad="11"/>
 <connect gate="A" pin="CC2" pad="12"/>
@@ -22834,9 +22835,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="GND38" library="hot-wand" deviceset="GND" device=""/>
-<part name="U5" library="hot-wand" deviceset="AP53781" device="-QFN16" value="AP53781">
+<part name="U5" library="hot-wand" deviceset="AP53781" device="-QFN3030-16" value="AP53781">
 <attribute name="JLCPARTNUM" value="C52730979"/>
-<attribute name="JLC_ROTATION" value="180"/>
+<attribute name="JLC_ROTATION" value="270"/>
 </part>
 <part name="JP2" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
 <attribute name="JLC-DNP" value="1"/>
@@ -22858,7 +22859,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3">
-<attribute name="JLCPARTNUM" value="C17667"/>
+<attribute name="JLCPARTNUM" value="C23159"/>
 </part>
 <part name="R31" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>

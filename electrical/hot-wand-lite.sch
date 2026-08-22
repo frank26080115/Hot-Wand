@@ -5370,6 +5370,8 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="6" x="1.255" y="0.95" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 <smd name="5" x="1.255" y="0" dx="1.21" dy="0.58" layer="1" roundness="25"/>
 <smd name="4" x="1.255" y="-0.95" dx="1.21" dy="0.58" layer="1" roundness="25"/>
+<wire x1="-2.5" y1="0.9" x2="-2.5" y2="1.8" width="0.3048" layer="21"/>
+<wire x1="-2.5" y1="1.8" x2="-1.3" y2="1.8" width="0.3048" layer="21"/>
 </package>
 <package name="POWERPAK-SO8-X1">
 <wire x1="-3.075" y1="2.575" x2="3.075" y2="2.575" width="0.127" layer="51"/>
@@ -5400,38 +5402,6 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
 <smd name="9" x="0.69" y="0" dx="3.81" dy="3.91" layer="1"/>
 <wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
-</package>
-<package name="QFN-16">
-<wire x1="-2.932" y1="2.9066" x2="-2.3986" y2="2.9066" width="0.2032" layer="21"/>
-<wire x1="-2.932" y1="2.9066" x2="-2.932" y2="2.2462" width="0.2032" layer="21"/>
-<wire x1="2.3986" y1="2.9066" x2="2.932" y2="2.9066" width="0.2032" layer="21"/>
-<wire x1="2.932" y1="2.9066" x2="2.932" y2="2.2462" width="0.2032" layer="21"/>
-<wire x1="-2.424" y1="-2.932" x2="-2.9574" y2="-2.932" width="0.2032" layer="21"/>
-<wire x1="-2.9574" y1="-2.932" x2="-2.9574" y2="-2.2716" width="0.2032" layer="21"/>
-<wire x1="2.9574" y1="-2.932" x2="2.424" y2="-2.932" width="0.2032" layer="21"/>
-<wire x1="2.9574" y1="-2.932" x2="2.9574" y2="-2.2716" width="0.2032" layer="21"/>
-<smd name="1" x="-2.35" y="1.2" dx="0.8" dy="0.4" layer="1"/>
-<smd name="2" x="-2.35" y="0.4" dx="0.8" dy="0.4" layer="1"/>
-<smd name="3" x="-2.35" y="-0.4" dx="0.8" dy="0.4" layer="1"/>
-<smd name="4" x="-2.35" y="-1.2" dx="0.8" dy="0.4" layer="1"/>
-<smd name="5" x="-1.2" y="-2.35" dx="0.8" dy="0.35" layer="1" rot="R90"/>
-<smd name="6" x="-0.4" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="7" x="0.4" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="8" x="1.2" y="-2.35" dx="0.8" dy="0.4" layer="1" rot="R90"/>
-<smd name="9" x="2.35" y="-1.2" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="10" x="2.35" y="-0.4" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="11" x="2.35" y="0.4" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="12" x="2.35" y="1.2" dx="0.8" dy="0.4" layer="1" rot="R180"/>
-<smd name="13" x="1.2" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="14" x="0.4" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="15" x="-0.4" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="16" x="-1.2" y="2.35" dx="0.8" dy="0.4" layer="1" rot="R270"/>
-<smd name="EXP" x="0" y="0" dx="3.19" dy="3.19" layer="1" stop="no" cream="no"/>
-<text x="-1.95" y="3.3" size="0.4064" layer="25">&gt;NAME</text>
-<text x="-1.9516" y="-3.6634" size="0.4064" layer="27">&gt;VALUE</text>
-<rectangle x1="-1.7" y1="-1.7" x2="1.7" y2="1.7" layer="29"/>
-<rectangle x1="-1.6" y1="-1.6" x2="1.6" y2="1.6" layer="31"/>
-<rectangle x1="-2.85" y1="2.375" x2="-2.425" y2="2.825" layer="21"/>
 </package>
 <package name="SAMESKY_UJC-H-G-SMT-2-P6-TR">
 <text x="-4.5" y="6.5" size="1.27" layer="25">&gt;NAME</text>
@@ -7239,6 +7209,37 @@ Max Component Height - 25.57mm</description>
 <wire x1="4.5" y1="10.5" x2="4.5" y2="11.9" width="0.127" layer="21"/>
 <wire x1="4.5" y1="11.9" x2="-4.5" y2="11.9" width="0.127" layer="21"/>
 <wire x1="-4.5" y1="11.9" x2="-4.5" y2="10.5" width="0.127" layer="21"/>
+</package>
+<package name="QFN3030-16">
+<smd name="1" x="-1.5" y="0.75" dx="0.7" dy="0.3" layer="1"/>
+<smd name="2" x="-1.5" y="0.25" dx="0.7" dy="0.3" layer="1"/>
+<smd name="3" x="-1.5" y="-0.25" dx="0.7" dy="0.3" layer="1"/>
+<smd name="4" x="-1.5" y="-0.75" dx="0.7" dy="0.3" layer="1"/>
+<smd name="5" x="-0.75" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="6" x="-0.25" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="7" x="0.25" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="8" x="0.75" y="-1.5" dx="0.7" dy="0.3" layer="1" rot="R90"/>
+<smd name="9" x="1.5" y="-0.75" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="10" x="1.5" y="-0.25" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="11" x="1.5" y="0.25" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="12" x="1.5" y="0.75" dx="0.7" dy="0.3" layer="1" rot="R180"/>
+<smd name="13" x="0.75" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="14" x="0.25" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="15" x="-0.25" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="16" x="-0.75" y="1.5" dx="0.7" dy="0.3" layer="1" rot="R270"/>
+<smd name="EXP" x="0" y="0" dx="1.7" dy="1.7" layer="1"/>
+<text x="-1.95" y="2.3" size="0.8128" layer="25">&gt;NAME</text>
+<text x="-1.9516" y="3.3366" size="0.8128" layer="27">&gt;VALUE</text>
+<wire x1="-1.6" y1="1.1" x2="-1.6" y2="1.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="1.6" x2="-1.1" y2="1.6" width="0.127" layer="21"/>
+<wire x1="1.1" y1="1.6" x2="1.6" y2="1.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="1.6" x2="1.6" y2="1.1" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-1.1" x2="1.6" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-1.6" x2="1.1" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="-1.1" y1="-1.6" x2="-1.6" y2="-1.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="-1.6" x2="-1.6" y2="-1.1" width="0.127" layer="21"/>
+<wire x1="-1.8" y1="1.1" x2="-1.8" y2="1.6" width="0.127" layer="21"/>
+<wire x1="-2" y1="1.1" x2="-2" y2="1.6" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -11708,7 +11709,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <gate name="A" symbol="AP53781" x="0" y="0"/>
 </gates>
 <devices>
-<device name="-QFN16" package="QFN-16">
+<device name="-QFN3030-16" package="QFN3030-16">
 <connects>
 <connect gate="A" pin="CC1" pad="11"/>
 <connect gate="A" pin="CC2" pad="12"/>
@@ -14185,7 +14186,7 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
 </part>
-<part name="C16" library="hot-wand" deviceset="CAP_POL" device="1206" value="10u">
+<part name="C16" library="hot-wand" deviceset="CAP_POL" device="1206-KIT" value="10u">
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="TAJA106K016TNJ;T491A106K016AT"/>
 </part>
@@ -14220,9 +14221,9 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="GND27" library="hot-wand" deviceset="GND" device=""/>
-<part name="U4" library="hot-wand" deviceset="AP53781" device="-QFN16" value="AP53781">
+<part name="U4" library="hot-wand" deviceset="AP53781" device="-QFN3030-16" value="AP53781">
 <attribute name="JLCPARTNUM" value="C52730979"/>
-<attribute name="JLC_ROTATION" value="180"/>
+<attribute name="JLC_ROTATION" value="270"/>
 </part>
 <part name="JP2" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
 <attribute name="JLC-DNP" value="1"/>
@@ -14244,7 +14245,7 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3">
-<attribute name="JLCPARTNUM" value="C17667"/>
+<attribute name="JLCPARTNUM" value="C23159"/>
 </part>
 <part name="R10" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>
@@ -14415,7 +14416,7 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
 <part name="R18" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="56K">
-<attribute name="JLCPARTNUM" value="C23242"/>
+<attribute name="JLCPARTNUM" value="C23206"/>
 </part>
 <part name="C13" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470u">
 <attribute name="JLC-DNP" value="1"/>
@@ -14435,7 +14436,9 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <part name="SJ3" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="SJ4" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="SJ5" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
-<part name="JP5" library="hot-wand" deviceset="M07" device="LOCK"/>
+<part name="JP5" library="hot-wand" deviceset="M07" device="LOCK">
+<attribute name="JLC-DNP" value="1"/>
+</part>
 <part name="R19" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="51K">
 <attribute name="JLCPARTNUM" value="C23196"/>
 </part>
@@ -14445,16 +14448,18 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="JP4" library="hot-wand" deviceset="M02" device="PTH3"/>
+<part name="JP4" library="hot-wand" deviceset="M02" device="PTH3">
+<attribute name="JLC-DNP" value="1"/>
+</part>
 <part name="GND10" library="hot-wand" deviceset="GND" device=""/>
 <part name="TVS4" library="hot-wand" deviceset="TVS" device="SOD323-R" value="">
-<attribute name="JLCPCB" value="C840638"/>
+<attribute name="JLCPARTNUM" value="C840638"/>
 </part>
 <part name="TVS5" library="hot-wand" deviceset="TVS" device="SOD323-R" value="">
-<attribute name="JLCPCB" value="C840638"/>
+<attribute name="JLCPARTNUM" value="C840638"/>
 </part>
 <part name="TVS6" library="hot-wand" deviceset="TVS" device="SOD323-R" value="">
-<attribute name="JLCPCB" value="C840638"/>
+<attribute name="JLCPARTNUM" value="C840638"/>
 </part>
 <part name="GND12" library="hot-wand" deviceset="GND" device=""/>
 <part name="R23" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
@@ -14851,7 +14856,9 @@ for measurement</text>
 <instance part="SJ3" gate="A" x="172.72" y="-187.96" rot="R180"/>
 <instance part="SJ4" gate="A" x="172.72" y="-190.5" rot="R180"/>
 <instance part="SJ5" gate="A" x="172.72" y="-193.04" rot="R180"/>
-<instance part="JP5" gate="G$1" x="233.68" y="-579.12" rot="R180"/>
+<instance part="JP5" gate="G$1" x="233.68" y="-579.12" rot="R180">
+<attribute name="JLC-DNP" x="233.68" y="-579.12" size="1.778" layer="96" rot="R180" display="off"/>
+</instance>
 <instance part="R19" gate="G$1" x="195.58" y="-586.74" smashed="yes" rot="R270">
 <attribute name="NAME" x="191.9986" y="-582.93" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="197.104" y="-582.93" size="1.778" layer="96" rot="R270"/>
@@ -14866,16 +14873,18 @@ for measurement</text>
 <attribute name="NAME" x="175.006" y="-524.764" size="1.778" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="187.706" y="-521.97" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="JP4" gate="G$1" x="157.48" y="-335.28" rot="MR0"/>
+<instance part="JP4" gate="G$1" x="157.48" y="-335.28" rot="MR0">
+<attribute name="JLC-DNP" x="157.48" y="-335.28" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
 <instance part="GND10" gate="1" x="139.7" y="-340.36" rot="MR0"/>
 <instance part="TVS4" gate="G$1" x="236.22" y="-325.12" rot="R90">
-<attribute name="JLCPCB" x="236.22" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
+<attribute name="JLCPARTNUM" x="236.22" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="TVS5" gate="G$1" x="246.38" y="-325.12" rot="R90">
-<attribute name="JLCPCB" x="246.38" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
+<attribute name="JLCPARTNUM" x="246.38" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="TVS6" gate="G$1" x="256.54" y="-325.12" rot="R90">
-<attribute name="JLCPCB" x="256.54" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
+<attribute name="JLCPARTNUM" x="256.54" y="-325.12" size="1.27" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND12" gate="1" x="236.22" y="-335.28"/>
 <instance part="R23" gate="G$1" x="142.24" y="-304.8" smashed="yes" rot="MR180">
