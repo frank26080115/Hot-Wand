@@ -18,6 +18,7 @@
 #include "blink.h"
 #include "hotwandlite.h"
 #include "rfgen.h"
+#include "testing_cli.h"
 
 // -----------------------------------------------------------------------------
 // Configuration
@@ -146,8 +147,8 @@ static void            initialize_hardware();
 static void            sample_power_switch(uint32_t currentTimeMs);
 static PowerMode       read_power_mode();
 static uint8_t         power_percent(PowerMode powerMode, uint32_t voltageMv);
-static blink_voltage_t blink_voltage(VoltageRange voltageRange);
-static blink_power_t   blink_power(PowerMode powerMode);
+static blink_voltage_t voltage_to_blink_mode(VoltageRange voltageRange);
+static blink_power_t   power_to_blink_mode(PowerMode powerMode);
 static void            report_readings(uint32_t currentTimeMs, uint32_t voltageMv, PowerMode powerMode);
 static const char*     power_mode_name(PowerMode powerMode);
 } // namespace
@@ -248,6 +249,12 @@ void pwrmgt_task(void)
 
 uint32_t pwrmgt_read_voltage_mv(void)
 {
+    uint32_t simulatedVoltageMv = 0;
+    if (testing_get_simulated_voltage_mv(&simulatedVoltageMv))
+    {
+        return simulatedVoltageMv;
+    }
+
     initialize_hardware();
 
     const uint32_t currentTimeMs = millis();
@@ -310,7 +317,7 @@ static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
             g_lastNormalRfTrackingMs = currentTimeMs;
         }
     }
-    blink_set_pattern(blink_voltage(g_voltageRange), blink_power(g_powerMode));
+    blink_set_pattern(voltage_to_blink_mode(g_voltageRange), power_to_blink_mode(g_powerMode));
 
     g_appliedVoltageRange = g_voltageRange;
     g_appliedPowerMode    = g_powerMode;
@@ -399,6 +406,13 @@ static void sample_power_switch(uint32_t currentTimeMs)
 
 static PowerMode read_power_mode()
 {
+    uint8_t simulatedMode = 0;
+    if (testing_get_simulated_mode(&simulatedMode))
+    {
+        // The CLI accepts only the three values represented by PowerMode.
+        return static_cast<PowerMode>(simulatedMode);
+    }
+
     // ECO wins if an invalid jumper arrangement pulls both inputs low.
     if (digitalRead(SEL2_PIN) == LOW)
     {
@@ -428,12 +442,12 @@ static uint8_t power_percent(PowerMode powerMode, uint32_t voltageMv)
     }
 }
 
-static blink_voltage_t blink_voltage(VoltageRange voltageRange)
+static blink_voltage_t voltage_to_blink_mode(VoltageRange voltageRange)
 {
     return (voltageRange == VoltageRange::High) ? BLINK_VOLTAGE_HIGH : BLINK_VOLTAGE_LOW;
 }
 
-static blink_power_t blink_power(PowerMode powerMode)
+static blink_power_t power_to_blink_mode(PowerMode powerMode)
 {
     switch (powerMode)
     {

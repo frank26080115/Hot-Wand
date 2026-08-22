@@ -12,6 +12,7 @@
 
 #include <Arduino.h>
 #include "hotwandlite.h"
+#include "testing_cli.h"
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -25,10 +26,17 @@ void setup()
 
     // Serial is the XIAO's USB CDC port; the baud rate is nominal for USB.
     Serial.begin(115200);
+    cli_init();
 }
 
 void loop()
 {
+    // A started test owns the application until the board is reset.
+    if (testing_task())
+    {
+        return;
+    }
+
     // Apply power-selection inputs and update the status indication.
     pwrmgt_task();
     blink_task();
