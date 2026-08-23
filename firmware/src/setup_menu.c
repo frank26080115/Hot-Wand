@@ -22,6 +22,7 @@
 #include "stm32f0xx_hal.h"
 #include "systick.h"
 #include "typedefs.h"
+#include "watchdog.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -242,6 +243,7 @@ void setup_menu(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -469,5 +471,6 @@ static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
      */
     for (;;)
     {
+        /* Deliberately expire IWDG if the requested reset is suppressed. */
     }
 }

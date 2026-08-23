@@ -836,8 +836,11 @@ static void adc_fault(void)
      * calling adc_init() again while conversions are running, or a future
      * initialization-order regression.
      */
+    /* Shut down RF immediately, then let IWDG recover the controller. */
+    rfgen_emergency_stop();
     HAL_NVIC_DisableIRQ(ADC1_IRQn);
 
+    /* Deliberately do not feed the watchdog in a fatal handler. */
     for (;;)
     {
     }

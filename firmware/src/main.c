@@ -21,6 +21,7 @@
 #include "tipdetect.h"
 #include "uart_debug.h"
 #include "tests.h"
+#include "watchdog.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -83,6 +84,13 @@ int main(void)
     // with HSE immediately afterward.
     HAL_Init();
 
+    /* Establish the fail-low RF state before starting the watchdog. */
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        Error_Handler();
+    }
+
     rfgen_clock_init();
     systick_init();
     adc_init();
@@ -105,6 +113,8 @@ int main(void)
     // when all ADC channels have been read once
     // we use the LSB of the data to use as a RNG seed
     // taking advantage of noise
+    /* Deliberately do not feed here: a DMA/ADC path that never produces a
+     * usable seed is a startup fault and should be recovered by IWDG. */
     do
     {
         random_seed = adc_get_rand_seed();
@@ -246,6 +256,9 @@ int main(void)
             display_last_frame_ms = now;
             main_render_display();
         }
+
+        /* Feed only after the complete supervised foreground pass succeeds. */
+        watchdog_feed();
     }
 }
 
@@ -299,6 +312,7 @@ static void boot_check_for_setup(void)
             }
 
             HAL_Delay(1);
+            watchdog_feed();
             continue;
         }
 
@@ -326,6 +340,7 @@ static void boot_check_for_setup(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -409,6 +424,7 @@ static void boot_wait_for_power_stable(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -460,8 +476,11 @@ void enter_sleep_mode(void)
 
 static void Error_Handler(void)
 {
+    /* Leave every power-stage control fail-low, then let IWDG recover. */
+    rfgen_emergency_stop();
     __disable_irq();
 
+    /* Deliberately do not feed the watchdog in a fatal handler. */
     for (;;)
     {
     }

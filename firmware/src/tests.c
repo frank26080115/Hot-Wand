@@ -18,6 +18,7 @@
 #include "systick.h"
 #include "tipdetect.h"
 #include "uart_debug.h"
+#include "watchdog.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -87,6 +88,7 @@ void test_run(void)
     // test_bringup_oled();
     // test_rfgen();
     // test_rfgen_burst();
+    // test_watchdog_rf_reset();
     // test_nvm_simple();
     // test_nvm_full_page();
     // test_battery_guess();
@@ -113,6 +115,7 @@ void test_bringup_systick(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -140,6 +143,7 @@ void test_bringup_button(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -158,6 +162,7 @@ void test_bringup_adc(void)
 
         UART_debug_task();
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -185,6 +190,7 @@ void test_bringup_fan(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -198,6 +204,7 @@ void test_bringup_pwrlvl(void)
         /* TIM3 has 32 counts per period, so CCR1 = 24 is exactly 75%. */
         TIM3->CCR1 = btn_is_down() ? TEST_PWRLVL_75_PERCENT_CCR : 0;
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -225,6 +232,7 @@ void test_bringup_pwrlvl_min(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -232,6 +240,7 @@ void test_bringup_oled(void)
 {
     for (;;)
     {
+        /* show_fault() is terminal and services IWDG after making RF safe. */
         show_fault("HELLO\nWORLD", false);
     }
 }
@@ -263,6 +272,7 @@ void test_rfgen(void)
 
         UART_debug_task();
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -314,6 +324,45 @@ void test_rfgen_burst(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_watchdog_rf_reset(void)
+{
+    UART_SetAllowed(false);
+    rfgen_stop();
+    btn_has_short_press(true);
+
+    for (;;)
+    {
+        btn_task();
+
+        if (btn_has_short_press(true))
+        {
+            UART_SetAllowed(true);
+            UART_Write("WATCHDOG RF RESET TEST: RF starts after this line\r\n");
+
+            /* Give the active-RF interval one full watchdog period. */
+            watchdog_feed();
+            rfgen_start();
+
+            if (rfgen_is_active())
+            {
+                __disable_irq();
+
+                /* Deliberately do not feed. TIM1 must keep toggling until the
+                 * independent watchdog resets the MCU and PB1 fails low. */
+                for (;;)
+                {
+                }
+            }
+
+            UART_Write("WATCHDOG RF RESET TEST: RF start was blocked\r\n");
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -349,6 +398,7 @@ void test_nvm_simple(void)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -374,6 +424,7 @@ void test_nvm_full_page(void)
             break;
         }
         HAL_Delay(1);
+        watchdog_feed();
     }
 
     UART_Write("\r\nNVM FULL PAGE TEST\r\n");
@@ -393,6 +444,7 @@ void test_nvm_full_page(void)
         for (;;)
         {
             HAL_Delay(1);
+            watchdog_feed();
         }
     }
     UART_Write("FACTORY ERASE PASSED\r\n");
@@ -413,8 +465,11 @@ void test_nvm_full_page(void)
             for (;;)
             {
                 HAL_Delay(1);
+                watchdog_feed();
             }
         }
+
+        watchdog_feed();
     }
 
     UART_Write("SILENT FILL PASSED; FREE SLOTS ");
@@ -429,8 +484,11 @@ void test_nvm_full_page(void)
             for (;;)
             {
                 HAL_Delay(1);
+                watchdog_feed();
             }
         }
+
+        watchdog_feed();
     }
 
     UART_Write("FINAL USED SLOTS ");
@@ -441,6 +499,7 @@ void test_nvm_full_page(void)
     for (;;)
     {
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -465,6 +524,7 @@ void test_battery_guess(void)
             break;
         }
         HAL_Delay(1);
+        watchdog_feed();
     }
 
     UART_Write("battery_mode,battery_millivolts,valid,optimistic_cell_count,pessimistic_cell_count,");
@@ -478,12 +538,14 @@ void test_battery_guess(void)
         {
             valid = battery_guess(battery_millivolts, battery_mode, &guess);
             test_battery_guess_write_row(battery_mode, battery_millivolts, valid, &guess);
+            watchdog_feed();
         }
     }
 
     for (;;)
     {
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 

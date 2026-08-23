@@ -123,6 +123,11 @@ void rfgen_start(void)
         return;
     }
 
+    /* Do not let a debugger halt freeze TIM1 on a high PWM half-cycle. The
+     * independently running watchdog will reset a halted foreground task. */
+    __HAL_RCC_DBGMCU_CLK_ENABLE();
+    __HAL_DBGMCU_UNFREEZE_TIM1();
+
     __HAL_RCC_TIM1_CLK_ENABLE();
     __HAL_RCC_SYSCFG_CLK_ENABLE();
     __HAL_RCC_TIM1_FORCE_RESET();
@@ -334,4 +339,20 @@ void NMI_Handler_Impl(void)
 void HAL_RCC_CSSCallback(void)
 {
     rfgen_fault(); // this will signal to the application that a failure occured
+}
+
+/*
+ * A strong vector shim routes HardFault here. Stop RF on the first fault when
+ * the stack is still usable; if this code faults again, the existing Cortex-M0
+ * LOCKUP-to-TIM1-break route forces the timer output low in hardware.
+ */
+void HardFault_Handler_Impl(void)
+{
+    rfgen_emergency_stop();
+    __disable_irq();
+
+    /* Deliberately do not feed IWDG; it provides the eventual system reset. */
+    for (;;)
+    {
+    }
 }

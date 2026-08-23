@@ -19,6 +19,7 @@ The warning will pause the operation of the soldering iron, and the user can ove
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
+#include "watchdog.h"
 
 #include <stddef.h>
 
@@ -269,6 +270,7 @@ void battery_show_fault(bool allow_override)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 

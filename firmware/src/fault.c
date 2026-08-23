@@ -21,6 +21,7 @@ device It is animated in a way that prevents OLED burn-in, and it can be dimmed 
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
+#include "watchdog.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -111,6 +112,7 @@ void show_fault(const char* text, bool allow_button_reset)
                 fault_reset_if_button_pressed();
             }
             HAL_Delay(1);
+            watchdog_feed();
         }
     }
 
@@ -181,6 +183,7 @@ void show_fault(const char* text, bool allow_button_reset)
         }
 
         HAL_Delay(1);
+        watchdog_feed();
     }
 }
 
@@ -440,5 +443,10 @@ static void fault_reset_if_button_pressed(void)
     if (btn_is_down() || btn_has_short_press(true))
     {
         NVIC_SystemReset();
+
+        /* Deliberately expire IWDG if a debugger suppresses the reset. */
+        for (;;)
+        {
+        }
     }
 }
