@@ -73,9 +73,9 @@ On paper, this current transformer is behaving almost like a digital component b
 
 I planned out the winding in 3D with consideration for my transformer PCB footprint. All wires are to be 22 AWG (SergeyMax used 0.6mm). There isn't many photos of this component so I thought a 3D model would help a ton.
 
-![](imgs/current_transformer_winding_3d.png)
+![](imgs/current_transformer_winding_3d_1.png)
 
-![](imgs/current_transformer_winding_3d_nocore.png)
+![](imgs/current_transformer_winding_3d_2.png)
 
 It's possible and even beneficial to make this winding in a bifilar fashion. (it is a pain to 3D model in such a way)
 
