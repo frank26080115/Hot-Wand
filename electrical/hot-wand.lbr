@@ -17760,8 +17760,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </package>
 <package name="SWITCH-SLW-864574-5A-RA-N-D">
 <pad name="C" x="0" y="0" drill="0.8" shape="octagon"/>
-<pad name="R" x="2" y="0" drill="0.8" shape="octagon"/>
-<pad name="L" x="-2" y="0" drill="0.8" shape="octagon"/>
+<pad name="R" x="2" y="0" drill="0.8" shape="square"/>
+<pad name="L" x="-2" y="0" drill="0.8" shape="square"/>
 <pad name="M2" x="4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <pad name="M1" x="-4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <wire x1="-4.3" y1="2.3" x2="-2" y2="2.3" width="0.127" layer="21"/>

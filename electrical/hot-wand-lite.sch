@@ -7243,8 +7243,8 @@ Max Component Height - 25.57mm</description>
 </package>
 <package name="SWITCH-SLW-864574-5A-RA-N-D">
 <pad name="C" x="0" y="0" drill="0.8" shape="octagon"/>
-<pad name="R" x="2" y="0" drill="0.8" shape="octagon"/>
-<pad name="L" x="-2" y="0" drill="0.8" shape="octagon"/>
+<pad name="R" x="2" y="0" drill="0.8" shape="square"/>
+<pad name="L" x="-2" y="0" drill="0.8" shape="square"/>
 <pad name="M2" x="4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <pad name="M1" x="-4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <wire x1="-4.3" y1="2.3" x2="-2" y2="2.3" width="0.127" layer="21"/>
@@ -14204,10 +14204,10 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="JLC_ROTATION" value="180"/>
 </part>
 <part name="R3" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3R6">
-<attribute name="JLCPARTNUM" value="C54921041"/>
+<attribute name="JLCPARTNUM" value="C445783"/>
 </part>
 <part name="R4" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3R6">
-<attribute name="JLCPARTNUM" value="C54921041"/>
+<attribute name="JLCPARTNUM" value="C445783"/>
 </part>
 <part name="GND15" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+3" library="hot-wand" deviceset="+12V" device=""/>
@@ -14526,7 +14526,7 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <part name="R25" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
 <attribute name="JLCPARTNUM" value="C23179"/>
 </part>
-<part name="SW1" library="hot-wand" deviceset="SWITCH-SPDT-2MNT" device="-SLW-864574-5A-RA-N-D" value="">
+<part name="SW1" library="hot-wand" deviceset="SWITCH-SPDT-2MNT" device="-SLW-864574-5A-RA-N-D" value="SWITCH-SPDT-2MNT-SLW-864574-5A-RA-N-D">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="SLW-864574-5A-RA-N-D"/>
 </part>
@@ -14577,6 +14577,7 @@ for measurement</text>
 (26K eqv)</text>
 <text x="185.42" y="-314.96" size="1.27" layer="97" rot="R90">mess with these resistors
 if LEDs are too dim</text>
+<text x="102.87" y="-252.476" size="1.6764" layer="96">0.25W</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">
@@ -15271,9 +15272,6 @@ if LEDs are too dim</text>
 <junction x="246.38" y="-330.2"/>
 </segment>
 <segment>
-<pinref part="SW1" gate="S" pin="S"/>
-<wire x1="154.94" y1="-327.66" x2="157.48" y2="-327.66" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="-327.66" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
 <pinref part="GND35" gate="1" pin="GND"/>
 <pinref part="SW1" gate="M" pin="MNT1"/>
 <pinref part="SW1" gate="M" pin="MNT2"/>
@@ -15282,7 +15280,6 @@ if LEDs are too dim</text>
 <wire x1="152.4" y1="-335.28" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
 <junction x="152.4" y="-335.28"/>
 <junction x="147.32" y="-335.28"/>
-<junction x="157.48" y="-335.28"/>
 </segment>
 </net>
 <net name="+24V" class="0">

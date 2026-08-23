@@ -946,8 +946,8 @@ Max Component Height - 1.45mm</description>
 </package>
 <package name="SWITCH-SLW-864574-5A-RA-N-D">
 <pad name="C" x="0" y="0" drill="0.8" shape="octagon"/>
-<pad name="R" x="2" y="0" drill="0.8" shape="octagon"/>
-<pad name="L" x="-2" y="0" drill="0.8" shape="octagon"/>
+<pad name="R" x="2" y="0" drill="0.8" shape="square"/>
+<pad name="L" x="-2" y="0" drill="0.8" shape="square"/>
 <pad name="M2" x="4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <pad name="M1" x="-4.1" y="0" drill="1.2" shape="offset" rot="R270"/>
 <wire x1="-4.3" y1="2.3" x2="-2" y2="2.3" width="0.127" layer="21"/>
@@ -1293,7 +1293,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="VALUE" x="64.116" y="69.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="R3" library="hot-wand" package="0603-RES" value="3R6" x="45.4" y="68.6" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C54921041" x="45.4" y="68.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C445783" x="45.4" y="68.6" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="43.589" y="68.262" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="44.616" y="69.457" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
@@ -1303,7 +1303,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="VALUE" x="63.984" y="66.843" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
 <element name="R4" library="hot-wand" package="0603-RES" value="3R6" x="48.8" y="69.7" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C54921041" x="48.8" y="69.7" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C445783" x="48.8" y="69.7" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="47.089" y="69.462" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="47.384" y="68.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
@@ -1608,7 +1608,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="98.189" y="50.262" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="98.316" y="51.257" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
-<element name="SW1" library="hot-wand" package="SWITCH-SLW-864574-5A-RA-N-D" value="" x="110" y="12" smashed="yes" rot="R270">
+<element name="SW1" library="hot-wand" package="SWITCH-SLW-864574-5A-RA-N-D" value="SWITCH-SPDT-2MNT-SLW-864574-5A-RA-N-D" x="110" y="12" smashed="yes" rot="R270">
 <attribute name="NAME" x="110.5" y="6.5" size="0.8128" layer="25" rot="R180"/>
 <attribute name="JLC-DNP" value="1" x="110" y="12" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="PARTNUM" value="SLW-864574-5A-RA-N-D" x="110" y="12" size="1.778" layer="27" rot="R270" display="off"/>
@@ -2063,7 +2063,6 @@ Max Component Height - 1.45mm</description>
 <via x="14.6" y="31.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="14.6" y="28.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="9.2" y="29.9" extent="1-16" drill="0.3" shape="octagon"/>
-<contactref element="SW1" pad="R"/>
 <contactref element="SW1" pad="M1"/>
 <contactref element="SW1" pad="M2"/>
 <via x="99" y="48.4" extent="1-16" drill="0.3" shape="octagon"/>

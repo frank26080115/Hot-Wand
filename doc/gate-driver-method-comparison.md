@@ -107,6 +107,19 @@ Pgate at 13.56 MHz = 24e-9 * 10 * 13.56e6 = 3.25 W
 
 The driver moves the same charge on each edge, but it must do it 28.9 times as often.
 
+### Gate resistor recommendation for the IRF510
+
+The 13.56 MHz design uses separate 3.6 ohm turn-on and turn-off resistors between the 1EDN8511B and the IRF510. These parts must not be selected as ordinary low-power gate resistors. Using the 1.35 W, 12 V gate-power estimate above, 1EDN8511B's typical output resistances, and the IRF510's 2.5 ohm typical internal gate resistance gives approximately:
+
+```text
+P(R-turn-on)  ~= (1.35 W / 2) * 3.6 / (0.85 + 3.6 + 2.5) = 0.35 W
+P(R-turn-off) ~= (1.35 W / 2) * 3.6 / (0.35 + 3.6 + 2.5) = 0.38 W
+```
+
+The [IRF510 datasheet](https://www.vishay.com/docs/91015/irf510.pdf) specifies 2.5 ohms only as a typical gate-input resistance at 1 MHz; it gives no guaranteed minimum. Conservatively ignoring that internal resistance raises the estimates to about 0.55 W for R_turn_on and 0.62 W for R_turn_off. The real losses depend on Q2's actual gate-charge operating point and waveform, but these estimates rule out ordinary 0.1 W or 0.25 W parts and leave too little assurance for an ordinary 0.5 W part.
+
+**Recommendation:** fit both resistors with the 3.6 ohm `1206` footprint pulse-withstanding resistor rated at least 0.75 W at 70 degrees C. The Yageo part `SR1206FR-7T3R6L` is an AEC-Q200 surge-resistant thick-film resistor rated 0.75 W at 70 degrees C, giving useful margin over the expected 0.35 W to 0.38 W. Its permissible power derates above 70 degrees C, so the assembled board should be tested at continuous RF output and the resistor temperatures checked in the final enclosure.
+
 ## What Happens If the 1EDN8511B Drives Q1 Directly?
 
 The approximately 3.25 W at 10 V, or roughly 3.9 W at 12 V, is not all dissipated inside the driver IC. It is divided among the driver's output transistors, external gate resistors, Q1's internal gate resistance, and other series resistance. Nevertheless, all of it becomes heat somewhere; none of the energy placed in the gate is recovered by a conventional push-pull connection.
@@ -205,7 +218,7 @@ The extra power caused by mistuning can appear in several places:
 | L8                | Its circulating RF current can be much greater than the 500 mA drawn from the supply. Skin effect, proximity effect, and ordinary copper resistance convert part of that circulating current into heat. |
 | L7                | It carries the gate amplifier's DC input current plus RF ripple. Both copper loss and core loss depend on the resulting current waveform. |
 | C37/C38 and PCB resistance | Capacitor ESR, dielectric loss, and trace resistance dissipate part of the circulating RF energy. Detuning can also increase the voltage across the coupling capacitors. |
-| U2, R15, and R17  | These primarily pay for charging Q2's gate rather than directly absorbing all of the additional tank loss. Q2's altered drain waveform can still change its Miller charge and the current returned through the driver. |
+| U2, R16, and R17  | These primarily pay for charging Q2's gate rather than directly absorbing all of the additional tank loss. Q2's altered drain waveform can still change its Miller charge and the current returned through the driver. |
 
 The 6 W figure only describes the power entering from the 12 V bus. Resonant voltage and current magnification must be considered separately. Q2's drain voltage can be much greater than 12 V, and L8's circulating current can be much greater than 500 mA. Q2's heatsink helps with its share of the real power loss, but it does not reduce either of those RF magnification effects.
 
@@ -218,7 +231,7 @@ During initial tuning, the useful measurements are:
 3. Q2 VDS, especially its peak voltage and the shape of the drain waveform.
 4. RMS voltage across R12, from which its power can be calculated directly.
 5. Continuous or frequent conduction of TVS2 or D9, visible as clipping of the gate waveform.
-6. Temperatures of Q2, R12, L7, L8, U2, R15, and R17 after reaching thermal equilibrium.
+6. Temperatures of Q2, R12, L7, L8, U2, R16, and R17 after reaching thermal equilibrium.
 7. Main-buck input power, which reveals losses caused by an incorrectly driven Q1 but does not appear in the 12 V gate-driver measurement.
 
 Starting with the main buck output disabled or limited and using a current-limited 12 V source makes these quantities easier to inspect while L8 is adjusted. The final tuned condition is identified by the required Q1 gate waveform, a class-E-like Q2 drain waveform, low clamp conduction, and a minimum in the gate amplifier's 12 V input current.
@@ -228,3 +241,103 @@ Starting with the main buck output disabled or limited and using a current-limit
 Driving Q1 directly with the 1EDN8511B might produce a waveform on the bench, because the IC has adequate peak current and its edge times are short relative to a 73.75 ns period. It is not an attractive drop-in simplification. It asks a SOT-23 device and its gate resistors to process several watts of gate energy at a frequency far beyond the datasheet's power-consumption plot, leaves little thermal margin, and can add main-MOSFET switching loss if the edges or phase are wrong.
 
 The RF-amplifier method is more complicated and must be tuned, but it has a sound purpose: in Hot-Wand, the substituted 1EDN8511B hard-switches the IRF510's smaller gate, while L8 and Q1 exchange most of Q1's much larger gate energy locally. The expected saving is probably a factor around 1.5 to 2 in total auxiliary power, rather than an order of magnitude. The final comparison should be made by measuring total 12 V current, U2 temperature, R12 temperature, and Q1's VGS waveform on the assembled board.
+
+## Appendix: Calculations for 470 kHz Lite version
+
+Hot-Wand Lite eliminates the resonant gate amplifier and drives its power MOSFET directly. Its U2 is still a 1EDN8511B powered from 12 V, with separate 3.6 ohm source and sink resistors. The calculations below describe continuous 470 kHz operation, corresponding to a 100 percent RF pulse density. At lower power settings, the average gate-drive power scales approximately with the fraction of carrier pulses that are present.
+
+Two possible power MOSFETs are compared:
+
+| MOSFET | C_iss used | Qg used | Gate-charge test condition |
+|:-------|-----------:|--------:|:---------------------------|
+| IRF640NPBF | 1160 pF typical | 67 nC maximum | VDS = 160 V, ID = 11 A, VGS = 0 to 10 V |
+| STP19NF20 | 800 pF typical | 24 nC typical | VDS = 160 V, ID = 15 A, VGS = 0 to 10 V |
+
+The IRF640NPBF values come from the [Infineon IRF640N datasheet](https://www.infineon.com/assets/row/public/documents/24/49/infineon-irf640n-datasheet-en.pdf). As in the 13.56 MHz calculations, Qg is a better estimate of hard-switching power than C_iss because it includes the voltage-dependent gate-drain and Miller charge under the datasheet's switching condition.
+
+### Gate charge, current, and total drive power
+
+For a conventional push-pull driver:
+
+```text
+average supply current = Qg * f
+average charge traffic = 2 * Qg * f
+gate-drive power from the supply = Qg * Vdrive * f
+```
+
+At 470 kHz this gives:
+
+| MOSFET | Qg used | Charge in + out per cycle | Average supply current | Average charge traffic | Power at 10 V | 12 V estimate using the same Qg |
+|:-------|--------:|--------------------------:|-----------------------:|-----------------------:|--------------:|--------------------------------:|
+| IRF640NPBF | 67 nC | 134 nC | 31.5 mA | 63.0 mA | 0.315 W | 0.378 W |
+| STP19NF20 | 24 nC | 48 nC | 11.3 mA | 22.6 mA | 0.113 W | 0.135 W |
+
+For example, the IRF640NPBF calculation is:
+
+```text
+Isupply = 67e-9 * 470e3 = 31.5 mA
+Pgate at 10 V = 67e-9 * 10 * 470e3 = 0.315 W
+Pgate at 12 V ~= 67e-9 * 12 * 470e3 = 0.378 W
+```
+
+The 12 V results are estimates because both datasheet Qg values describe a 0-to-10 V gate excursion. The real charge required to reach 12 V will be somewhat greater and will also depend on the MOSFET's drain voltage and current in the assembled circuit.
+
+Using C_iss alone would predict substantially less power:
+
+```text
+IRF640NPBF: P = 1160e-12 * 12^2 * 470e3 = 0.0785 W
+STP19NF20:  P =  800e-12 * 12^2 * 470e3 = 0.0541 W
+```
+
+For the IRF640NPBF, `C_iss * 12 V` represents only 13.9 nC, compared with its specified 67 nC total gate charge. For the STP19NF20 it represents 9.6 nC, compared with 24 nC. These capacitor-only results should therefore not be used to rate U2 or the gate resistors.
+
+### Estimated U2 and gate-resistor heating
+
+Using the same deliberately simplified model as the main calculation, take U2's typical source resistance as 0.85 ohm and its sink resistance as 0.35 ohm. Ignore the MOSFET's internal gate resistance and PCB resistance. The fractions of each edge's loss assigned to U2 are then:
+
+```text
+source-edge driver share = 0.85 / (0.85 + 3.6) = 19.1%
+sink-edge driver share   = 0.35 / (0.35 + 3.6) =  8.9%
+```
+
+Half of the total gate-drive power is associated with charging the gate and half with discharging it. At the 12 V estimates:
+
+| MOSFET | U2 source loss | U2 sink loss | Total U2 output-stage loss | 3.6 ohm turn-on resistor | 3.6 ohm turn-off resistor |
+|:-------|---------------:|-------------:|---------------------------:|------------------------:|-------------------------:|
+| IRF640NPBF | 36.1 mW | 16.7 mW | 52.8 mW | 0.153 W | 0.172 W |
+| STP19NF20 | 12.9 mW | 6.0 mW | 18.9 mW | 0.0548 W | 0.0617 W |
+
+The IRF640NPBF driver calculation, for example, is:
+
+```text
+P(U2) ~= (0.378 W / 2) * (19.1% + 8.9%)
+P(U2) ~= 0.0528 W
+
+P(turn-on resistor)  ~= (0.378 W / 2) * 3.6 / (0.85 + 3.6)
+P(turn-on resistor)  ~= 0.153 W
+
+P(turn-off resistor) ~= (0.378 W / 2) * 3.6 / (0.35 + 3.6)
+P(turn-off resistor) ~= 0.172 W
+```
+
+With the 1EDN8511B's specified 170 degrees C/W junction-to-ambient thermal resistance, these output-stage losses correspond to idealized junction rises of approximately:
+
+```text
+IRF640NPBF: 0.0528 W * 170 degrees C/W = 9.0 degrees C
+STP19NF20:  0.0189 W * 170 degrees C/W = 3.2 degrees C
+```
+
+This is much more comfortable for U2 than direct drive at 13.56 MHz. It does not include U2's quiescent consumption, input switching loss, cross-conduction, PCB thermal conditions, or the MOSFET's internal gate resistance. Internal gate resistance would reduce U2's and the external resistors' shares, but the corresponding energy would still become heat inside the MOSFET.
+
+The external resistors are the tighter concern with the IRF640NPBF. Its estimates of 0.153 W and 0.172 W each exceed the common 0.1 W nominal rating of an ordinary 0603 resistor, even before temperature derating and the underestimate caused by extending a 10 V Qg value to 12 V. The STP19NF20 estimates of about 55 mW and 62 mW are below 0.1 W, although pulse capability, temperature derating, and the actual assembled waveform still need to be checked against the selected resistor datasheet.
+
+Ignoring MOSFET internal gate resistance, the initial edge-current estimates are the same for either MOSFET:
+
+```text
+initial source current ~= 12 / (0.85 + 3.6) = 2.70 A
+initial sink current   ~= 12 / (0.35 + 3.6) = 3.04 A
+```
+
+Both are below U2's 4 A source and 8 A sink peak ratings. The IRF640NPBF requires the current pulses to move substantially more charge, which is why it produces approximately 2.8 times the driver and resistor heating of the STP19NF20 at the same frequency and voltage.
+
+These calculations cover only the gate-drive subsystem. They do not predict the power MOSFET's drain switching loss, which depends on the measured VDS and ID overlap, the load network, and the achieved gate waveform. The final check should measure both gate resistors' temperatures, U2's temperature, Q1 VGS, and the input power difference between RF enabled and disabled at continuous full output.
