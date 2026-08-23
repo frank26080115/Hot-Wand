@@ -68,7 +68,7 @@ static bool initialize_hardware(const uint32_t* periodTable, uint16_t periodCoun
 static bool initialize_dma(const uint32_t* periodTable, uint16_t periodCount);
 static bool validate_table(const uint32_t* periodTable, uint16_t periodCount);
 static bool start_output(const uint32_t* periodTable, uint16_t periodCount);
-static void change_output(const uint32_t* periodTable, uint16_t periodCount);
+static bool change_output(const uint32_t* periodTable, uint16_t periodCount);
 static void wait_for_tcc0_sync();
 
 // -----------------------------------------------------------------------------
@@ -100,8 +100,7 @@ bool rfgen_platform_change(const uint32_t* periodTable, uint16_t periodCount)
         return false;
     }
 
-    change_output(periodTable, periodCount);
-    return true;
+    return change_output(periodTable, periodCount);
 }
 
 void rfgen_platform_stop(void)
@@ -280,55 +279,50 @@ static bool start_output(const uint32_t* periodTable, uint16_t periodCount)
     return true;
 }
 
-static void change_output(const uint32_t* periodTable, uint16_t periodCount)
+static bool change_output(const uint32_t* periodTable, uint16_t periodCount)
 {
     const uint8_t channel = g_periodDma.getChannel();
-    volatile DmacDescriptor* const writebackDescriptors =
-        reinterpret_cast<volatile DmacDescriptor*>(DMAC->WRBADDR.reg);
-    volatile DmacDescriptor& writeback = writebackDescriptors[channel];
 
     /*
-     * The active descriptor runs from the DMAC writeback area, leaving the
-     * circular base descriptor free to stage the next table. Reserve several
-     * carrier periods for the descriptor writes, then wait for the old block's
-     * completion flag. TCC0 and its fixed compare never stop.
+     * Suspend after the current DMA beat, then update the circular base
+     * descriptor while the channel's active descriptor is stable. Resuming
+     * lets the current table finish; the DMAC loads the new base descriptor at
+     * its next loop boundary. TCC0 and its fixed compare never stop.
+     *
+     * The DMAC writeback BTCNT field is not a live remaining-beat counter on
+     * SAMD21. Waiting for it to increase can therefore deadlock the CPU while
+     * the hardware waveform continues running.
      */
-    uint32_t interruptState = 0;
-    for (;;)
-    {
-        while (writeback.BTCNT.reg <= 4u)
-        {
-        }
+    DMAC->CHID.bit.ID   = channel;
+    DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_SUSP;
+    DMAC->CHCTRLB.bit.CMD = DMAC_CHCTRLB_CMD_SUSPEND_Val;
 
-        interruptState = __get_PRIMASK();
-        __disable_irq();
-        if (writeback.BTCNT.reg > 4u)
+    const uint32_t suspendStartedUs = micros();
+    while (true)
+    {
+        DMAC->CHID.bit.ID = channel;
+        if ((DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_SUSP) != 0u)
         {
             break;
         }
-        if (interruptState == 0u)
+        if (static_cast<uint32_t>(micros() - suspendStartedUs) >= 1000u)
         {
-            __enable_irq();
+            // Cancel a late suspend request and leave the old table intact.
+            DMAC->CHID.bit.ID     = channel;
+            DMAC->CHCTRLB.bit.CMD = DMAC_CHCTRLB_CMD_RESUME_Val;
+            return false;
         }
     }
 
-    DMAC->CHID.bit.ID     = channel;
-    DMAC->CHINTFLAG.reg   = DMAC_CHINTFLAG_TCMPL;
     g_periodDma.changeDescriptor(g_periodDescriptor,
                                  const_cast<uint32_t*>(periodTable),
                                  const_cast<uint32_t*>(&TCC0->PERB.reg),
                                  periodCount);
     __DMB();
-    if (interruptState == 0u)
-    {
-        __enable_irq();
-    }
-
-    do
-    {
-        DMAC->CHID.bit.ID = channel;
-    } while ((DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL) == 0u);
-    DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+    DMAC->CHID.bit.ID     = channel;
+    DMAC->CHINTFLAG.reg   = DMAC_CHINTFLAG_SUSP;
+    DMAC->CHCTRLB.bit.CMD = DMAC_CHCTRLB_CMD_RESUME_Val;
+    return true;
 }
 
 static void wait_for_tcc0_sync()
