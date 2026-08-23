@@ -14531,6 +14531,9 @@ Standard 7-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <attribute name="PARTNUM" value="SLW-864574-5A-RA-N-D"/>
 </part>
 <part name="GND35" library="hot-wand" deviceset="GND" device=""/>
+<part name="R26" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
+<attribute name="JLCPARTNUM" value="C441975"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -14971,6 +14974,9 @@ if LEDs are too dim</text>
 </instance>
 <instance part="SW1" gate="M" x="149.86" y="-332.74"/>
 <instance part="GND35" gate="1" x="157.48" y="-340.36"/>
+<instance part="R26" gate="G$1" x="27.94" y="-325.12">
+<attribute name="JLCPARTNUM" x="27.94" y="-325.12" size="1.778" layer="96" display="off"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -15409,9 +15415,9 @@ if LEDs are too dim</text>
 <label x="15.24" y="-256.54" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="PA4_A1_D1"/>
-<wire x1="45.72" y1="-325.12" x2="43.18" y2="-325.12" width="0.1524" layer="91"/>
-<label x="43.18" y="-325.12" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="R26" gate="G$1" pin="1"/>
+<wire x1="22.86" y1="-325.12" x2="17.78" y2="-325.12" width="0.1524" layer="91"/>
+<label x="17.78" y="-325.12" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="12V-2" class="0">
@@ -16012,6 +16018,13 @@ if LEDs are too dim</text>
 <wire x1="147.32" y1="-325.12" x2="139.7" y2="-325.12" width="0.1524" layer="91"/>
 <wire x1="139.7" y1="-325.12" x2="139.7" y2="-347.98" width="0.1524" layer="91"/>
 <junction x="139.7" y="-347.98"/>
+</segment>
+</net>
+<net name="RF-GEN-" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="PA4_A1_D1"/>
+<pinref part="R26" gate="G$1" pin="2"/>
+<wire x1="45.72" y1="-325.12" x2="33.02" y2="-325.12" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

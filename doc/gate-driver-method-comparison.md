@@ -120,6 +120,29 @@ The [IRF510 datasheet](https://www.vishay.com/docs/91015/irf510.pdf) specifies 2
 
 **Recommendation:** fit both resistors with the 3.6 ohm `1206` footprint pulse-withstanding resistor rated at least 0.75 W at 70 degrees C. The Yageo part `SR1206FR-7T3R6L` is an AEC-Q200 surge-resistant thick-film resistor rated 0.75 W at 70 degrees C, giving useful margin over the expected 0.35 W to 0.38 W. Its permissible power derates above 70 degrees C, so the assembled board should be tested at continuous RF output and the resistor temperatures checked in the final enclosure.
 
+### Estimated U2 heating while driving the IRF510
+
+The 1.35 W gate-power estimate is the total energy dissipated among U2's output transistors, the two external gate resistors, the IRF510's internal gate resistance, and other series resistance. It is not 1.35 W dissipated entirely inside U2.
+
+Using the IRF510's 2.5 ohm typical internal gate resistance, U2's estimated output-stage share is:
+
+```text
+P(U2 source) ~= (1.35 W / 2) * 0.85 / (0.85 + 3.6 + 2.5) = 0.083 W
+P(U2 sink)   ~= (1.35 W / 2) * 0.35 / (0.35 + 3.6 + 2.5) = 0.037 W
+
+P(U2 output stage) ~= 0.083 W + 0.037 W = 0.12 W
+```
+
+Because 2.5 ohms is a typical IRF510 value specified at 1 MHz, and no minimum is guaranteed, a conservative calculation ignores the MOSFET's internal gate resistance:
+
+```text
+P(U2 output stage)
+  ~= (1.35 W / 2) * (0.85 / (0.85 + 3.6) + 0.35 / (0.35 + 3.6))
+  ~= 0.19 W
+```
+
+With U2's specified 170 degrees C/W junction-to-ambient thermal resistance, 0.12 W to 0.19 W corresponds to an idealized junction rise of about 20 to 32 degrees C on the datasheet test board. This range covers only resistive loss in the output stage. It excludes quiescent consumption, input switching, internal cross-conduction, PCB thermal conditions, and other frequency-dependent losses. Infineon's power-versus-frequency data stops at 1 MHz, so 13.56 MHz is a substantial extrapolation and the assembled U2 temperature and 12 V supply current remain authoritative checks. This also explains why the video report of suspect MAX17602 devices becoming very hot cannot be accepted or rejected from gate-charge power alone: a counterfeit or unsuitable driver can have much greater internal dynamic loss than this simplified resistance model predicts.
+
 ## What Happens If the 1EDN8511B Drives Q1 Directly?
 
 The approximately 3.25 W at 10 V, or roughly 3.9 W at 12 V, is not all dissipated inside the driver IC. It is divided among the driver's output transistors, external gate resistors, Q1's internal gate resistance, and other series resistance. Nevertheless, all of it becomes heat somewhere; none of the energy placed in the gate is recovered by a conventional push-pull connection.
