@@ -27,11 +27,10 @@
 namespace
 {
 /*
- * The schematic uses 4.7 kOhm above the ADC node and 470 Ohm below it, giving
- * an exact 11:1 input-to-ADC ratio.
- * The SAMD21 and RP2040 targets use their nominal 3.3 V analog supply as the
- * ADC full scale. ESP32 targets use the core's calibrated millivolt reading.
- * The per-board initialization below requests a 12-bit result.
+ * Keep the divider constants synchronized with the resistor values in the
+ * schematic. The conversion reconstructs the input voltage from their ratio.
+ * SAMD21 and RP2040 targets use their nominal analog supply as ADC full scale;
+ * ESP32 targets use the core's calibrated millivolt reading.
  */
 constexpr uint32_t kAdcReferenceMv    = 3300;
 constexpr uint32_t kAdcMaximumReading = 4095;
