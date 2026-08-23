@@ -20,3 +20,4 @@
 #endif
 #include "power.h"
 #include "rfgen.h"
+#include "watchdog.h"
