@@ -33,12 +33,15 @@ constexpr size_t   kCliBufferSize          = 32;
 constexpr uint32_t kVoltageReportIntervalMs = 1000;
 
 char cliBuffer[kCliBufferSize];
-SerialCommands testingCli(&Serial, cliBuffer, sizeof(cliBuffer));
+// Terminate on LF and treat CR as argument whitespace. This accepts terminals
+// that send either LF or CRLF instead of requiring one exact line ending.
+SerialCommands testingCli(&Serial, cliBuffer, sizeof(cliBuffer), "\n", " \r\t");
 
 bool     g_testingActive           = false;
 bool     g_voltageReportingEnabled = false;
 bool     g_simulatedModeEnabled     = false;
 bool     g_simulatedVoltageEnabled  = false;
+bool     g_cliReadyReported         = false;
 uint8_t  g_simulatedMode            = 0;
 uint32_t g_simulatedVoltageMv       = 0;
 uint32_t g_lastVoltageReportMs     = 0;
@@ -86,9 +89,21 @@ void cli_init()
 
 bool testing_task()
 {
-    // ReadSerial() is non-blocking and dispatches complete CRLF-terminated
-    // commands received by the USB CDC Serial port.
-    testingCli.ReadSerial();
+    // Wait until input proves that a host has opened the USB CDC port before
+    // printing the banner; setup-time USB output can be lost during enumeration.
+    if (!g_cliReadyReported && (Serial.available() > 0))
+    {
+        Serial.println("OK: test CLI ready; line endings LF or CRLF");
+        g_cliReadyReported = true;
+    }
+
+    // ReadSerial() is non-blocking and dispatches complete LF-terminated
+    // commands. A CR from CRLF is discarded as token whitespace.
+    const SERIAL_COMMANDS_ERRORS readResult = testingCli.ReadSerial();
+    if (readResult == SERIAL_COMMANDS_ERROR_BUFFER_FULL)
+    {
+        Serial.println("ERROR: command is too long");
+    }
 
     if (!g_testingActive)
     {
@@ -144,7 +159,7 @@ static void set_power_command(SerialCommands* sender)
     char* argument = sender->Next();
     if ((argument == nullptr) || (sender->Next() != nullptr))
     {
-        sender->GetSerial()->println("Usage: power <percent>");
+        sender->GetSerial()->println("ERROR: usage: power <percent>");
         return;
     }
 
@@ -153,7 +168,7 @@ static void set_power_command(SerialCommands* sender)
     const long requestedPower = strtol(argument, &end, 10);
     if ((errno == ERANGE) || (end == argument) || (*end != '\0'))
     {
-        sender->GetSerial()->println("Error: power must be an integer");
+        sender->GetSerial()->println("ERROR: power must be an integer");
         return;
     }
 
@@ -167,7 +182,7 @@ static void set_power_command(SerialCommands* sender)
     start_testing(sender);
     rfgen_set(powerPercent);
 
-    sender->GetSerial()->print("RF power requested: ");
+    sender->GetSerial()->print("OK: RF power requested: ");
     sender->GetSerial()->print(requestedPower < 0 ? 0 : requestedPower);
     sender->GetSerial()->println('%');
 }
@@ -176,14 +191,14 @@ static void enable_voltage_command(SerialCommands* sender)
 {
     if (sender->Next() != nullptr)
     {
-        sender->GetSerial()->println("Usage: voltage");
+        sender->GetSerial()->println("ERROR: usage: voltage");
         return;
     }
 
     start_testing(sender);
     g_voltageReportingEnabled = true;
     g_lastVoltageReportMs     = millis();
-    sender->GetSerial()->println("ADC voltage reporting enabled at 1 second intervals");
+    sender->GetSerial()->println("OK: ADC voltage reporting enabled at 1 second intervals");
 }
 
 static void simulate_mode_command(SerialCommands* sender)
@@ -191,7 +206,7 @@ static void simulate_mode_command(SerialCommands* sender)
     char* argument = sender->Next();
     if ((argument == nullptr) || (sender->Next() != nullptr))
     {
-        sender->GetSerial()->println("Usage: simmode <0=ECO, 1=NORMAL, 2=SPORT>");
+        sender->GetSerial()->println("ERROR: usage: simmode <0=ECO, 1=NORMAL, 2=SPORT>");
         return;
     }
 
@@ -200,14 +215,14 @@ static void simulate_mode_command(SerialCommands* sender)
     const long modeNumber = strtol(argument, &end, 10);
     if ((errno == ERANGE) || (end == argument) || (*end != '\0') || (modeNumber < 0) || (modeNumber > 2))
     {
-        sender->GetSerial()->println("Error: mode must be 0 (ECO), 1 (NORMAL), or 2 (SPORT)");
+        sender->GetSerial()->println("ERROR: mode must be 0 (ECO), 1 (NORMAL), or 2 (SPORT)");
         return;
     }
 
     g_simulatedMode        = static_cast<uint8_t>(modeNumber);
     g_simulatedModeEnabled = true;
 
-    sender->GetSerial()->print("Mode input overridden until reset: ");
+    sender->GetSerial()->print("OK: mode input overridden until reset: ");
     sender->GetSerial()->print(g_simulatedMode);
     sender->GetSerial()->print(" (");
     sender->GetSerial()->print(simulated_mode_name(g_simulatedMode));
@@ -219,7 +234,7 @@ static void simulate_voltage_command(SerialCommands* sender)
     char* argument = sender->Next();
     if ((argument == nullptr) || (sender->Next() != nullptr))
     {
-        sender->GetSerial()->println("Usage: simvoltage <millivolts>");
+        sender->GetSerial()->println("ERROR: usage: simvoltage <millivolts>");
         return;
     }
 
@@ -228,21 +243,21 @@ static void simulate_voltage_command(SerialCommands* sender)
     const unsigned long voltageMv = strtoul(argument, &end, 10);
     if ((errno == ERANGE) || (end == argument) || (*end != '\0') || (*argument == '-'))
     {
-        sender->GetSerial()->println("Error: voltage must be a non-negative integer in millivolts");
+        sender->GetSerial()->println("ERROR: voltage must be a non-negative integer in millivolts");
         return;
     }
 
     g_simulatedVoltageMv      = static_cast<uint32_t>(voltageMv);
     g_simulatedVoltageEnabled = true;
 
-    sender->GetSerial()->print("Voltage input overridden until reset: ");
+    sender->GetSerial()->print("OK: voltage input overridden until reset: ");
     sender->GetSerial()->print(g_simulatedVoltageMv);
     sender->GetSerial()->println(" mV");
 }
 
 static void unrecognized_command(SerialCommands* sender, const char* command)
 {
-    sender->GetSerial()->print("Unknown test command: ");
+    sender->GetSerial()->print("ERROR: unknown test command: ");
     sender->GetSerial()->println(command);
     sender->GetSerial()->println("Commands: power <percent>, voltage, simmode <0-2>, simvoltage <mV>");
 }
