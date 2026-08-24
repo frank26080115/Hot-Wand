@@ -77,7 +77,7 @@ I planned out the winding in 3D with consideration for my transformer PCB footpr
 
 ![](imgs/current_transformer_winding_3d_2.png)
 
-It's possible and even beneficial to make this winding in a bifilar fashion. (it is a pain to 3D model in such a way)
+The two secondary wires are first twisted together, and then wound around the toroid, crossing the center of the toroid 14 times. A twisted bifilar winding implementation.
 
 Also, it's hard to get the directions wrong, because the directions for the current flow (the primary current must be in the opposite direction of the secondaries) are actually dictated by the PCB design, not the winding direction. You can wind it clockwise or counterclockwise and it is theoretically going to do the same thing physically. But, do not criss-cross at the bottom!
 
