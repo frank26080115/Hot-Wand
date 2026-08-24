@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,16 +53,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -8892,36 +8892,6 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="9" x="0.69" y="-1.15" dx="3.81" dy="1.7" layer="1"/>
 <wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
 </package>
-<package name="HEATSINK-ATS-PCB1046">
-<wire x1="-11.9" y1="0" x2="11.9" y2="0" width="1.2" layer="151"/>
-<wire x1="11.9" y1="0" x2="11.9" y2="-11.2" width="1.2" layer="151"/>
-<wire x1="11.9" y1="-11.2" x2="20.9" y2="-11.2" width="1.2" layer="151"/>
-<wire x1="20.9" y1="-11.2" x2="20.9" y2="0" width="1.2" layer="151"/>
-<wire x1="-11.9" y1="0" x2="-11.9" y2="-11.2" width="1.2" layer="151"/>
-<wire x1="-11.9" y1="-11.2" x2="-20.9" y2="-11.2" width="1.2" layer="151"/>
-<wire x1="-20.9" y1="-11.2" x2="-20.9" y2="0" width="1.2" layer="151"/>
-<circle x="-12" y="-10.2" radius="1.2" width="0.05" layer="151"/>
-<circle x="12" y="-10.2" radius="1.2" width="0.05" layer="151"/>
-<text x="-12" y="1" size="0.8128" layer="25">&gt;NAME</text>
-<text x="-12" y="2" size="0.8128" layer="27">&gt;VALUE</text>
-</package>
-<package name="HEATSINK-BOYD-7020">
-<wire x1="-16.5" y1="1.3" x2="16.5" y2="1.3" width="0" layer="151"/>
-<wire x1="16.5" y1="1.3" x2="16.5" y2="-10.64" width="0" layer="151"/>
-<wire x1="16.5" y1="-10.64" x2="-16.5" y2="-10.64" width="0" layer="151"/>
-<wire x1="-16.5" y1="-10.64" x2="-16.5" y2="1.3" width="0" layer="151"/>
-<circle x="-15.9" y="-4.8" radius="1" width="0.01" layer="151"/>
-<circle x="15.9" y="-4.8" radius="1" width="0.01" layer="151"/>
-<wire x1="-9.55" y1="0.65" x2="9.55" y2="0.65" width="1.27" layer="151"/>
-<wire x1="9.55" y1="0.65" x2="9.55" y2="-10" width="1.27" layer="151"/>
-<wire x1="9.55" y1="-10" x2="15.85" y2="-10" width="1.27" layer="151"/>
-<wire x1="15.85" y1="-10" x2="15.85" y2="0.65" width="1.27" layer="151"/>
-<wire x1="-9.55" y1="0.65" x2="-9.55" y2="-10" width="1.27" layer="151"/>
-<wire x1="-15.85" y1="-10" x2="-9.55" y2="-10" width="1.27" layer="151"/>
-<wire x1="-15.85" y1="-10" x2="-15.85" y2="0.65" width="1.27" layer="151"/>
-<text x="-16" y="2.3" size="0.8128" layer="25">&gt;NAME</text>
-<text x="-16" y="3.3" size="0.8128" layer="27">&gt;VALUE</text>
-</package>
 <package name="CONN_73330-0030_MOL">
 <wire x1="-2.4638" y1="4.6228" x2="2.4638" y2="4.6228" width="0.1524" layer="21"/>
 <wire x1="4.8768" y1="6.0706" x2="4.8768" y2="23.5712" width="0.1524" layer="21"/>
@@ -8945,13 +8915,6 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <pad name="3" x="-4.318" y="-4.318" drill="2.5" diameter="3.048"/>
 <pad name="4" x="4.318" y="-4.318" drill="2.5" diameter="3.048"/>
 <pad name="5" x="4.318" y="4.318" drill="2.5" diameter="3.048"/>
-</package>
-<package name="HEATSINK-5042">
-<wire x1="-9.4" y1="-20.5" x2="-9.4" y2="0.5" width="1" layer="151"/>
-<wire x1="-9.4" y1="0.5" x2="9.4" y2="0.5" width="1" layer="151"/>
-<wire x1="9.4" y1="0.5" x2="9.4" y2="-20.5" width="1" layer="151"/>
-<text x="-10" y="2" size="0.8128" layer="25">&gt;NAME</text>
-<text x="-10" y="3" size="0.8128" layer="27">&gt;VALUE</text>
 </package>
 <package name="SW_1-1825027-1">
 <wire x1="-3.58" y1="4.01" x2="3.58" y2="4.01" width="0.127" layer="21"/>
@@ -9935,18 +9898,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="-3.2766" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Name</text>
 <text x="-1.7272" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Value</text>
 </package>
-<package name="HEATSINK-SQ-14MM">
-<wire x1="-7" y1="7" x2="7" y2="7" width="0.127" layer="151"/>
-<wire x1="7" y1="7" x2="7" y2="-7" width="0.127" layer="151"/>
-<wire x1="7" y1="-7" x2="-7" y2="-7" width="0.127" layer="151"/>
-<wire x1="-7" y1="-7" x2="-7" y2="7" width="0.127" layer="151"/>
-</package>
-<package name="HEATSINK-SQ-12MM">
-<wire x1="-6" y1="6" x2="6" y2="6" width="0.127" layer="151"/>
-<wire x1="6" y1="6" x2="6" y2="-6" width="0.127" layer="151"/>
-<wire x1="6" y1="-6" x2="-6" y2="-6" width="0.127" layer="151"/>
-<wire x1="-6" y1="-6" x2="-6" y2="6" width="0.127" layer="151"/>
-</package>
 <package name="FAN-20MM-TIEDOWN">
 <wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
 <wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
@@ -10264,6 +10215,25 @@ Max Component Height - 25.57mm</description>
 <wire x1="-1.6" y1="-1.6" x2="-1.6" y2="-1.1" width="0.127" layer="21"/>
 <wire x1="-1.8" y1="1.1" x2="-1.8" y2="1.6" width="0.127" layer="21"/>
 <wire x1="-2" y1="1.1" x2="-2" y2="1.6" width="0.127" layer="21"/>
+</package>
+<package name="TO220V-REAR">
+<description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
+<wire x1="-5.08" y1="2.032" x2="-5.08" y2="-0.381" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="2.032" x2="5.08" y2="-0.381" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="2.032" x2="-5.08" y2="2.032" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="2.032" x2="-5.08" y2="3.048" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="3.048" x2="5.08" y2="3.048" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="3.048" x2="5.08" y2="2.032" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="-0.381" x2="-4.191" y2="-1.27" width="0.2032" layer="21" curve="92.798868"/>
+<wire x1="5.08" y1="-0.381" x2="4.191" y2="-1.27" width="0.2032" layer="21" curve="-92.798868"/>
+<wire x1="-4.191" y1="-1.27" x2="-3.81" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="4.191" y1="-1.27" x2="3.81" y2="-1.27" width="0.2032" layer="21"/>
+<pad name="1" x="-2.54" y="0" drill="1" shape="offset" rot="R270"/>
+<pad name="2" x="0" y="0" drill="1" shape="offset" rot="R270"/>
+<pad name="3" x="2.54" y="0" drill="1" shape="offset" rot="R270"/>
+<text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<rectangle x1="-5.08" y1="2.032" x2="5.08" y2="3.048" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -10700,15 +10670,6 @@ Max Component Height - 25.57mm</description>
 <pin name="GND" x="12.7" y="-5.08" length="middle" direction="pas" rot="R180"/>
 <pin name="CC1" x="12.7" y="5.08" length="middle" direction="pas" rot="R180"/>
 <pin name="CC2" x="12.7" y="0" length="middle" direction="pas" rot="R180"/>
-</symbol>
-<symbol name="HEATSINK">
-<wire x1="0" y1="0" x2="0" y2="7.62" width="0.254" layer="94"/>
-<wire x1="0" y1="7.62" x2="20.32" y2="7.62" width="0.254" layer="94"/>
-<wire x1="20.32" y1="7.62" x2="20.32" y2="0" width="0.254" layer="94"/>
-<wire x1="20.32" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
-<text x="2.54" y="2.54" size="2.1844" layer="94">HEATSINK</text>
-<text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
-<text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
 </symbol>
 <symbol name="733300030_3">
 <wire x1="5.08" y1="2.54" x2="5.08" y2="-12.7" width="0.1524" layer="94"/>
@@ -15524,6 +15485,16 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 <technology name=""/>
 </technologies>
 </device>
+<device name="-TO220V-REAR" package="TO220V-REAR">
+<connects>
+<connect gate="G$1" pin="D" pad="2"/>
+<connect gate="G$1" pin="G" pad="1"/>
+<connect gate="G$1" pin="S" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="-BUCK" package="TO220-BUCK">
 <connects>
 <connect gate="G$1" pin="D" pad="2"/>
@@ -19884,6 +19855,16 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <technology name=""/>
 </technologies>
 </device>
+<device name="-TO220V-REAR" package="TO220V-REAR">
+<connects>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="IN" pad="1"/>
+<connect gate="G$1" pin="OUT" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="-BUCK" package="TO220-BUCK">
 <connects>
 <connect gate="G$1" pin="GND" pad="2"/>
@@ -20067,38 +20048,6 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <connect gate="B" pin="G" pad="4"/>
 <connect gate="B" pin="S" pad="3"/>
 </connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="HEATSINK" prefix="HEATSINK">
-<gates>
-<gate name="A" symbol="HEATSINK" x="0" y="0"/>
-</gates>
-<devices>
-<device name="-ATS-PCB1046" package="HEATSINK-ATS-PCB1046">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-BOYD-7020" package="HEATSINK-BOYD-7020">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-5042" package="HEATSINK-5042">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-SQ-14MM" package="HEATSINK-SQ-14MM">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-SQ-12MM" package="HEATSINK-SQ-12MM">
 <technologies>
 <technology name=""/>
 </technologies>
@@ -22569,7 +22518,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="P+2" library="hot-wand" deviceset="+24V" device=""/>
-<part name="Q1" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="STP19NF20">
+<part name="Q1" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-TO220V-REAR" value="STP19NF20">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND16" library="hot-wand" deviceset="GND" device=""/>
@@ -22597,7 +22546,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R17" library="hot-wand" deviceset="RESISTOR" device="1206" value="3R6">
 <attribute name="JLCPARTNUM" value="C6301221"/>
 </part>
-<part name="Q2" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="PTH2" value="IRF510">
+<part name="Q2" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-TO220V-REAR" value="IRF510">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND21" library="hot-wand" deviceset="GND" device=""/>
@@ -22883,12 +22832,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="PARTNUM" value="SMAJ40CA"/>
 </part>
 <part name="GND43" library="hot-wand" deviceset="GND" device=""/>
-<part name="HEATSINK1" library="hot-wand" deviceset="HEATSINK" device="-5042" value="HEATSINK-5042">
-<attribute name="JLC-DNP" value="1"/>
-</part>
-<part name="HEATSINK2" library="hot-wand" deviceset="HEATSINK" device="-5042" value="HEATSINK-5042">
-<attribute name="JLC-DNP" value="1"/>
-</part>
 <part name="JP1" library="hot-wand" deviceset="COAX-FTYPE-PCB-MNT" device="" value="COAX-FTYPE-PCB-MNT">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -23027,9 +22970,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="GND58" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
-<part name="HEATSINK3" library="hot-wand" deviceset="HEATSINK" device="-SQ-12MM">
-<attribute name="JLC-DNP" value="1"/>
-</part>
 <part name="C61" library="hot-wand" deviceset="CAP_POL" device="1206-KIT" value="10u">
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
@@ -23109,6 +23049,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R52" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>
 </part>
+<part name="SJ7" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 </parts>
 <sheets>
 <sheet>
@@ -23760,8 +23701,6 @@ curr meas</text>
 <attribute name="JLCPARTNUM" x="93.98" y="-647.7" size="0.8128" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND43" gate="1" x="93.98" y="-655.32" rot="MR0"/>
-<instance part="HEATSINK1" gate="A" x="88.9" y="-187.96"/>
-<instance part="HEATSINK2" gate="A" x="142.24" y="-226.06"/>
 <instance part="JP1" gate="A" x="360.68" y="-139.7"/>
 <instance part="SW1" gate="G$1" x="226.06" y="-322.58"/>
 <instance part="GND44" gate="1" x="236.22" y="-330.2"/>
@@ -23896,7 +23835,6 @@ curr meas</text>
 <instance part="FAN1" gate="G$1" x="317.5" y="-429.26"/>
 <instance part="GND58" gate="1" x="345.44" y="-457.2"/>
 <instance part="P+16" gate="1" x="345.44" y="-419.1"/>
-<instance part="HEATSINK3" gate="A" x="101.6" y="-63.5"/>
 <instance part="C61" gate="G$1" x="345.44" y="-431.8">
 <attribute name="PARTNUM" x="345.44" y="-431.8" size="1.778" layer="96" display="off"/>
 <attribute name="JLCPARTNUM" x="345.44" y="-431.8" size="1.778" layer="96" display="off"/>
@@ -23988,6 +23926,7 @@ curr meas</text>
 <instance part="R52" gate="G$1" x="177.8" y="-330.2">
 <attribute name="JLCPARTNUM" x="177.8" y="-330.2" size="1.778" layer="96" display="off"/>
 </instance>
+<instance part="SJ7" gate="A" x="58.42" y="-182.88" smashed="yes" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -24153,6 +24092,8 @@ curr meas</text>
 <junction x="58.42" y="-193.04"/>
 <pinref part="SJ6" gate="A" pin="1"/>
 <wire x1="58.42" y1="-185.42" x2="58.42" y2="-193.04" width="0.1524" layer="91"/>
+<pinref part="SJ7" gate="A" pin="1"/>
+<junction x="58.42" y="-185.42"/>
 </segment>
 <segment>
 <pinref part="Q2" gate="G$1" pin="S"/>
@@ -25998,6 +25939,8 @@ curr meas</text>
 <pinref part="Q1" gate="G$1" pin="S"/>
 <wire x1="58.42" y1="-180.34" x2="58.42" y2="-177.8" width="0.1524" layer="91"/>
 <pinref part="SJ6" gate="A" pin="2"/>
+<pinref part="SJ7" gate="A" pin="2"/>
+<junction x="58.42" y="-180.34"/>
 </segment>
 </net>
 <net name="N$60" class="0">
