@@ -7148,8 +7148,8 @@ Max Component Height - 25.57mm</description>
 <wire x1="1.525" y1="-1.525" x2="1.525" y2="1.525" width="0.1" layer="51"/>
 <wire x1="1.525" y1="1.525" x2="-1.525" y2="1.525" width="0.1" layer="51"/>
 <wire x1="-1.525" y1="1.525" x2="-1.525" y2="-1.525" width="0.1" layer="51"/>
-<wire x1="0.808" y1="1.525" x2="-0.692" y2="1.525" width="0.2" layer="21"/>
-<wire x1="1.058" y1="-1.525" x2="-0.942" y2="-1.525" width="0.2" layer="21"/>
+<wire x1="0.8" y1="1.525" x2="-0.7" y2="1.525" width="0.2" layer="21"/>
+<wire x1="0.8" y1="-1.525" x2="-0.7" y2="-1.525" width="0.2" layer="21"/>
 <wire x1="-2.93" y1="2.525" x2="2.93" y2="2.525" width="0.1" layer="51"/>
 <wire x1="2.93" y1="2.525" x2="2.93" y2="-2.525" width="0.1" layer="51"/>
 <wire x1="2.93" y1="-2.525" x2="-2.93" y2="-2.525" width="0.1" layer="51"/>
@@ -7257,6 +7257,25 @@ Max Component Height - 25.57mm</description>
 <wire x1="-2" y1="7.2" x2="-2" y2="2.3" width="0.127" layer="21"/>
 <wire x1="2" y1="7.2" x2="2" y2="2.3" width="0.127" layer="21"/>
 <text x="-4" y="-4" size="0.8128" layer="25">&gt;NAME</text>
+</package>
+<package name="TO220V-REAR">
+<description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
+<wire x1="-5.08" y1="2.032" x2="-5.08" y2="-0.381" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="2.032" x2="5.08" y2="-0.381" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="2.032" x2="-5.08" y2="2.032" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="2.032" x2="-5.08" y2="3.048" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="3.048" x2="5.08" y2="3.048" width="0.2032" layer="21"/>
+<wire x1="5.08" y1="3.048" x2="5.08" y2="2.032" width="0.2032" layer="21"/>
+<wire x1="-5.08" y1="-0.381" x2="-4.191" y2="-1.27" width="0.2032" layer="21" curve="92.798868"/>
+<wire x1="5.08" y1="-0.381" x2="4.191" y2="-1.27" width="0.2032" layer="21" curve="-92.798868"/>
+<wire x1="-4.191" y1="-1.27" x2="-3.81" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="4.191" y1="-1.27" x2="3.81" y2="-1.27" width="0.2032" layer="21"/>
+<pad name="1" x="-2.54" y="0" drill="1" shape="offset" rot="R270"/>
+<pad name="2" x="0" y="0" drill="1" shape="offset" rot="R270"/>
+<pad name="3" x="2.54" y="0" drill="1" shape="offset" rot="R270"/>
+<text x="-2.794" y="3.429" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-3.302" y="-3.302" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<rectangle x1="-5.08" y1="2.032" x2="5.08" y2="3.048" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -9793,6 +9812,16 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <technology name=""/>
 </technologies>
 </device>
+<device name="-TO220V-REAR" package="TO220V-REAR">
+<connects>
+<connect gate="G$1" pin="D" pad="2"/>
+<connect gate="G$1" pin="G" pad="1"/>
+<connect gate="G$1" pin="S" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="-BUCK" package="TO220-BUCK">
 <connects>
 <connect gate="G$1" pin="D" pad="2"/>
@@ -11655,6 +11684,16 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 </technologies>
 </device>
 <device name="-TO220V" package="TO220V">
+<connects>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="IN" pad="1"/>
+<connect gate="G$1" pin="OUT" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-TO220V-REAR" package="TO220V-REAR">
 <connects>
 <connect gate="G$1" pin="GND" pad="2"/>
 <connect gate="G$1" pin="IN" pad="1"/>
