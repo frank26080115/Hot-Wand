@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.1" altunitdist="mm" altunit="mm"/>
+<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.05" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -16359,6 +16359,31 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <smd name="2" x="1.75" y="0" dx="1.7" dy="1.6" layer="1"/>
 <smd name="3" x="-1.7" y="-1" dx="1.4" dy="1.2" layer="1"/>
 </package>
+<package name="TRIM_35WR1KLFTR_V3">
+<wire x1="-1.6" y1="1.5" x2="-1.6" y2="-1.5" width="0.127" layer="51"/>
+<wire x1="-1.6" y1="-1.5" x2="1.2" y2="-1.5" width="0.127" layer="51"/>
+<wire x1="1.2" y1="-1.5" x2="1.4" y2="-1.4" width="0.127" layer="51"/>
+<wire x1="-1.6" y1="1.5" x2="1.2" y2="1.5" width="0.127" layer="51"/>
+<wire x1="1.2" y1="1.5" x2="1.4" y2="1.4" width="0.127" layer="51"/>
+<wire x1="1.4" y1="1.4" x2="1.4" y2="-1.4" width="0.127" layer="51"/>
+<wire x1="-0.68" y1="-1.5" x2="1.2" y2="-1.5" width="0.127" layer="21"/>
+<wire x1="-0.68" y1="1.5" x2="1.2" y2="1.5" width="0.127" layer="21"/>
+<wire x1="1.4" y1="1.4" x2="1.4" y2="1.12" width="0.127" layer="21"/>
+<wire x1="1.4" y1="-1.4" x2="1.4" y2="-1.12" width="0.127" layer="21"/>
+<wire x1="1.2" y1="-1.5" x2="1.4" y2="-1.4" width="0.127" layer="21"/>
+<wire x1="1.2" y1="1.5" x2="1.4" y2="1.4" width="0.127" layer="21"/>
+<wire x1="-2.45" y1="1.85" x2="-2.45" y2="-1.85" width="0.05" layer="39"/>
+<wire x1="-2.45" y1="-1.85" x2="2.65" y2="-1.85" width="0.05" layer="39"/>
+<wire x1="2.65" y1="-1.85" x2="2.65" y2="1.85" width="0.05" layer="39"/>
+<wire x1="2.65" y1="1.85" x2="-2.45" y2="1.85" width="0.05" layer="39"/>
+<text x="-2.45" y="2.15" size="1.27" layer="25">&gt;NAME</text>
+<text x="-2.45" y="-2.05" size="1.27" layer="27" align="top-left">&gt;VALUE</text>
+<smd name="1" x="-1.7" y="1" dx="1.4" dy="1.2" layer="1"/>
+<smd name="2" x="1.75" y="0" dx="1.7" dy="1.6" layer="1"/>
+<smd name="3" x="-1.7" y="-1" dx="1.4" dy="1.2" layer="1"/>
+<wire x1="-2.45" y1="0.35" x2="-2.45" y2="-0.35" width="0" layer="41"/>
+<wire x1="-0.95" y1="0.35" x2="-0.95" y2="-0.35" width="0" layer="41"/>
+</package>
 <package name="1X02-2MM">
 <pad name="1" x="-1" y="0" drill="0.8" shape="square"/>
 <pad name="2" x="1" y="0" drill="0.8" shape="octagon"/>
@@ -27177,6 +27202,16 @@ Standard 5-pin 0.1" header. Use with straight break away headers (SKU : PRT-0011
 <technology name=""/>
 </technologies>
 </device>
+<device name="-35WR1KLFTR_V3" package="TRIM_35WR1KLFTR_V3">
+<connects>
+<connect gate="G$1" pin="A" pad="3"/>
+<connect gate="G$1" pin="E" pad="1"/>
+<connect gate="G$1" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="-TX33X-2" package="TRIM_TC33X-2-103E">
 <connects>
 <connect gate="G$1" pin="A" pad="3"/>
@@ -31879,6 +31914,16 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </technologies>
 </device>
 <device name="_V2" package="TRIM_35WR1KLFTR_V2">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+<connect gate="G$1" pin="3" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="_V3" package="TRIM_35WR1KLFTR_V3">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
