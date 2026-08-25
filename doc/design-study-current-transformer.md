@@ -1,4 +1,4 @@
-In SergeyMax’s design, there is a current transformer at the RF output. It is using one of the same toroid cores that’s used in other places in this design. The primary winding is just a single loop of the RF output. The transformer is 1:14:14 so the two secondaries are both 14, and it’s kind of like 28 but with a center tap. The tap is connected to the RF output through a 10pF capacitor. The output of the transformer goes to something that resembles a full bridge diode rectifier. That goes to what looks like a RC filter before a resistor leading to the feedback network of the main buck converter.
+In SergeyMax’s design, there is a current transformer at the RF output. It is using one of the same toroid cores that’s used in other places in this design. The primary winding is just a single loop of the RF output. The transformer is 1:14:14 so the two secondaries are both 14. The connection that looks almost like a center tap is connected to the RF output through a 10pF capacitor. The output of the transformer goes to something that resembles a full bridge diode rectifier. That goes to what looks like a RC filter before a resistor leading to the feedback network of the main buck converter.
 
 At a simple first glance, I assumed that this was some sort of stability or protection mechanism. More current would mean more signal driven into the feedback network and thus lower the buck converter’s output voltage. I thought maybe this was to compensate for some sort of voltage drop caused by in-rush, maybe the buck converter overcompensated for voltage drops like that, and needed something to stabilize it.
 
@@ -8,7 +8,7 @@ SergeyMax’s own blog post didn’t really give a clear answer, and other peopl
 
 TLDR: This is a power factor meter. As the temperature of the iron tip changes, the complex load changes, shifting the phase relationship between RF voltage and current. The tip doesn't need or want more power when it is already hot, and the power factor will change. This current transformer circuit is able to sense this by detecting the phase difference between voltage and current, and then it tells the buck converter to lower its output voltage when the tip doesn't want more power. (technically it also tells the buck converter to raise the voltage when it is cold)
 
-The builder posted to the forum thread:
+The builder `rfmerrill` posted to the forum thread:
 
 > At first I thought it was a simple current sense circuit, but then I noticed that the RC filter is a lowpass at around 2 kHz, and the diodes are not arranged in a rectifier configuration.
 > 
@@ -63,7 +63,11 @@ The numbers used in this model are in this document at the bottom.
 
 ## My Own Implementation
 
-The builder told me that he didn't get the current transformer to work with any of the substitute toroid cores, it only started working once he put in the effort to import some of the Russian ones that SergeyMax used.
+The builder `rfmerrill` told me that (over reddit chat)
+
+> I was never able to get it to work until I actually sourced the exact cores from russia
+
+He didn't get the current transformer to work with any of the substitute toroid cores, it only started working once he put in the effort to import some of the Russian ones that SergeyMax used.
 
 The rule of thumb is that for a transformer application, a different AL doesn't mean I have to change the winding ratios, it's a ratio after all.
 
@@ -80,6 +84,12 @@ I planned out the winding in 3D with consideration for my transformer PCB footpr
 The two secondary wires are first twisted together, and then wound around the toroid, crossing the center of the toroid 14 times. A twisted bifilar winding implementation.
 
 Also, it's hard to get the directions wrong, because the directions for the current flow (the primary current must be in the opposite direction of the secondaries) are actually dictated by the PCB design, not the winding direction. You can wind it clockwise or counterclockwise and it is theoretically going to do the same thing physically. But, do not criss-cross at the bottom!
+
+## Screenshot From SergeyMax's Follow-up Video
+
+![](imgs/sergeymax_currenttransformer_ss.png)
+
+He did say that if you screw this up, it could make the circuit do the opposite, which is boosting the voltage when it should be lowering it. I have spent a ton of time making sure I did not make this mistake.
 
 ## Iron Tip Model
 
