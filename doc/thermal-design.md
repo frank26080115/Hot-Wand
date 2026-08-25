@@ -35,7 +35,9 @@ To encourage the airflow through this exit, all other air escape gaps not useful
 
 ![](imgs/thermal_3d_air_gaps_covered.png)
 
-The builder can also add a mesh filter if desired.
+To further prevent debris from entering the enclosure, a louvered air intake grille is 3D printed, with slats facing downwards.
+
+![](imgs/louvered_intake_grille.png)
 
 ## Buck Converter Cooling
 
@@ -64,3 +66,11 @@ The firmware allows the user to pick between 16 different fan control modes, in 
 The microcontroller always has its own internal temperature sensor that is being monitored, but it is questionable if this is useful, as it is placed very far away from RF and power components.
 
 There are connections and voltage dividers for two NTC thermistors. These are optional, but I have attached the NTC thermistors to the plastic casing of the two main MOSFETs.
+
+## Resistor Changes from Original Design
+
+In SergeyMax's design, he used two 2.2 ohm resistors in series (doing both source and sink) between the output of his MAX17602 and the IRF510 MOSFET. The foorprint are 0805 and the power rating is not specified, but I think 0805 can go up to 0.5W if you shop hard enough. In my design, I have two 3.6 ohm resistors here doing the same job, one for source and one for sink. Calculations showed that these should be worst case 0.75W rated so I used a 1206 footprint instead.
+
+The 22 ohm resistor used at the input of the tip-detector circuit is an ordinary 0805 footprint resistor in SergeyMax's design. Many EEVBlog users reported that this resistor tended to fail when the tip is actually removed. In my design, these have been beefed up to a 2512 footprint resistor rated for 2W. Better safe than sorry.
+
+At the gate of the main amp MOSFET, there are 150 ohm resistors that SergeyMax specified to be 2W rated and he used a axial package. In my design, I still used a 2W rating but I used a SMD 2512 package, with plenty of ground stitching vias (and 2oz copper PCB). for 12V DC conditions, 150 ohm should cause a bit under 1W of heat, and this net is supposed to be a 12V RF gate clock so we expect a bit less.

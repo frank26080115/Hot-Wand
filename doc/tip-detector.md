@@ -4,7 +4,7 @@ The tip detector shuts down RF generation when the handpiece or cartridge become
 
 The circuit is primarily a **DC continuity detector with an RF low-pass filter**. It injects a few milliamps of DC into the RF output. A connected cartridge provides a low-resistance DC path to ground and holds the detector low. An open connector or cartridge removes that path, allowing the bias voltage to turn on Q3.
 
-There is no diode RF rectifier or calibrated envelope detector in this circuit. Residual RF could be rectified by Q3's base-emitter junction, but that is an unwanted secondary effect and not the intended detection mechanism.
+(There is no diode RF rectifier or calibrated envelope detector in this circuit. Residual RF could be rectified by Q3's base-emitter junction, but that is an unwanted secondary effect and not the intended detection mechanism.)
 
 ## Circuit
 
@@ -30,14 +30,16 @@ RF-OUT -- R21 22 ohm -- L9 22 uH --+-- R22 2.2 kohm -- Q3 base
 Q3 emitter -- GND
 ```
 
-Q3 is a BC846B NPN transistor. In the normal build, VR2 and VR3 are both shorted and can be treated as zero-ohm links. All primary calculations below assume that configuration. VR2 may instead be populated with resistance when deliberately experimenting with lower continuity-test currents. VR3 has no required tuning function, so it is omitted from the equivalent circuit and calculations. R20 is normally not populated.
-
 The output logic is active-low:
 
 | Physical state   | Q3        | `TIP-DET` / PA5   |
 |------------------|-----------|-------------------|
 | Tip connected    | Off       | High: tip present |
 | Tip disconnected | Saturated | Low: tip absent   |
+
+![](imgs/tip_det_sim_connected.png)
+
+![](imgs/tip_det_sim_disconnected.png)
 
 ## DC Operation
 
