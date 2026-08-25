@@ -15,3 +15,5 @@ Try organizing files such that the most important core function are first, then 
 Do not add `U` or `UL` or `L` at the end of numbers
 
 Do not add `(void)` to the start of function calls that has a return value that is not being used
+
+Do not edit project documentation unless explicitly asked to, the prompt must indicate which markdown file is allowed to be edited in this case.

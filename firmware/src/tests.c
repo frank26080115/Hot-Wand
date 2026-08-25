@@ -7,6 +7,9 @@
 #include "battery.h"
 #include "button.h"
 #include "fan.h"
+#if FAN_PWM_ENABLED
+#include "fan_pwm.h"
+#endif
 #include "fault.h"
 #include "miscutils.h"
 #include "nvm.h"
@@ -46,7 +49,9 @@ extern const uint8_t __nvm_page_end__;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void      test_fan_pin_init(void);
+#if !FAN_PWM_ENABLED
+static void test_fan_pin_init(void);
+#endif
 static void      test_report_tip_state(bool triggered);
 static void      test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* settings);
 static bool      test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right);
@@ -179,14 +184,29 @@ void test_bringup_fan(void)
         {
             if (!fan_pin_owned)
             {
+#if FAN_PWM_ENABLED
+                if (!fanpwm_init(FANPWM_MODE_DIRECT))
+                {
+                    continue;
+                }
+#else
                 test_fan_pin_init();
+#endif
                 fan_pin_owned = true;
             }
+#if FAN_PWM_ENABLED
+            fanpwm_set(100);
+#else
             HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_SET);
+#endif
         }
         else if (fan_pin_owned)
         {
+#if FAN_PWM_ENABLED
+            fanpwm_set(0);
+#else
             HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_RESET);
+#endif
         }
 
         HAL_Delay(1);
@@ -553,6 +573,7 @@ void test_battery_guess(void)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
+#if !FAN_PWM_ENABLED
 static void test_fan_pin_init(void)
 {
     // the actual fan state machine won't actually initialize the pin, so we have to do it here for the test
@@ -568,6 +589,7 @@ static void test_fan_pin_init(void)
     gpio_cfg.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
 }
+#endif
 
 static void test_report_tip_state(bool triggered)
 {
@@ -593,8 +615,10 @@ static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* setti
     nvm_apply_defaults(settings);
     settings->startup_power_level = (uint8_t)(value % 3);
     value /= 3;
-    settings->fan_mode = (uint8_t)(value % 4);
-    value /= 4;
+    settings->fan_mode = (uint8_t)(value % 16);
+    value /= 16;
+    settings->fan_sig_inv = (uint8_t)(value % 2);
+    value /= 2;
     settings->auto_sleep = (uint8_t)(value % 4);
     value /= 4;
     settings->auto_dim = (uint8_t)(value % 4);
@@ -614,7 +638,7 @@ static bool test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwa
            (left->fan_mode == right->fan_mode) && (left->auto_sleep == right->auto_sleep) &&
            (left->auto_dim == right->auto_dim) && (left->idle_detect_thresh == right->idle_detect_thresh) &&
            (left->batt_mode == right->batt_mode) && (left->input_v_calib == right->input_v_calib) &&
-           (left->show_splash == right->show_splash);
+           (left->show_splash == right->show_splash) && (left->fan_sig_inv == right->fan_sig_inv);
 }
 
 static uintptr_t test_nvm_page_start(void)
@@ -739,6 +763,8 @@ static void test_nvm_report_settings(const hotwand_setup_nvm_t* settings)
     test_uart_write_number(settings->startup_power_level);
     UART_Write(" FAN=");
     test_uart_write_number(settings->fan_mode);
+    UART_Write(" FPOL=");
+    test_uart_write_number(settings->fan_sig_inv);
     UART_Write(" SLEEP=");
     test_uart_write_number(settings->auto_sleep);
     UART_Write(" DIM=");

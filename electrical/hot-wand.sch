@@ -9575,9 +9575,9 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <package name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
 <text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
-<wire x1="-9.4" y1="1.7" x2="9.7" y2="1.7" width="0" layer="41"/>
-<wire x1="9.7" y1="1.7" x2="9.7" y2="-1.7" width="0" layer="41"/>
-<wire x1="9.7" y1="-1.7" x2="-9.4" y2="-1.7" width="0" layer="41"/>
+<wire x1="-9.4" y1="1.7" x2="9.8" y2="1.7" width="0" layer="41"/>
+<wire x1="9.8" y1="1.7" x2="9.8" y2="-1.7" width="0" layer="41"/>
+<wire x1="9.8" y1="-1.7" x2="-9.4" y2="-1.7" width="0" layer="41"/>
 <wire x1="-9.4" y1="-1.7" x2="-9.4" y2="1.7" width="0" layer="41"/>
 <text x="-9" y="-2.8" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
@@ -10643,6 +10643,7 @@ Max Component Height - 25.57mm</description>
 <circle x="13.97" y="13.97" radius="11.43" width="0.254" layer="94"/>
 <circle x="13.97" y="13.97" radius="3.81" width="0.254" layer="94"/>
 <text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
+<text x="13.97" y="26.67" size="1.016" layer="94" align="center">PWM FAN CONNECTOR</text>
 </symbol>
 <symbol name="SJ_2">
 <wire x1="-0.635" y1="-1.397" x2="0.635" y2="-1.397" width="1.27" layer="94" curve="180" cap="flat"/>
@@ -22820,6 +22821,7 @@ curr meas</text>
 <text x="83.312" y="-672.084" size="1.27" layer="97" rot="R90">VCC1/2 rated 31V max</text>
 <text x="284.988" y="-231.14" size="1.27" layer="97" align="center-left">changes test current</text>
 <text x="102.87" y="-252.476" size="1.6764" layer="96">0.75W</text>
+<text x="391.16" y="-405.384" size="0.8128" layer="97" rot="R180" align="top-left">Noctua NF-A4X10 PWM</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="289.56" y="-30.48"/>

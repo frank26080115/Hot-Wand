@@ -266,12 +266,10 @@ bool rfgen_is_active(void)
 bool rfgen_tip_allows_start(void)
 {
     /*
-     * TIM_DIER_UIE is the update-interrupt-enable bit, not the pending flag.
-     * tipdetect_arm_timer() sets it together with TIM_CR1_CEN after either edge
-     * on TIP_DET. While it is set, TIM17 is timing the 300 us debounce interval,
-     * or its update interrupt is pending but has not run yet.
-     * TIM17_IRQHandler_Impl() clears UIE and CEN before sampling the settled
-     * pin and unmasking the next TIP_DET edge.
+     * tipdetect_is_qualifying() remains true while the timer is measuring the
+     * 300 us debounce interval and while its update interrupt is pending but
+     * has not run yet. The timer handler clears the qualifying state before
+     * sampling the settled pin and unmasking the next TIP_DET edge.
      *
      * Refusing to start during that interval prevents RF from being enabled
      * while tip presence is uncertain. It also prevents rfgen_clock_init()
@@ -279,13 +277,13 @@ bool rfgen_tip_allows_start(void)
      * The main loop retries after UIE clears, so the normal lockout lasts only
      * the debounce interval plus any interrupt latency.
      *
-     * This is deliberately fail-closed: if TIM17 stops counting, its IRQ is
-     * disabled, or its handler never runs while UIE remains set, RF restart is
-     * blocked indefinitely. The current timer ISR and tip-detect failure path
-     * both clear UIE and CEN together; future changes must preserve that
-     * invariant or add an explicit timeout/recovery fault.
+     * This is deliberately fail-closed: if the qualification timer stops, its
+     * IRQ is disabled, or its handler never runs, RF restart remains blocked.
+     * The timer ISR and tip-detect failure path clear their timer state
+     * together; future changes must preserve that invariant or add an explicit
+     * timeout/recovery fault.
      */
-    if (tipdetect_has_triggered() || ((TIM17->DIER & TIM_DIER_UIE) != 0))
+    if (tipdetect_has_triggered() || tipdetect_is_qualifying())
     {
         return false;
     }

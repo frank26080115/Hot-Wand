@@ -1369,9 +1369,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <package name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
 <text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
-<wire x1="-9.4" y1="1.7" x2="9.7" y2="1.7" width="0" layer="41"/>
-<wire x1="9.7" y1="1.7" x2="9.7" y2="-1.7" width="0" layer="41"/>
-<wire x1="9.7" y1="-1.7" x2="-9.4" y2="-1.7" width="0" layer="41"/>
+<wire x1="-9.4" y1="1.7" x2="9.8" y2="1.7" width="0" layer="41"/>
+<wire x1="9.8" y1="1.7" x2="9.8" y2="-1.7" width="0" layer="41"/>
+<wire x1="9.8" y1="-1.7" x2="-9.4" y2="-1.7" width="0" layer="41"/>
 <wire x1="-9.4" y1="-1.7" x2="-9.4" y2="1.7" width="0" layer="41"/>
 <text x="-9" y="-2.8" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
 </package>
@@ -1785,7 +1785,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="C14" library="hot-wand" package="0805" value="100pF 1000V" x="97" y="39.7" smashed="yes" rot="MR180">
 <attribute name="NAME" x="95.538" y="38.7745" size="0.8128" layer="26" font="vector" rot="MR180"/>
-<attribute name="VALUE" x="95.484" y="37.697" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="93.284" y="37.697" size="0.8128" layer="28" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="97" y="39.7" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="JLC-DNP" value="2" x="97" y="39.7" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>

@@ -10,15 +10,13 @@ The overall firmware is split into the main application that operates the solder
 
 The project uses PlatformIO's STM32Cube framework and the STM32F0 hardware abstraction layer supplied by ST. The vendor HAL and CMSIS definitions provide the supported interface to clock control, GPIO, interrupt configuration, ADC setup and calibration, flash programming, and the other MCU peripherals. This keeps device-specific register names, bit definitions, and startup behavior tied to the selected STM32 target rather than duplicating them inside the application.
 
-Some paths use the STM32 peripheral registers directly after the HAL has established the surrounding clocks and pin configuration. This is intentional where the firmware needs an exact timer waveform, a carefully ordered GPIO/peripheral handoff, or a small deterministic interrupt path. The RF carrier, power-attenuation PWM, tip-detect timer, ADC channel rotation, and OLED I2C transport are examples. These accesses still use ST's CMSIS device definitions; they are not a separate home-grown hardware abstraction layer.
+Some paths use the STM32 peripheral registers directly after the HAL has established the surrounding clocks and pin configuration. This is intentional where the firmware needs an exact timer waveform, a carefully ordered GPIO/peripheral handoff, or a small deterministic interrupt path. The RF carrier, power-attenuation PWM, fan PWM, tip-detect timer, ADC channel rotation, and OLED I2C transport are examples. These accesses still use ST's CMSIS device definitions; they are not a separate home-grown hardware abstraction layer.
 
 ## Imported U8g2 display library
 
 A copy of U8g2, including its U8x8 support layer, is imported into `lib/u8g2` and compiled as part of the firmware instead of being fetched as a build-time dependency. The imported library provides the SSD1306 display driver, framebuffer, fonts, and drawing primitives. Its upstream license is retained alongside the source.
 
 Application code reaches U8g2 through `oled.c`. That module supplies the display setup and the U8x8 byte, GPIO, and delay callbacks that connect the library to this board's I2C transport and STM32 timing functions. Keeping the adapter at this boundary avoids spreading display-controller and library-callback details through the rest of the firmware.
-
-The STM32F042 is the primary build target. Its custom PlatformIO board definition and linker script describe the actual device and reserve the required flash area for nonvolatile settings. Link-time optimization is enabled, and the configured maximum image size ensures the application fits in the STM32F042 flash allocation.
 
 ## Execution model
 
@@ -34,7 +32,7 @@ Interrupts are reserved for events that cannot depend on foreground loop latency
 
 - SysTick maintains the HAL millisecond counter used by the cooperative state machines.
 - The ADC completion interrupt advances continuous round-robin sampling, updates the filtered readings, and maintains a high-granularity DC-input-voltage history.
-- EXTI and TIM17 qualify tip-presence edges with a hardware-timed debounce interval. (highest priority)
+- EXTI and TIM14 qualify tip-presence edges with a hardware-timed debounce interval. (highest priority)
 - The clock security system uses the NMI path to shut down RF if the external crystal fails.
 - The user button press is using an interrupt edge trrigger sharing EXTI.
 
@@ -44,11 +42,19 @@ The startup vector table supplied by STM32Cube uses weak handlers. `interrupt_ve
 
 Tip detection starts fail-closed: before the detector has initialized and confirmed the input, its fault latch is set and RF is not allowed to start. The electrical input has an external pull-up, so a high level represents a connected tip and a low level represents a missing tip.
 
-Both input edges trigger EXTI. The handler masks the tip interrupt and starts TIM17 as a one-shot timer for the 300 microsecond debounce interval. When that interval expires, the timer interrupt samples the settled pin. A confirmed missing tip latches the fault and calls `rfgen_stop()` directly from the interrupt path, without waiting for another pass through the main loop. Edges arriving during qualification remain pending and receive another complete qualification interval after EXTI is unmasked.
+Both input edges trigger EXTI. The handler masks the tip interrupt and starts TIM14 as a one-shot timer for the 300 microsecond debounce interval. When that interval expires, the timer interrupt samples the settled pin. A confirmed missing tip latches the fault and calls `rfgen_stop()` directly from the interrupt path, without waiting for another pass through the main loop. Edges arriving during qualification remain pending and receive another complete qualification interval after EXTI is unmasked.
 
 The latch does not clear merely because the signal returns high. Reset is allowed only when the last debounced state says the tip is present, the physical pin is currently high, and no debounce interval is in progress. Normal operation treats the resulting tip fault as terminal until the user resets the controller.
 
-RF startup independently repeats these checks. It refuses to start while the tip latch is set, while TIM17 is qualifying an edge, or while the physical tip input is low. The final check and timer enable are performed with maskable interrupts disabled, closing the race in which a disconnect could otherwise occur partway through startup.
+RF startup independently repeats these checks. It refuses to start while the tip latch is set, while TIM14 is qualifying an edge, or while the physical tip input is low. The final check and timer enable are performed with maskable interrupts disabled, closing the race in which a disconnect could otherwise occur partway through startup.
+
+## Fan controller
+
+The firmware allows the user to pick between 16 different fan control modes, in three broad categories:
+
+ * simple and force the fan to a certain speed
+ * automatic modes triggered by a particular temperature threshold
+ * adaptive modes that adjusts fan speed based on temperature detected
 
 ## RF generation and shutdown safety
 

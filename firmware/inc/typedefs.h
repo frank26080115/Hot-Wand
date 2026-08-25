@@ -5,10 +5,23 @@
 
 enum
 {
-    FAN_MODE_OFF       = 0,
-    FAN_MODE_ON        = 1,
-    FAN_MODE_AUTO_LOW  = 2,
-    FAN_MODE_AUTO_HIGH = 3,
+    FAN_MODE_OFF                   = 0,
+    FAN_MODE_ON_100_RAMPED         = 1,
+    FAN_MODE_ON_25                 = 2,
+    FAN_MODE_ON_50                 = 3,
+    FAN_MODE_ON_75                 = 4,
+    FAN_MODE_AUTO_BINARY_100_COOL  = 5,
+    FAN_MODE_AUTO_BINARY_100_QUIET = 6,
+    FAN_MODE_AUTO_BINARY_50_COOL   = 7,
+    FAN_MODE_AUTO_BINARY_50_QUIET  = 8,
+    FAN_MODE_AUTO_BINARY_25_COOL   = 9,
+    FAN_MODE_AUTO_BINARY_25_QUIET  = 10,
+    FAN_MODE_AUTO_ADAPTIVE_25      = 11,
+    FAN_MODE_AUTO_ADAPTIVE_50      = 12,
+    FAN_MODE_AUTO_ADAPTIVE_75      = 13,
+    FAN_MODE_AUTO_ADAPTIVE_100     = 14,
+    FAN_MODE_AUTO_ADAPTIVE_150     = 15,
+    FAN_MODE_LAST                  = FAN_MODE_AUTO_ADAPTIVE_150,
 };
 
 enum
@@ -76,16 +89,17 @@ typedef struct __attribute__((packed, aligned(2)))
     uint8_t magic; // 0xFF or 0x00 is invalid
 
     uint8_t startup_power_level : 2;
-    uint8_t fan_mode : 2;
     uint8_t auto_sleep : 2;
     uint8_t auto_dim : 2;
+    uint8_t show_splash : 1;
+    uint8_t fan_sig_inv : 1;
+
     uint8_t idle_detect_thresh : 3;
     uint8_t batt_mode : 3;
-    uint8_t show_splash : 1;
-    uint8_t rsvd_1 : 1;
+    uint8_t rsvd_1 : 2;
 
     uint8_t  input_v_calib : 4;
-    uint8_t  rsvd_2 : 4;
+    uint8_t  fan_mode : 4;
     uint16_t checksum;
 } hotwand_setup_nvm_t;
 

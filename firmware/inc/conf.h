@@ -55,17 +55,46 @@
 #error "ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS must be nonzero"
 #endif
 
-#define TEMPERATURE_FAN_THRESHOLD_LOW_C  50
-#define TEMPERATURE_FAN_THRESHOLD_HIGH_C 80
 #define TEMPERATURE_HOT_WARNING_THRESH_C 80
 #define TEMPERATURE_SHUTDOWN_THRESH_C    110
 #define TEMPERATURE_SHUTDOWN_TIME_MS     1000
 #define TEMPERATURE_HYSTERYSIS_C         5
-#define FAN_MINIMUM_ON_TIME_MS           (10 * 1000)
-#define FAN_MINIMUM_OFF_TIME_MS          (5 * 1000)
 
-#if (FAN_MINIMUM_ON_TIME_MS == 0) || (FAN_MINIMUM_OFF_TIME_MS == 0)
-#error "Fan minimum on and off times must be nonzero"
+/* The regular build owns PA13 through the TIM16/TIM17 IR_OUT PWM path. The
+ * fallback build overrides this to zero and retains only direct GPIO modes. */
+#ifndef FAN_PWM_ENABLED
+#define FAN_PWM_ENABLED 1
+#endif
+
+#define FAN_ADAPTIVE_ON_TEMPERATURE_C   40
+#define FAN_COOL_ON_TEMPERATURE_C       50
+#define FAN_QUIET_ON_TEMPERATURE_C      70
+#define FAN_TEMPERATURE_HYSTERESIS_C    2
+#define FAN_MINIMUM_PWM_PERCENT         25
+#define FAN_RAMP_PERCENT_PER_SECOND     25
+#define FAN_STARTUP_BOOST_TIME_MS       500
+#define FAN_ADAPTIVE_UPDATE_INTERVAL_MS 1000
+#define FAN_MINIMUM_ON_TIME_MS          (10 * 1000)
+#define FAN_MINIMUM_OFF_TIME_MS         (5 * 1000)
+
+/* Leave PA13 under SWD control and defer firmware fan commands during this
+ * boot window. Set to zero through a build flag when immediate fan takeover
+ * is preferred over a guaranteed debugger-connection interval. */
+#ifndef FAN_STARTUP_OFF_TIME_MS
+#define FAN_STARTUP_OFF_TIME_MS (5 * 1000)
+#endif
+
+#if (FAN_PWM_ENABLED != 0) && (FAN_PWM_ENABLED != 1)
+#error "FAN_PWM_ENABLED must be 0 or 1"
+#endif
+
+#if (FAN_ADAPTIVE_ON_TEMPERATURE_C < FAN_TEMPERATURE_HYSTERESIS_C) ||                                                  \
+    (FAN_COOL_ON_TEMPERATURE_C < FAN_TEMPERATURE_HYSTERESIS_C) ||                                                      \
+    (FAN_QUIET_ON_TEMPERATURE_C < FAN_TEMPERATURE_HYSTERESIS_C) || (FAN_MINIMUM_PWM_PERCENT == 0) ||                   \
+    (FAN_MINIMUM_PWM_PERCENT > 100) || (FAN_RAMP_PERCENT_PER_SECOND == 0) || (FAN_RAMP_PERCENT_PER_SECOND > 100) ||    \
+    (FAN_STARTUP_BOOST_TIME_MS == 0) || (FAN_ADAPTIVE_UPDATE_INTERVAL_MS == 0) || (FAN_MINIMUM_ON_TIME_MS == 0) ||     \
+    (FAN_MINIMUM_OFF_TIME_MS == 0)
+#error "Invalid fan thresholds, duty limits, or timing"
 #endif
 
 /* Set to 0 if production units intentionally omit both external NTC sensors. */
@@ -77,9 +106,7 @@
 #error "NTC_FAULT_WARNING_ENABLED must be 0 or 1"
 #endif
 
-#if (TEMPERATURE_FAN_THRESHOLD_LOW_C > TEMPERATURE_FAN_THRESHOLD_HIGH_C) ||                                            \
-    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_FAN_THRESHOLD_LOW_C) ||                                                    \
-    (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C) ||                                                   \
+#if (TEMPERATURE_HYSTERYSIS_C > TEMPERATURE_HOT_WARNING_THRESH_C) ||                                                   \
     (TEMPERATURE_HOT_WARNING_THRESH_C >= TEMPERATURE_SHUTDOWN_THRESH_C) || (TEMPERATURE_SHUTDOWN_TIME_MS == 0)
 #error "Invalid thermal thresholds, hysteresis, or shutdown timing"
 #endif

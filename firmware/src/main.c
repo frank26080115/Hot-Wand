@@ -164,7 +164,8 @@ int main(void)
     pwrlvl_init();
     pwrmgt_set_desired_power_level((pwrlvl_mode_t)settings.startup_power_level);
     pwrmgt_set_idle_power_threshold(settings.idle_detect_thresh);
-    fan_init(settings.fan_mode);
+    settings.fan_mode = fan_normalize_mode(settings.fan_mode);
+    fan_init(settings.fan_mode, settings.fan_sig_inv != 0);
     display_last_frame_ms = systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
 
     test_run(); // if the test is enabled, then this will never return

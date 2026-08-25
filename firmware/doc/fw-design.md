@@ -49,11 +49,11 @@ If the temperature is too hot, the power limit of ECO mode will be automatically
 
 The cooling fan hardware is optional, but the control for it will always exist.
 
-The fan is always off for at least the configured minimum-off time after power up. After that interval, the fan will respect the configured operation mode. If the mode is always-on, then it will turn on.
+The firmware allows the user to pick between 16 different fan control modes, in three broad categories:
 
-In either automatic mode, the fan turns on when any monitored temperature exceeds that mode's configured low or high threshold. It turns off only after every monitored temperature falls to or below the selected threshold minus the configured temperature hysteresis. Normal state-machine transitions keep the fan on for at least the configured minimum-on time and off for at least the configured minimum-off time, preventing rapid cycling around a threshold. Explicit safety, fault, and sleep stops remain immediate; if such a stop is recoverable, the minimum-off interval is enforced before the fan can restart.
-
-The fan is off during sleep mode.
+ * simple and force the fan to a certain speed
+ * automatic modes triggered by a particular temperature threshold
+ * adaptive modes that adjusts fan speed based on temperature detected
 
 # Boot Mode
 
@@ -93,3 +93,4 @@ A 5 minute inactivity timeout will cause the device to enter sleep mode (without
  * Power output limiter
  * RF clock generator
  * Fan state machine
+ * PA13 fan PWM generator, with a compile-time GPIO fallback

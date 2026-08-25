@@ -7,8 +7,11 @@ extern "C"
 {
 #endif
 
-/* Initializes the saved FAN_MODE_*; invalid modes fail safe as off. */
-void fan_init(uint8_t mode);
+/* Returns a mode supported by the selected build. Unsupported fallback-build
+ * modes become the automatic cool profile. */
+uint8_t fan_normalize_mode(uint8_t mode);
+/* Initializes the saved FAN_MODE_* and the selected PA13 signal topology. */
+void fan_init(uint8_t mode, bool signal_inverted);
 /* Performs the optional delayed, one-shot external NTC health warning. */
 void ntc_task(void);
 void fan_task(void);

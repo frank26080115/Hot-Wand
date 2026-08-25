@@ -25,6 +25,9 @@ void tipdetect_task(void);
 /* Returns the latched disconnect state; once true, it requires a reset. */
 bool tipdetect_has_triggered(void);
 
+/* Returns true while an input edge is undergoing timed qualification. */
+bool tipdetect_is_qualifying(void);
+
 /* Ignored unless the tip is present and no debounce is in progress. */
 void tipdetect_reset(void);
 

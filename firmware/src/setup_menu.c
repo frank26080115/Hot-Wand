@@ -13,6 +13,7 @@
 
 #include "adc.h"
 #include "button.h"
+#include "fan.h"
 #include "miscutils.h"
 #include "nvm.h"
 #include "oled.h"
@@ -38,6 +39,16 @@
 #define SETUP_MENU_VOLTAGE_REFRESH_INTERVAL_MS 100
 #define SETUP_MENU_VOLTAGE_BUFFER_SIZE         7
 #define SETUP_MENU_BOTTOM_TEXT_BASELINE        (OLED_FIRST_TEXT_BASELINE + (11 * OLED_TEXT_LINE_HEIGHT))
+#if FAN_PWM_ENABLED
+#define SETUP_MENU_FAN_ITEMS                                                                                           \
+    "OFF|ON\n100%|ON\n25%|ON\n50%|ON\n75%|AUTO\n100/0\nCOOL|AUTO\n100/0\nQUIET|AUTO\n50%/0\nCOOL|"                     \
+    "AUTO\n50%/0\nQUIET|AUTO\n25%/0\nCOOL|AUTO\n25%/0\nQUIET|ADAPT\n25%|ADAPT\n50%|ADAPT\n75%|ADAPT\n100%|"            \
+    "ADAPT\n150%"
+#define SETUP_MENU_FAN_ITEM_COUNT 16
+#else
+#define SETUP_MENU_FAN_ITEMS      "OFF|ON\n100%|AUTO\n100/0\nCOOL|AUTO\n100/0\nQUIET"
+#define SETUP_MENU_FAN_ITEM_COUNT 4
+#endif
 #ifdef SHOW_SPLASH
 #define SETUP_MENU_LAST_VALUE_ITEM SETUP_ITEM_SHOW_SPLASH
 #else
@@ -52,6 +63,9 @@ enum
 {
     SETUP_ITEM_STARTUP_POWER_LEVEL = 0,
     SETUP_ITEM_FAN_MODE,
+#if FAN_PWM_ENABLED
+    SETUP_ITEM_FAN_SIGNAL_POLARITY,
+#endif
     SETUP_ITEM_AUTO_SLEEP,
     SETUP_ITEM_AUTO_DIM,
     SETUP_ITEM_IDLE_DETECT_THRESH,
@@ -86,9 +100,17 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_FAN_MODE] =
         {
                                           .title     = "FAN\nMODE",
-                                          .items     = "OFF|ON|AUTO\nLOW|AUTO\nHIGH",
-                                          .items_cnt = 4,
+                                          .items     = SETUP_MENU_FAN_ITEMS,
+                                          .items_cnt = SETUP_MENU_FAN_ITEM_COUNT,
                                           },
+#if FAN_PWM_ENABLED
+    [SETUP_ITEM_FAN_SIGNAL_POLARITY] =
+        {
+                                          .title     = "FAN\nSIGNL\nPOLAR",
+                                          .items     = "DIRCT|INVRT",
+                                          .items_cnt = 2,
+                                          },
+#endif
     [SETUP_ITEM_AUTO_SLEEP] =
         {
                                           .title     = "AUTO\nSLEEP",
@@ -141,6 +163,17 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
                                           },
 };
 
+#if !FAN_PWM_ENABLED
+/* Display positions are intentionally separate from persistent mode codes in
+ * the GPIO-only build because its supported values are noncontiguous. */
+static const uint8_t setup_fan_mode_codes[] = {
+    FAN_MODE_OFF,
+    FAN_MODE_ON_100_RAMPED,
+    FAN_MODE_AUTO_BINARY_100_COOL,
+    FAN_MODE_AUTO_BINARY_100_QUIET,
+};
+#endif
+
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
@@ -154,6 +187,9 @@ static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size
 static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
 static void        setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration);
 static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
+#if !FAN_PWM_ENABLED
+static uint8_t setup_menu_get_fan_option(uint8_t mode);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -177,6 +213,7 @@ void setup_menu(void)
     {
         nvm_apply_defaults(&settings);
     }
+    settings.fan_mode = fan_normalize_mode(settings.fan_mode);
 
     graphics = OLED_GetGraphics(&oled);
     if (graphics != NULL)
@@ -258,7 +295,15 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t
     case SETUP_ITEM_STARTUP_POWER_LEVEL:
         return settings->startup_power_level;
     case SETUP_ITEM_FAN_MODE:
+#if FAN_PWM_ENABLED
         return settings->fan_mode;
+#else
+        return setup_menu_get_fan_option(settings->fan_mode);
+#endif
+#if FAN_PWM_ENABLED
+    case SETUP_ITEM_FAN_SIGNAL_POLARITY:
+        return settings->fan_sig_inv;
+#endif
     case SETUP_ITEM_AUTO_SLEEP:
         return settings->auto_sleep;
     case SETUP_ITEM_AUTO_DIM:
@@ -306,8 +351,17 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
         settings->startup_power_level = value;
         break;
     case SETUP_ITEM_FAN_MODE:
+#if FAN_PWM_ENABLED
         settings->fan_mode = value;
+#else
+        settings->fan_mode = setup_fan_mode_codes[value];
+#endif
         break;
+#if FAN_PWM_ENABLED
+    case SETUP_ITEM_FAN_SIGNAL_POLARITY:
+        settings->fan_sig_inv = value;
+        break;
+#endif
     case SETUP_ITEM_AUTO_SLEEP:
         settings->auto_sleep = value;
         break;
@@ -474,3 +528,22 @@ static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
         /* Deliberately expire IWDG if the requested reset is suppressed. */
     }
 }
+
+#if !FAN_PWM_ENABLED
+static uint8_t setup_menu_get_fan_option(uint8_t mode)
+{
+    uint8_t option;
+
+    for (option = 0; option < (sizeof(setup_fan_mode_codes) / sizeof(setup_fan_mode_codes[0])); ++option)
+    {
+        if (setup_fan_mode_codes[option] == mode)
+        {
+            return option;
+        }
+    }
+
+    /* fan_normalize_mode() normally makes this unreachable. Keep the menu on
+     * its AUTO COOL entry if a corrupt value reaches this helper. */
+    return 2;
+}
+#endif

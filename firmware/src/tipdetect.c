@@ -78,12 +78,12 @@ void tipdetect_init(void)
     }
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_TIM17_CLK_ENABLE();
-    __HAL_RCC_TIM17_FORCE_RESET();
-    __HAL_RCC_TIM17_RELEASE_RESET();
+    __HAL_RCC_TIM14_CLK_ENABLE();
+    __HAL_RCC_TIM14_FORCE_RESET();
+    __HAL_RCC_TIM14_RELEASE_RESET();
 
     tipdetect_timer                        = (TIM_HandleTypeDef){0};
-    tipdetect_timer.Instance               = TIM17;
+    tipdetect_timer.Instance               = TIM14;
     tipdetect_timer.Init.Prescaler         = TIPDETECT_TIMER_PRESCALER;
     tipdetect_timer.Init.CounterMode       = TIM_COUNTERMODE_UP;
     tipdetect_timer.Init.Period            = TIPDETECT_TIMER_PERIOD;
@@ -116,7 +116,7 @@ void tipdetect_init(void)
     HAL_GPIO_Init(TIP_DET_GPIOx, &gpio_cfg);
 
     __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
-    HAL_NVIC_ClearPendingIRQ(TIM17_IRQn);
+    HAL_NVIC_ClearPendingIRQ(TIM14_IRQn);
 
     tipdetect_tip_present   = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
     tipdetect_triggered     = !tipdetect_tip_present;
@@ -124,8 +124,8 @@ void tipdetect_init(void)
     tipdetect_edge_decay_ms = systick_get_ms();
     tipdetect_initialized   = true;
 
-    HAL_NVIC_SetPriority(TIM17_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0);
-    HAL_NVIC_EnableIRQ(TIM17_IRQn);
+    HAL_NVIC_SetPriority(TIM14_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0);
+    HAL_NVIC_EnableIRQ(TIM14_IRQn);
     HAL_NVIC_SetPriority(EXTI4_15_IRQn, TIPDETECT_EXTI_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
@@ -180,8 +180,8 @@ void tipdetect_reset(void)
 
     /* Never clear the latch while the last debounced state or the current
      * electrical state says that the tip is absent, or while an edge is still
-     * being qualified by TIM17. */
-    if (((TIM17->DIER & TIM_DIER_UIE) == 0) && tipdetect_tip_present &&
+     * being qualified by TIM14. */
+    if (!tipdetect_is_qualifying() && tipdetect_tip_present &&
         (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET))
     {
         tipdetect_triggered = false;
@@ -229,18 +229,18 @@ void EXTI4_15_IRQHandler_Impl(void)
     }
 }
 
-void TIM17_IRQHandler_Impl(void)
+void TIM14_IRQHandler_Impl(void)
 {
     bool tip_present;
 
-    if (((TIM17->SR & TIM_SR_UIF) == 0) || ((TIM17->DIER & TIM_DIER_UIE) == 0))
+    if (((TIM14->SR & TIM_SR_UIF) == 0) || ((TIM14->DIER & TIM_DIER_UIE) == 0))
     {
         return;
     }
 
-    CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);
-    CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
-    CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
+    CLEAR_BIT(TIM14->DIER, TIM_DIER_UIE);
+    CLEAR_BIT(TIM14->CR1, TIM_CR1_CEN);
+    CLEAR_BIT(TIM14->SR, TIM_SR_UIF);
 
     /* Discard edges accumulated during the debounce window, then sample. Any
      * edge racing with or following the sample remains pending and starts
@@ -267,22 +267,32 @@ bool tipdetect_has_triggered(void)
     return tipdetect_triggered;
 }
 
+bool tipdetect_is_qualifying(void)
+{
+    /*
+     * UIE is set together with CEN when an edge begins qualification. The ISR
+     * clears UIE before sampling, so it also covers the interval where the
+     * update is pending but its handler has not run yet.
+     */
+    return (TIM14->DIER & TIM_DIER_UIE) != 0;
+}
+
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
 static void tipdetect_arm_timer(void)
 {
-    CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
-    CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);
-    TIM17->PSC = TIPDETECT_TIMER_PRESCALER;
-    TIM17->ARR = TIPDETECT_TIMER_PERIOD;
-    TIM17->CNT = 0;
-    TIM17->EGR = TIM_EGR_UG;
-    CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
-    HAL_NVIC_ClearPendingIRQ(TIM17_IRQn);
-    SET_BIT(TIM17->DIER, TIM_DIER_UIE);
-    SET_BIT(TIM17->CR1, TIM_CR1_CEN);
+    CLEAR_BIT(TIM14->CR1, TIM_CR1_CEN);
+    CLEAR_BIT(TIM14->DIER, TIM_DIER_UIE);
+    TIM14->PSC = TIPDETECT_TIMER_PRESCALER;
+    TIM14->ARR = TIPDETECT_TIMER_PERIOD;
+    TIM14->CNT = 0;
+    TIM14->EGR = TIM_EGR_UG;
+    CLEAR_BIT(TIM14->SR, TIM_SR_UIF);
+    HAL_NVIC_ClearPendingIRQ(TIM14_IRQn);
+    SET_BIT(TIM14->DIER, TIM_DIER_UIE);
+    SET_BIT(TIM14->CR1, TIM_CR1_CEN);
 }
 
 static void tipdetect_fail_closed(void)
@@ -292,11 +302,11 @@ static void tipdetect_fail_closed(void)
     tipdetect_triggered   = true;
 
     CLEAR_BIT(EXTI->IMR, TIP_DET_PINn);
-    if (__HAL_RCC_TIM17_IS_CLK_ENABLED())
+    if (__HAL_RCC_TIM14_IS_CLK_ENABLED())
     {
-        CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);
-        CLEAR_BIT(TIM17->CR1, TIM_CR1_CEN);
-        CLEAR_BIT(TIM17->SR, TIM_SR_UIF);
+        CLEAR_BIT(TIM14->DIER, TIM_DIER_UIE);
+        CLEAR_BIT(TIM14->CR1, TIM_CR1_CEN);
+        CLEAR_BIT(TIM14->SR, TIM_SR_UIF);
     }
 
     rfgen_stop();
