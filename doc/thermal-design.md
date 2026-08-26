@@ -2,6 +2,8 @@ When the project started, it didn't look like SergeyMax focused on thermal very 
 
 ![](imgs/sergeymax_thermal_first.png)
 
+Here's a fun question to hold in your head: Why are the actual Metcal or Thermaltronics stations so gigantic when SergeyMax's unit look so small? The differences are huge.
+
 The builder over at EEVblog named `rfmerrill` has a photo of his own build and he stuck the MOSFETs against the enclosure wall with some thermal pads in between.
 
 ![](imgs/rfmerrill_heatsink.jpg)
@@ -39,6 +41,10 @@ To further prevent debris from entering the enclosure, a louvered air intake gri
 
 ![](imgs/louvered_intake_grille.png)
 
+Back to the question I posed at the start: The Metcal stations are meant for 24/7 non-stop factory operations over decades, it wants to have no moving parts, no possible dust or liquid ingress, so it's a gigantic chunk of aluminum. They remind me of those industrial computers that are also chunks of aluminum with no fans.
+
+Our little portable DIY version of this station is definitely going to need some considerations for thermal dissipation.
+
 ## Buck Converter Cooling
 
 The PCB is made with 2oz thick copper for better heat dissipation. This is important for the `TPS54560` buck converter. There are some vent air exit slits near where the buck converter is. That region has a brass standoff connecting that copper pour to the bottom plate of the enclosure. I also soldered on some copper cooling fins to the exposed copper pour in that region.
@@ -67,6 +73,20 @@ The microcontroller always has its own internal temperature sensor that is being
 
 There are connections and voltage dividers for two NTC thermistors. These are optional, but I have attached the NTC thermistors to the plastic casing of the two main MOSFETs.
 
+The thermistor is 10 kohm at 25C and have beta of 3950K, a 2.2 kohm pull-up resistor towards 3.3V is used to implement a voltage divider.
+
+| Temp (C) | ADC reading |
+|----------|-------------|
+| 0        | 960         |
+| 25       | 839         |
+| 50       | 634         |
+| 75       | 413         |
+| 100      | 246         |
+| 125      | 143         |
+| 150      | 85          |
+
+Candidates for NTC thermistor: NRL2104J3950B1F (wire leads) or NRNE104H3950B1H (through hole)
+
 ## Resistor Changes from Original Design
 
 In SergeyMax's design, he used two 2.2 ohm resistors in series (doing both source and sink) between the output of his MAX17602 and the IRF510 MOSFET. The foorprint are 0805 and the power rating is not specified, but I think 0805 can go up to 0.5W if you shop hard enough. In my design, I have two 3.6 ohm resistors here doing the same job, one for source and one for sink. Calculations showed that these should be worst case 0.75W rated so I used a 1206 footprint instead.
@@ -74,3 +94,25 @@ In SergeyMax's design, he used two 2.2 ohm resistors in series (doing both sourc
 The 22 ohm resistor used at the input of the tip-detector circuit is an ordinary 0805 footprint resistor in SergeyMax's design. Many EEVBlog users reported that this resistor tended to fail when the tip is actually removed. In my design, these have been beefed up to a 2512 footprint resistor rated for 2W. Better safe than sorry.
 
 At the gate of the main amp MOSFET, there are 150 ohm resistors that SergeyMax specified to be 2W rated and he used a axial package. In my design, I still used a 2W rating but I used a SMD 2512 package, with plenty of ground stitching vias (and 2oz copper PCB). for 12V DC conditions, 150 ohm should cause a bit under 1W of heat, and this net is supposed to be a 12V RF gate clock so we expect a bit less.
+
+## Airflow Napkin Math
+
+(note: numbers are from the design on August 26 2026, final numbers may have changed)
+
+Intake area: fan represented as two circles, 38mm OD and 18mm ID, giving an oriface area of 880mm^2
+
+Outlets for buck converter cooling: 40mm^2 to 60mm^2
+
+Outlet for MOSFET cooling: 45mm x 8.6mm = 387mm^2
+
+Outlets for inductor cooling: 2x or 4x or 6x 4mm diameter holes, oriface area ranging from 25mm^2 to 75mm^2
+
+Useless outlets: 25mm x 5mm and 20mm x 5mm, 225mm^2 total
+
+![](imgs/airflow_pie_chart.png)
+
+Generated using `doc\tools\airflow_pie_chart.py`
+
+This rough estimate only tells me:
+ * I can afford to have those 6 holes for the toroid cooling, maybe even more. The magnetic properties of those toroids do depend on temperature a bit.
+ * I should put in an effort into mimizing the useless air outlets

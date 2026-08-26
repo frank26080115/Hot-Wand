@@ -62,13 +62,15 @@ Uses the Fair-Rite 5961004901 toroid core and 22 AWG wire.
 
 The primary (the 1 in 1:14:14) is just a single wire crossing the inside of the toroid once. No crossing on the bottom/outside of the toroid.
 
-The two secondaries can be done using a single pair of wires (bifilar), wrapping the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+The wire length of each secondary should be about 355 mm. (there is an additional +8% to account for the twisting of the two wires)
 
-![](imgs/current_transformer_winding_3d.png)
+Twist these two secondary wires together first, evenly, then wrap the result around the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
 
-![](imgs/current_transformer_winding_3d_nocore.png)
+Reference the following 3D model:
 
-The wire length of each secondary should be about 331 mm.
+![](imgs/current_transformer_winding_3d_1.png)
+
+![](imgs/current_transformer_winding_3d_2.png)
 
 #### large inductors
 
@@ -100,7 +102,7 @@ The totals below use the rounded cut lengths given above. The values calculated 
 
 For 22 AWG:
 
-`210 + 242 + 242 + 331 + 331 = 1356 mm = 1.356 m = 4.45 ft`
+`210 + 242 + 242 + 355 + 355 = 1404 mm = 1.404 m = 4.6 ft`
 
 This includes L8, both 9 uH chokes, and both current-transformer secondaries. It does not include the current transformer's short one-turn primary; reserve at least another 50 mm for it. The resulting planned requirement is approximately 1.41 m or 4.62 ft.
 
@@ -126,9 +128,7 @@ Drill 2.5mm diameter holes into the bottom enclosure lid. I used a 3D printed dr
 
 ### Screen Bezel
 
-3D print the screen bezel. Use epoxy to attach it to the box where the large screen cutout was made. Then use a drill to drill into the aluminum where the screw should go. I used a M3 threading tap and M3 screw. Use a sheet metal screw if you do not have a threading tap.
-
-Or just skip having a screen bezel.
+3D print the screen bezel. Use epoxy to attach it to the side of the enclosure box. Then use a drill to drill into the aluminum where the screw should go. I used a M3 threading tap and M3 screw. Use a sheet metal screw if you do not have a threading tap.
 
 ## PCB Standoffs
 
@@ -148,23 +148,53 @@ Soldering the standoff near the buck converter will help dissipate even more hea
 
 ### Buck Converter
 
-The buck converter has heat dissipation areas designed into the PCB. Take a 1mm thick copper sheet, cut it into strips 12mm long and 5mm high, solder them to the top plane in an array arrangement pointing towards the vent hole of the enclosure. Cut some of the fins in a way to avoid the screw head.
-
-Alternatively you can just buy a 12mm x 12mm square heat-sink and just cut it to clear the area on it where the screw needs to go. Make sure to use thermal compound or thermal double-sided tape underneath the square heat-sink.
+The buck converter has heat dissipation areas designed into the PCB. Take a 1mm thick copper sheet, cut it into strips 12mm long and 5mm high, solder them to the top plane in an array arrangement pointing towards the vent hole of the enclosure. Avoid the screw head meant for the standoff.
 
 ### MOSFETs
 
-The heat-sinks are Boyd Laconia 504222B00000G. Cut and bend the heat-sinks like in the photos TODO
+The heatsink is a `Same Sky` `HSB21-454515`. It is a 45mm x 45mm x 15mm square heatsink with pin-fins.
 
-Epoxy a M3 nut to the TO-220 tab, make sure you are filling the gap between the nut and the plastic body. Or, if you are fancy, you can solder a brass nut to the tab. You will not be tightening this nut very hard. When you are finished doing this, make sure a nylon M3 screw can freely thread into this nut.
+3D print the drilling guide for the heatsink. Drill the two holes meant for thread tapping #4-40 screws, you must choose your own drill bits for this according to what you have available.
 
-Use double-sided-adhesive thermal pads to attach the heat-sink body to the back of the TO-220. Make sure the hole is aligned.
+Using a dremel, cut the indicated fins away, the area here will need to be flat so screws can secure the heatsink against the enclosure wall.
 
-Cut a strip of 2mm or 3mm thick thermal padding, stick it to the back of the heat-sink, and make sure the hole is exposed.
+Thread tap these holes for #4-40 screws.
+
+On the back of the TO-220 MOSFETs, place silicone thermal pads meant for TO-220 devices. This must be electrically insulating
+
+In the hole of the TO-220 tab, place a nylon shoulder washer meant for #4 screws and about 3.6mm OD. This must be electrically insulating.
+
+Using a 1/2 inch long #4-40 screws, secure both MOSFETs to the heatsink.
+
+Using a multimeter, double check that the MOSFET tabs are not conductive with each other or with the heatsink or with the screws.
+
+Bend the legs of both MOSFETs simultaneously such that the heatsink's bottom will be just slightly outside of the enclosure box when the box is placed on top.
 
 ## Cooling Fan
 
-Attach the cooling fan to the PCB with hot glue or epoxy or VHB tape first. Then use insulated solid core 22 AWG wire, or similar, to solder the fan to the PCB through the mounting holes. Then add more hot glue around these holes
+#### Option A: Noctua A4x10 PWM
+
+Using a drill and a 3mm drill bit and the drilling template, drill the mounting holes for the fan into the enclosure wall. Using a drill, dremel, and the cutting template, cut and grind the hole meant for the fan's air intake.
+
+3D print the louvered intake grille.
+
+The fan is mounted inside the box, with the airflow direction towards the inside of the box. The grille is mounted on the outside of the box. Use M3 thread 25mm long screws and nuts to fasten it all together. (other screws that will work are #4-40 or #6-32 screws that are 1 inch long)
+
+There are a few solder jumper configurations to match if using the Noctua fan, please see photo. (always grounded, direct PWM signaling)
+
+The fan connector connects to the FAN connector on the PCB.
+
+#### Option B: 20mm fan
+
+WARNING: the 20mm fan method is not ideal, they are weak and not powerful. However, they are $5 instead of $15.
+
+Attach the cooling fan to the PCB with hot glue or epoxy or VHB tape first. Then use insulated solid core 22 AWG wire, or similar, to solder the fan to the PCB through the mounting holes. Then add more hot glue around these holes.
+
+Connect the fan's wires to the pins on the PCB labelled as `FAN+` and `FAN-`. Obviously the `+` side is for positive wire and `-` side is for the negative wire.
+
+3D print the fan duct out of TPU, and use VHB tape to attach it to the fan itself.
+
+Cut some slits into the enclosure wall as the air intake.
 
 ## Final Assembly
 
