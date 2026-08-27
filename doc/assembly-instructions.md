@@ -12,7 +12,26 @@ Please see the detailed BOM file to see which components are soldered by whom, a
 
 The 22uH axial inductor needs to be raised slightly above the PCB.
 
+![](placeholder)
+
 There are several LED indicators on the top side of the board, they simply indicate if a particular power bus actually has power, they are not required.
+
+The PowerPAK MOSFETs are hand soldered:
+
+1. brush the bottom of the MOSFET with rosin flux, brush the PCB footprint with rosin flux
+2. apply a **thin** layer of solder to the center pad of the MOSFET footprint on the PCB
+3. brush some more flux onto the PCB footprint
+4. solder pin 1 of the MOSFET to the PCB, ensuring it is on straight
+5. solder pins 2, 3, 4 of the MOSFET onto the PCB
+6. solder pins 5 thru 8 of the MOSFET all in one go, apply extra solder as the wicking action will pull solder underneath the MOSFET (this is why we prepped the center pad first)
+
+At this moment, it is possible to test the power input. Verify that the ideal-diode is working. Verify that USB-C PD negotiation is working.
+
+Install the fuse holder.
+
+Install the IC1 buck converter for 12V, and test that it is working (power up and use a multimeter).
+
+![](placeholder)
 
 #### Solder Jumpers and Tuning Parts
 
@@ -30,9 +49,11 @@ VR2 and VR3 are used to tune the sensitivity of the tip-detector. VR2 with R19 (
 
 SJ1 is connected between the microcontroller's BOOT0 pin and ground. It should be shorted out with solder in all normal situations. It can be used to put the microcontroller in a bootloader mode if a wire is used to bridge BOOT0 to VCC.
 
-SJ3 connects the fan control MOSFET to the microcontroller's SWDIO pin. You must short this out with solder but only after the firmware has been flashed to the microcontroller. Otherwise the fan will go wild during firmware flashing.
+SJ3 connects the microcontroller to the overall fan controlling circuitry. Only connect this after flashing the microcontroller with firmware.
 
-SJ4 should be left open. Shorting it out will leave the fan permanently spinning with no control.
+SJ4 is used to select the fan's ground, it can be permanently connected to ground, or have the ground connected to the MOSFET.
+
+SJ5 selects the connection to the PWM pin of the fan. Most fans do not actually use a PWM signal. You can select the PWM signal coming directly from the MCU (recommended for Noctua brand fans and some others), or select the PWM to come from the MOSFET (open drain mode, requires signal inversion in configurable firmware settings).
 
 R46 should be a 0 ohm resistor (or short it out with solder). You can choose to replace it with a particular value if you need to negotiate a certain current limit with the USB-PD host.
 
@@ -52,7 +73,7 @@ Equation for wire length: `(2 * 10) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.
 
 10 turns should be 242 mm of wire.
 
-If you actually managed to get a `K16x8x6`, then use 15 turns.
+If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, then use 15 turns.
 
 #### current transformer
 
@@ -116,19 +137,23 @@ For one complete unit, the practical minimum purchase is 1.5 m (5 ft) of 22 AWG 
 
 ### Box Walls
 
-The box walls has holes and cutouts. Two 4mm holes are for the screws that press the MOSFET heat-sinks against the wall. A big 10mm hole is for the coax connector, a 3mm hole is for the button. The coax connector hole and the button hole will be turned into a slot for easier construction using a dremel.
+The box walls has holes and cutouts. Follow the diagrams to understand the purpose of each, the proper sizes and threads to use.
 
-The slots are cut using a dremel and cutoff disk. The big cutout is for the screen.
+A 3D printed drilling and cutting template is provided.
 
-This is all guided by a 3D printed drilling template. The template also has 2mm holes to help guide the long dremel cuts, used like perforation.
+There are holes for a face-plate, the template does not include the holes for the template, as the face-plate itself is the template.
+
+It is recommended to use a 2.5mm drill bit for all holes first, and if the hole needs to be bigger, then use a second drill bit after removing the template.
 
 ### Bottom Lid
 
 Drill 2.5mm diameter holes into the bottom enclosure lid. I used a 3D printed drilling template to help me with this.
 
-### Screen Bezel
+If possible and if you want a cleaner build, countersink these holes and use countersink-head screws
 
-3D print the screen bezel. Use epoxy to attach it to the side of the enclosure box. Then use a drill to drill into the aluminum where the screw should go. I used a M3 threading tap and M3 screw. Use a sheet metal screw if you do not have a threading tap.
+### Face-Plate
+
+3D print the face-plate. Use epoxy to attach it to the side of the enclosure box. Then use a drill to drill into the aluminum where the screw should go. The holes are tapped for #4-40 screws. #4-40 screws are used to fasten the face-plate to the box.
 
 ## PCB Standoffs
 
@@ -152,6 +177,8 @@ The buck converter has heat dissipation areas designed into the PCB. Take a 1mm 
 
 ### MOSFETs
 
+This is all done before the MOSFETs are soldered to the PCB.
+
 The heatsink is a `Same Sky` `HSB21-454515`. It is a 45mm x 45mm x 15mm square heatsink with pin-fins.
 
 3D print the drilling guide for the heatsink. Drill the two holes meant for thread tapping #4-40 screws, you must choose your own drill bits for this according to what you have available.
@@ -168,13 +195,13 @@ Using a 1/2 inch long #4-40 screws, secure both MOSFETs to the heatsink.
 
 Using a multimeter, double check that the MOSFET tabs are not conductive with each other or with the heatsink or with the screws.
 
-Bend the legs of both MOSFETs simultaneously such that the heatsink's bottom will be just slightly outside of the enclosure box when the box is placed on top.
+Bend the legs of both MOSFETs, according to this diagram.
+
+Insert the MOSFETs into the PCB, bend the legs simultaneously such that the heatsink's bottom will be just slightly outside of the enclosure box when the box is placed on top.
 
 ## Cooling Fan
 
-#### Option A: Noctua A4x10 PWM
-
-Using a drill and a 3mm drill bit and the drilling template, drill the mounting holes for the fan into the enclosure wall. Using a drill, dremel, and the cutting template, cut and grind the hole meant for the fan's air intake.
+Using a drill and a 3mm drill bit and the drilling template, drill the mounting holes for the fan into the enclosure wall. Using a drill, dremel, and the cutting template, cut and grind the large hole meant for the fan's air intake.
 
 3D print the louvered intake grille.
 
@@ -184,25 +211,49 @@ There are a few solder jumper configurations to match if using the Noctua fan, p
 
 The fan connector connects to the FAN connector on the PCB.
 
-#### Option B: 20mm fan
+#### Fan Shopping Options
 
-WARNING: the 20mm fan method is not ideal, they are weak and not powerful. However, they are $5 instead of $15.
+The best fan is a [12V Noctua NF-A4x10 PWM](https://www.noctua.at/en/products/nf-a4x10-pwm), it is quiet, has PWM control, and has a 6 year warranty.
 
-Attach the cooling fan to the PCB with hot glue or epoxy or VHB tape first. Then use insulated solid core 22 AWG wire, or similar, to solder the fan to the PCB through the mounting holes. Then add more hot glue around these holes.
+Otherwise, find any 12V 40mm square 10mm thick fan. Such as [Winnsinn](https://www.amazon.com/gp/product/B07DB5XQ23/ref=ox_sc_act_title_2)
 
-Connect the fan's wires to the pins on the PCB labelled as `FAN+` and `FAN-`. Obviously the `+` side is for positive wire and `-` side is for the negative wire.
+#### Fan Solder Jumper Selection
 
-3D print the fan duct out of TPU, and use VHB tape to attach it to the fan itself.
+For fans with only two wires, simply connect it such that the positive wire is connected to where it says `FAN+`, and the positive wire is connected to where it says `FAN-`. Then, use solder to bridge SJ4-B.
 
-Cut some slits into the enclosure wall as the air intake.
+For fans with a PWM input (4 wires), plug the connector in the correct orientation (as indicated by the artwork). Then, for fans that prefer a push-pull PWM signal, use solder to bridge SJ4-A and SJ5-D. For fans that prefer an open-drain PWM signal, use solder to bridge SJ4-A and SJ5-C.
+
+Noctua's documentation says their fans prefer a push-pull signal. Other brands of PC fans traditionally prefers an open-drain signal.
+
+Using an open-drain signal requires the firmware option "FAN SIGNL POLAR" to be set to `INVRT`.
+
+## Firmware Flashing
+
+Populate the debug header using a plain 6 pin female header with 0.1 inch pitch.
+
+Using a ST-Link, connect the debugger signals to the debugger header, matching the signals by name. This is best done using simple male to female jumper wires.
+
+Power on the circuit, preferably using a current limited power supply.
+
+Use the ST-Link Utility application to flash the firmware hex file to the microcontroller.
 
 ## Final Assembly
 
 With the brass standoffs already attached to the PCB (see previous step), attach the PCB to the enclosure lid with more screws, maybe countersink the holes and use countersink screws if you are able to.
 
-The bottom lid with the PCB on it should just slip into the enclosure box. Use the screws that came with the enclosure to close the box.
+Plug in the fan at this point.
 
-There are two holes on the wall of the enclosure aligned to where the TO-220 MOSFETs have their holes, the one we epoxied nuts to. Insert a long nylon M3 screw, with a nylon washer, into those holes, and try to tighten the MOSFET heat-sinks against the wall of the enclosure. Remember, in the previous step we have put a thick piece of thermal padding on the heat-sinks in this area. Tightening these nylon screws will compress this padding, ensure good thermal transfer from the MOSFET to the enclosure, which will improve heat dissipation.
+Clean the surface the heatsink and the surface of the box using rubbing alcohol. Put some thermal compound on the box's surface where it will meet the heatsink.
+
+Slip the box over the circuit board (the circuit board should already be attached to the bottom lid).
+
+Secure the heatsink, using #4-40 x 3/8 inch screws. Clean up any thermal compound that may have overflowed out.
+
+Secure the heatsink's air-duct, using #4-40 x 3/8 inch screws.
+
+Secure the face-plate, using #4-40 x 3/8 inch screws.
+
+Use the screws that came with the enclosure to close the box completely, screwing the bottom lid into the box.
 
 ## Component Skipping and Substitutions
 
