@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.1" altunitdist="mm" altunit="mm"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -17992,16 +17992,27 @@ Through-hole SPDT Switch&lt;br&gt;
 <pad name="V" x="0" y="1.27" drill="1" shape="octagon"/>
 <pad name="T" x="0" y="-1.27" drill="1" shape="octagon"/>
 <pad name="P" x="0" y="-3.8" drill="1" shape="octagon"/>
-<wire x1="-2" y1="5" x2="-2" y2="-5" width="0.127" layer="21"/>
-<wire x1="-2" y1="-5" x2="3" y2="-5" width="0.127" layer="21"/>
-<wire x1="3" y1="-5" x2="3" y2="-1" width="0.127" layer="21"/>
-<wire x1="3" y1="-1" x2="3" y2="4" width="0.127" layer="21"/>
-<wire x1="3" y1="4" x2="3" y2="5" width="0.127" layer="21"/>
-<wire x1="3" y1="5" x2="-2" y2="5" width="0.127" layer="21"/>
-<wire x1="3" y1="4" x2="2" y2="4" width="0.127" layer="21"/>
-<wire x1="2" y1="4" x2="2" y2="-1" width="0.127" layer="21"/>
-<wire x1="2" y1="-1" x2="3" y2="-1" width="0.127" layer="21"/>
+<wire x1="-3" y1="5" x2="-3" y2="4" width="0.127" layer="21"/>
+<wire x1="-3" y1="4" x2="-3" y2="-1" width="0.127" layer="21"/>
+<wire x1="-3" y1="-1" x2="-3" y2="-5" width="0.127" layer="21"/>
+<wire x1="-3" y1="-5" x2="3" y2="-5" width="0.127" layer="21"/>
+<wire x1="3" y1="-5" x2="3" y2="5" width="0.127" layer="21"/>
+<wire x1="3" y1="5" x2="-3" y2="5" width="0.127" layer="21"/>
+<wire x1="-2" y1="4" x2="-2" y2="-1" width="0.127" layer="21"/>
 <text x="-2" y="6" size="0.8128" layer="25">&gt;NAME</text>
+<wire x1="-2" y1="4" x2="-3" y2="4" width="0.127" layer="21"/>
+<wire x1="-2" y1="-1" x2="-3" y2="-1" width="0.127" layer="21"/>
+</package>
+<package name="PAD.03X.05">
+<smd name="P$1" x="0" y="0" dx="1.27" dy="1.27" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="PAD-SQ-2MM">
+<smd name="1" x="0" y="0" dx="2" dy="2" layer="1"/>
+<text x="-1" y="-2.2" size="0.8128" layer="25">&gt;NAME</text>
+</package>
+<package name="PAD-SQ-2.5MM">
+<smd name="1" x="0" y="0" dx="2.5" dy="2.5" layer="1"/>
+<text x="-1.5" y="-2.5" size="0.8128" layer="25">&gt;NAME</text>
 </package>
 </packages>
 <symbols>
@@ -19342,6 +19353,13 @@ Through-hole SPDT Switch&lt;br&gt;
 <circle x="13.97" y="13.97" radius="3.81" width="0.254" layer="94"/>
 <text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
 <text x="13.97" y="26.67" size="1.016" layer="94" align="center">PWM FAN CONNECTOR</text>
+</symbol>
+<symbol name="TEST-POINT">
+<wire x1="2.54" y1="0" x2="0" y2="0" width="0.1524" layer="94"/>
+<wire x1="3.302" y1="0.762" x2="3.302" y2="-0.762" width="0.1524" layer="94" curve="180"/>
+<text x="-2.54" y="2.54" size="1.778" layer="95">&gt;Name</text>
+<text x="-2.54" y="-2.54" size="1.778" layer="96">&gt;Value</text>
+<pin name="1" x="0" y="0" visible="off" length="point" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -32781,6 +32799,53 @@ Simple slide switch. Spark Fun Electronics SKU : COM-00102</description>
 <connect gate="G$1" pin="P" pad="P"/>
 <connect gate="G$1" pin="T" pad="T"/>
 <connect gate="G$1" pin="V" pad="V"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="TEST-POINT" prefix="TP">
+<gates>
+<gate name="G$1" symbol="TEST-POINT" x="0" y="0"/>
+</gates>
+<devices>
+<device name="2" package="PAD.02X.02">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3" package="PAD.03X.03">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3X5" package="PAD.03X.05">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-SQ-2MM" package="PAD-SQ-2MM">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-SQ-2.5MM" package="PAD-SQ-2.5MM">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
 </connects>
 <technologies>
 <technology name=""/>
