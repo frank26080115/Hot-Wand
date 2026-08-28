@@ -17,3 +17,6 @@ venv/
 env/
 dist/
 *.egg-info/
+
+# Affinity temporary lock files
+*.af~lock~
