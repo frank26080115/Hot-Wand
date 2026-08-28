@@ -1,21 +1,14 @@
 ## 0. Circuit Board Reception
 
-Get the circuit board from JLCPCB
+Get the circuit board from JLCPCB with mostly bottom components already populated.
 
-Populate all out-of-stock components that JLCPCB did not populate
+Populate all out-of-stock components that JLCPCB did not populate on the bottom side first.
 
 ## 1. Input Power
 
 ![](../doc/imgs/soldering_1.jpg)
 
-Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a soldering iron (not hot air). For each of the three MOSFETs, follow these steps:
-
-1. brush the bottom of the MOSFET with flux, brush the PCB footprint with flux
-2. apply a **very thin** layer of solder to the center pad of the MOSFET footprint on the PCB (not the MOSFET itself)
-3. brush some more flux onto the PCB footprint
-4. solder pin 1 of the MOSFET to the PCB, ensuring it is on straight
-5. solder pins 2, 3, 4 of the MOSFET onto the PCB
-6. solder pins 5 thru 8 of the MOSFET all in one go, apply extra solder as the wicking action will pull solder underneath the MOSFET (this is why we prepped the center pad first)
+Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a soldering iron (not hot air). For each of the three MOSFETs, [follow these steps (click here for document)](./assembly-supplement.md#power-input-mosfets)
 
 Populate the USB-C connector, followed by the XT30 connector
 
@@ -27,13 +20,15 @@ Then test USB-C negotiation with a variety of configurations (20V vs 28V, 5A lim
 
 During the USB-C tests, the shunt jumpers should have been installed to JP5
 
+([click here to see testing notes](assembly-supplement.md#testing-note-voltage-measurement-points))
+
 (OPTIONAL) Populate LEDs. If you choose to do this, it might be nice to use different colours for each one.
 
 ![](../doc/imgs/soldering_2.jpg)
 
 Populate the potentiometers. (DEVELOPMENT ONLY) Make note of their orientation and correlate spin direction with resistances.
 
-Populate the fuse holder, and install a 7A fuse (20x5mm glass fast-blow fuse). Do a quick check to make sure it doesn't blow a fuse immediately.
+Populate the fuse holder, and install a 7A fuse (20x5mm glass fast-blow fuse). Do a quick check to make sure it doesn't blow a fuse immediately. ([click here to see testing notes](assembly-supplement.md#testing-note-voltage-measurement-points))
 
 Populate all through hole capacitors
 
@@ -53,17 +48,19 @@ Populate the L1 inductor. This is the main buck converter's first stage inductor
 
 Now, when powered up, the main buck converter will start outputting some voltage. Adjust the potentiometer to vary the voltage, test up to the limit, then set it to the lowest possible setting.
 
-Populate the L9 inductor. This is the filter inductor for the tip detector.
+([click here to see testing notes](assembly-supplement.md#testing-note-voltage-measurement-points))
+
+Populate the L9 inductor. This is the filter inductor for the tip detector. It should be raised about 5mm above the PCB when installed.
 
 ## 3. PCB Cooling and Mounting Hardware
 
-Add the custom cut copper fins to the buck converter heat dissipation area. Using 0.5mm thick copper sheets, cut strips that are about 5mm tall, and then cut them into small fins. Solder these fins to the top side of the PCB where the copper is exposed, near where buck converter is under, which is also near where one of the standoff screws is supposed to go. Arrange them such that the fins are perpendicular to the edge of the board as we want the air to flow outwards towards vents that are on the side of the box.
+Add the custom cut copper fins to the buck converter heat dissipation area.  [Click here to see detailed procedures](assembly-supplement.md#pcb-cooling-fins-near-buck-converter)
 
 ![](TODO: photo)
 
 Do not make the fins block the area where the brass standoff and screw is supposed to go! We are soldering on the fins first before the standoffs are attached because it is easier to solder this way, without the huge thermal mass of the standoff.
 
-Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional.
+Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional.
 
 ![](../doc/imgs/standoffs_3d.png)
 
@@ -79,23 +76,21 @@ Populate the debug header. It is a 6 pin female header with 0.1 inch pin pitch o
 
 ![](../doc/imgs/soldering_4_3d.png)
 
-Configure the fan solder jumpers (SJ3, SJ4, SJ5), these are on the bottom of the PCB.
-
-![](../doc/imgs/fan_sj_config.png)
-
 Ensure **SJ1** is bridged (ie. shorted) by solder.
 
-At this point in the build process, you need to flash the firmware to the microcontroller
+At this point in the build process, you need to [flash the firmware to the microcontroller (click here for instructions)](firmware-flashing.md)
 
 ![](../doc/imgs/stlink_flashing.png)
 
-TODO: link to another page on firmware flashing
+(DEVELOPMENT ONLY) Test firmware as much as possible, go through all bring-up tests
 
-(DEVELOPMENT ONLY) Test firmware as much as possible, see all bring-up tests
+Configure the fan solder jumpers (SJ3, SJ4, SJ5), these are on the bottom of the PCB. Do this after firmware flashing. [More details, click here](./assembly-supplement.md#fan-solder-jumper-selection)
+
+![](../doc/imgs/fan_sj_config.png)
 
 ## 5. Custom Inductors
 
-Wind custom inductors (way more detailed instructions)
+Wind custom inductors ([click here for detailed instructions](custom-inductors.md))
 
 (DEVELOPMENT ONLY) measure custom wound inductor for inductance
 
@@ -105,11 +100,11 @@ Populate all custom wound inductors and transformer.
 
 ## 6. Solder/Measurement Jumpers
 
-Either short out with solder, or populate **SJ6** with a 0.01 ohm measurement resistor, which is used to measure drain current of Q1.
+Short out **SJ6** and **SJ7** and **SJ8** with solder.
 
-If SJ6 is not used for measurements, then also short out **SJ7** with solder.
+(DEVELOPMENT ONLY) SJ6 can be used for measuring the drain current of Q1, when populated with a 0.01 ohm measurement resistor.
 
-**SJ8** is used to measure the current consumption of the 12V rail, to determine the gate driver's efficiency. The tuning happens after the MOSFETs are ready. Short it out with solder if you are not performing this measurement.
+(DEVELOPMENT ONLY) SJ8 used to measure the current consumption of the 12V rail, to determine the gate driver's efficiency. The tuning happens after the MOSFETs are ready. Short it out with solder if you are not performing this measurement.
 
 ## 6. Printed Parts and Templates
 
