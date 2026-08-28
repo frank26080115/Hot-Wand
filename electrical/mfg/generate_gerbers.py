@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import copy
+import io
 import os
 import re
 import shutil
@@ -12,6 +14,7 @@ import sys
 import tempfile
 import uuid
 import zipfile
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -28,6 +31,15 @@ LENGTH_PATTERN = re.compile(
     r"^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*(mil|mm|inch|in)?$",
     re.IGNORECASE,
 )
+
+ILLUSTRATION_SUPERSAMPLE_FACTOR = 4
+ILLUSTRATION_BACKGROUND_COLOR = "#FFFFFF"
+ILLUSTRATION_FR4_COLOR = "#064B2F"
+ILLUSTRATION_COPPER_COLOR = "#2EAD65"
+ILLUSTRATION_EXPOSED_COPPER_COLOR = "#D4AF37"
+ILLUSTRATION_SILK_COLOR = "#FFFFFF"
+ILLUSTRATION_FEATURE_COLOR = "#000000"
+SVG_GRAPHICAL_GROUP_TAG = "g"
 
 
 @dataclass(frozen=True)
@@ -513,6 +525,345 @@ def run_preview(
         )
 
 
+def local_svg_tag(element: ET.Element) -> str:
+    if not isinstance(element.tag, str):
+        return ""
+    return element.tag.rsplit("}", 1)[-1]
+
+
+def render_illustration_layer_alpha(
+    source_root: ET.Element,
+    root_group_id: str,
+    side_layer_id: str | None,
+    output_size: tuple[int, int],
+) -> object:
+    try:
+        import cairosvg
+        from PIL import Image
+    except ImportError as exc:
+        raise RuntimeError(
+            "CairoSVG and Pillow are required for PCB illustrations; install "
+            "them with 'python -m pip install CairoSVG Pillow'"
+        ) from exc
+
+    isolated_root = copy.deepcopy(source_root)
+    root_groups = {
+        child.get("id"): child
+        for child in list(isolated_root)
+        if local_svg_tag(child) == SVG_GRAPHICAL_GROUP_TAG
+        and child.get("id") in {"top", "bottom", "drills", "dimensional"}
+    }
+    target_group = root_groups.get(root_group_id)
+    if target_group is None:
+        raise RuntimeError(
+            f"Cannot render PCB illustration; missing SVG group: {root_group_id}"
+        )
+
+    for group_id, group in root_groups.items():
+        if group_id != root_group_id:
+            isolated_root.remove(group)
+
+    if side_layer_id is not None:
+        expected_id = f"{root_group_id}-{side_layer_id}"
+        side_groups = {
+            child.get("id"): child
+            for child in list(target_group)
+            if local_svg_tag(child) == SVG_GRAPHICAL_GROUP_TAG
+        }
+        layer_group = side_groups.get(expected_id)
+        if layer_group is None:
+            raise RuntimeError(
+                f"Cannot render PCB illustration; missing SVG group: {expected_id}"
+            )
+        for group_id, group in side_groups.items():
+            if group_id != expected_id:
+                target_group.remove(group)
+        target_group = layer_group
+
+    # Inline paint on the selected layer overrides the preview stylesheet while
+    # preserving explicit fill:none/stroke:none declarations on its geometry.
+    target_group.set("style", "fill:#000;stroke:#000;opacity:1")
+    isolated_root.set("shape-rendering", "crispEdges")
+    png_bytes = cairosvg.svg2png(
+        bytestring=ET.tostring(
+            isolated_root,
+            encoding="utf-8",
+            xml_declaration=True,
+        ),
+        output_width=output_size[0],
+        output_height=output_size[1],
+    )
+    with Image.open(io.BytesIO(png_bytes)) as rendered_layer:
+        rendered_layer.load()
+        return rendered_layer.getchannel("A").copy()
+
+
+def save_illustration_png(
+    image: object,
+    output_path: Path,
+    dpi: tuple[float, float],
+) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w+b",
+            dir=output_path.parent,
+            prefix=f".{output_path.name}-",
+            suffix=".tmp.png",
+            delete=False,
+        ) as temporary_file:
+            temporary_path = Path(temporary_file.name)
+
+        image.save(
+            temporary_path,
+            format="PNG",
+            dpi=dpi,
+            compress_level=9,
+        )
+        if temporary_path.stat().st_size == 0:
+            raise RuntimeError(f"Pillow created an empty PCB illustration: {output_path.name}")
+        os.replace(temporary_path, output_path)
+        temporary_path = None
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
+def create_illustration_pngs(build_dir: Path) -> list[Path]:
+    try:
+        from PIL import Image, ImageChops, ImageDraw, ImageOps
+    except ImportError as exc:
+        raise RuntimeError(
+            "Pillow is required for PCB illustrations; install it with "
+            "'python -m pip install Pillow'"
+        ) from exc
+
+    svg_path = build_dir / "preview.svg"
+    top_preview_path = build_dir / "preview-top.png"
+    if not svg_path.is_file() or not top_preview_path.is_file():
+        raise RuntimeError("PCB illustrations require preview.svg and preview-top.png")
+
+    source_root = ET.parse(svg_path).getroot()
+    with Image.open(top_preview_path) as preview_image:
+        final_size = preview_image.size
+        raw_dpi = preview_image.info.get("dpi", (500.0, 500.0))
+        dpi = (float(raw_dpi[0]), float(raw_dpi[1]))
+
+    render_size = tuple(
+        dimension * ILLUSTRATION_SUPERSAMPLE_FACTOR
+        for dimension in final_size
+    )
+
+    # Work from a final-resolution, hard-edged outline mask. Flooding this
+    # one-bit barrier is more reliable than flooding the colored illustration:
+    # layer colors and anti-aliased feature edges cannot affect board detection.
+    outline_alpha = render_illustration_layer_alpha(
+        source_root,
+        "dimensional",
+        None,
+        final_size,
+    )
+    outline_binary = outline_alpha.point(
+        lambda value: 255 if value else 0,
+        mode="1",
+    )
+    outline_alpha.close()
+    flood_map = outline_binary.convert("L")
+    flood_corner = next(
+        (
+            corner
+            for corner in (
+                (0, 0),
+                (final_size[0] - 1, 0),
+                (0, final_size[1] - 1),
+                (final_size[0] - 1, final_size[1] - 1),
+            )
+            if flood_map.getpixel(corner) == 0
+        ),
+        None,
+    )
+    if flood_corner is None:
+        flood_map.close()
+        outline_binary.close()
+        raise RuntimeError(
+            "Cannot identify the illustration background; every canvas corner "
+            "is occupied by the milling outline"
+        )
+    ImageDraw.floodfill(flood_map, flood_corner, 128, thresh=0)
+    exterior_binary = flood_map.point(
+        lambda value: 255 if value == 128 else 0,
+        mode="1",
+    )
+    flood_map.close()
+    if exterior_binary.getbbox() is None:
+        exterior_binary.close()
+        outline_binary.close()
+        raise RuntimeError(
+            "Cannot identify an exterior region outside the milling outline"
+        )
+    board_binary = ImageChops.invert(exterior_binary)
+    board_alpha = board_binary.convert("L")
+
+    def compose_side(side: str) -> object:
+        copper_alpha = render_illustration_layer_alpha(
+            source_root,
+            side,
+            "copper",
+            render_size,
+        )
+        mask_alpha = render_illustration_layer_alpha(
+            source_root,
+            side,
+            "mask",
+            render_size,
+        )
+
+        # Gerber solder-mask geometry describes mask openings. Convert both
+        # inputs to binary coverage before intersecting them so only exposed
+        # copper becomes gold. The cream/paste layer is never rendered.
+        copper_binary = copper_alpha.point(
+            lambda value: 255 if value else 0,
+            mode="1",
+        )
+        mask_binary = mask_alpha.point(
+            lambda value: 255 if value else 0,
+            mode="1",
+        )
+        exposed_copper_alpha = ImageChops.logical_and(copper_binary, mask_binary)
+
+        illustration = Image.new("RGBA", render_size, (0, 0, 0, 0))
+        try:
+            illustration.paste(
+                ILLUSTRATION_COPPER_COLOR,
+                (0, 0, *render_size),
+                copper_alpha,
+            )
+            illustration.paste(
+                ILLUSTRATION_EXPOSED_COPPER_COLOR,
+                (0, 0, *render_size),
+                exposed_copper_alpha,
+            )
+
+            for root_group_id, side_layer_id, color in (
+                (side, "silk", ILLUSTRATION_SILK_COLOR),
+                ("drills", None, ILLUSTRATION_FEATURE_COLOR),
+            ):
+                feature_alpha = render_illustration_layer_alpha(
+                    source_root,
+                    root_group_id,
+                    side_layer_id,
+                    render_size,
+                )
+                try:
+                    illustration.paste(
+                        color,
+                        (0, 0, *render_size),
+                        feature_alpha,
+                    )
+                finally:
+                    feature_alpha.close()
+
+            rendered_features = illustration.resize(
+                final_size,
+                resample=Image.Resampling.LANCZOS,
+            )
+
+            # Everything except the crisp milling outline is clipped to the
+            # detected board region and composited over opaque dark-green FR-4.
+            feature_alpha = rendered_features.getchannel("A")
+            clipped_feature_alpha = ImageChops.multiply(
+                feature_alpha,
+                board_alpha,
+            )
+            rendered_features.putalpha(clipped_feature_alpha)
+            final_image = Image.new(
+                "RGBA",
+                final_size,
+                ILLUSTRATION_BACKGROUND_COLOR,
+            )
+            final_image.paste(
+                ILLUSTRATION_FR4_COLOR,
+                (0, 0, *final_size),
+                board_binary,
+            )
+            final_image.alpha_composite(rendered_features)
+            final_image.paste(
+                ILLUSTRATION_FEATURE_COLOR,
+                (0, 0, *final_size),
+                outline_binary,
+            )
+            feature_alpha.close()
+            clipped_feature_alpha.close()
+            rendered_features.close()
+        finally:
+            illustration.close()
+            copper_alpha.close()
+            mask_alpha.close()
+            copper_binary.close()
+            mask_binary.close()
+            exposed_copper_alpha.close()
+        return final_image
+
+    def crop_to_white_padding(image: object, padding: int = 10) -> object:
+        white_background = Image.new(
+            "RGBA",
+            image.size,
+            ILLUSTRATION_BACKGROUND_COLOR,
+        )
+        try:
+            color_difference = ImageChops.difference(
+                image,
+                white_background,
+            ).convert("RGB")
+            try:
+                content_bounds = color_difference.getbbox()
+            finally:
+                color_difference.close()
+        finally:
+            white_background.close()
+
+        if content_bounds is None:
+            raise RuntimeError("Cannot crop an empty PCB illustration")
+
+        cropped_image = image.crop(content_bounds)
+        try:
+            return ImageOps.expand(
+                cropped_image,
+                border=padding,
+                fill=ILLUSTRATION_BACKGROUND_COLOR,
+            )
+        finally:
+            cropped_image.close()
+
+    uncropped_top_image = compose_side("top")
+    bottom_image = compose_side("bottom")
+    uncropped_bottom_mirrored_image = ImageOps.mirror(bottom_image)
+    try:
+        top_image = crop_to_white_padding(uncropped_top_image)
+        bottom_mirrored_image = crop_to_white_padding(
+            uncropped_bottom_mirrored_image
+        )
+    finally:
+        uncropped_top_image.close()
+        uncropped_bottom_mirrored_image.close()
+    top_path = build_dir / "illustration-top.png"
+    bottom_mirrored_path = build_dir / "illustration-bottom-mirrored.png"
+    try:
+        save_illustration_png(top_image, top_path, dpi)
+        save_illustration_png(bottom_mirrored_image, bottom_mirrored_path, dpi)
+    finally:
+        top_image.close()
+        bottom_image.close()
+        bottom_mirrored_image.close()
+        board_alpha.close()
+        board_binary.close()
+        exterior_binary.close()
+        outline_binary.close()
+
+    return [top_path, bottom_mirrored_path]
+
+
 def publish_build(build_dir: Path, output_dir: Path) -> None:
     backup_dir = output_dir.with_name(
         f".{output_dir.name}-backup-{uuid.uuid4().hex}"
@@ -673,6 +1024,9 @@ def main() -> int:
         if not args.no_preview:
             print("Generating SVG preview...")
             run_preview(preview_script, build_dir, gerbv)
+            print("Generating PCB illustrations...")
+            for illustration_path in create_illustration_pngs(build_dir):
+                print(f"Created {illustration_path}")
 
         # The whole directory is replaced only after CAM and preview generation pass.
         publish_build(build_dir, output_dir)

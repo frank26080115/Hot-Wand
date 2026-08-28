@@ -1610,6 +1610,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="73.3454" y="29.94" size="0.8128" layer="25" font="vector" ratio="10" rot="R270"/>
 <attribute name="VALUE" x="72.4826" y="20.1244" size="0.8128" layer="27" font="vector" ratio="10" rot="R90"/>
 <attribute name="JLC-DNP" value="1" x="72" y="23" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="5300-17-RC" x="72" y="23" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="C42" library="hot-wand" package="0603-CAP" value="33nF" x="74.7" y="29.4" smashed="yes" rot="MR180">
 <attribute name="NAME" x="76.338" y="29.8745" size="0.8128" layer="26" font="vector" rot="MR180"/>
