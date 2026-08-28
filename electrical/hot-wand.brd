@@ -4760,8 +4760,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$26">
 <contactref element="U7" pad="1"/>
 <contactref element="SJ1" pad="2"/>
-<wire x1="39.075" y1="20.88" x2="39.075" y2="21.6" width="0.254" layer="16"/>
+<wire x1="39.075" y1="20.88" x2="39.075" y2="21.2" width="0.254" layer="16"/>
+<wire x1="39.075" y1="21.2" x2="39.075" y2="21.4" width="0.254" layer="16"/>
+<wire x1="39.075" y1="21.4" x2="39.075" y2="21.6" width="0.254" layer="16"/>
 <wire x1="39.075" y1="21.6" x2="37.05" y2="21.6" width="0.254" layer="16"/>
+<wire x1="39.075" y1="21.4" x2="37.05" y2="21.4" width="0.254" layer="16"/>
+<wire x1="39.075" y1="21.2" x2="37.05" y2="21.2" width="0.254" layer="16"/>
 </signal>
 <signal name="N$50">
 <contactref element="VR4" pad="3"/>
