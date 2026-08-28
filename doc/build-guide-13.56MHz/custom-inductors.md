@@ -1,10 +1,10 @@
-## Custom Inductors
+# Custom Inductors
 
 Make sure you are familiar with how to use enamel coated magnet wire correctly, how to prepare the ends of the wires for soldering, etc.
 
 Remember that, one "turn" is defined as passing through the center of the toroid once. It doesn't have to be a complete loop.
 
-#### 9 uH choke
+## 9 uH choke
 
 Both small custom inductors use the Fair-Rite 5961004901 toroid core, and 22 AWG solid core enamel coated wire (aka magnet wire).
 
@@ -16,7 +16,7 @@ Equation for wire length: `(2 * 10) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.
 
 If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, then use 15 turns.
 
-#### current transformer
+## Current transformer
 
 The ratio is 1:14:14
 
@@ -30,11 +30,11 @@ Twist these two secondary wires together first, evenly, then wrap the result aro
 
 Reference the following 3D model:
 
-![](imgs/current_transformer_winding_3d_1.png)
+![](../imgs/current_transformer_winding_3d_1.png)
 
-![](imgs/current_transformer_winding_3d_2.png)
+![](../imgs/current_transformer_winding_3d_2.png)
 
-#### large inductors
+## Large inductors
 
 The three large inductors are using the Amidon T130-6 toroid cores and 16 AWG solid core enamel coated wire.
 
@@ -46,11 +46,11 @@ Equation for wire length: `(2 * 10) + T * (2 * ((33 - 19.8) / 2 + 11.1) + pi * 1
 
 540 uH -> 7 turns -> 310 mm
 
-#### coreless inductor L8
+## Coreless inductor L8
 
 Use 10 turns of 22 AWG wire, wound around a 5 mm dowel or similar mandrel. Make the coil approximately 10 mm wide, then squeeze or stretch it during tuning.
 
-![](imgs/coreless_inductor_3d.png)
+![](../imgs/coreless_inductor_3d.png)
 
 Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm leads, and 5% extra wire for winding tolerance, the approximate cut length in millimeters is:
 
@@ -58,7 +58,7 @@ Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm 
 
 This gives approximately 207 mm, so cut about 210 mm of wire before winding.
 
-#### Total wire used
+## Total wire used
 
 The totals below use the rounded cut lengths given above. The values calculated directly from the equations are within about 5 mm of these totals.
 

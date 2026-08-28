@@ -1,4 +1,6 @@
-# Power Input MOSFETs
+# Assembly Supplement
+
+## Power Input MOSFETs
 
 Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a soldering iron (not hot air). For each of the three MOSFETs, follow these steps:
 
@@ -9,21 +11,21 @@ Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a so
 5. solder pins 2, 3, 4 of the MOSFET onto the PCB
 6. solder pins 5 thru 8 of the MOSFET all in one go, apply extra solder as the wicking action will pull solder underneath the MOSFET (this is why we prepped the center pad first)
 
-# Testing Note: Voltage Measurement Points
+## Testing Note: Voltage Measurement Points
 
 During assembly, it is recommended that you test the power supplies as they are added. Using a multimeter, these are the points that are convenient to test each important voltage node.
 
-[![](../doc/imgs/voltage_measurement_nodes_200.png)](../doc/imgs/voltage_measurement_nodes_800.png)
+[![](../imgs/voltage_measurement_nodes_200.png)](../imgs/voltage_measurement_nodes_800.png)
 
-# PCB Cooling Fins near Buck Converter
+## PCB Cooling Fins near Buck Converter
 
 Using 0.5mm thick copper sheets, cut strips that are about 5mm tall, and then cut them into small fins. Solder these fins to the top side of the PCB where the copper is exposed, near where buck converter is under, which is also near where one of the standoff screws is supposed to go. Arrange them such that the fins are perpendicular to the edge of the board as we want the air to flow outwards towards vents that are on the side of the box.
 
-![](TODO: photo)
+<!-- TODO: Add a photo of the PCB cooling fins. -->
 
-# Fan Solder Jumper Selection
+## Fan Solder Jumper Selection
 
-![](../doc/imgs/fan_sj_config.png)
+![](../imgs/fan_sj_config.png)
 
 For fans with only two wires, simply connect it such that the positive wire is connected to where it says `FAN+`, and the positive wire is connected to where it says `FAN-`. Then, use solder to bridge SJ4-B.
 
@@ -33,7 +35,7 @@ Noctua's documentation says their fans prefer a push-pull signal. Other brands o
 
 Using an open-drain signal requires the firmware option "FAN SIGNL POLAR" to be set to `INVRT`.
 
-# Solder Jumpers and Tuning Parts
+## Solder Jumpers and Tuning Parts
 
 VR1 and R37: Responsible for main buck converter output voltage. If the best value for VR1 is known, VR1 can be omitted and R37 used in its place as a permanent setting.
 
@@ -59,7 +61,7 @@ SJ5 selects the connection to the PWM pin of the fan. Most fans do not actually 
 
 R46 should be a 0 ohm resistor (or short it out with solder). You can choose to replace it with a particular value if you need to negotiate a certain current limit with the USB-PD host.
 
-# Component Skipping and Substitutions
+## Component Skipping and Substitutions
 
 ### Fuse
 
