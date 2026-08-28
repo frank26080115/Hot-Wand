@@ -98,7 +98,11 @@ Populate all custom wound inductors and transformer.
 
 ## 6. Solder/Measurement Jumpers
 
-Short out **SJ6** and **SJ7** and **SJ8** with solder.
+Ensure that **SJ1** is already bridged/shorted with solder. (BOOT0 pin of MCU)
+
+Ensure that **SJ3** is already bridged/shorted with solder. (fan control signal from MCU)
+
+Short **SJ6** and **SJ7** and **SJ8** with solder.
 
 (DEVELOPMENT ONLY) SJ6 can be used for measuring the drain current of Q1, when populated with a 0.01 ohm measurement resistor.
 
@@ -106,13 +110,21 @@ Short out **SJ6** and **SJ7** and **SJ8** with solder.
 
 ## 7. Printed Parts and Templates
 
-3D print all drilling and cutting templates
+3D print: face plate, air intake grille, air exhaust duct, internal air blocker
 
-3D print: face plate, air intake grille, air exhaust duct, internal air blockers
+![](../imgs/3d_printed_parts_dictionary.png)
 
 3D printing material is PETG, or really anything that is more temperature resistant than PLA. Do not use PLA.
 
-Everything can be 3D printed using a 0.4mm or 0.6mm nozzle.
+Everything can be 3D printed using a 0.4mm or 0.6mm nozzle. Everything is designed to be printable without supports.
+
+The internal air blocker may need some additional tweaking with a knife and file before it fits.
+
+3D print all drilling and cutting templates. These are to be printed using PLA.
+
+![](../imgs/drill_cut_templates_cad.png)
+
+![](../imgs/heatsink_drill_template.png)
 
 ## 8. Enclosure Preparation
 
@@ -124,13 +136,13 @@ Drill and cut enclosure box and lid. Use the cutting and drilling templates to h
 
 (note: all holes start off with a 2.5mm drill bit, and if needed, a larger drill bit is used after)
 
+(note: the template is designed to be used with a drill press, the surface angles of the template are made so that holes being drilled are perpendicular to the box's tapered walls)
+
 ![](../imgs/enclosure_drills_1.png)
 
 ![](../imgs/enclosure_drills_2.png)
 
 ![](../imgs/enclosure_drills_3.png)
-
-The holes for the face plate are not a part of the drilling template. Instead, the face plate itself is used as the drilling template. These holes are thread-tapped for #4-40 screws. The face plate will be fastened as the very last step of the whole build.
 
 Perform an inspection of 3D printed parts and make sure they fit on the enclosure, such that the cutouts are the right size and in the right positions. Additional cutting, grinding, and/or filing, maybe required to make adjustments. Ensure the face plate lines up, and the tactile button, OLED screen, and coaxial connector all line up when the box is dropped over the circuit board when the circuit board is attached to the bottom box lid.
 
@@ -151,6 +163,8 @@ Place a silicone thermal pad between each MOSFET and the heatsink.
 Insert a nylon shoulder washer (for #4 screws with 3.7mm OD and 2mm depth) into the TO-220 tab's hole.
 
 Fasten the MOSFET to the heatsink using a #4-40 x 3/8 inch long screw through the nylon shoulder washer.
+
+DO NOT FORGET THE NYLON SHOULDER WASHERS! Or else you blow up your circuit as you short circuit the drain tab to ground.
 
 ![](../imgs/mosfets_screws_isolated.png)
 
@@ -179,6 +193,10 @@ Perform mandatory safety related firmware tests (tip detection, NTC thermistors,
 ## 10. Final Assembly
 
 **Perform a final review of all soldering, including test points, test resistors, solder jumpers.**
+
+Clean the entire PCB, using an antistatic brush and rubbing alcohol.
+
+At this point, you may apply conformal coating over the circuit board if you wish.
 
 Fasten PCB to bottom lid, using the brass standoffs installed previously and M2.5 x 4mm screws.
 
