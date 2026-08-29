@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,16 +53,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -1370,10 +1370,12 @@ Max Component Height - 1.45mm</description>
 <package name="CPOL-RADIAL-1000UF-25V">
 <wire x1="-1.905" y1="1.27" x2="-3.175" y2="1.27" width="0.2032" layer="21"/>
 <circle x="0" y="0" radius="5.461" width="0.2032" layer="21"/>
-<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651"/>
-<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="octagon"/>
 <text x="-1.905" y="-4.318" size="0.8128" layer="27">&gt;Value</text>
 <text x="-0.762" y="2.921" size="0.4064" layer="25">&gt;Name</text>
+<wire x1="-5.8" y1="1" x2="-5.8" y2="-1" width="0.127" layer="21"/>
+<wire x1="-6.1" y1="1" x2="-6.1" y2="-1" width="0.127" layer="21"/>
 </package>
 <package name="VISHAY_C">
 <wire x1="0" y1="1.27" x2="0" y2="1.905" width="0.254" layer="21"/>
@@ -7794,6 +7796,18 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="1.27" y="1.27" size="0.4064" layer="25">&gt;Name</text>
 <text x="1.27" y="-3.81" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
+<package name="CPOL-RADIAL-COMBO-10MM">
+<wire x1="-1.905" y1="1.27" x2="-3.175" y2="1.27" width="0.2032" layer="21"/>
+<circle x="0" y="0" radius="5.461" width="0.2032" layer="21"/>
+<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="octagon"/>
+<text x="-1.905" y="-4.318" size="0.8128" layer="27">&gt;Value</text>
+<text x="-0.762" y="2.921" size="0.4064" layer="25">&gt;Name</text>
+<wire x1="-5.9" y1="1" x2="-5.9" y2="-1" width="0.127" layer="21"/>
+<wire x1="-6.2" y1="1" x2="-6.2" y2="-1" width="0.127" layer="21"/>
+<pad name="2B" x="-1.24" y="-0.8" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1B" x="1.24" y="0.8" drill="0.8" diameter="1.651" shape="octagon"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -8276,6 +8290,17 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <pin name="4" x="5.08" y="2.54" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
 <pin name="5" x="5.08" y="5.08" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
 <pin name="6" x="5.08" y="7.62" visible="pad" length="middle" direction="pas" swaplevel="1" rot="R180"/>
+</symbol>
+<symbol name="DIODE">
+<wire x1="-1.27" y1="-1.27" x2="1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="-1.27" y2="1.27" width="0.254" layer="94"/>
+<wire x1="1.27" y1="1.27" x2="1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="-1.27" y1="1.27" x2="-1.27" y2="-1.27" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="1.27" y2="-1.27" width="0.254" layer="94"/>
+<text x="2.54" y="0.4826" size="1.778" layer="95">&gt;NAME</text>
+<text x="2.54" y="-2.3114" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="A" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+<pin name="C" x="2.54" y="0" visible="off" length="short" direction="pas" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -10575,6 +10600,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <connects>
 <connect gate="G$1" pin="+" pad="1"/>
 <connect gate="G$1" pin="-" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH5" package="CPOL-RADIAL-COMBO-10MM">
+<connects>
+<connect gate="G$1" pin="+" pad="1 1B"/>
+<connect gate="G$1" pin="-" pad="2 2B"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -15063,6 +15097,1563 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </device>
 </devices>
 </deviceset>
+<deviceset name="DIODE" prefix="D" uservalue="yes">
+<description>&lt;b&gt;Diode&lt;/b&gt;
+These are standard reverse protection diodes and small signal diodes. SMA package can handle up to about 1A. SOD-323 can handle about 200mA. What the SOD-323 package when ordering, there are some mfgs out there that are 5-pin packages.</description>
+<gates>
+<gate name="G$1" symbol="DIODE" x="0" y="0"/>
+</gates>
+<devices>
+<device name="AG" package="AG">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="BR210S" package="BR210S">
+<connects>
+<connect gate="G$1" pin="A" pad="T1"/>
+<connect gate="G$1" pin="C" pad="T2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C1702-05" package="C1702-05">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C1702-15" package="C1702-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C1702E15" package="C1702E15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C182A" package="C182A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C182B" package="C182B">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C221B1A" package="C221B1A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C221B1AS" package="C221B1AS">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C221B1B" package="C221B1B">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C221B1BS" package="C221B1BS">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C2672" package="C2672">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C2673" package="C2673">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C2992" package="C2992">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C4111-15" package="C4111-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="C5102" package="C5102">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="CB417-12" package="CB417-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="CB417-15" package="CB417-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="CB429-15" package="CB429-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="CB429-17" package="CB429-17">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="D-10" package="D-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="D-12.5" package="D-12.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="D-2.5" package="D-2.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="D-5" package="D-5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="D-7.5" package="D-7.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DIODELIB-MELF-MLL41" package="DIODELIB-MELF-MLL41">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DIODELIB-SOT223" package="DIODELIB-SOT223">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="4"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DIODELIB-SOT23" package="DIODELIB-SOT23">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DIODE-ZENER" package="DIODE-ZENER">
+<connects>
+<connect gate="G$1" pin="A" pad="P$2"/>
+<connect gate="G$1" pin="C" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO07" package="DO07">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO13M" package="DO13M">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO15-12" package="DO15-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO201-15" package="DO201-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO201T15" package="DO201T15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO204-10" package="DO204-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO214AA" package="DO214AA">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO214AC" package="DO214AC">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO-214AC" package="DO-214AC">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO214BA" package="DO214BA">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO218L" package="DO218L">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO218S" package="DO218S">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO220L" package="DO220L">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO220S" package="DO220S">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO27-15" package="DO27-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO27-15E" package="DO27-15E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO27Z15" package="DO27Z15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO27Z15E" package="DO27Z15E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO34-5" package="DO34-5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO34-7" package="DO34-7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO34Z7" package="DO34Z7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35-10" package="DO35-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35-7" package="DO35-7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35-7A" package="DO35-7A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35-7B" package="DO35-7B">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35Z10" package="DO35Z10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35Z7" package="DO35Z7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO41-10" package="DO41-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO41-7" package="DO41-7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO41-7.6" package="DO41-7.6">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO41Z10" package="DO41Z10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DOP3L" package="DOP3L">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ER900" package="ER900">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126-10" package="F126-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126-10A" package="F126-10A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126-12" package="F126-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126-12A" package="F126-12A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126Z10" package="F126Z10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126Z10A" package="F126Z10A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126Z12" package="F126Z12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="F126Z12A" package="F126Z12A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="FKIT-LED-1206" package="FKIT-LED-1206">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="G4-12" package="G4-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="G4-12E" package="G4-12E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="G4-15" package="G4-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="GF1" package="GF1">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="GT32" package="GT32">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="IW220ACS" package="IW220ACS">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED-0603" package="LED-0603">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED10MM" package="LED10MM">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED-1206" package="LED-1206">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED3MM" package="LED3MM">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="K"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED3MM-NS" package="LED3MM-NS">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="K"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED5MM" package="LED5MM">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="K"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="LED5MM-KIT" package="LED5MM-KIT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="K"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="MICROMELF-R" package="MICROMELF-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="MICROMELF-W" package="MICROMELF-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="MINIMELF" package="MINIMELF">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1-10" package="P1-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1-10E" package="P1-10E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1-12" package="P1-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1-12E" package="P1-12E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1Z12" package="P1Z12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P1Z12E" package="P1Z12E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P2-15" package="P2-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P3-15" package="P3-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P6-15" package="P6-15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="P6T15" package="P6T15">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="POWERDI323" package="POWERDI323">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="POWERMITE" package="POWERMITE">
+<connects>
+<connect gate="G$1" pin="A" pad="2"/>
+<connect gate="G$1" pin="C" pad="1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="RAD2,5" package="RAD2,5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="RAD2,5L" package="RAD2,5L">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="RAD5G" package="RAD5G">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SC79_INFINEON" package="SC79_INFINEON">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SCD80_INFINEON" package="SCD80_INFINEON">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SGA-10" package="SGA-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SGB-10" package="SGB-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SGC-10" package="SGC-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMA-ALT1" package="SMA">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMA-DO214AC" package="SMA-DO214AC">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="K"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMB-ALT1" package="SMB">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMBG" package="SMBG">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMBJ" package="SMBJ">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMC" package="SMC">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD106A-R" package="SOD106A-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD106A-W" package="SOD106A-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD106-R" package="SOD106-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD106-W" package="SOD106-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD110-R" package="SOD110-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD110-W" package="SOD110-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD123" package="SOD123">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD-123_MINI-SMA" package="SOD-123_MINI-SMA">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD123FL" package="SOD123FL">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD323_ST" package="SOD323_ST">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD323-R" package="SOD323-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD323R_INFINEON" package="SOD323R_INFINEON">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD323-W" package="SOD323-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD323W_INFINEON" package="SOD323W_INFINEON">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD523" package="SOD523">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD57-10" package="SOD57-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD57Z10" package="SOD57Z10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD61A" package="SOD61A">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD61B" package="SOD61B">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD61C" package="SOD61C">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD61D" package="SOD61D">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD61E" package="SOD61E">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD64-10" package="SOD64-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD64-12" package="SOD64-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD64Z10" package="SOD64Z10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD64Z12" package="SOD64Z12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD80C" package="SOD80C">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD80-R" package="SOD80-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD80-W" package="SOD80-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD81" package="SOD81">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD81Z" package="SOD81Z">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD83-12" package="SOD83-12">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD84" package="SOD84">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD87-R" package="SOD87-R">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD87-W" package="SOD87-W">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOT1862L" package="SOT1862L">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOT1862S" package="SOT1862S">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOT54B" package="SOT54B">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOT54H" package="SOT54H">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO18D" package="TO18D">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO220AC" package="TO220AC">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO220ACK" package="TO220ACK">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO220ACS" package="TO220ACS">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO236" package="TO236">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TO92H" package="TO92H">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ZDIO-10" package="ZDIO-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ZDIO12.5" package="ZDIO12.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ZDIO-2.5" package="ZDIO-2.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ZDIO-5" package="ZDIO-5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ZDIO-7.5" package="ZDIO-7.5">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMA" package="SMA-DIODE">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH" package="DIODE-1N4001">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOD" package="SOD-323">
+<connects>
+<connect gate="G$1" pin="A" pad="2"/>
+<connect gate="G$1" pin="C" pad="1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SOT23" package="SOT23-3">
+<connects>
+<connect gate="G$1" pin="A" pad="1"/>
+<connect gate="G$1" pin="C" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="1N4148" package="DIODE-1N4148">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMB" package="SMB-DIODE">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="HV" package="DIODE-HV">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMA-ALT" package="SMA-DIODE_ALT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="SMA-KIT" package="SMA-DIODE-KIT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -15205,7 +16796,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </part>
 <part name="GND32" library="hot-wand" deviceset="GND" device=""/>
 <part name="LED1" library="hot-wand" deviceset="LED" device="0603" value="LED">
-<attribute name="JLC-DNP" value="1"/>
+<attribute name="JLCPARTNUM" value="C2286"/>
 </part>
 <part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
 <attribute name="JLCPARTNUM" value="C21190"/>
@@ -15240,6 +16831,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </part>
 <part name="L1" library="hot-wand" deviceset="INDUCTOR" device="-PA4343" value="33u">
 <attribute name="JLCPARTNUM" value="C2453886"/>
+<attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M"/>
 </part>
 <part name="JP1" library="hot-wand" deviceset="COAX-SMA" device="-EDGE-LGRPAD" value="COAX-SMA">
 <attribute name="JLC-DNP" value="1"/>
@@ -15303,7 +16895,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <part name="GND5" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND6" library="hot-wand" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="hot-wand" deviceset="24V" device=""/>
-<part name="C12" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470u">
+<part name="C12" library="hot-wand" deviceset="CAP_POL" device="PTH5" value="470u">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND7" library="hot-wand" deviceset="GND" device=""/>
@@ -15423,7 +17015,18 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <part name="SJ6" library="hot-wand" deviceset="SOLDERJUMPER_2WAY" device="S"/>
 <part name="SJ7" library="hot-wand" deviceset="SOLDERJUMPER_2WAY" device="S"/>
 <part name="GND39" library="hot-wand" deviceset="GND" device=""/>
-<part name="JP7" library="hot-wand" deviceset="M06" device="LOCK"/>
+<part name="JP5" library="hot-wand" deviceset="M06" device="LOCK"/>
+<part name="D2" library="hot-wand" deviceset="DIODE-SCHOTTKY" device="SOD123FL" value="1A 40V">
+<attribute name="JLCPARTNUM" value="C8598"/>
+</part>
+<part name="D3" library="hot-wand" deviceset="DIODE" device="SMA" value="ES1J">
+<attribute name="JLCPARTNUM" value="C64879"/>
+<attribute name="JLC_ROTATION" value="180"/>
+</part>
+<part name="D4" library="hot-wand" deviceset="TVS" device="SMC" value="SM15T150CA">
+<attribute name="JLCPARTNUM" value="C133715"/>
+</part>
+<part name="GND40" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -15435,7 +17038,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="33.02" y="-561.34" size="5.08" layer="97">USB-PD Input</text>
 <text x="39.116" y="-519.684" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>
-<text x="53.34" y="-304.8" size="5.08" layer="97">Microcontroller</text>
+<text x="33.02" y="-304.8" size="5.08" layer="97">Microcontroller</text>
 <text x="157.48" y="-377.444" size="0.8128" layer="97" rot="R180" align="top-left">MS2006H12D-RSR</text>
 <text x="62.992" y="-387.35" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max
 14V UVLO</text>
@@ -15618,6 +17221,7 @@ if LEDs are too dim</text>
 <instance part="GND32" gate="1" x="101.6" y="-541.02" rot="MR0"/>
 <instance part="LED1" gate="G$1" x="170.18" y="-327.66" smashed="yes">
 <attribute name="NAME" x="173.736" y="-332.232" size="1.778" layer="95" rot="R90"/>
+<attribute name="JLCPARTNUM" x="170.18" y="-327.66" size="1.27" layer="96" display="off"/>
 </instance>
 <instance part="R5" gate="G$1" x="170.18" y="-317.5" smashed="yes" rot="R270">
 <attribute name="NAME" x="170.6626" y="-319.532" size="1.778" layer="95" rot="R270"/>
@@ -15660,10 +17264,11 @@ if LEDs are too dim</text>
 <attribute name="VALUE" x="71.12" y="-175.26" size="1.778" layer="96"/>
 <attribute name="JLC-DNP" x="76.2" y="-180.34" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
-<instance part="L1" gate="G$1" x="30.48" y="-167.64" smashed="yes">
-<attribute name="NAME" x="29.464" y="-174.498" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="26.924" y="-174.498" size="1.778" layer="96" rot="R90"/>
-<attribute name="JLCPARTNUM" x="30.48" y="-167.64" size="1.778" layer="96" display="off"/>
+<instance part="L1" gate="G$1" x="12.7" y="-167.64" smashed="yes">
+<attribute name="NAME" x="11.684" y="-174.498" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="9.144" y="-174.498" size="1.778" layer="96" rot="R90"/>
+<attribute name="JLCPARTNUM" x="12.7" y="-167.64" size="1.778" layer="96" display="off"/>
+<attribute name="PARTNUM" x="12.7" y="-167.64" size="1.27" layer="96" display="off"/>
 </instance>
 <instance part="JP1" gate="G$1" x="182.88" y="-182.88" smashed="yes" rot="MR0">
 <attribute name="PARTNUM" x="182.88" y="-182.88" size="1.778" layer="96" rot="MR0" display="off"/>
@@ -15671,17 +17276,17 @@ if LEDs are too dim</text>
 <attribute name="NAME" x="186.69" y="-178.816" size="1.778" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="186.944" y="-174.498" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="Q1" gate="G$1" x="30.48" y="-190.5" smashed="yes">
-<attribute name="NAME" x="25.4" y="-185.42" size="1.778" layer="95"/>
-<attribute name="VALUE" x="34.29" y="-184.912" size="1.778" layer="96" rot="R270"/>
-<attribute name="JLC-DNP" x="30.48" y="-190.5" size="1.27" layer="96" display="off"/>
+<instance part="Q1" gate="G$1" x="12.7" y="-190.5" smashed="yes">
+<attribute name="NAME" x="7.62" y="-185.42" size="1.778" layer="95"/>
+<attribute name="VALUE" x="16.51" y="-184.912" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLC-DNP" x="12.7" y="-190.5" size="1.27" layer="96" display="off"/>
 </instance>
 <instance part="F1" gate="G$1" x="177.8" y="-477.52">
 <attribute name="JLC-DNP" x="177.8" y="-477.52" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="GND2" gate="1" x="30.48" y="-203.2"/>
+<instance part="GND2" gate="1" x="12.7" y="-203.2"/>
 <instance part="SUPPLY1" gate="+24V" x="195.58" y="-472.44"/>
-<instance part="SUPPLY2" gate="+24V" x="30.48" y="-152.4"/>
+<instance part="SUPPLY2" gate="+24V" x="12.7" y="-152.4"/>
 <instance part="C1" gate="G$1" x="45.72" y="-193.04">
 <attribute name="JLCPARTNUM" x="45.72" y="-193.04" size="1.778" layer="96" display="off"/>
 <attribute name="PARTNUM" x="45.72" y="-193.04" size="1.27" layer="96" display="off"/>
@@ -15744,7 +17349,7 @@ if LEDs are too dim</text>
 <instance part="U1" gate="G$1" x="76.2" y="-327.66">
 <attribute name="JLC-DNP" x="76.2" y="-327.66" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="U$2" gate="G$1" x="109.22" y="-312.42"/>
+<instance part="U$2" gate="G$1" x="109.22" y="-302.26"/>
 <instance part="GND8" gate="1" x="109.22" y="-345.44"/>
 <instance part="R17" gate="G$1" x="177.8" y="-586.74" smashed="yes" rot="R270">
 <attribute name="NAME" x="174.2186" y="-582.93" size="1.778" layer="95" rot="R270"/>
@@ -15806,7 +17411,7 @@ if LEDs are too dim</text>
 <attribute name="VALUE" x="181.61" y="-559.816" size="1.778" layer="96"/>
 <attribute name="JLCPARTNUM" x="185.42" y="-561.34" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="SJ1" gate="A" x="30.48" y="-198.12" rot="R90"/>
+<instance part="SJ1" gate="A" x="12.7" y="-198.12" rot="R90"/>
 <instance part="SJ2" gate="A" x="172.72" y="-185.42" rot="R180"/>
 <instance part="SJ3" gate="A" x="172.72" y="-187.96" rot="R180"/>
 <instance part="SJ4" gate="A" x="172.72" y="-190.5" rot="R180"/>
@@ -15883,7 +17488,24 @@ if LEDs are too dim</text>
 <instance part="SJ6" gate="G$1" x="175.26" y="-406.4" rot="R180"/>
 <instance part="SJ7" gate="G$1" x="182.88" y="-431.8" rot="R270"/>
 <instance part="GND39" gate="1" x="190.5" y="-436.88" rot="MR0"/>
-<instance part="JP7" gate="G$1" x="233.68" y="-586.74" rot="MR0"/>
+<instance part="JP5" gate="G$1" x="233.68" y="-586.74" rot="MR0"/>
+<instance part="D2" gate="G$1" x="109.22" y="-307.34" smashed="yes" rot="R270">
+<attribute name="NAME" x="109.7026" y="-309.88" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="111.9886" y="-304.8" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="109.22" y="-307.34" size="1.27" layer="96" rot="R270" display="off"/>
+</instance>
+<instance part="D3" gate="G$1" x="27.94" y="-185.42" smashed="yes" rot="R270">
+<attribute name="JLC_ROTATION" x="27.94" y="-185.42" size="1.27" layer="96" rot="R270" display="off"/>
+<attribute name="JLCPARTNUM" x="27.94" y="-185.42" size="1.27" layer="96" rot="R270" display="off"/>
+<attribute name="NAME" x="30.2006" y="-183.896" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="25.6794" y="-187.96" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="D4" gate="G$1" x="27.94" y="-195.58" smashed="yes" rot="R90">
+<attribute name="NAME" x="29.845" y="-191.77" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="32.131" y="-190.246" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLCPARTNUM" x="27.94" y="-195.58" size="1.27" layer="96" rot="R90" display="off"/>
+</instance>
+<instance part="GND40" gate="1" x="27.94" y="-203.2"/>
 </instances>
 <busses>
 </busses>
@@ -16153,7 +17775,7 @@ if LEDs are too dim</text>
 <segment>
 <wire x1="228.6" y1="-581.66" x2="226.06" y2="-581.66" width="0.1524" layer="91"/>
 <label x="226.06" y="-581.66" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="JP7" gate="G$1" pin="5"/>
+<pinref part="JP5" gate="G$1" pin="5"/>
 </segment>
 <segment>
 <pinref part="JP4" gate="G$1" pin="1"/>
@@ -16202,14 +17824,19 @@ if LEDs are too dim</text>
 <wire x1="190.5" y1="-431.8" x2="190.5" y2="-434.34" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP7" gate="G$1" pin="3"/>
+<pinref part="JP5" gate="G$1" pin="3"/>
 <wire x1="228.6" y1="-586.74" x2="226.06" y2="-586.74" width="0.1524" layer="91"/>
 <label x="226.06" y="-586.74" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP7" gate="G$1" pin="2"/>
+<pinref part="JP5" gate="G$1" pin="2"/>
 <wire x1="228.6" y1="-589.28" x2="226.06" y2="-589.28" width="0.1524" layer="91"/>
 <label x="226.06" y="-589.28" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="D4" gate="G$1" pin="1"/>
+<pinref part="GND40" gate="1" pin="GND"/>
+<wire x1="27.94" y1="-198.12" x2="27.94" y2="-200.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+24V" class="0">
@@ -16227,7 +17854,7 @@ if LEDs are too dim</text>
 </segment>
 <segment>
 <pinref part="L1" gate="G$1" pin="1"/>
-<wire x1="30.48" y1="-160.02" x2="30.48" y2="-154.94" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-160.02" x2="12.7" y2="-154.94" width="0.1524" layer="91"/>
 <pinref part="SUPPLY2" gate="+24V" pin="+24V"/>
 </segment>
 <segment>
@@ -16275,8 +17902,8 @@ if LEDs are too dim</text>
 </segment>
 <segment>
 <pinref part="Q1" gate="G$1" pin="G"/>
-<wire x1="22.86" y1="-190.5" x2="20.32" y2="-190.5" width="0.1524" layer="91"/>
-<label x="20.32" y="-190.5" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="5.08" y1="-190.5" x2="2.54" y2="-190.5" width="0.1524" layer="91"/>
+<label x="2.54" y="-190.5" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="+12V" class="0">
@@ -16570,11 +18197,12 @@ if LEDs are too dim</text>
 <segment>
 <pinref part="Q1" gate="G$1" pin="D"/>
 <pinref part="L1" gate="G$1" pin="2"/>
-<wire x1="30.48" y1="-175.26" x2="30.48" y2="-180.34" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-175.26" x2="12.7" y2="-180.34" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="1"/>
-<wire x1="30.48" y1="-180.34" x2="30.48" y2="-185.42" width="0.1524" layer="91"/>
-<wire x1="30.48" y1="-180.34" x2="45.72" y2="-180.34" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-180.34" x2="12.7" y2="-185.42" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-180.34" x2="27.94" y2="-180.34" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
+<wire x1="27.94" y1="-180.34" x2="45.72" y2="-180.34" width="0.1524" layer="91"/>
 <wire x1="45.72" y1="-180.34" x2="53.34" y2="-180.34" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="-180.34" x2="55.88" y2="-180.34" width="0.1524" layer="91"/>
 <wire x1="45.72" y1="-187.96" x2="45.72" y2="-180.34" width="0.1524" layer="91"/>
@@ -16587,11 +18215,14 @@ if LEDs are too dim</text>
 <pinref part="C5" gate="G$1" pin="1"/>
 <wire x1="55.88" y1="-203.2" x2="53.34" y2="-203.2" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="-203.2" x2="53.34" y2="-195.58" width="0.1524" layer="91"/>
-<junction x="30.48" y="-180.34"/>
+<junction x="12.7" y="-180.34"/>
 <junction x="45.72" y="-180.34"/>
 <junction x="53.34" y="-187.96"/>
 <junction x="53.34" y="-180.34"/>
 <junction x="53.34" y="-195.58"/>
+<pinref part="D3" gate="G$1" pin="A"/>
+<wire x1="27.94" y1="-182.88" x2="27.94" y2="-180.34" width="0.1524" layer="91"/>
+<junction x="27.94" y="-180.34"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -16688,10 +18319,9 @@ if LEDs are too dim</text>
 <junction x="78.74" y="-421.64"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="5V"/>
-<wire x1="106.68" y1="-314.96" x2="109.22" y2="-314.96" width="0.1524" layer="91"/>
 <pinref part="U$2" gate="G$1" pin="5V"/>
-<wire x1="109.22" y1="-314.96" x2="109.22" y2="-312.42" width="0.1524" layer="91"/>
+<pinref part="D2" gate="G$1" pin="A"/>
+<wire x1="109.22" y1="-304.8" x2="109.22" y2="-302.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="USB-V-SEL-20V" class="0">
@@ -16704,7 +18334,7 @@ if LEDs are too dim</text>
 <segment>
 <wire x1="228.6" y1="-579.12" x2="226.06" y2="-579.12" width="0.1524" layer="91"/>
 <label x="226.06" y="-579.12" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="JP7" gate="G$1" pin="6"/>
+<pinref part="JP5" gate="G$1" pin="6"/>
 </segment>
 </net>
 <net name="SEL3" class="0">
@@ -16811,7 +18441,7 @@ if LEDs are too dim</text>
 <wire x1="160.02" y1="-568.96" x2="144.78" y2="-568.96" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP7" gate="G$1" pin="1"/>
+<pinref part="JP5" gate="G$1" pin="1"/>
 <wire x1="228.6" y1="-591.82" x2="226.06" y2="-591.82" width="0.1524" layer="91"/>
 <label x="226.06" y="-591.82" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -16867,7 +18497,7 @@ if LEDs are too dim</text>
 <segment>
 <wire x1="228.6" y1="-584.2" x2="226.06" y2="-584.2" width="0.1524" layer="91"/>
 <label x="226.06" y="-584.2" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="JP7" gate="G$1" pin="4"/>
+<pinref part="JP5" gate="G$1" pin="4"/>
 </segment>
 </net>
 <net name="N$13" class="0">
@@ -16993,6 +18623,21 @@ if LEDs are too dim</text>
 <wire x1="182.88" y1="-426.72" x2="182.88" y2="-421.64" width="0.1524" layer="91"/>
 <pinref part="FAN1" gate="G$1" pin="G"/>
 <wire x1="182.88" y1="-421.64" x2="187.96" y2="-421.64" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$23" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="5V"/>
+<wire x1="106.68" y1="-314.96" x2="109.22" y2="-314.96" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="-314.96" x2="109.22" y2="-309.88" width="0.1524" layer="91"/>
+<pinref part="D2" gate="G$1" pin="C"/>
+</segment>
+</net>
+<net name="N$25" class="0">
+<segment>
+<pinref part="D3" gate="G$1" pin="C"/>
+<pinref part="D4" gate="G$1" pin="2"/>
+<wire x1="27.94" y1="-187.96" x2="27.94" y2="-190.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
