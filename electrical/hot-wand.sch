@@ -3993,10 +3993,12 @@ Max Component Height - 1.45mm</description>
 <package name="CPOL-RADIAL-1000UF-25V">
 <wire x1="-1.905" y1="1.27" x2="-3.175" y2="1.27" width="0.2032" layer="21"/>
 <circle x="0" y="0" radius="5.461" width="0.2032" layer="21"/>
-<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651"/>
-<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="octagon"/>
 <text x="-1.905" y="-4.318" size="0.8128" layer="27">&gt;Value</text>
 <text x="-0.762" y="2.921" size="0.4064" layer="25">&gt;Name</text>
+<wire x1="-5.8" y1="1" x2="-5.8" y2="-1" width="0.127" layer="21"/>
+<wire x1="-6.1" y1="1" x2="-6.1" y2="-1" width="0.127" layer="21"/>
 </package>
 <package name="VISHAY_C">
 <wire x1="0" y1="1.27" x2="0" y2="1.905" width="0.254" layer="21"/>
@@ -10055,6 +10057,18 @@ Max Component Height - 25.57mm</description>
 <wire x1="5.7" y1="5.6" x2="5.7" y2="-2" width="0.127" layer="21"/>
 <wire x1="5.7" y1="-2" x2="-5.7" y2="-2" width="0.127" layer="21"/>
 <wire x1="-5.7" y1="-2" x2="-5.7" y2="5.6" width="0.127" layer="21"/>
+</package>
+<package name="CPOL-RADIAL-COMBO-10MM">
+<wire x1="-1.905" y1="1.27" x2="-3.175" y2="1.27" width="0.2032" layer="21"/>
+<circle x="0" y="0" radius="5.461" width="0.2032" layer="21"/>
+<pad name="2" x="-2.54" y="0" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1" x="2.54" y="0" drill="0.8" diameter="1.651" shape="octagon"/>
+<text x="-1.905" y="-4.318" size="0.8128" layer="27">&gt;Value</text>
+<text x="-0.762" y="2.921" size="0.4064" layer="25">&gt;Name</text>
+<wire x1="-5.9" y1="1" x2="-5.9" y2="-1" width="0.127" layer="21"/>
+<wire x1="-6.2" y1="1" x2="-6.2" y2="-1" width="0.127" layer="21"/>
+<pad name="2B" x="-1.24" y="-0.8" drill="0.8" diameter="1.651" shape="square"/>
+<pad name="1B" x="1.24" y="0.8" drill="0.8" diameter="1.651" shape="octagon"/>
 </package>
 </packages>
 <symbols>
@@ -17714,6 +17728,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <connects>
 <connect gate="G$1" pin="+" pad="1"/>
 <connect gate="G$1" pin="-" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="PTH5" package="CPOL-RADIAL-COMBO-10MM">
+<connects>
+<connect gate="G$1" pin="+" pad="1 1B"/>
+<connect gate="G$1" pin="-" pad="2 2B"/>
 </connects>
 <technologies>
 <technology name=""/>
