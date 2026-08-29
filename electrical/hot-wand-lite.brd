@@ -183,15 +183,17 @@
 <text x="99.7" y="45.5" size="1.016" layer="26" rot="MR180">PWR-DIS</text>
 <rectangle x1="48.2" y1="66" x2="53.1" y2="71.7" layer="29"/>
 <rectangle x1="48.2" y1="66" x2="53.1" y2="71.7" layer="30"/>
+<text x="25.7" y="4.6" size="0.8128" layer="21" align="center-left">FAN+POS</text>
+<text x="25.7" y="2" size="0.8128" layer="21" align="center-left">FAN-NEG</text>
 </plain>
 <libraries>
 <library name="hot-wand">
 <packages>
 <package name="0603-CAP">
-<wire x1="-1.473" y1="0.983" x2="1.473" y2="0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="0.983" x2="1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="-0.983" x2="-1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="-1.473" y1="-0.983" x2="-1.473" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="-1.473" y1="0.933" x2="1.473" y2="0.933" width="0.01" layer="39"/>
+<wire x1="1.473" y1="0.933" x2="1.473" y2="-0.933" width="0.01" layer="39"/>
+<wire x1="1.473" y1="-0.933" x2="-1.473" y2="-0.933" width="0.01" layer="39"/>
+<wire x1="-1.473" y1="-0.933" x2="-1.473" y2="0.933" width="0.01" layer="39"/>
 <wire x1="-0.356" y1="0.432" x2="0.356" y2="0.432" width="0.1016" layer="51"/>
 <wire x1="-0.356" y1="-0.419" x2="0.356" y2="-0.419" width="0.1016" layer="51"/>
 <wire x1="0" y1="0.0305" x2="0" y2="-0.0305" width="0.5588" layer="21"/>
@@ -258,19 +260,6 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <text x="-0.889" y="1.016" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-1.016" y="-1.397" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
-<package name="MOLEX-1X2">
-<wire x1="-1.27" y1="3.048" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="3.81" y1="3.048" x2="3.81" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="3.81" y1="3.048" x2="-1.27" y2="3.048" width="0.127" layer="21"/>
-<wire x1="3.81" y1="-2.54" x2="2.54" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="2.54" y1="-2.54" x2="0" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="0" y1="-2.54" x2="-1.27" y2="-2.54" width="0.127" layer="21"/>
-<wire x1="0" y1="-2.54" x2="0" y2="-1.27" width="0.127" layer="21"/>
-<wire x1="0" y1="-1.27" x2="2.54" y2="-1.27" width="0.127" layer="21"/>
-<wire x1="2.54" y1="-1.27" x2="2.54" y2="-2.54" width="0.127" layer="21"/>
-<pad name="1" x="0" y="0" drill="1" diameter="1.8796" shape="square"/>
-<pad name="2" x="2.54" y="0" drill="1" diameter="1.8796"/>
-</package>
 <package name="FAN-20MM-TIEDOWN">
 <wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
 <wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
@@ -281,7 +270,7 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
 <pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
 </package>
-<package name="TO220-BUCK">
+<package name="TO220-BUCK-12V">
 <description>&lt;b&gt;TO 220 Vertical&lt;/b&gt; Package works with various parts including N-Channel MOSFET SparkFun SKU: COM-10213</description>
 <pad name="1" x="-2.54" y="0" drill="1" shape="long" rot="R90"/>
 <pad name="2" x="0" y="0" drill="1" shape="long" rot="R90"/>
@@ -580,10 +569,10 @@ Max Component Height - 25.57mm</description>
 <text x="-1.016" y="-1.397" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
 <package name="0603-RES">
-<wire x1="-1.473" y1="0.983" x2="1.473" y2="0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="0.983" x2="1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="1.473" y1="-0.983" x2="-1.473" y2="-0.983" width="0.0508" layer="39"/>
-<wire x1="-1.473" y1="-0.983" x2="-1.473" y2="0.983" width="0.0508" layer="39"/>
+<wire x1="-1.473" y1="0.933" x2="1.473" y2="0.933" width="0.01" layer="39"/>
+<wire x1="1.473" y1="0.933" x2="1.473" y2="-0.933" width="0.01" layer="39"/>
+<wire x1="1.473" y1="-0.933" x2="-1.473" y2="-0.933" width="0.01" layer="39"/>
+<wire x1="-1.473" y1="-0.933" x2="-1.473" y2="0.933" width="0.01" layer="39"/>
 <wire x1="-0.356" y1="0.432" x2="0.356" y2="0.432" width="0.1016" layer="51"/>
 <wire x1="-0.356" y1="-0.419" x2="0.356" y2="-0.419" width="0.1016" layer="51"/>
 <smd name="1" x="-0.85" y="0" dx="1.1" dy="1" layer="1"/>
@@ -633,10 +622,10 @@ Max Component Height - 1.45mm</description>
 <wire x1="-0.8" y1="1.45" x2="0.8" y2="1.45" width="0.1" layer="51"/>
 <wire x1="-0.8" y1="-1.45" x2="0.8" y2="-1.45" width="0.1" layer="51"/>
 <wire x1="-0.8" y1="-1.45" x2="-0.8" y2="1.45" width="0.1" layer="51"/>
-<wire x1="-2.1" y1="-1.7" x2="2.1" y2="-1.7" width="0.1" layer="39"/>
-<wire x1="2.1" y1="-1.7" x2="2.1" y2="1.7" width="0.1" layer="39"/>
-<wire x1="-2.1" y1="1.7" x2="2.1" y2="1.7" width="0.1" layer="39"/>
-<wire x1="-2.1" y1="-1.7" x2="-2.1" y2="1.7" width="0.1" layer="39"/>
+<wire x1="-2" y1="-1.7" x2="2" y2="-1.7" width="0.01" layer="39"/>
+<wire x1="2" y1="-1.7" x2="2" y2="1.7" width="0.01" layer="39"/>
+<wire x1="-2" y1="1.7" x2="2" y2="1.7" width="0.01" layer="39"/>
+<wire x1="-2" y1="-1.7" x2="-2" y2="1.7" width="0.01" layer="39"/>
 <circle x="-1.3" y="1.7" radius="0.125" width="0.25" layer="21"/>
 <wire x1="0.425" y1="-1.45" x2="0.425" y2="1.45" width="0.2" layer="21"/>
 <wire x1="-0.425" y1="1.45" x2="0.425" y2="1.45" width="0.2" layer="21"/>
@@ -865,68 +854,6 @@ Max Component Height - 1.45mm</description>
 <text x="-2" y="-2" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
 <text x="-2" y="-3" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
-<package name="1X07_LOCK">
-<wire x1="14.605" y1="1.27" x2="15.875" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="15.875" y1="1.27" x2="16.51" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="16.51" y1="-0.635" x2="15.875" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="11.43" y1="0.635" x2="12.065" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="12.065" y1="1.27" x2="13.335" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="13.335" y1="1.27" x2="13.97" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="13.97" y1="-0.635" x2="13.335" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="13.335" y1="-1.27" x2="12.065" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="12.065" y1="-1.27" x2="11.43" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="14.605" y1="1.27" x2="13.97" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="13.97" y1="-0.635" x2="14.605" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="15.875" y1="-1.27" x2="14.605" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="6.985" y1="1.27" x2="8.255" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="8.255" y1="1.27" x2="8.89" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="8.89" y1="-0.635" x2="8.255" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="8.89" y1="0.635" x2="9.525" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="9.525" y1="1.27" x2="10.795" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="10.795" y1="1.27" x2="11.43" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="11.43" y1="-0.635" x2="10.795" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="10.795" y1="-1.27" x2="9.525" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="9.525" y1="-1.27" x2="8.89" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="3.81" y1="0.635" x2="4.445" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="4.445" y1="1.27" x2="5.715" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="5.715" y1="1.27" x2="6.35" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="6.35" y1="-0.635" x2="5.715" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="5.715" y1="-1.27" x2="4.445" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="4.445" y1="-1.27" x2="3.81" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="6.985" y1="1.27" x2="6.35" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="6.35" y1="-0.635" x2="6.985" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="8.255" y1="-1.27" x2="6.985" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="-0.635" y1="1.27" x2="0.635" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="0.635" y1="1.27" x2="1.27" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="1.27" y1="-0.635" x2="0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="1.27" y1="0.635" x2="1.905" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="1.905" y1="1.27" x2="3.175" y2="1.27" width="0.2032" layer="21"/>
-<wire x1="3.175" y1="1.27" x2="3.81" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="3.81" y1="-0.635" x2="3.175" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="3.175" y1="-1.27" x2="1.905" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="1.905" y1="-1.27" x2="1.27" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="-0.635" y1="1.27" x2="-1.27" y2="0.635" width="0.2032" layer="21"/>
-<wire x1="-1.27" y1="-0.635" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="0.635" y1="-1.27" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
-<wire x1="16.51" y1="0.635" x2="16.51" y2="-0.635" width="0.2032" layer="21"/>
-<pad name="1" x="0" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="2" x="2.54" y="-0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="3" x="5.08" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="4" x="7.62" y="-0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="5" x="10.16" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="6" x="12.7" y="-0.127" drill="1" diameter="1.8796" rot="R90"/>
-<pad name="7" x="15.24" y="0.127" drill="1" diameter="1.8796" rot="R90"/>
-<text x="-1.3462" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-1.27" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
-<rectangle x1="14.986" y1="-0.254" x2="15.494" y2="0.254" layer="51"/>
-<rectangle x1="12.446" y1="-0.254" x2="12.954" y2="0.254" layer="51"/>
-<rectangle x1="9.906" y1="-0.254" x2="10.414" y2="0.254" layer="51"/>
-<rectangle x1="7.366" y1="-0.254" x2="7.874" y2="0.254" layer="51"/>
-<rectangle x1="4.826" y1="-0.254" x2="5.334" y2="0.254" layer="51"/>
-<rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
-<rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
-</package>
 <package name="1X02_LONGPADS">
 <pad name="1" x="0" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
 <pad name="2" x="2.54" y="0" drill="1.2" diameter="1.8796" shape="long" rot="R90"/>
@@ -962,6 +889,84 @@ Max Component Height - 1.45mm</description>
 <wire x1="-2" y1="7.2" x2="-2" y2="2.3" width="0.127" layer="21"/>
 <wire x1="2" y1="7.2" x2="2" y2="2.3" width="0.127" layer="21"/>
 <text x="-4" y="-4" size="0.8128" layer="25">&gt;NAME</text>
+</package>
+<package name="FAN-CONN-X4">
+<pad name="G" x="0" y="3.8" drill="1" shape="octagon"/>
+<pad name="V" x="0" y="1.27" drill="1" shape="octagon"/>
+<pad name="T" x="0" y="-1.27" drill="1" shape="octagon"/>
+<pad name="P" x="0" y="-3.8" drill="1" shape="octagon"/>
+<wire x1="-3" y1="5" x2="-3" y2="4" width="0.127" layer="21"/>
+<wire x1="-3" y1="4" x2="-3" y2="-1" width="0.127" layer="21"/>
+<wire x1="-3" y1="-1" x2="-3" y2="-5" width="0.127" layer="21"/>
+<wire x1="-3" y1="-5" x2="3" y2="-5" width="0.127" layer="21"/>
+<wire x1="3" y1="-5" x2="3" y2="5" width="0.127" layer="21"/>
+<wire x1="3" y1="5" x2="-3" y2="5" width="0.127" layer="21"/>
+<wire x1="-2" y1="4" x2="-2" y2="-1" width="0.127" layer="21"/>
+<text x="-2" y="6" size="0.8128" layer="25">&gt;NAME</text>
+<wire x1="-2" y1="4" x2="-3" y2="4" width="0.127" layer="21"/>
+<wire x1="-2" y1="-1" x2="-3" y2="-1" width="0.127" layer="21"/>
+</package>
+<package name="SJ_3">
+<wire x1="1.27" y1="-1.016" x2="-1.27" y2="-1.016" width="0.1524" layer="21"/>
+<wire x1="1.27" y1="1.016" x2="1.524" y2="0.762" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.524" y1="0.762" x2="-1.27" y2="1.016" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.524" y1="-0.762" x2="-1.27" y2="-1.016" width="0.1524" layer="21" curve="90"/>
+<wire x1="1.27" y1="-1.016" x2="1.524" y2="-0.762" width="0.1524" layer="21" curve="90"/>
+<wire x1="1.524" y1="-0.762" x2="1.524" y2="0.762" width="0.1524" layer="21"/>
+<wire x1="-1.524" y1="-0.762" x2="-1.524" y2="0.762" width="0.1524" layer="21"/>
+<wire x1="-1.27" y1="1.016" x2="1.27" y2="1.016" width="0.1524" layer="21"/>
+<smd name="1" x="-0.9" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<smd name="3" x="0.9" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<text x="-1.27" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-0.1001" y="0" size="0.02" layer="27">&gt;VALUE</text>
+<text x="-1.27" y="-1.905" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
+<package name="1X05_LOCK">
+<wire x1="6.985" y1="1.27" x2="8.255" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="8.255" y1="1.27" x2="8.89" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="8.89" y1="-0.635" x2="8.255" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="8.89" y1="0.635" x2="9.525" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="9.525" y1="1.27" x2="10.795" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="10.795" y1="1.27" x2="11.43" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="11.43" y1="-0.635" x2="10.795" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="10.795" y1="-1.27" x2="9.525" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="9.525" y1="-1.27" x2="8.89" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="3.81" y1="0.635" x2="4.445" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="4.445" y1="1.27" x2="5.715" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="5.715" y1="1.27" x2="6.35" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="6.35" y1="-0.635" x2="5.715" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="5.715" y1="-1.27" x2="4.445" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="4.445" y1="-1.27" x2="3.81" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="6.985" y1="1.27" x2="6.35" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="6.35" y1="-0.635" x2="6.985" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="8.255" y1="-1.27" x2="6.985" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="-0.635" y1="1.27" x2="0.635" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="0.635" y1="1.27" x2="1.27" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="-0.635" x2="0.635" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="1.27" y1="0.635" x2="1.905" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="1.905" y1="1.27" x2="3.175" y2="1.27" width="0.2032" layer="21"/>
+<wire x1="3.175" y1="1.27" x2="3.81" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="3.81" y1="-0.635" x2="3.175" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="3.175" y1="-1.27" x2="1.905" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="1.905" y1="-1.27" x2="1.27" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="-1.27" y1="0.635" x2="-1.27" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="-0.635" y1="1.27" x2="-1.27" y2="0.635" width="0.2032" layer="21"/>
+<wire x1="-1.27" y1="-0.635" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="0.635" y1="-1.27" x2="-0.635" y2="-1.27" width="0.2032" layer="21"/>
+<wire x1="11.43" y1="0.635" x2="11.43" y2="-0.635" width="0.2032" layer="21"/>
+<pad name="1" x="0" y="0.127" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="2" x="2.54" y="-0.127" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="3" x="5.08" y="0.127" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="4" x="7.62" y="-0.127" drill="1.016" diameter="1.8796" rot="R90"/>
+<pad name="5" x="10.16" y="0.127" drill="1.016" diameter="1.8796" rot="R90"/>
+<text x="-1.3462" y="1.8288" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-1.27" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="9.906" y1="-0.254" x2="10.414" y2="0.254" layer="51"/>
+<rectangle x1="7.366" y1="-0.254" x2="7.874" y2="0.254" layer="51"/>
+<rectangle x1="4.826" y1="-0.254" x2="5.334" y2="0.254" layer="51"/>
+<rectangle x1="2.286" y1="-0.254" x2="2.794" y2="0.254" layer="51"/>
+<rectangle x1="-0.254" y1="-0.254" x2="0.254" y2="0.254" layer="51"/>
 </package>
 </packages>
 </library>
@@ -1189,11 +1194,11 @@ Max Component Height - 1.45mm</description>
 <attribute name="VALUE" x="5.924" y="30.343" size="0.8128" layer="28" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C14663" x="7.9" y="32.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="C17" library="hot-wand" package="EIA3216-KIT" value="10u" x="28.6" y="10.5" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C13585" x="28.6" y="10.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K" x="28.6" y="10.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="NAME" x="31.64" y="12.081" size="0.8128" layer="26" font="fixed" rot="MR0"/>
-<attribute name="VALUE" x="31.692" y="13.132" size="0.8128" layer="28" rot="MR0"/>
+<element name="C17" library="hot-wand" package="EIA3216-KIT" value="10u" x="18" y="4.53" smashed="yes" rot="MR180">
+<attribute name="JLCPARTNUM" value="C13585" x="18" y="4.53" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K" x="18" y="4.53" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="14.96" y="2.949" size="0.8128" layer="26" font="fixed" rot="MR180"/>
+<attribute name="VALUE" x="14.908" y="1.898" size="0.8128" layer="28" rot="MR180"/>
 </element>
 <element name="D1" library="hot-wand" package="SMA-DIODE" value="2A" x="53.7" y="61.6" smashed="yes" rot="MR180">
 <attribute name="JLC_ROTATION" value="180" x="53.7" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -1201,14 +1206,11 @@ Max Component Height - 1.45mm</description>
 <attribute name="PARTNUM" value="VSSAF5N50;SL36A" x="53.7" y="61.6" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="NAME" x="50.649" y="62.986" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 </element>
-<element name="FAN1" library="hot-wand" package="MOLEX-1X2" value="" x="24" y="8" smashed="yes" rot="R90">
-<attribute name="JLC-DNP" value="1" x="24" y="8" size="1.778" layer="27" rot="R90" display="off"/>
-</element>
 <element name="FAN2" library="hot-wand" package="FAN-20MM-TIEDOWN" value="FAN-TIEDOWN-20MM-V1" x="11.6" y="16.8" smashed="yes" rot="R22">
 <attribute name="JLC-DNP" value="1" x="11.6" y="16.8" size="1.778" layer="27" rot="R22" display="off"/>
 <attribute name="PARTNUM" value="MS2006H12D-RSR" x="11.6" y="16.8" size="1.778" layer="27" rot="R22" display="off"/>
 </element>
-<element name="IC1" library="hot-wand" package="TO220-BUCK" value="12V R-78K12-2.0" x="50" y="56.5" smashed="yes" rot="R90">
+<element name="IC1" library="hot-wand" package="TO220-BUCK-12V" value="12V R-78K12-2.0" x="50" y="56.5" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="50" y="56.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="48.371" y="50.906" size="0.8128" layer="25" font="fixed" ratio="10" rot="R90"/>
 </element>
@@ -1310,13 +1312,13 @@ Max Component Height - 1.45mm</description>
 </element>
 <element name="R7" library="hot-wand" package="0603-RES" value="4K7" x="22" y="39.6" smashed="yes" rot="MR180">
 <attribute name="NAME" x="23.862" y="38.911" size="0.8128" layer="26" font="fixed" rot="MR90"/>
-<attribute name="VALUE" x="23.316" y="39.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="24.957" y="38.784" size="0.8128" layer="28" font="vector" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C23162" x="22" y="39.6" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="R8" library="hot-wand" package="0603-RES" value="4K7" x="22" y="35.8" smashed="yes" rot="MR180">
-<attribute name="NAME" x="23.511" y="36.538" size="0.8128" layer="26" font="fixed" rot="MR180"/>
-<attribute name="VALUE" x="23.484" y="35.543" size="0.8128" layer="28" font="vector" rot="MR180"/>
-<attribute name="JLCPARTNUM" value="C23162" x="22" y="35.8" size="1.778" layer="28" rot="MR180" display="off"/>
+<element name="R8" library="hot-wand" package="0603-RES" value="4K7" x="22" y="35.4" smashed="yes" rot="MR180">
+<attribute name="NAME" x="23.511" y="36.138" size="0.8128" layer="26" font="fixed" rot="MR180"/>
+<attribute name="VALUE" x="23.484" y="35.143" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<attribute name="JLCPARTNUM" value="C23162" x="22" y="35.4" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="R9" library="hot-wand" package="0603-RES" value="4K3" x="13.4" y="34.9" smashed="yes" rot="MR270">
 <attribute name="NAME" x="14.262" y="34.011" size="0.8128" layer="26" font="fixed" rot="MR90"/>
@@ -1498,9 +1500,9 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="111.5015" y="42.811" size="0.8128" layer="25" font="fixed" rot="R90"/>
 </element>
-<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="41.5" y="5.1" smashed="yes" rot="MR0">
-<attribute name="JLC-DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="DNP" value="1" x="41.5" y="5.1" size="1.778" layer="28" rot="MR0" display="off"/>
+<element name="PCB2" library="hot-wand" package="PCB-ART-VERSION-LITE" value="PCB-ART-VER-LITE" x="44.5" y="4.9" smashed="yes" rot="MR0">
+<attribute name="JLC-DNP" value="1" x="44.5" y="4.9" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="DNP" value="1" x="44.5" y="4.9" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="R22" library="hot-wand" package="0603-RES" value="4K7" x="63.5" y="50.7" smashed="yes" rot="MR0">
 <attribute name="JLCPARTNUM" value="C23162" x="63.5" y="50.7" size="0.8128" layer="28" font="fixed" rot="MR0" display="off"/>
@@ -1532,15 +1534,15 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="17.138" y="22.289" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="16.143" y="22.116" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
-<element name="R13" library="hot-wand" package="0603-RES" value="24K" x="8.2" y="21.4" smashed="yes" rot="MR90">
-<attribute name="JLCPARTNUM" value="C23352" x="8.2" y="21.4" size="0.8128" layer="28" rot="MR90" display="off"/>
-<attribute name="NAME" x="9.162" y="21.211" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="VALUE" x="10.257" y="21.284" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<element name="R13" library="hot-wand" package="0603-RES" value="24K" x="12.4" y="23" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C23352" x="12.4" y="23" size="0.8128" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="11.211" y="22.038" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="11.184" y="20.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
-<element name="R14" library="hot-wand" package="0603-RES" value="2K" x="8.2" y="24.9" smashed="yes" rot="MR90">
-<attribute name="JLCPARTNUM" value="C22975" x="8.2" y="24.9" size="1.778" layer="28" rot="MR90" display="off"/>
-<attribute name="NAME" x="9.062" y="24.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="VALUE" x="10.157" y="24.084" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<element name="R14" library="hot-wand" package="0603-RES" value="2K" x="9" y="21.3" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C22975" x="9" y="21.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="9.889" y="22.162" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="9.816" y="23.257" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="SJ1" library="hot-wand" package="1206-SJ" value="SJ-SMALL-1206-SJ" x="55.4" y="68.8" smashed="yes" rot="R180">
 <attribute name="NAME" x="57.2" y="67.3" size="0.8128" layer="25" font="fixed" rot="R180"/>
@@ -1556,11 +1558,6 @@ Max Component Height - 1.45mm</description>
 </element>
 <element name="SJ5" library="hot-wand" package="1206-SJ" value="SJ-SMALL-1206-SJ" x="108.4" y="42" smashed="yes" rot="MR90">
 <attribute name="NAME" x="107.2" y="42.9" size="0.8128" layer="26" font="fixed" rot="MR270"/>
-</element>
-<element name="JP5" library="hot-wand" package="1X07_LOCK" value="" x="2" y="7.5" smashed="yes" rot="R90">
-<attribute name="NAME" x="3.6288" y="7.7462" size="0.8128" layer="25" ratio="10" rot="R270"/>
-<attribute name="VALUE" x="5.175" y="6.23" size="1.27" layer="27" rot="R90"/>
-<attribute name="JLC-DNP" value="1" x="2" y="7.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="R19" library="hot-wand" package="0603-RES" value="51K" x="18.8" y="27.3" smashed="yes" rot="MR270">
 <attribute name="JLCPARTNUM" value="C23196" x="18.8" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
@@ -1609,7 +1606,7 @@ Max Component Height - 1.45mm</description>
 <attribute name="NAME" x="98.189" y="50.262" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="98.316" y="51.257" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
-<element name="SW1" library="hot-wand" package="SWITCH-SLW-864574-5A-RA-N-D" value="SWITCH-SPDT-2MNT-SLW-864574-5A-RA-N-D" x="110" y="12" smashed="yes" rot="R270">
+<element name="SW1" library="hot-wand" package="SWITCH-SLW-864574-5A-RA-N-D" value="" x="110" y="12" smashed="yes" rot="R270">
 <attribute name="NAME" x="110.5" y="6.5" size="0.8128" layer="25" rot="R180"/>
 <attribute name="JLC-DNP" value="1" x="110" y="12" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="PARTNUM" value="SLW-864574-5A-RA-N-D" x="110" y="12" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1618,6 +1615,39 @@ Max Component Height - 1.45mm</description>
 <attribute name="JLCPARTNUM" value="C441975" x="93.1" y="67.4" size="0.8128" layer="28" rot="MR90" display="off"/>
 <attribute name="NAME" x="94.0255" y="65.738" size="0.8128" layer="26" rot="MR90"/>
 <attribute name="VALUE" x="95.003" y="65.084" size="0.8128" layer="28" rot="MR90"/>
+</element>
+<element name="Q6" library="hot-wand" package="SOT23-3" value="G3404" x="27.8" y="2.9" smashed="yes" rot="MR270">
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="NAME" x="29.678" y="2.4745" size="0.8128" layer="26" rot="MR90"/>
+<attribute name="VALUE" x="27.9905" y="3.916" size="0.4064" layer="28" rot="MR270"/>
+<attribute name="JLCPARTNUM" value="C96615" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
+</element>
+<element name="R27" library="hot-wand" package="0603-RES" value="470Ω" x="28.8" y="6.4" smashed="yes" rot="MR90">
+<attribute name="JLCPARTNUM" value="C23179" x="28.8" y="6.4" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="NAME" x="29.762" y="5.511" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="30.857" y="5.484" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="R28" library="hot-wand" package="0603-RES" value="4K7" x="28.8" y="9.9" smashed="yes" rot="MR90">
+<attribute name="JLCPARTNUM" value="C23162" x="28.8" y="9.9" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="NAME" x="29.662" y="9.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
+<attribute name="VALUE" x="30.757" y="8.984" size="0.8128" layer="28" font="vector" rot="MR90"/>
+</element>
+<element name="FAN1" library="hot-wand" package="FAN-CONN-X4" value="FAN-CONN-X4-CONN-X4" x="22.3" y="5.8" smashed="yes" rot="R180">
+<attribute name="NAME" x="19.3" y="11.2" size="0.8128" layer="25"/>
+</element>
+<element name="SJ6" library="hot-wand" package="SJ_3" value="" x="24.6" y="9.6" smashed="yes" rot="MR90">
+<attribute name="NAME" x="25.87" y="8.33" size="0.8128" layer="26" rot="MR90"/>
+<attribute name="VALUE" x="24.6" y="9.4999" size="0.02" layer="28" rot="MR90"/>
+<attribute name="VALUE" x="22.695" y="8.33" size="0.4064" layer="28" rot="MR90"/>
+</element>
+<element name="SJ7" library="hot-wand" package="SJ_3" value="" x="24.6" y="2" smashed="yes" rot="MR90">
+<attribute name="NAME" x="25.57" y="3.83" size="0.8128" layer="26" rot="MR90"/>
+<attribute name="VALUE" x="24.6" y="1.8999" size="0.02" layer="28" rot="MR90"/>
+<attribute name="VALUE" x="22.695" y="0.73" size="0.4064" layer="28" rot="MR90"/>
+</element>
+<element name="JP5" library="hot-wand" package="1X05_LOCK" value="" x="2.1" y="7.08" smashed="yes" rot="R90">
+<attribute name="NAME" x="3.9288" y="9.7662" size="1.27" layer="25" ratio="10" rot="R270"/>
+<attribute name="VALUE" x="5.275" y="5.81" size="1.27" layer="27" rot="R90"/>
 </element>
 </elements>
 <signals>
@@ -1731,11 +1761,11 @@ Max Component Height - 1.45mm</description>
 <via x="15.4" y="26" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="15.7" y="29.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="15.1" y="35.8" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="16.6" y="36.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="16.6" y="35.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="16.6" y="36.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="16.6" y="34.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20" y="39.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20" y="37.6" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="20" y="35.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="20" y="34.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="20" y="41.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="28.2" y="44.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="26.1" y="42.5" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1750,14 +1780,10 @@ Max Component Height - 1.45mm</description>
 <via x="23" y="24" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="25" y="29" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="23" y="29" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="23" y="12" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="7" y="8" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="19.2" y="5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="19" y="9.2" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="24" y="4.2" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="31.7" y="10.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="30.2" y="9.1" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="30.2" y="11.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="16.4" y="3.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="16.4" y="5.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="14.9" y="4.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="35" y="30" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="39" y="32" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="39" y="35" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1811,20 +1837,20 @@ Max Component Height - 1.45mm</description>
 <via x="54.3" y="55.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="54.4" y="57.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="54.6" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="67" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="67" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="71" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="71" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="75" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="75" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="79" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="79" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="87" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="87" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="91" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="91" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="95" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="97" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="67" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="67" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="71" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="71" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="75" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="75" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="79" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="79" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="87" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="87" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="91" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="91" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="95" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="97" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="59" y="58" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="59" y="55" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="76.2" y="34" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1872,8 +1898,7 @@ Max Component Height - 1.45mm</description>
 <via x="111.3" y="25" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="5.7" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="0.7" y="5.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="25" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="37" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="0.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="49" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="65" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="82" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1893,8 +1918,7 @@ Max Component Height - 1.45mm</description>
 <via x="94" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="90" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87" y="53" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="25.2" y="11.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="25.5" y="6.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="25.8" y="1.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="74.6" y="45" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="89.4" y="45" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="89" y="13" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1939,10 +1963,10 @@ Max Component Height - 1.45mm</description>
 <via x="108.6" y="25" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="23" y="34" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="39" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="82.2" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="83.6" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="83.6" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="82.2" y="56" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="82.2" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="83.6" y="58.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="83.6" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="82.2" y="56.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="25" y="34" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="7.6" y="42.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="8.2" y="42.7" extent="1-16" drill="0.3" shape="octagon"/>
@@ -1994,15 +2018,7 @@ Max Component Height - 1.45mm</description>
 <via x="108.8" y="28.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="108.8" y="29.6" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="110" y="40.5" extent="1-16" drill="0.3" shape="octagon"/>
-<contactref element="JP5" pad="1"/>
-<contactref element="JP5" pad="4"/>
-<contactref element="JP5" pad="7"/>
-<via x="19" y="6.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="13" y="8.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="13" y="11.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="13" y="13.7" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="13" y="16.8" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="13" y="18.5" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="17.3" y="19.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="18.5" y="18.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="19.6" y="14.2" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2011,9 +2027,6 @@ Max Component Height - 1.45mm</description>
 <via x="20.3" y="18" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="19.9" y="27.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="17.7" y="27.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="13.4" y="21.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="9.5" y="21" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="9.5" y="19.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="22.8" y="54" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="24" y="50" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="52.8" y="62.1" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2042,7 +2055,7 @@ Max Component Height - 1.45mm</description>
 <via x="97" y="48.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="93.6" y="48.8" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="90" y="48.8" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="49" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="47.9" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="TVS4" pad="A"/>
 <contactref element="TVS5" pad="A"/>
 <contactref element="TVS6" pad="A"/>
@@ -2059,15 +2072,15 @@ Max Component Height - 1.45mm</description>
 <contactref element="SW1" pad="M1"/>
 <contactref element="SW1" pad="M2"/>
 <via x="99" y="48.4" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="36" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="32" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="28" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="24" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="86" y="40" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="36" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="32" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="28" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="24" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="85.7" y="40" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="88" y="39" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="88" y="41" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="88" y="24" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="20" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="20" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87" y="20" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="89" y="11" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="93" y="11" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2087,10 +2100,10 @@ Max Component Height - 1.45mm</description>
 <via x="106.2" y="28" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="107" y="28" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="107.8" y="28" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="85" y="16" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="16" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87" y="16" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87" y="13" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="86" y="12" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="85.7" y="12" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87" y="22" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="48.2" y="70.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="50" y="70.3" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2102,6 +2115,32 @@ Max Component Height - 1.45mm</description>
 <via x="57.7" y="66" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55.8" y="71.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="58" y="71.4" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="Q6" pad="2"/>
+<contactref element="R28" pad="2"/>
+<via x="85.2" y="48.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="83.3" y="50.8" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="86.4" y="50.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="40" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="SJ7" pad="1"/>
+<via x="23.4" y="1.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="29.8" y="1.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="28.8" y="1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="30.3" y="6" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="31.5" y="7.4" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="32.1" y="2.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="32.1" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="41" y="2.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="49" y="2.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="57.6" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="72.4" y="0.7" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="JP5" pad="2"/>
+<contactref element="JP5" pad="5"/>
+<via x="82" y="2.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="85.6" y="5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="84" y="12" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="17.7" y="29" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="19.9" y="29" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -2171,7 +2210,6 @@ Max Component Height - 1.45mm</description>
 <signal name="+12V">
 <contactref element="C15" pad="A"/>
 <contactref element="D1" pad="C"/>
-<contactref element="FAN1" pad="2"/>
 <contactref element="C17" pad="A"/>
 <contactref element="U2" pad="1"/>
 <contactref element="C18" pad="2"/>
@@ -2185,16 +2223,20 @@ Max Component Height - 1.45mm</description>
 <wire x1="58.8" y1="68.55" x2="58.8" y2="67.25" width="0.4064" layer="16"/>
 <wire x1="58.8" y1="67.25" x2="59.45" y2="66.6" width="0.4064" layer="16"/>
 <wire x1="59.45" y1="66.6" x2="59.45" y2="64.6" width="0.6" layer="16"/>
-<wire x1="26.95" y1="10.5" x2="24" y2="10.5" width="1" layer="16"/>
-<wire x1="24" y1="10.5" x2="24" y2="10.54" width="1" layer="16"/>
 <via x="53" y="42" extent="1-16" drill="0.3" shape="octagon"/>
 <wire x1="53" y1="42" x2="29" y2="42" width="1" layer="1"/>
 <wire x1="29" y1="42" x2="24" y2="37" width="1" layer="1"/>
-<wire x1="24" y1="37" x2="24" y2="10.54" width="1" layer="1"/>
 <wire x1="53" y1="57.6" x2="54.2114" y2="58.8114" width="1" layer="16"/>
 <wire x1="54.2114" y1="58.8114" x2="55.9012" y2="58.8114" width="1" layer="16"/>
 <wire x1="59.45" y1="64.6" x2="59.45" y2="63.6" width="0.6096" layer="16"/>
 <wire x1="59.45" y1="63.6" x2="58.25" y2="62.4" width="0.6096" layer="16"/>
+<contactref element="FAN1" pad="V"/>
+<wire x1="24" y1="37" x2="24" y2="12.3" width="1" layer="1"/>
+<wire x1="25.3" y1="11" x2="25.3" y2="5.55610625" width="1" layer="1"/>
+<wire x1="25.3" y1="5.55610625" x2="24.27389375" y2="4.53" width="1" layer="1"/>
+<wire x1="24.27389375" y1="4.53" x2="22.3" y2="4.53" width="1" layer="1"/>
+<wire x1="22.3" y1="4.53" x2="19.65" y2="4.53" width="1" layer="16"/>
+<wire x1="24" y1="12.3" x2="25.3" y2="11" width="1" layer="1"/>
 </signal>
 <signal name="MCU-RF">
 <contactref element="U2" pad="6"/>
@@ -2341,8 +2383,8 @@ Max Component Height - 1.45mm</description>
 <contactref element="TVS3" pad="1"/>
 <wire x1="22.95" y1="41.3" x2="22.95" y2="39.6" width="0.6" layer="16"/>
 <wire x1="22.95" y1="39.6" x2="22.95" y2="37.7" width="0.6" layer="16"/>
-<wire x1="22.95" y1="37.7" x2="22.95" y2="35.8" width="0.6" layer="16"/>
-<wire x1="22.95" y1="35.8" x2="22.85" y2="35.8" width="0.6" layer="16"/>
+<wire x1="22.95" y1="37.7" x2="22.95" y2="35.4" width="0.6" layer="16"/>
+<wire x1="22.95" y1="35.4" x2="22.85" y2="35.4" width="0.6" layer="16"/>
 <wire x1="22.85" y1="39.6" x2="22.95" y2="39.6" width="0.2032" layer="16"/>
 <wire x1="23.15" y1="37.6" x2="22.95" y2="37.6" width="0.2032" layer="16"/>
 <wire x1="22.95" y1="37.6" x2="22.95" y2="37.7" width="0.2032" layer="16"/>
@@ -2400,14 +2442,14 @@ Max Component Height - 1.45mm</description>
 <vertex x="7.5" y="41.7"/>
 </polygon>
 <via x="11" y="38.5" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="15.8" y1="31.6" x2="15.8" y2="35.8" width="0.3048" layer="16"/>
-<wire x1="15.8" y1="35.8" x2="15.8" y2="39.391725" width="0.3048" layer="16"/>
+<wire x1="15.8" y1="31.6" x2="15.8" y2="35.4" width="0.3048" layer="16"/>
+<wire x1="15.8" y1="35.4" x2="15.8" y2="39.391725" width="0.3048" layer="16"/>
 <wire x1="15.8" y1="39.391725" x2="15.191725" y2="40" width="0.3048" layer="16"/>
 <wire x1="15.191725" y1="40" x2="11" y2="40" width="0.3048" layer="16"/>
 <wire x1="11" y1="40" x2="11" y2="38.5" width="0.2032" layer="16"/>
 <wire x1="11" y1="38.5" x2="10.3" y2="38.5" width="0.2032" layer="16"/>
 <wire x1="10.3" y1="38.5" x2="10.3" y2="39.4" width="0.2032" layer="16"/>
-<wire x1="21.15" y1="35.8" x2="15.8" y2="35.8" width="0.3048" layer="16"/>
+<wire x1="21.15" y1="35.4" x2="15.8" y2="35.4" width="0.3048" layer="16"/>
 <wire x1="14.5" y1="30.55" x2="15.45" y2="30.55" width="0.2032" layer="16"/>
 <wire x1="15.45" y1="30.55" x2="15.8" y2="30.9" width="0.2032" layer="16"/>
 <wire x1="15.8" y1="30.9" x2="15.8" y2="31.6" width="0.2032" layer="16"/>
@@ -2729,22 +2771,24 @@ Max Component Height - 1.45mm</description>
 <contactref element="IC2" pad="4"/>
 <contactref element="U1" pad="14"/>
 <wire x1="55.9012" y1="56.5" x2="62.099" y2="56.5" width="1" layer="16"/>
-<wire x1="95.62" y1="54.68" x2="95.62" y2="56.299715625" width="1" layer="16"/>
-<wire x1="95.62" y1="56.299715625" x2="94.919715625" y2="57" width="1" layer="16"/>
-<wire x1="94.919715625" y1="57" x2="65" y2="57" width="1" layer="16"/>
+<wire x1="95.62" y1="54.68" x2="95.62" y2="56.599715625" width="1" layer="16"/>
+<wire x1="95.62" y1="56.599715625" x2="94.919715625" y2="57.3" width="1" layer="16"/>
+<wire x1="94.919715625" y1="57.3" x2="65" y2="57.3" width="1" layer="16"/>
 <wire x1="65" y1="57.35" x2="62.099" y2="57.35" width="1.5" layer="16"/>
 <wire x1="62.099" y1="57.35" x2="62.099" y2="56.5" width="1.5" layer="16"/>
-<wire x1="65" y1="57" x2="65" y2="57.35" width="1" layer="16"/>
+<wire x1="65" y1="57.3" x2="65" y2="57.35" width="1" layer="16"/>
 </signal>
 <signal name="3V3">
 <contactref element="U1" pad="12"/>
 </signal>
 <signal name="USB-V-SEL-20V">
 <contactref element="R18" pad="2"/>
-<contactref element="JP5" pad="3"/>
 <wire x1="21.2" y1="23.05" x2="21.2" y2="14.58" width="0.4064" layer="16"/>
 <wire x1="21.2" y1="14.58" x2="19.2" y2="12.58" width="0.4064" layer="16"/>
-<wire x1="19.2" y1="12.58" x2="1.873" y2="12.58" width="0.4064" layer="16"/>
+<contactref element="JP5" pad="1"/>
+<wire x1="19.2" y1="12.58" x2="9.48" y2="12.58" width="0.4064" layer="16"/>
+<wire x1="9.48" y1="12.58" x2="3.98" y2="7.08" width="0.4064" layer="16"/>
+<wire x1="3.98" y1="7.08" x2="1.973" y2="7.08" width="0.4064" layer="16"/>
 </signal>
 <signal name="SEL3">
 <contactref element="U1" pad="5"/>
@@ -2818,29 +2862,23 @@ Max Component Height - 1.45mm</description>
 <signal name="USB-I-SEL">
 <contactref element="U4" pad="5"/>
 <contactref element="R13" pad="1"/>
-<contactref element="JP5" pad="6"/>
-<wire x1="8.2" y1="20.2" x2="2.127" y2="20.2" width="0.4064" layer="16"/>
-<wire x1="8.2" y1="20.55" x2="8.2" y2="20.2" width="0.4064" layer="16"/>
-<wire x1="13.75" y1="28.3" x2="13.75" y2="22.95" width="0.3" layer="16"/>
-<wire x1="13.75" y1="22.95" x2="11" y2="20.2" width="0.3" layer="16"/>
-<wire x1="11" y1="20.2" x2="8.2" y2="20.2" width="0.3" layer="16"/>
+<wire x1="13.75" y1="28.3" x2="13.75" y2="22.9" width="0.3048" layer="16"/>
+<contactref element="JP5" pad="4"/>
+<wire x1="13.75" y1="22.9" x2="13.75" y2="22.15" width="0.3048" layer="16"/>
+<wire x1="13.75" y1="22.15" x2="6.3" y2="14.7" width="0.3048" layer="16"/>
+<wire x1="6.3" y1="14.7" x2="2.227" y2="14.7" width="0.3048" layer="16"/>
+<wire x1="13.25" y1="23" x2="13.75" y2="23" width="0.3048" layer="16"/>
+<wire x1="13.75" y1="23" x2="13.75" y2="22.9" width="0.3048" layer="16"/>
 </signal>
 <signal name="N$9">
 <contactref element="R16" pad="1"/>
 <contactref element="R15" pad="2"/>
 <wire x1="16.4" y1="26.45" x2="16.4" y2="24.75" width="0.4064" layer="16"/>
 </signal>
-<signal name="FAN-CTRL">
-<contactref element="FAN1" pad="1"/>
-<wire x1="24" y1="8" x2="16" y2="8" width="1.2" layer="16"/>
-<contactref element="JP5" pad="2"/>
-<wire x1="16" y1="8" x2="13.96" y2="10.04" width="1.2" layer="16"/>
-<wire x1="13.96" y1="10.04" x2="2.127" y2="10.04" width="1.2" layer="16"/>
-</signal>
 <signal name="N$10">
 <contactref element="R13" pad="2"/>
 <contactref element="R14" pad="1"/>
-<wire x1="8.2" y1="22.25" x2="8.2" y2="24.05" width="0.4064" layer="16"/>
+<wire x1="11.55" y1="23" x2="9.85" y2="21.3" width="0.3048" layer="16"/>
 </signal>
 <signal name="N$11">
 <contactref element="Q1" pad="3B"/>
@@ -2873,10 +2911,12 @@ Max Component Height - 1.45mm</description>
 </signal>
 <signal name="USB-V-SEL-28V">
 <contactref element="R20" pad="2"/>
-<contactref element="JP5" pad="5"/>
 <wire x1="18.8" y1="23.05" x2="18.8" y2="19.66" width="0.4064" layer="16"/>
-<wire x1="18.8" y1="19.66" x2="16.8" y2="17.66" width="0.4064" layer="16"/>
-<wire x1="16.8" y1="17.66" x2="1.873" y2="17.66" width="0.4064" layer="16"/>
+<contactref element="JP5" pad="3"/>
+<wire x1="18.8" y1="19.66" x2="13.64" y2="14.5" width="0.4064" layer="16"/>
+<wire x1="13.64" y1="14.5" x2="8.6" y2="14.5" width="0.4064" layer="16"/>
+<wire x1="8.6" y1="14.5" x2="6.26" y2="12.16" width="0.4064" layer="16"/>
+<wire x1="6.26" y1="12.16" x2="1.973" y2="12.16" width="0.4064" layer="16"/>
 </signal>
 <signal name="N$13">
 <contactref element="R19" pad="2"/>
@@ -2954,6 +2994,49 @@ Max Component Height - 1.45mm</description>
 <contactref element="R26" pad="2"/>
 <wire x1="93.1" y1="68.3" x2="93.1" y2="69.9" width="0.4064" layer="16"/>
 <wire x1="93.1" y1="69.9" x2="93.08" y2="69.92" width="0.4064" layer="16"/>
+</signal>
+<signal name="N$19">
+<contactref element="R27" pad="1"/>
+<contactref element="Q6" pad="1"/>
+<wire x1="28.8" y1="5.55" x2="28.8" y2="3.85" width="0.6096" layer="16"/>
+</signal>
+<signal name="FAN">
+<contactref element="U1" pad="8"/>
+<contactref element="R27" pad="2"/>
+<contactref element="R28" pad="1"/>
+<wire x1="80.38" y1="54.68" x2="80.38" y2="52.62" width="0.4064" layer="1"/>
+<wire x1="80.38" y1="52.62" x2="84.8" y2="48.2" width="0.4064" layer="1"/>
+<via x="84.8" y="48.2" extent="1-16" drill="0.3" shape="octagon"/>
+<wire x1="84.8" y1="48.2" x2="84.8" y2="3" width="0.4064" layer="16"/>
+<wire x1="84.8" y1="3" x2="83.3" y2="1.5" width="0.4064" layer="16"/>
+<wire x1="83.3" y1="1.5" x2="31.8" y2="1.5" width="0.4064" layer="16"/>
+<contactref element="SJ6" pad="3"/>
+<wire x1="24.6" y1="10.5" x2="25.6" y2="10.5" width="0.6096" layer="16"/>
+<wire x1="25.6" y1="10.5" x2="27.1" y2="9" width="0.6096" layer="16"/>
+<wire x1="27.1" y1="9" x2="28.75" y2="9" width="0.6096" layer="16"/>
+<wire x1="28.75" y1="9" x2="28.8" y2="9.05" width="0.6096" layer="16"/>
+<wire x1="28.8" y1="9.05" x2="28.8" y2="7.25" width="0.6096" layer="16"/>
+<wire x1="31.8" y1="1.5" x2="31.3" y2="2" width="0.4064" layer="16"/>
+<wire x1="31.3" y1="2" x2="31.3" y2="6.493365625" width="0.4064" layer="16"/>
+<wire x1="31.3" y1="6.493365625" x2="30.543365625" y2="7.25" width="0.4064" layer="16"/>
+<wire x1="30.543365625" y1="7.25" x2="28.8" y2="7.25" width="0.4064" layer="16"/>
+</signal>
+<signal name="N$20">
+<contactref element="FAN1" pad="P"/>
+<contactref element="SJ6" pad="2"/>
+<wire x1="24.6" y1="9.6" x2="22.3" y2="9.6" width="0.6096" layer="16"/>
+</signal>
+<signal name="N$22">
+<contactref element="SJ6" pad="1"/>
+<contactref element="Q6" pad="3"/>
+<contactref element="SJ7" pad="3"/>
+<wire x1="24.6" y1="2.9" x2="26.7" y2="2.9" width="0.6096" layer="16"/>
+<wire x1="24.6" y1="8.7" x2="24.6" y2="2.9" width="0.6096" layer="16"/>
+</signal>
+<signal name="N$24">
+<contactref element="SJ7" pad="2"/>
+<contactref element="FAN1" pad="G"/>
+<wire x1="22.3" y1="2" x2="24.6" y2="2" width="0.6096" layer="16"/>
 </signal>
 </signals>
 <errors>

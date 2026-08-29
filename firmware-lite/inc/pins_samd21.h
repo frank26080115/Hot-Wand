@@ -20,6 +20,9 @@
 // Active-low power switch: XIAO D9/A9, SAMD21 PA05.
 #define POWER_SWITCH_PIN D9
 
+// Active-high fan control: XIAO D7/A7, SAMD21 PB09.
+#define FAN_CONTROL_PIN D7
+
 // Both footprint pads are connected to the voltage-sense net. This target uses
 // XIAO D8/A8 (SAMD21 PA07) for ADC and must leave D2 high-impedance.
 #define ADC_PIN D8

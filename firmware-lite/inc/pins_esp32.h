@@ -21,6 +21,9 @@
 // Active-low power switch on XIAO D9, ESP32-S3 GPIO8.
 #define POWER_SWITCH_PIN 8
 
+// Active-high fan control on XIAO D7, ESP32-S3 GPIO44.
+#define FAN_CONTROL_PIN 44
+
 // Both footprint pads are connected to the voltage-sense net. Use XIAO D2,
 // ESP32-S3 GPIO3/ADC1_CH2, and leave XIAO D8/GPIO7 high-impedance. GPIO3 is
 // also a strapping pin, so validate the board's reset/JTAG behavior in hardware.
@@ -43,6 +46,9 @@
 // Active-low power switch on XIAO D9, ESP32-C3 GPIO9. GPIO9 is also the C3's
 // boot strap pin, so holding the switch low during reset can enter download mode.
 #define POWER_SWITCH_PIN 9
+
+// Active-high fan control on XIAO D7, ESP32-C3 GPIO20.
+#define FAN_CONTROL_PIN 20
 
 // XIAO D2 is ESP32-C3 GPIO4/ADC1_CH4. XIAO D8/GPIO8 is not ADC-capable and
 // must remain high-impedance even though the PCB connects it to the same net.

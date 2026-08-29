@@ -19,6 +19,9 @@
 // Active-low power switch: XIAO D9 is RP2040 GPIO4.
 #define POWER_SWITCH_PIN D9
 
+// Active-high fan control: XIAO D7 is RP2040 GPIO1.
+#define FAN_CONTROL_PIN D7
+
 // Both footprint pads are connected to the voltage-sense net. This target uses
 // XIAO D2 for ADC and must leave D8 high-impedance.
 #define ADC_PIN D2
@@ -41,5 +44,8 @@
 
 // Active-low power switch.
 #define POWER_SWITCH_PIN 28
+
+// Active-high fan control on RP2040 GPIO26.
+#define FAN_CONTROL_PIN 26
 
 #endif

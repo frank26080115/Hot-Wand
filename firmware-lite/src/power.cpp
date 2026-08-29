@@ -362,6 +362,11 @@ static void initialize_hardware()
     // The power switch grounds this input to request shutdown.
     pinMode(POWER_SWITCH_PIN, INPUT_PULLUP);
 
+    // Keep the active-high fan control off until the power switch is sampled.
+    // Write the safe level before enabling the output to avoid a startup pulse.
+    digitalWrite(FAN_CONTROL_PIN, LOW);
+    pinMode(FAN_CONTROL_PIN, OUTPUT);
+
     // The PCB connects two alternative module pads to the voltage-sense net.
     // Only ADC_PIN may interact with it. INPUT disables the other pad's output
     // driver, and writing LOW while it is an input explicitly disables any
@@ -400,6 +405,7 @@ static void sample_power_switch(uint32_t currentTimeMs)
 
     g_lastPowerSwitchSampleMs = currentTimeMs;
     g_shutdownRequested       = (digitalRead(POWER_SWITCH_PIN) == LOW);
+    digitalWrite(FAN_CONTROL_PIN, g_shutdownRequested ? LOW : HIGH);
     g_powerSwitchSampled      = true;
 }
 
