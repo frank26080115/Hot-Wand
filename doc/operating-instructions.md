@@ -38,7 +38,11 @@ If you want to power from a AC power supply, the best way is to add a XT30 conne
 
 Only USB-C PD chargers delivering 65W or more will work with Hot-Wand. Only USB-C chargers delivering 140W or more will deliver the maximum amount of power that Hot-Wand is capable of delivering. If you want a cheaper way of using the maximum power output, consider using the XT30 connector along with a dedicated DC power supply.
 
-The voltage and current requested from a USB-PD host can be configured using jumper shunt blocks. The voltage requested is 20V by default without the jumper, and 28V when the jumper is installed. Some USB hosts can still provide 20V even if 28V is requested.
+The voltage and current requested from a USB-PD host can be configured using jumper shunt blocks.
+
+![](imgs/config_jumpers.jpg)
+
+The voltage requested is 20V by default without the jumper, and 28V when the jumper is installed. Some USB hosts can still provide 20V even if 28V is requested.
 
 The current requested is "automatic" without the jumper, and 5A when the jumper is installed. However, requesting 5A, you need a special USB-C cable with a "E-marker" chip, and it must be rated 140W or more.
 
