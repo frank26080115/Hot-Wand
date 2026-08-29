@@ -5669,14 +5669,15 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="0.6" y1="-1" x2="-0.6" y2="0" width="0.3048" layer="21"/>
 </package>
 <package name="FAN-20MM-TIEDOWN">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21" style="shortdash"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
 <pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
 <pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
 <pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
 <pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
+<wire x1="-3.3" y1="10" x2="-3.3" y2="9" width="0.127" layer="21" style="shortdash"/>
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="-9" width="0.127" layer="21" style="shortdash"/>
 </package>
 <package name="FAN-20MM-TIEDOWN-V2">
 <wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>

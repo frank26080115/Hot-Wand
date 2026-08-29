@@ -16420,14 +16420,15 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="-6" y1="-6" x2="-6" y2="6" width="0.127" layer="151"/>
 </package>
 <package name="FAN-20MM-TIEDOWN">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21" style="shortdash"/>
+<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
+<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
 <pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
 <pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
 <pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
 <pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
+<wire x1="-3.3" y1="10" x2="-3.3" y2="9" width="0.127" layer="21" style="shortdash"/>
+<wire x1="-3.3" y1="-10" x2="-3.3" y2="-9" width="0.127" layer="21" style="shortdash"/>
 </package>
 <package name="FAN-20MM-TIEDOWN-V2">
 <wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
