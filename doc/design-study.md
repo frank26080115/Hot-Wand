@@ -142,11 +142,11 @@ With two power inputs, I need one to not explode the other, especially the batte
 
 I am not using a 10V tap from a AC transformer like SergeyMax, instead, I've placed a 12V fixed voltage buck converter in the circuit. This powers the gate driver and the cooling fan. The microcontroller is also powered by a similar 3.3V buck converter. These are small and compatible with 78XX series voltage regulators.
 
-The Radio Thermal design features a NTC in-rush limiter on the barrel jack. In my design, the AP53781 slowly opens the MOSFET that gates the VBUS power, slow enough to act as an in-rush limiter. When the MOSFETs connect, the in-rush towards the input bulk capacitor should not exceed 2A. If 2A is tripping the USB power supply then we have bigger issues. The RF amplifier should not cause a large in-rush when starting. The MOSFET will close and the inductor will essentially block the current surge that you would expect.
-
 Leaving out a barrel jack in my design is a deliberate decision.
 
 I also added a classic glass fuse in my design. I expect it to be appreciated during a short circuit event or a MOSFET failure.
+
+There is some inrush current to worry about. This is discussed later.
 
 ### Thermal and Cooling
 
@@ -201,7 +201,7 @@ Both the 12V and 3.3V auxiliary power regulators (they are buck converters too b
 
 The battery input is always protected by an ideal-diode implementation, so that even if the user mistakenly connects both the battery and the USB port, the battery doesn't explode.
 
-An additional MOSFET protects the AP53781 from high battery voltage, the rating for AP53781 is 31V and the battery might be as high as 35V. This MOSFET is driven by the AP53781 itself so the AP53781 is acting like the ideal-diode controller. The additional gate capacitance being driven by a current limited gate driver means all of the MOSFETs will turn on slower, which slows down in-rush current into the big bulk capacitor, which is actually a good side effect.
+An additional MOSFET protects the AP53781 from high battery voltage, the rating for AP53781 is 31V and the battery might be as high as 35V. This MOSFET is driven by the AP53781 itself so the AP53781 is acting like the ideal-diode controller. The additional gate capacitance being driven by a current limited gate driver means all of the MOSFETs will turn on slower, which slows down inrush current into the big bulk capacitor, which is actually a good side effect.
 
 Plus, there's a 20x5mm glass fuse that will blow during over-current. The upstream shouldn't explode.
 
@@ -212,3 +212,21 @@ I threw in some TVS diodes around the XT30 input, the USB input, and the tactile
 For the Lite 470 kHz version that is a copy of Radio Thermal's design, which is asking for a 20V 5A power supply, this is a little tricky. The problem is that, the premise of the project is to add USB-PD as a power input, but, only the USB-C cables with a E-marker inside are capable of 5A. This is very annoying and I'd like to implement a reduced power mode just so it would work with 3A instead, which can make it work with normal USB-C cables and 65W USB-C chargers. The constraint is that we cannot add a buck converter into the design.
 
 To overcome all this... this topic deserves [its own page, please click here](lite-power-attenuation.md)
+
+### Inrush Current Study
+
+My design uses large bulk capacitors at the input, and also, I've allowed it to be connected to up to 8S worth of batteries, almost 34V. This would make the XT30 connector spark if the inrush current is uncontrolled.
+
+The Radio Thermal design features a NTC inrush limiter on the barrel jack. In my design, the AP53781 slowly opens the MOSFET that gates the VBUS power, slow enough to act as an inrush limiter. When the MOSFETs connect, the inrush towards the input bulk capacitor should not exceed 2A. If 2A is tripping the USB power supply then we have bigger issues. The RF amplifier should not cause a large inrush when starting. The MOSFET will turn on and the inductor will essentially block the current surge (limits initial `di/dt`) that you would expect.
+
+That leaves the XT30 connector to worry about, but I don't want to use an NTC inrush limiter, as it will waste a lot of power, we're talking about several watts. The more advanced 13.56 MHz design is a lot more dynamic in terms of current consumption as it has both circuitry and firmware that dynamically adjusts the power being supplied to the iron. So an NTC inrush limiter will very frequently cool back down and become very resistive. This both wastes energy and causes a delay in the soldering iron's thermal response.
+
+There is an ideal-diode implementation in the way of the inrush, but the body diode of the MOSFET there will still conduct, so it's not helpful in blocking inrush. It will see a large pulse but expected to survive. I've selected some seriously overkill MOSFETs already.
+
+Another idea that was explored: using the ideal-diode controller to block the inrush by giving it a back-to-back MOSFET instead of a single MOSFET. This was studied and determined to be not feasible, the problem being that the incoming voltage will blow up the second MOSFET's `V_GS`. Texas Instruments explicitly says the LM74700 does not support this because its off action is to connect GATE to ANODE; that only guarantees `V_GS=0` for the input-side MOSFET.
+
+So the real solution might be to use a Texas Instruments `LM7481`. These are basically ideal-diode controllers for back-to-back NFETs. Noting that this is the ideal solution... **I didn't implement this** for project logistics and scope reasons. It's a big expensive change very late in the project for very little actual benefit when accounting for expected usage.
+
+The napkin math thankfully still says the glass fuse can handle the impulse without melting.
+
+Realistically, the solution is to just live with the spark. For the units I am giving to my friends, I will include a few sacrificial battery pigtail extenders, one for XT30-to-XT30, one for barrel jack, one for XT60. For desktop usage, simply plug in the XT30 before actually applying AC power, or just use USB-PD as intended.
