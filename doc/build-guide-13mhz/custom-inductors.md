@@ -73,3 +73,7 @@ For 16 AWG:
 `186 + 269 + 310 = 765 mm = 0.765 m = 2.51 ft`
 
 For one complete unit, the practical minimum purchase is 1.5 m (5 ft) of 22 AWG and 1 m (3.3 ft) of 16 AWG. To leave enough wire for trimming mistakes or rewinding an inductor, buy approximately 3 m (10 ft) of 22 AWG and 1.5 m (5 ft) of 16 AWG.
+
+## Securing the Inductors
+
+Custom inductors are commonly secured with neutral-cure, electronics-grade RTV silicone, which remains flexible and is relatively easy to remove, or with two-part epoxy when a rigid, permanent bond is wanted. Avoid acid-cure RTV silicone, recognizable by its vinegar smell, because it can corrode copper and electronics. Avoid hot-melt glue as it is very possible for this circuit to get hot.

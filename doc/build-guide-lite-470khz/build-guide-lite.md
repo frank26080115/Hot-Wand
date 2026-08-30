@@ -2,7 +2,7 @@
 
 ## 0. Circuit Board Reception
 
-Get the circuit board from JLCPCB with mostly bottom components already populated.
+Get the circuit board from JLCPCB with mostly bottom components already populated. [See this guide on ordering from JLCPCB](jlcpcb-ordering.md)
 
 Populate all out-of-stock components that JLCPCB did not populate on the bottom side first. (this depends on what was available when the circuit board was ordered)
 

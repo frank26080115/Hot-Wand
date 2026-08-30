@@ -28,7 +28,7 @@ Quantity: **one Same Sky UJC-H-G-SMT-P6-TR**. Install it at JP2 for USB-PD input
 
 ### XT30 board connector
 
-Quantity: **one AMASS XT30PW-M**. Install it at JP3 as the alternate high-current DC input. It is the right-angle male PCB version, not an in-line cable connector. Shop at [LCSC](https://www.lcsc.com/product-detail/plug_changzhou-amass-elec-xt30pw-m_C431092.html) or [Out of Darts](https://outofdarts.com/products/xt30pw-m-board-mount-connector-male-pcb).
+Quantity: **one XT30PW-M**. Install it at JP3 as the high-current DC input. It is the right-angle male PCB version. Search for this on your preferred online shop.
 
 ### USB-PD selection header
 
