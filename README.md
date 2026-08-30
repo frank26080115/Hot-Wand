@@ -12,7 +12,7 @@ This is nearly a clone of [SergeyMax's design](https://github.com/SergeyMax/Sold
  * uses a 128x32 OLED display
  * options for low power mode, automatic sleep
  * uses a STM32F042F6P6 microcontroller (more flash memory)
- * optional cooling fan, temperature sensors
+ * cooling fan, temperature sensors
  * internal glass fuse
  * substituted parts that are only available from Russia
 
