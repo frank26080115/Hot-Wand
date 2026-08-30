@@ -4,7 +4,9 @@
 
 Get the circuit board from JLCPCB with mostly bottom components already populated.
 
-Populate all out-of-stock components that JLCPCB did not populate on the bottom side first.
+Populate all out-of-stock components that JLCPCB did not populate on the bottom side first. (this depends on what was available when the circuit board was ordered)
+
+For all the other required parts, [see the shopping document (click here)](shopping.md)
 
 ## 1. Input Power
 
@@ -27,6 +29,8 @@ During the USB-C tests, the shunt jumpers should have been installed to JP5
 (OPTIONAL) Populate LEDs. If you choose to do this, it might be nice to use different colours for each one.
 
 ![](../imgs/soldering_2.jpg)
+
+Make sure the components with polarity are installed correctly. The capacitors have a negative lead that is marked with a `-` symbol and a strip on the side.
 
 Populate the potentiometers. (DEVELOPMENT ONLY) Make note of their orientation and correlate spin direction with resistances.
 
@@ -58,7 +62,7 @@ Add the custom cut copper fins to the buck converter heat dissipation area.  [Cl
 
 Do not make the fins block the area where the brass standoff and screw is supposed to go! We are soldering on the fins first before the standoffs are attached because it is easier to solder this way, without the huge thermal mass of the standoff.
 
-Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional.
+Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
 
 ![](../imgs/standoffs_3d.png)
 
@@ -228,7 +232,13 @@ Fasten on the face plate, using #4-40 screws
 
 ![](../imgs/faceplate_screws_3d.png)
 
+Using the screws that came with the purchase of the enclosure, screw the lid to the box.
+
+![](../imgs/screw_in_bottom.png)
+
 Stick on some rubber feet to the bottom of the enclosure.
+
+<!-- TODO: photograph -->
 
 ## 11. Enclosed Development
 

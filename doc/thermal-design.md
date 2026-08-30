@@ -116,3 +116,11 @@ Generated using `doc\tools\airflow_pie_chart.py`
 This rough estimate only tells me:
  * I can afford to have those 6 holes for the toroid cooling, maybe even more. The magnetic properties of those toroids do depend on temperature a bit.
  * I should put in an effort into mimizing the useless air outlets
+
+## Cooling for the Lite Version
+
+I've met with the developers of Radio Thermal, I commented on how big their design is but most of it was taken up by the fan. They replied that it does still work without the fan, but they do not make claims about its performance without the fan.
+
+In my design, there's still a fan and a heatsink (actually two heatsinks stuck together) on the MOSFET. The air is blowing against the heatsink and the toroids internally.
+
+![](./build-guide-lite-470khz/imgs/heatsink_sticking_out.png)

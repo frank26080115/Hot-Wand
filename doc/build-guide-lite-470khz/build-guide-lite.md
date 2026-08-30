@@ -4,7 +4,9 @@
 
 Get the circuit board from JLCPCB with mostly bottom components already populated.
 
-Populate all out-of-stock components that JLCPCB did not populate on the bottom side first.
+Populate all out-of-stock components that JLCPCB did not populate on the bottom side first. (this depends on what was available when the circuit board was ordered)
+
+For all the other required parts, [see the shopping document (click here)](shopping.md)
 
 ## 1. Input Power
 
@@ -26,6 +28,10 @@ During the USB-C tests, the shunt jumpers should have been installed to JP5
 
 ![](./imgs/soldering_2.jpg)
 
+Make sure the components with polarity are installed correctly. The capacitors have a negative lead that is marked with a `-` symbol and a strip on the side.
+
+The SMA coaxial connector is supposed to be soldered upside down, with the center pin on the bottom of the board.
+
 ## 3. Microcontroller and Firmware Bring-Up
 
 WARNING: NEVER flash firmware while the main input power is connected. You can also just remove the microcontroller module before flashing it.
@@ -46,13 +52,95 @@ It is recommended to solder female headers onto the Hot-Wand-Lite PCB where the 
 
 ## 4. Custom Inductors
 
-## 5. RF Power Stage and Output
+There are 4 custom inductors in this design. [Follow the instructions on how to create them (click here)](custom-indoctors.md), and then solder them to their perspective locations.
 
-## 6. Configuration Jumpers and Indicators
+## 5. MOSFET Heatsink
 
-## 7. Mounting Hardware
+Assemble the MOSFET together with the heatsinks according to the diagrams:
 
-## 8. Final Assembly and Testing
+![](imgs/mosfet_heatsink_3dviews.png)
+
+![](imgs/mosfet_heatsink_stack.png)
+
+Then solder the MOSFET to the circuit board.
+
+Using a multimeter, ensure that the MOSFET's drain tab is not continuous with the screw or heatsink.
+
+WARNING: do NOT forget the thermal pad or the shoulder washer, as without them you can cause a catastrophic high energy short circuit to ground when the circuit is powered up.
+
+## 6. Mounting Hardware and Enclosure Modification
+
+Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
+
+![](imgs/standoffs_3d.png)
+
+## 7. Printed Parts and Templates
+
+3D print: air intake grille
+
+![](imgs/airintakegrille_labeled.png)
+
+3D printing material is PETG, or really anything that is more temperature resistant than PLA. Do not use PLA.
+
+Everything can be 3D printed using a 0.4mm or 0.6mm nozzle. Everything is designed to be printable without supports.
+
+3D print all drilling and cutting templates. These are to be printed using PLA.
+
+![](./imgs/cut_template.png)
+
+(note: the cut template for the bottom lid may be using a design with more holes meant for the 13.56 MHz version, skip drilling those holes)
+
+## 8. Enclosure Modification
+
+![](./imgs/enclosure_opening_labels.png)
+
+Drill and cut enclosure box and lid. Use the cutting and drilling templates to help. Thread tap enclosure box where needed. Please refer to diagram.
+
+(note: all holes start off with a 2.5mm drill bit, and if needed, a larger drill bit is used after)
+
+(note: the template is designed to be used with a drill press, the surface angles of the template are made so that holes being drilled are perpendicular to the box's tapered walls)
+
+The fan holes are the only holes that need to be larger than 2.5mm, they are supposed to be 3mm or 1/8" diameter holes.
+
+There is an area on the bottom lid where it will touch the SMA coaxial connector. You need to cut (or grind or file) this section slightly. See image
+
+![](imgs/bottom_lid_coax_notch.png)
+
+(note: the images here may not reflect the final design, for example, I may have enlarged the air outlet slits)
+
+Perform an inspection of 3D printed parts and make sure they fit on the enclosure, such that the cutouts are the right size and in the right positions. Additional cutting, grinding, and/or filing, maybe required to make adjustments.
+
+Clean all metal shavings, debur all drilled and cut edges, dull all sharp edges.
+
+## 9. Final Assembly and Testing
+
+**Perform a final review of all soldering, including test points, test resistors, solder jumpers.**
+
+Clean the entire PCB, using an antistatic brush and rubbing alcohol.
+
+At this point, you may apply conformal coating over the circuit board if you wish.
+
+Fasten PCB to bottom lid, using the brass standoffs installed previously and M2.5 x 4mm screws.
+
+![](imgs/bottom_lid_screws_3d.png)
+
+3D print the air intake grille. Assemble cooling fan and the air intake grille to the box. See diagram for details.
+
+![](../imgs/fan_fasteners.png)
+
+Drop the box over the whole assembly. The heatsink might touch the box, that's ok.
+
+Bend the top two and bottom two heatsink fins outwards against the box wall. This prevents the MOSFET legs from being damaged if the box is dropped.
+
+![](./imgs/bend_heatsink_fins.png)
+
+Using the screws that came with the purchase of the enclosure, screw the lid to the box.
+
+![](./imgs/screw_in_lid.png)
+
+Stick on some rubber feet to the bottom of the enclosure.
+
+<!-- TODO: photograph -->
 
 ## Handpiece
 
