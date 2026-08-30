@@ -44,13 +44,13 @@ In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz
 
  * layout to fit in a Hammond MFG enclosure
  * uses battery XT30 connector or USB-PD for input
- * uses a Seeed Studio XIAO SAMD21 microcontroller
+ * uses some sort of Seeed Studio XIAO microcontroller module
  * user selectable power levels via externally pluggable jumpers
  * internal glass fuse
 
-Physically, Hot-Wand and Hot-Wand-Lite uses the same aluminum enclosure. The power input stage are almost identical. The RF output connector is a SMA connector. [Radio Thermal](https://radiothermal.com/) (the inspiration for this) has instructions on how to build the handpiece.
+Physically, Hot-Wand and Hot-Wand-Lite uses the same aluminum enclosure. The power input stage are almost identical. The RF output connector is a SMA connector this time. [Radio Thermal](https://radiothermal.com/) (the inspiration for this) has instructions on how to build a cheap handpiece.
 
-This cost saving design features no fault detection.
+This cost saving design has way less fault detection.
 
 While this is a DIY project and not a commercial product, it is a difficult project as it requires hand-wound inductors and tuning the inductor coils. Regarding how this is copying a lot of the [Radio Thermal](https://radiothermal.com/) design, I am copying it verbatim, as they do not use anything weird from Russia, and the RF design education I've already gotten from the much more complicated 13.56 MHz version of Hot-Wand.
 
@@ -65,3 +65,20 @@ The RF soldering iron's station unit does not feature a temperature setting or e
 I've always liked the Metcal MX-5200 I have access to at work. I'm also a robot combat competitor, both in insect weight classes and also a part of a heavyweight battlebots team. Thus, I travel with my tools a lot, sometimes even flying to NHRL from California. And while I like my [iFixit soldering iron](https://eleccelerator.com/review-ifixit-soldering-iron/) for it's portability, I thought it'd be cool to have a portable RF soldering iron.
 
 While I designed this project, the cost started to balloon. At one point it was decided to drop the pretense that DIY is cheaper, and instead, build something I would rather own even more than the actual (gigantic) MX-5200.
+
+## Design Study
+
+Please see [my full design study (click here)](doc\design-study.md). This includes:
+
+ * Dissection of SergeyMax's design
+ * Analyzes other DIY builder's notes as they build SergeyMax's design
+ * Analyzes SergeyMax's follow-up video (that's in Russian)
+ * My additional design choices, justifications, calculations
+ * and more
+
+and please explore the [documentation directory itself](doc), as I might've written something but forgot to link it.
+
+## Build Guides
+
+ * [DIY build guide for the Hot Wand (13.56 MHz version)](doc\doc\build-guide-13mhz\build-guide.md)
+ * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc\build-guide-lite-470khz\build-guide-lite.md)
