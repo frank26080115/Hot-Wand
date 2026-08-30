@@ -22999,7 +22999,7 @@ Crss 26pF</text>
 0.11 Rdson</text>
 <text x="259.08" y="-251.46" size="1.016" layer="96" align="bottom-right">Bourns 5300-17-RC</text>
 <text x="156.21" y="-721.868" size="1.778" layer="97" rot="R270" align="bottom-right">select 20V</text>
-<text x="27.94" y="-566.42" size="5.08" layer="97">XT-30 DC Input</text>
+<text x="27.94" y="-566.42" size="5.08" layer="97">XT30 DC Input</text>
 <text x="25.4" y="-685.8" size="5.08" layer="97">USB-PD Input</text>
 <text x="31.496" y="-644.144" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>

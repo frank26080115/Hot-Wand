@@ -132,7 +132,7 @@ With all the pins assigned, I still had two ADC capable pins left, so I added fo
 
 The power input in my design is my own design, it is not derived from either of the preceding projects.
 
-For battery power, I put in a XT-30 connector in my design, as the choice is between XT-30 and XT60, and I simply will more likely need it to be XT-30. My own small combat robots all use XT-30 and our team's bigger robots use other much bigger connectors.
+For battery power, I put in a XT30 connector in my design, as the choice is between XT30 and XT60, and I simply will more likely need it to be XT30. My own small combat robots all use XT30 and our team's bigger robots use other much bigger connectors.
 
 For USB-C power input, it uses a USB-PD negotiation IC [AP53781](https://www.diodes.com/part/view/AP53781), compatible with PD3.2, to obtain 28V (from EPR, Extended Power Range). This IC is quite simple, you pick the voltage and current using two resistors. You can also pick "automatic" for the current. The hope is that, if 28V is unavailable from the connected charger, then it will fall back to the next lower voltage, which is 20V.
 

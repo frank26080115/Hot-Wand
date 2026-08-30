@@ -17127,7 +17127,7 @@ if LEDs are too dim</text>
 <text x="102.87" y="-252.476" size="1.6764" layer="96">0.25W</text>
 <text x="35.56" y="-469.646" size="1.016" layer="97">theoretically handles 8S
 practically should keep it 6S</text>
-<text x="35.56" y="-464.82" size="5.08" layer="97">XT-30 DC Input</text>
+<text x="35.56" y="-464.82" size="5.08" layer="97">XT30 DC Input</text>
 <text x="91.186" y="-469.9" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max each</text>
 <text x="91.694" y="-532.638" size="1.27" layer="97" align="top-left">rated 70V</text>
 <text x="146.304" y="-542.036" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>

@@ -16,7 +16,7 @@ Technically this device will accept up to 28V, and theoretically it is more powe
 
 ## Powering by USB-PD
 
-Only USB-C chargers delivering 100W or more will work with Hot-Wand-Lite. If you want a cheaper way of using the maximum power output, consider using the XT-30 connector along with a dedicated DC power supply capable of 20V and 5A, or more. A 65W USB-C charger might work if you configure for 15V mode.
+Only USB-C chargers delivering 100W or more will work with Hot-Wand-Lite. If you want a cheaper way of using the maximum power output, consider using the XT30 connector along with a dedicated DC power supply capable of 20V and 5A, or more. A 65W USB-C charger might work if you configure for 15V mode.
 
 The voltage and current requested from a USB-PD host can be configured using jumper shunt blocks. The voltage requested is 15V by default without the jumper, and 20V when the jumper is installed.
 

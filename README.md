@@ -8,7 +8,7 @@ This is nearly a clone of [SergeyMax's design](https://github.com/SergeyMax/Sold
 
  * redrawn schematic for clarity
  * layout to fit in a Hammond MFG enclosure
- * removed AC power input, uses DC inputs (battery XT-30 connector) or USB-PD (with negotiation for 28V)
+ * removed AC power input, uses DC inputs (battery XT30 connector) or USB-PD (with negotiation for 28V)
  * uses a 128x32 OLED display
  * options for low power mode, automatic sleep
  * uses a STM32F042F6P6 microcontroller (more flash memory)
@@ -26,7 +26,7 @@ I implemented a rather fancy GUI, fancier than what is available on a Metcal sol
  * various fault detection
  * easter eggs! try and find them
 
-The XT-30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
+The XT30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
 The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (hopefully 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. If the current required is more than the current available from the USB-PD host, the user can select one of the lower power modes to avoid unexpected shutdown.
 
@@ -43,7 +43,7 @@ While this is a DIY project and not a commercial product, it is a difficult proj
 In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz handpieces. This is the inexpensive version. It is a clone of the [Radio Thermal](https://radiothermal.com/), but with modifications
 
  * layout to fit in a Hammond MFG enclosure
- * uses battery XT-30 connector or USB-PD for input
+ * uses battery XT30 connector or USB-PD for input
  * uses a Seeed Studio XIAO SAMD21 microcontroller
  * user selectable power levels via externally pluggable jumpers
  * internal glass fuse
