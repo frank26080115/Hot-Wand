@@ -17132,7 +17132,7 @@ practically should keep it 6S</text>
 <text x="91.694" y="-532.638" size="1.27" layer="97" align="top-left">rated 70V</text>
 <text x="146.304" y="-542.036" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>
 <text x="138.176" y="-494.538" size="1.016" layer="97">50V each</text>
-<text x="138.176" y="-481.838" size="1.016" layer="97">inrush ~0.5A/30ms</text>
+<text x="138.176" y="-481.838" size="1.016" layer="97">inrush ~1A/30ms</text>
 <text x="149.86" y="-508" size="1.27" layer="97">OV cutoff: 38.8 V nominal, 37.0 V to 40.8 V worst-case</text>
 <text x="165.1" y="-541.02" size="1.27" layer="97">this protects the AP53781
 from high battery voltage</text>

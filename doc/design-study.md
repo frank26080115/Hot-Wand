@@ -223,10 +223,6 @@ That leaves the XT30 connector to worry about, but I don't want to use an NTC in
 
 There is an ideal-diode implementation in the way of the inrush, but the body diode of the MOSFET there will still conduct, so it's not helpful in blocking inrush. It will see a large pulse but expected to survive. I've selected some seriously overkill MOSFETs already.
 
-Another idea that was explored: using the ideal-diode controller to block the inrush by giving it a back-to-back MOSFET instead of a single MOSFET. This was studied and determined to be not feasible, the problem being that the incoming voltage will blow up the second MOSFET's `V_GS`. Texas Instruments explicitly says the LM74700 does not support this because its off action is to connect GATE to ANODE; that only guarantees `V_GS=0` for the input-side MOSFET.
+Another idea that was explored: using the `LM74700` ideal-diode controller to block the inrush by giving it a back-to-back MOSFET instead of a single MOSFET. This was studied and determined to be not feasible, the problem being that the incoming voltage will blow up the second MOSFET's `V_GS`. Texas Instruments explicitly says the `LM74700` does not support this because its off action is to connect GATE to ANODE; that only guarantees `V_GS=0` for the input-side MOSFET.
 
-So the real solution might be to use a Texas Instruments `LM7481`. These are basically ideal-diode controllers for back-to-back NFETs. Noting that this is the ideal solution... **I didn't implement this** for project logistics and scope reasons. It's a big expensive change very late in the project for very little actual benefit when accounting for expected usage.
-
-The napkin math thankfully still says the glass fuse can handle the impulse without melting.
-
-Realistically, the solution is to just live with the spark. For the units I am giving to my friends, I will include a few sacrificial battery pigtail extenders, one for XT30-to-XT30, one for barrel jack, one for XT60. For desktop usage, simply plug in the XT30 before actually applying AC power, or just use USB-PD as intended.
+So the real solution is to use a Texas Instruments `LM74810`. These are basically ideal-diode controllers for back-to-back NFETs. I implemented the inrush limiting feature according to the recommendation in the datasheet, it involves a resistor and capacitor on the HGATE signal.
