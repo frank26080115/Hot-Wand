@@ -22748,7 +22748,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="VR2" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V3" value="1K">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="TC33X-1-102E"/>
+<attribute name="PARTNUM" value="TC33X-2-102E"/>
 </part>
 <part name="C58" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3">
 <attribute name="JLCPARTNUM" value="C1613"/>
@@ -22784,7 +22784,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="VR4" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="4K7">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="TC33X-1-472E"/>
+<attribute name="PARTNUM" value="TC33X-2-472E"/>
 </part>
 <part name="SJ2" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
@@ -22844,7 +22844,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </part>
 <part name="VR3" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V3" value="1K">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="TC33X-1-102E"/>
+<attribute name="PARTNUM" value="TC33X-2-102E"/>
 </part>
 <part name="R32" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>

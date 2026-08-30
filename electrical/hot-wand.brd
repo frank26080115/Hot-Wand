@@ -2363,7 +2363,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLC-DNP" value="1" x="48.8" y="56.7" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="VR2" library="hot-wand" package="TRIM_35WR1KLFTR_V3" value="1K" x="67.1" y="23.5" smashed="yes">
-<attribute name="PARTNUM" value="TC33X-1-102E" x="67.1" y="23.5" size="1.778" layer="27" display="off"/>
+<attribute name="PARTNUM" value="TC33X-2-102E" x="67.1" y="23.5" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="69.15" y="21.65" size="0.8128" layer="25" font="vector" rot="R180"/>
 <attribute name="VALUE" x="66.85" y="20.65" size="0.8128" layer="27" font="vector" align="top-left"/>
 <attribute name="JLC-DNP" value="1" x="67.1" y="23.5" size="1.778" layer="27" display="off"/>
@@ -2415,7 +2415,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLC-DNP" value="1" x="36.6" y="21.6" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="VR4" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="4K7" x="109.1" y="8.5" smashed="yes" rot="R90">
-<attribute name="PARTNUM" value="TC33X-1-472E" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="TC33X-2-472E" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="108.05" y="11.45" size="0.8128" layer="25"/>
 <attribute name="JLC-DNP" value="1" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
@@ -2493,7 +2493,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="0.657" y="32.484" size="0.8128" layer="28" font="vector" rot="MR90"/>
 </element>
 <element name="VR3" library="hot-wand" package="TRIM_35WR1KLFTR_V3" value="1K" x="67.1" y="27.4" smashed="yes">
-<attribute name="PARTNUM" value="TC33X-1-102E" x="67.1" y="27.4" size="0.8128" layer="27" display="off"/>
+<attribute name="PARTNUM" value="TC33X-2-102E" x="67.1" y="27.4" size="0.8128" layer="27" display="off"/>
 <attribute name="NAME" x="66.75" y="29.15" size="0.8128" layer="25"/>
 <attribute name="VALUE" x="68.75" y="30.25" size="0.8128" layer="27" rot="R180" align="top-left"/>
 <attribute name="JLC-DNP" value="1" x="67.1" y="27.4" size="1.778" layer="27" display="off"/>

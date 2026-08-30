@@ -1,6 +1,6 @@
 # Shopping List for Hot Wand (13.56 MHz version)
 
-This is a practical shopping list for building **one** Hot Wand (13.56 MHz version). It supplements the fabrication files and the JLCPCB-assembled board; it is deliberately not a second BOM. Parts marked `JLC-DNP=2` in the schematic are not listed here because that value only records a temporary JLCPCB stock problem. Unvalued footprints marked `DNP`, solder jumpers, and PCB artwork are not purchases either.
+This is a practical shopping list for building **one** Hot Wand (13.56 MHz version). It supplements the fabrication files and the JLCPCB-assembled board; it is deliberately not a second BOM. Parts marked `JLC-DNP=2` in the schematic are not listed here because that value only records a temporary JLCPCB stock problem.
 
 Exact manufacturer part numbers matter unless an entry explicitly permits a substitute. Quantities below are the installed quantities for one unit. Distributor stock changes, so a Digi-Key search link is used where a durable exact-product link is unavailable.
 
@@ -20,7 +20,7 @@ Quantity: **three Vishay SiS862ADN-T1-GE3 MOSFETs**. Install them at Q4, Q5, and
 
 ### Dual input-switch MOSFET
 
-Quantity: **one Diodes Incorporated DMTH64M2LPDWQ-13**. Install it at Q6 in the USB-PD/input switching path. This is a dual MOSFET in the specified PowerDI5060-8 package, not two interchangeable discrete transistors. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=DMTH64M2LPDWQ-13).
+Quantity: **one Diodes Incorporated DMTH64M2LPDWQ-13**. Install it at Q6 in the USB-PD/input switching path. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=DMTH64M2LPDWQ-13).
 
 ### Main RF MOSFET
 
@@ -92,11 +92,11 @@ Quantity: **one Bourns TC33X-2-103E**. Install it at VR1 for the adjustment assi
 
 ### 1 kΩ trimmers
 
-Quantity: **two Bourns TC33X-1-102E**. Install them at VR2 and VR3 for calibration of the two sensing channels. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/bourns-inc/TC33X-1-102E/19202858).
+Quantity: **two Bourns TC33X-2-102E**. Install them at VR2 and VR3 for calibration of the two sensing channels. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-102E).
 
 ### 4.7 kΩ trimmer
 
-Quantity: **one Bourns TC33X-1-472E**. Install it at VR4 for its schematic adjustment. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/bourns-inc/TC33X-1-472E/6163992).
+Quantity: **one Bourns TC33X-2-472E**. Install it at VR4 for its schematic adjustment. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-472E).
 
 ### Power-MOSFET thermistors
 
