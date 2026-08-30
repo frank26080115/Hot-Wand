@@ -2613,8 +2613,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="R53" library="hot-wand" package="0603-RES" value="82K" x="16.8" y="59.3" smashed="yes" rot="MR0">
 <attribute name="JLCPARTNUM" value="C23254" x="16.8" y="59.3" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="NAME" x="17.789" y="60.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
-<attribute name="VALUE" x="17.816" y="61.057" size="0.8128" layer="28" font="vector" rot="MR0"/>
+<attribute name="NAME" x="18.289" y="60.162" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="18.316" y="61.157" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="R56" library="hot-wand" package="0805" value="100Ω" x="21.5" y="56" smashed="yes" rot="MR180">
 <attribute name="JLCPARTNUM" value="C441975" x="21.5" y="56" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -4449,13 +4449,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="22" y="67.115546875"/>
 <vertex x="22" y="68.8"/>
 </polygon>
-<via x="15.4" y="65.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="16.6" y="65.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="17.2" y="65.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="17.8" y="65.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="18.4" y="65.7" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="F1" pad="2"/>
-<via x="13.9" y="64.6" extent="1-16" drill="2" diameter="4" shape="square" alwaysstop="yes"/>
+<via x="13.8" y="63.5" extent="1-16" drill="2" diameter="4" shape="square" alwaysstop="yes"/>
 <contactref element="Q7" pad="7"/>
 <contactref element="Q7" pad="5"/>
 <contactref element="Q7" pad="9"/>
