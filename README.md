@@ -28,7 +28,7 @@ I implemented a rather fancy GUI, fancier than what is available on a Metcal sol
 
 The XT30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
-The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (hopefully 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. If the current required is more than the current available from the USB-PD host, the user can select one of the lower power modes to avoid unexpected shutdown.
+The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (capable of 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. If the current required is more than the current available from the USB-PD host, the user can select one of the lower power modes to avoid unexpected shutdown.
 
 The RF power output is through a F-type connector, so it is compatible with most 13.56 MHz handpieces, such as Metcal, Thermaltronics, Hakko.
 
@@ -65,6 +65,8 @@ The RF soldering iron's station unit does not feature a temperature setting or e
 I've always liked the Metcal MX-5200 I have access to at work. I'm also a robot combat competitor, both in insect weight classes and also a part of a heavyweight battlebots team. Thus, I travel with my tools a lot, sometimes even flying to NHRL from California. And while I like my [iFixit soldering iron](https://eleccelerator.com/review-ifixit-soldering-iron/) for it's portability, I thought it'd be cool to have a portable RF soldering iron.
 
 While I designed this project, the cost started to balloon. At one point it was decided to drop the pretense that DIY is cheaper, and instead, build something I would rather own even more than the actual (gigantic) MX-5200.
+
+I also wanted to document this project in a way that makes it way more friendly for a DIY builder to actually build.
 
 ## Design Study
 
