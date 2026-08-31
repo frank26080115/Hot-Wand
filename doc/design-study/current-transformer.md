@@ -4,7 +4,7 @@ At a simple first glance, I assumed that this was some sort of stability or prot
 
 SergeyMax’s own blog post didn’t really give a clear answer, and other people building his design were also studying it. This forum thread is a goldmine https://www.eevblog.com/forum/projects/i-built-the-diy-metcal-compatible-soldering-station/
 
-![](../imgs/sergeymax_currenttransformer.png)
+![](./imgs/sergeymax_currenttransformer.png)
 
 TLDR: This is a power factor meter. As the temperature of the iron tip changes, the complex load changes, shifting the phase relationship between RF voltage and current. The tip doesn't need or want more power when it is already hot, and the power factor will change. This current transformer circuit is able to sense this by detecting the phase difference between voltage and current, and then it tells the buck converter to lower its output voltage when the tip doesn't want more power. (technically it also tells the buck converter to raise the voltage when it is cold)
 
@@ -49,15 +49,15 @@ later
 
 I read what he said, and it was difficult to get a nice graphic out of a simulator to represent it, so I came up with this theoretical signal animation instead:
 
-![](../imgs/current_transformer_plots/animation.apng)
+![](./imgs/current_transformer_plots/animation.apng)
 
-![](../imgs/current_transformer_plots/tiled_3x3.png)
+![](./imgs/current_transformer_plots/tiled_3x3.png)
 
-If you wish to see the individual frames, [click here for all the frame files](../imgs/current_transformer_plots/)
+If you wish to see the individual frames, [click here for all the frame files](./imgs/current_transformer_plots/)
 
 For the three examples of tip temperature states and their resulting waveform:
 
-![](../imgs/current_transformer_plots/three_states.png)
+![](./imgs/current_transformer_plots/three_states.png)
 
 The numbers used in this model are in this document at the bottom.
 
@@ -87,7 +87,7 @@ Also, it's hard to get the directions wrong, because the directions for the curr
 
 ## Screenshot From SergeyMax's Follow-up Video
 
-![](../imgs/sergeymax_currenttransformer_ss.png)
+![](./imgs/sergeymax_currenttransformer_ss.png)
 
 He did say that if you screw this up, it could make the circuit do the opposite, which is boosting the voltage when it should be lowering it. I have spent a ton of time making sure I did not make this mistake.
 

@@ -4,7 +4,7 @@ The microcontroller is a STM32F042. On the circuit board, there is a 6 pin debug
 
 The assembly specifies that a 6 pin female header is installed to the bottom of the PCB at this location. This allows the debug port to be accessed even when the Hot-Wand device is fully enclosed. This means it is easier to use male-to-female dupont jumper wires to make the connection between the debugger and our circuit board.
 
-![](../imgs/stlink_flashing.png)
+![](./imgs/stlink_flashing.png)
 
 The firmware file is available as a `*.hex` file to download and flash directly.
 

@@ -25,11 +25,11 @@ In SergeyMax's design, there are the major sections:
  * linear regulators for the microcontroller
  * microcontroller and LCD screen
 
-[![SergeyMax schematic](../imgs/sergeymax_schematic.png)](https://habrastorage.org/webt/re/41/zc/re41zcn7fyp0lb9axbbr8i0vbn0.png)
+[![SergeyMax schematic](./imgs/sergeymax_schematic.png)](https://habrastorage.org/webt/re/41/zc/re41zcn7fyp0lb9axbbr8i0vbn0.png)
 
 SergeyMax's schematic is a bit hard to decode as it is drawn to fit everything onto one sheet of paper and also does not use net flags. Drawing it out again into logical blocks help.
 
-[![Hot Wand schematic preview](../imgs/sch_preview_thumb.jpg)](../../electrical/hot-wand.sch_preview.pdf)
+[![Hot Wand schematic preview](./imgs/sch_preview_thumb.jpg)](../../electrical/hot-wand.sch_preview.pdf)
 
 ### Input Power
 
@@ -44,7 +44,7 @@ For my own design, I really wanted to have adjustable power levels. The best way
 The feedback from the current transformer is kind of a power saving feature for added efficiency. It is a power factor detector that tells the buck converter to chill out if the iron tip is already hot. I have a [page written about it here](current-transformer.md).
 
 <a href="current-transformer.md">
-  <img src="../imgs/current_transformer_plots/animation.apng"
+  <img src="./imgs/current_transformer_plots/animation.apng"
        alt="Current-transformer phase detector animation"
        width="360">
 </a>
@@ -61,7 +61,7 @@ The dilemma is that, the RF amplifier needs a big beefy MOSFET that can survive 
 
 This simulation below is representing an ordinary push-pull driver at 12V, driving into a 800 pF capacitor pretending to be a MOSFET gate:
 
-![](../imgs/gate_amp_without.png)
+![](./imgs/gate_amp_without.png)
 
 At 13.56 MHz, this becomes upwards of 4W of heat being wasted, by very small parts.
 
@@ -79,15 +79,15 @@ There is an inductor in the design to tune the resonance of this circuit. The in
 
 You might want to start off with 15 mm wide and then compress it until it is tuned, because it is harder to stretch it when it is on a PCB.
 
-![](../imgs/metcal_aircore_inductor.png)
+![](./imgs/metcal_aircore_inductor.png)
 
 I plugged this into a simulator and was able to play with the inductance until the current consumption dropped to 100mA at 12V. 1.2W vs 4W, and moving the heat away from the small parts. Not bad.
 
-![](../imgs/gate_amp_tune_1.png)
+![](./imgs/gate_amp_tune_1.png)
 
 If you go overboard with stretching the coil then you end up with an output waveform either not low enough or not high enough. The wave form must at least reach 0V or else the next MOSFET won't actually ever turn off, which would essentially cause a short circuit event.
 
-![](../imgs/gate_amp_tune_2.png)
+![](./imgs/gate_amp_tune_2.png)
 
 The MOSFET STP19NF20 datasheet says it has a C_iss of 800 pF. The calculation for this L becomes `L = 1 / ((2 * pi * 13.56e6) ^ 2 * 800e-12)` which is `= 172 nH`. The schematic rounded this as 180 nH. The reactance from L8 nearly cancels out the reactance of the Q1 gate
 

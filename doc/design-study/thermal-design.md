@@ -1,12 +1,12 @@
 When the project started, it didn't look like SergeyMax focused on thermal very much. The box is plain looking without vent holes and the MOSFETs only have very small heatsinks.
 
-![](../imgs/sergeymax_thermal_first.png)
+![](./imgs/sergeymax_thermal_first.png)
 
 Here's a fun question to hold in your head: Why are the actual Metcal or Thermaltronics stations so gigantic when SergeyMax's unit look so small? The differences are huge.
 
 The builder over at EEVblog named `rfmerrill` has a photo of his own build and he stuck the MOSFETs against the enclosure wall with some thermal pads in between.
 
-![](../imgs/rfmerrill_heatsink.jpg)
+![](./imgs/rfmerrill_heatsink.jpg)
 
 `rfmerrill` did mention that:
 
@@ -18,8 +18,8 @@ also
 
 Years later, SergeyMax released a follow-up video. In it, his own unit has operated for a few years but he added a gigantic heatsink and a small cooling fan to it
 
-![](../imgs/sergeymax_update_heatsink.png)
-![](../imgs/sergeymax_update_fan.png)
+![](./imgs/sergeymax_update_heatsink.png)
+![](./imgs/sergeymax_update_fan.png)
 
 This prompted me to update my design. I will put a Noctua NF-A4x10 fan inside mine. I use these fans in many places, such as on my 3D printer and a they also cool my archival external hard-drives. They are quiet and last for years.
 
@@ -27,19 +27,19 @@ The plan is to mount it inside the enclosure on the side, on the wall where the 
 
 The MOSFETs will be mounted against a large square heatsink. The legs will have to be bent a lot for the back of the TO-220 to reach the heatsink. The heatsink is also attached to the outside of the aluminum enclosure. The assembly of this arrangement should be straight forward.
 
-![](../imgs/thermal_3d_1.png)
+![](./imgs/thermal_3d_1.png)
 
 It's hidden but there is an air exit at the foot of the MOSFETs. There is a 3D printed air-duct that will redirect exiting airflow up through the heatsink fins.
 
-![](../imgs/thermal_3d_duct_cross.png)
+![](./imgs/thermal_3d_duct_cross.png)
 
 To encourage the airflow through this exit, all other air escape gaps not useful for cooling are covered by 3D printed features.
 
-![](../imgs/thermal_3d_air_gaps_covered.png)
+![](./imgs/thermal_3d_air_gaps_covered.png)
 
 To further prevent debris from entering the enclosure, a louvered air intake grille is 3D printed, with slats facing downwards.
 
-![](../imgs/louvered_intake_grille.png)
+![](./imgs/louvered_intake_grille.png)
 
 Back to the question I posed at the start: The Metcal stations are meant for 24/7 non-stop factory operations over decades, it wants to have no moving parts, no possible dust or liquid ingress, so it's a gigantic chunk of aluminum. They remind me of those industrial computers that are also chunks of aluminum with no fans.
 
@@ -109,7 +109,7 @@ Outlets for inductor cooling: 2x or 4x or 6x 4mm diameter holes, oriface area ra
 
 Useless outlets: 25mm x 5mm and 20mm x 5mm, 225mm^2 total
 
-![](../imgs/airflow_pie_chart.png)
+![](./imgs/airflow_pie_chart.png)
 
 Generated using `doc\tools\airflow_pie_chart.py`
 

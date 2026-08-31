@@ -37,9 +37,9 @@ The output logic is active-low:
 | Tip connected    | Off       | High: tip present |
 | Tip disconnected | Saturated | Low: tip absent   |
 
-![](../imgs/tip_det_sim_connected.png)
+![](./imgs/tip_det_sim_connected.png)
 
-![](../imgs/tip_det_sim_disconnected.png)
+![](./imgs/tip_det_sim_disconnected.png)
 
 ## DC Operation
 

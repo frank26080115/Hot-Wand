@@ -37,7 +37,7 @@ R40_OHMS = 100.0
 C75_FARADS = 1.0e-6
 
 PHASE_STEP_DEGREES = 15
-OUTPUT_DIRECTORY = Path(__file__).resolve().parent / "current_transformer_plots"
+OUTPUT_DIRECTORY = Path(__file__).resolve().parent.parent / "design-study" / "imgs" / "current_transformer_plots"
 OUTPUT_DPI = 150
 ANIMATION_FRAME_DURATION_MS = 150
 ANIMATION_FILENAME = "animation.apng"

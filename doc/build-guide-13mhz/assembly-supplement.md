@@ -15,7 +15,7 @@ Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a so
 
 During assembly, it is recommended that you test the power supplies as they are added. Using a multimeter, these are the points that are convenient to test each important voltage node.
 
-[![](../imgs/voltage_measurement_nodes_200.png)](../imgs/voltage_measurement_nodes_800.png)
+[![](./imgs/voltage_measurement_nodes_200.png)](./imgs/voltage_measurement_nodes_800.png)
 
 ## PCB Cooling Fins near Buck Converter
 
@@ -25,7 +25,7 @@ Using 0.5mm thick copper sheets, cut strips that are about 5mm tall, and then cu
 
 ## Fan Solder Jumper Selection
 
-![](../imgs/fan_sj_config.png)
+![](./imgs/fan_sj_config.png)
 
 For fans with only two wires, simply connect it such that the positive wire is connected to where it says `FAN+`, and the positive wire is connected to where it says `FAN-`. Then, use solder to bridge SJ4-B.
 

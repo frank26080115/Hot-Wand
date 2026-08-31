@@ -10,7 +10,7 @@ For all the other required parts, [see the shopping document (click here)](shopp
 
 ## 1. Input Power
 
-![](../imgs/soldering_1.jpg)
+![](./imgs/soldering_1.jpg)
 
 Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a soldering iron (not hot air). For each of the three MOSFETs, [follow these steps (click here for document)](./assembly-supplement.md#power-input-mosfets)
 
@@ -28,7 +28,7 @@ During the USB-C tests, the shunt jumpers should have been installed to JP5
 
 (OPTIONAL) Populate LEDs. If you choose to do this, it might be nice to use different colours for each one.
 
-![](../imgs/soldering_2.jpg)
+![](./imgs/soldering_2.jpg)
 
 Make sure the components with polarity are installed correctly. The capacitors have a negative lead that is marked with a `-` symbol and a strip on the side.
 
@@ -40,7 +40,7 @@ Populate all through hole capacitors
 
 ## 2. Power Supplies
 
-![](../imgs/soldering_3.jpg)
+![](./imgs/soldering_3.jpg)
 
 Populate the 12V buck converter. Populate the 3.3V buck converter (or voltage regulator).
 
@@ -64,33 +64,33 @@ Do not make the fins block the area where the brass standoff and screw is suppos
 
 Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
 
-![](../imgs/standoffs_3d.png)
+![](./imgs/standoffs_3d.png)
 
 ## 4. Controls and Firmware Bring-Up
 
 Populate the tactile button, OLED screen, and the coax connector. The OLED screen needs a right angled header (4 pins).
 
-![](../imgs/oled_prep.png)
+![](./imgs/oled_prep.png)
 
 Populate the fan connector
 
 Populate the debug header. It is a 6 pin female header with 0.1 inch pin pitch on the bottom of the circuit board.
 
-![](../imgs/soldering_4.jpg)
+![](./imgs/soldering_4.jpg)
 
-![](../imgs/soldering_4_3d.png)
+![](./imgs/soldering_4_3d.png)
 
 Ensure **SJ1** is bridged (ie. shorted) by solder.
 
 At this point in the build process, you need to [flash the firmware to the microcontroller (click here for instructions)](firmware-flashing.md)
 
-![](../imgs/stlink_flashing.png)
+![](./imgs/stlink_flashing.png)
 
 (DEVELOPMENT ONLY) Test firmware as much as possible, go through all bring-up tests
 
 Configure the fan solder jumpers (SJ3, SJ4, SJ5), these are on the bottom of the PCB. Do this after firmware flashing. [More details, click here](./assembly-supplement.md#fan-solder-jumper-selection)
 
-![](../imgs/fan_sj_config.png)
+![](./imgs/fan_sj_config.png)
 
 ## 5. Custom Inductors
 
@@ -99,6 +99,8 @@ Wind custom inductors ([click here for detailed instructions](custom-inductors.m
 (DEVELOPMENT ONLY) measure custom wound inductor for inductance
 
 Populate all custom wound inductors and transformer.
+
+![](imgs/soldering_5.jpg)
 
 (DEVELOPMENT ONLY) Sanity check buck converter voltage isn't affected by power factor detector circuit
 
@@ -118,7 +120,7 @@ Short **SJ6** and **SJ7** and **SJ8** with solder.
 
 3D print: face plate, air intake grille, air exhaust duct, internal air blocker
 
-![](../imgs/3d_printed_parts_dictionary.png)
+![](./imgs/3d_printed_parts_dictionary.png)
 
 3D printing material is PETG, or really anything that is more temperature resistant than PLA. Do not use PLA.
 
@@ -128,15 +130,15 @@ The internal air blocker may need some additional tweaking with a knife and file
 
 3D print all drilling and cutting templates. These are to be printed using PLA.
 
-![](../imgs/drill_cut_templates_cad.png)
+![](./imgs/drill_cut_templates_cad.png)
 
-![](../imgs/heatsink_drill_template.png)
+![](./imgs/heatsink_drill_template.png)
 
 ## 8. Enclosure Preparation
 
-![](../imgs/enclosure_openings_1.png)
+![](./imgs/enclosure_openings_1.png)
 
-![](../imgs/enclosure_openings_2.png)
+![](./imgs/enclosure_openings_2.png)
 
 Drill and cut enclosure box and lid. Use the cutting and drilling templates to help. Thread tap enclosure box where needed. Please refer to diagram.
 
@@ -144,11 +146,11 @@ Drill and cut enclosure box and lid. Use the cutting and drilling templates to h
 
 (note: the template is designed to be used with a drill press, the surface angles of the template are made so that holes being drilled are perpendicular to the box's tapered walls)
 
-![](../imgs/enclosure_drills_1.png)
+![](./imgs/enclosure_drills_1.png)
 
-![](../imgs/enclosure_drills_2.png)
+![](./imgs/enclosure_drills_2.png)
 
-![](../imgs/enclosure_drills_3.png)
+![](./imgs/enclosure_drills_3.png)
 
 Perform an inspection of 3D printed parts and make sure they fit on the enclosure, such that the cutouts are the right size and in the right positions. Additional cutting, grinding, and/or filing, maybe required to make adjustments. Ensure the face plate lines up, and the tactile button, OLED screen, and coaxial connector all line up when the box is dropped over the circuit board when the circuit board is attached to the bottom box lid.
 
@@ -172,21 +174,21 @@ Fasten the MOSFET to the heatsink using a #4-40 x 3/8 inch long screw through th
 
 DO NOT FORGET THE NYLON SHOULDER WASHERS! Or else you blow up your circuit as you short circuit the drain tab to ground.
 
-![](../imgs/mosfets_screws_isolated.png)
+![](./imgs/mosfets_screws_isolated.png)
 
 Before tightening completely, make sure the MOSFET legs are aligned with their perspective footprints on the circuit board. Tighten the screw completely after alignment is ensured.
 
 Cut off the excess silicone thermal pad with an Xacto knife.
 
-![](../imgs/cut_thermal_pad.png)
+![](./imgs/cut_thermal_pad.png)
 
 Check to make sure heatsink is not causing continuity problems. The drain tab of each MOSFET must not be conductive with the heatsink, nor with each other.
 
 Bend the MOSFET legs, refer to the diagram. The goal is so that the heatsink can mate with the box's face once the box is dropped down on the circuit board.
 
-![](../imgs/to220_bent_3d.png)
+![](./imgs/to220_bent_3d.png)
 
-![](../imgs/mosfets_screws_in_context_2.png)
+![](./imgs/mosfets_screws_in_context_2.png)
 
 Solder MOSFETs to PCB, continue to adjust the angle of the MOSFET's legs as needed.
 
@@ -206,7 +208,7 @@ At this point, you may apply conformal coating over the circuit board if you wis
 
 Fasten PCB to bottom lid, using the brass standoffs installed previously and M2.5 x 4mm screws.
 
-![](../imgs/bottom_lid_screws_3d.png)
+![](./imgs/bottom_lid_screws_3d.png)
 
 Assemble cooling fan and the air intake grille to the box. See diagram for details.
 
@@ -222,21 +224,21 @@ Drop the box over the whole assembly
 
 Secure the heatsink with #4-40 screws and M3 washers
 
-![](../imgs/heatsink_box_screws_3d.png)
+![](./imgs/heatsink_box_screws_3d.png)
 
 Clean up thermal paste that got squished out
 
 Fasten on the air exhaust duct, using #4-40 screws
 
-![](../imgs/exhaust_screws_3d.png)
+![](./imgs/exhaust_screws_3d.png)
 
 Fasten on the face plate, using #4-40 screws
 
-![](../imgs/faceplate_screws_3d.png)
+![](./imgs/faceplate_screws_3d.png)
 
 Using the screws that came with the purchase of the enclosure, screw the lid to the box.
 
-![](../imgs/screw_in_bottom.png)
+![](./imgs/screw_in_bottom.png)
 
 Stick on some rubber feet to the bottom of the enclosure.
 
