@@ -68,7 +68,9 @@ Quantity: **one Würth Elektronik 744750460220, 22 uH inductor**. Install it at 
 
 ### Axial 22 uH inductor
 
-Quantity: **one Bourns 5300-17-RC**. Install it at L9. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/bourns-inc/5300-17-RC/3193284).
+Quantity: **one Abracon AIAP-01-220K-T**. Install it at L9. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/abracon-llc/AIAP-01-220K-T/3059827).
+
+Alternative: Bourns 5300-17-RC
 
 ### F-type handpiece connector
 
