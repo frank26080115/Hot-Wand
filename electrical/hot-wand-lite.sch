@@ -17154,8 +17154,6 @@ if 1 core
 for measurement</text>
 <text x="199.644" y="-621.284" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V
 (26K eqv)</text>
-<text x="185.42" y="-312.42" size="1.27" layer="97" rot="R90">mess with these resistors
-if LEDs are too dim</text>
 <text x="102.87" y="-252.476" size="1.6764" layer="96">0.25W</text>
 <text x="35.56" y="-469.646" size="1.016" layer="97">theoretically handles 8S
 practically should keep it 6S</text>
