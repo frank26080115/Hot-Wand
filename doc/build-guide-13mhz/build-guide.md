@@ -70,6 +70,8 @@ Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of t
 
 Populate the tactile button, OLED screen, and the coax connector. The OLED screen needs a right angled header (4 pins).
 
+![](../imgs/oled_prep.png)
+
 Populate the fan connector
 
 Populate the debug header. It is a 6 pin female header with 0.1 inch pin pitch on the bottom of the circuit board.

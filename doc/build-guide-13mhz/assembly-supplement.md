@@ -47,7 +47,7 @@ SJ7 is an additional short-to-ground for when SJ6 is not being used for current 
 
 R11 and VR4 are used to set the sensitivity of the current transformer power factor detector. If you need VR4 for tuning, then hort out SJ2, and maybe remove R11 depending on if you want it in parallel or not.
 
-SJ5 is a measurement resistor for the 12V bus. It is used when tuning L8 (the custom coreless inductor). During normal builds, short out SJ5 with solder.
+SJ8 is a measurement resistor for the 12V bus. It is used when tuning L8 (the custom coreless inductor). During normal builds, short out SJ8 with solder.
 
 VR2 and VR3 are used to tune the sensitivity of the tip-detector. VR2 with R19 (and sometimes R20) sets the constant DC bias into Q3's base. VR3 and R22 sets the sensitivity to AC for Q3's base. The resistors can be exchanged for other values when the final resistance is determined, and the potentiometers can be bypassed with a solder jump.
 
@@ -69,9 +69,9 @@ You can obviously just bridge the fuse holder footprint and not use a fuse. Do t
 
 ### Power Input Ideal Diode
 
-The ideal-diode for the XT30 connector input can simply be skipped, by soldering over the MOSFET's footprint. This will cause that input to not be protected against power from USB back-flowing into it. The purpose of the ideal-diode is so that a battery will not explode if the battery and USB are both connected at the same time. If you skip the ideal-diode, you lose this protection.
+Everything around U6, Q4, and Q5, these are an ideal-diode implementation with inrush limiting. They prevent a battery from exploding if a battery and USB are simultaneously plugged in. They also prevent inrush current from causing a fuse to blow. You can decide to skip these two protections, and maybe also add a NTC inrush limiter.
 
-You can also put a large schottky diode over the MOSFET footprint and keep the protection at the cost of some power efficiency loss.
+Q7 is used to protect the AP53781 from battery voltage that is potentially too high. Skip and short this out if you wish. Or substitute with an appropriate schottky diode.
 
 ### 3.3V Regulator
 

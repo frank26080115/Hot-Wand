@@ -70,13 +70,17 @@ Using a multimeter, ensure that the MOSFET's drain tab is not continuous with th
 
 WARNING: do NOT forget the thermal pad or the shoulder washer, as without them you can cause a catastrophic high energy short circuit to ground when the circuit is powered up.
 
-## 6. Mounting Hardware and Enclosure Modification
+## 6. Solder Jumpers
+
+SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground return current. For normal use, these all need to be bridged (ie shorted-out) with solder.
+
+## 7. Mounting Hardware
 
 Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
 
 ![](imgs/standoffs_3d.png)
 
-## 7. Printed Parts and Templates
+## 8. Printed Parts and Templates
 
 3D print: air intake grille
 
@@ -92,7 +96,7 @@ Everything can be 3D printed using a 0.4mm or 0.6mm nozzle. Everything is design
 
 (note: the cut template for the bottom lid may be using a design with more holes meant for the 13.56 MHz version, skip drilling those holes)
 
-## 8. Enclosure Modification
+## 9. Enclosure Modification
 
 ![](./imgs/enclosure_opening_labels.png)
 
@@ -114,7 +118,7 @@ Perform an inspection of 3D printed parts and make sure they fit on the enclosur
 
 Clean all metal shavings, debur all drilled and cut edges, dull all sharp edges.
 
-## 9. Final Assembly and Testing
+## 10. Final Assembly and Testing
 
 **Perform a final review of all soldering, including test points, test resistors, solder jumpers.**
 

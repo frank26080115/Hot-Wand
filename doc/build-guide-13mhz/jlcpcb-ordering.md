@@ -19,7 +19,7 @@ See the `electrical/mfg` directory for the files
 
 Sometimes, JLCPCB's parser misses the part number indicated and claims to not be able to find a part, in these cases, open the BOM file and find the part number, paste it into the search box manually.
 
-The part numbers chosen within the BOM are selected to have the highest availability, but sometimes a part can still be out-of-stock. Handle this situation however you need to.
+The part numbers chosen within the BOM are selected to have the highest availability, but sometimes a part can still be out-of-stock. Handle this situation however you need to. If you choose to skip those components, make sure you remember which ones were skipped and purchase them from another distributor.
 
 The rotations in the component placement file should be correct for the provided BOM, but you should be careful and double check against JLCPCB's placement preview.
 
