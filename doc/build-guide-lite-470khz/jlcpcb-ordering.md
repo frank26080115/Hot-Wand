@@ -14,3 +14,9 @@ Select Economic PCBA and bottom-side assembly only. The top-side and omitted par
 ## Gerber, BOM, CPL
 
 See the `electrical/mfg-lite` directory
+
+Sometimes, JLCPCB's parser misses the part number indicated and claims to not be able to find a part, in these cases, open the BOM file and find the part number, paste it into the search box manually.
+
+The part numbers chosen within the BOM are selected to have the highest availability, but sometimes a part can still be out-of-stock. Handle this situation however you need to.
+
+The rotations in the component placement file should be correct for the provided BOM, but you should be careful and double check against JLCPCB's placement preview.

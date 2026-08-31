@@ -44,7 +44,7 @@ Quantity: **one six-pin segment cut from a 1-by-40, 2.54 mm right-angle male bre
 
 ### USB-PD selection shunts
 
-Quantity: **two installed; buy one bulk bag of generic 2.54 mm jumper shunts**. Fit two shunts to JP5 to make the independent USB-PD selections. These are generic jumper blocks, so there is no reason to buy them individually; search for [bulk 2.54 mm jumper caps on Amazon](https://www.amazon.com/s?k=2.54mm+jumper+caps+100+pack).
+Quantity: **two installed; buy one bulk bag of generic 2.54 mm jumper shunts**. Fit two shunts to JP5 to make the independent USB-PD selections. Prefer the taller style with a finger tab or handle because it is much easier to move in the completed unit; search for [bulk 2.54 mm pull-tab jumper caps on Amazon](https://www.amazon.com/s?k=2.54mm+jumper+caps+with+handle+pull+tab).
 
 ### 470 uF bulk capacitor
 
@@ -72,7 +72,7 @@ Quantity: **one Bourns 5300-17-RC**. Install it at L9. Shop at [Digi-Key](https:
 
 ### F-type handpiece connector
 
-Quantity: **one Molex 0733300030 PCB F jack**. This is a F-type coaxial RF connector. Install it at JP1 as the 13.56 MHz handpiece output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0733300030/2755903).
+Quantity: **one Molex 0733300030 PCB F-type coaxial jack**. This is a F-type coaxial RF connector. Install it at JP1 as the 13.56 MHz handpiece output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0733300030/2755903).
 
 ### Pushbutton
 
@@ -146,7 +146,7 @@ This can be substituted for any cheap 40mm x 40mm x 10mm 12V cooling fan.
 
 ### TO-220 thermal pads
 
-Quantity: **two electrically insulating silicone TO-220 pads**. Place one between each of Q1 and Q2 and the heatsink; they are required because both transistor tabs must remain electrically isolated. T-Global DC0011/06-TI900-0.12-2A is suitable; shop at [Digi-Key](https://www.digikey.com/en/products/detail/t-global-technology/DC0011-06-TI900-0-12-2A/3466708).
+Quantity: **two electrically insulating silicone TO-220 pads**. Place one between each of Q1 and Q2 and the heatsink; they are required because both transistor tabs must remain electrically isolated. T-Global `DC0011/06-TI900-0.12-2A` is suitable; shop at [Digi-Key](https://www.digikey.com/en/products/detail/t-global-technology/DC0011-06-TI900-0-12-2A/3466708).
 
 ### TO-220 shoulder washers
 
@@ -166,17 +166,21 @@ Quantity: **twelve M2.5-by-4 mm screws**. Use six to attach the standoffs to the
 
 ### Fan screws
 
-Quantity: **two M3-by-20 mm screws**. They pass through the fan and its printed mounting feature. Buy them as part of a small [M3 hardware assortment from Amazon](https://www.amazon.com/s?k=M3+machine+screw+nut+washer+assortment).
+Quantity: **two M3-by-20 mm screws**. They pass through the fan and its printed mounting feature.
 
 This can be substituted liberally as long as you also substitute the nuts and washers these will screw into.
 
 ### Fan washers
 
-Quantity: **two M3 flat washers**. They spread the fan-fastener load on the fan. The same inexpensive [M3 hardware assortment](https://www.amazon.com/s?k=M3+machine+screw+nut+washer+assortment) can supply these.
+Quantity: **two M3 flat washers**. They spread the fan-fastener load on the fan.
+
+This can be substituted liberally as long as they fit the screws being used with it.
 
 ### Fan locknuts
 
-Quantity: **two M3 nylon-insert locknuts**. They keep the fan fasteners from loosening under vibration. Search for [M3 nylon-insert locknuts on Amazon](https://www.amazon.com/s?k=M3+nylon+insert+locknuts).
+Quantity: **two M3 nylon-insert locknuts**. They keep the fan fasteners from loosening under vibration.
+
+This can be substituted liberally as long as they fit the screws being used with it.
 
 ### Rubber feet
 

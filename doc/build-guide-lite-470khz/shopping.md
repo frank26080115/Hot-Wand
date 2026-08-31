@@ -70,17 +70,13 @@ Quantity: **two seven-pin segments cut from a long 2.54 mm female breakaway sock
 
 Quantity: **one Molex 0470531000**. Install it at FAN1 for the 12 V PWM fan. It is the keyed four-position PC-fan header expected by the fan cable. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0470531000/2421261).
 
-### Optional output-selection header
+### Output-selection header
 
 Quantity: **one four-pin segment cut from the same 1-by-40, 2.54 mm right-angle male header used for JP5**. Install it at JP6 only if the selectable output-level interface will be used; it exposes the signal-name selections documented in the build guide. Search for [2.54 mm right-angle breakaway headers on Amazon](https://www.amazon.com/s?k=2.54mm+right+angle+male+breakaway+header+1x40).
 
-### Optional output-selection shunts
+### Output-selection shunts
 
 Quantity: **two additional 2.54 mm pull-tab jumper shunts**. Fit them across the two signal-to-ground pairs at JP6 when the output-level selection header is installed. They can come from the same bulk bag purchased for JP5; search for [bulk 2.54 mm pull-tab jumper caps on Amazon](https://www.amazon.com/s?k=2.54mm+jumper+caps+with+handle+pull+tab).
-
-### Optional external-switch header
-
-Quantity: **one two-pin segment cut from the same 1-by-40, 2.54 mm right-angle male header used for JP5**. Install it at JP4 only if an external or development switch connection is wanted; it parallels the associated control signal and ground. Search for [2.54 mm right-angle breakaway headers on Amazon](https://www.amazon.com/s?k=2.54mm+right+angle+male+breakaway+header+1x40).
 
 ### Optional indicator LED
 
@@ -142,17 +138,21 @@ Quantity: **eight M2.5-by-4 mm screws**. Use four to attach the standoffs to the
 
 ### Fan screws
 
-Quantity: **two M3-by-20 mm screws**. They pass through the fan and its printed mounting feature. Buy them as part of a small [M3 hardware assortment from Amazon](https://www.amazon.com/s?k=M3+machine+screw+nut+washer+assortment).
+Quantity: **two M3-by-20 mm screws**. They pass through the fan and its printed mounting feature.
 
-This can be substituted liberally as long as the matching nuts and washers are also changed and the resulting hardware fits the fan and printed grille.
+This can be substituted liberally as long as you also substitute the nuts and washers these will screw into.
 
 ### Fan washers
 
-Quantity: **two M3 flat washers**. They spread the fan-fastener load on the fan. The same inexpensive [M3 hardware assortment](https://www.amazon.com/s?k=M3+machine+screw+nut+washer+assortment) can supply these.
+Quantity: **two M3 flat washers**. They spread the fan-fastener load on the fan.
+
+This can be substituted liberally as long as they fit the screws being used with it.
 
 ### Fan locknuts
 
-Quantity: **two M3 nylon-insert locknuts**. They keep the fan fasteners from loosening under vibration. Search for [M3 nylon-insert locknuts on Amazon](https://www.amazon.com/s?k=M3+nylon+insert+locknuts).
+Quantity: **two M3 nylon-insert locknuts**. They keep the fan fasteners from loosening under vibration.
+
+This can be substituted liberally as long as they fit the screws being used with it.
 
 ### Rubber feet
 
