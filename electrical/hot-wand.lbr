@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -18130,6 +18130,29 @@ Through-hole SPDT Switch&lt;br&gt;
 <wire x1="-1" y1="1.8" x2="-2" y2="1.8" width="0.127" layer="21"/>
 <wire x1="-2" y1="1.8" x2="-2" y2="1.1" width="0.127" layer="21"/>
 </package>
+<package name="LED_LTST-S220KRKT">
+<text x="-2.2225" y="0.9525" size="1.27" layer="25">&gt;NAME</text>
+<text x="-2.2225" y="-2.4925" size="1.27" layer="27">&gt;VALUE</text>
+<wire x1="-1.075" y1="0.25" x2="1.075" y2="0.25" width="0.127" layer="51"/>
+<wire x1="1.075" y1="0.25" x2="1.075" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="1.075" y1="-0.25" x2="0.85" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="0.85" y1="-0.25" x2="-0.85" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="-0.85" y1="-0.25" x2="-1.075" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="-1.075" y1="-0.25" x2="-1.075" y2="0.25" width="0.127" layer="51"/>
+<wire x1="-0.185" y1="0.25" x2="0.185" y2="0.25" width="0.127" layer="21"/>
+<wire x1="-2.25" y1="0.75" x2="2.25" y2="0.75" width="0.05" layer="39"/>
+<wire x1="2.25" y1="0.75" x2="2.25" y2="-0.9" width="0.05" layer="39"/>
+<wire x1="2.25" y1="-0.9" x2="-2.25" y2="-0.9" width="0.05" layer="39"/>
+<wire x1="-2.25" y1="-0.9" x2="-2.25" y2="0.75" width="0.05" layer="39"/>
+<circle x="-2.5" y="0" radius="0.1" width="0.2" layer="21"/>
+<circle x="-2.5" y="0" radius="0.1" width="0.2" layer="51"/>
+<wire x1="-0.85" y1="-0.25" x2="-0.35" y2="-0.75" width="0.127" layer="51" curve="90"/>
+<wire x1="-0.35" y1="-0.75" x2="0.35" y2="-0.75" width="0.127" layer="51"/>
+<wire x1="0.35" y1="-0.75" x2="0.85" y2="-0.25" width="0.127" layer="51" curve="90"/>
+<wire x1="0.185" y1="-0.75" x2="-0.185" y2="-0.75" width="0.127" layer="21"/>
+<smd name="C" x="-1.25" y="0" dx="1.5" dy="1" layer="1"/>
+<smd name="A" x="1.25" y="0" dx="1.5" dy="1" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -19499,6 +19522,32 @@ Through-hole SPDT Switch&lt;br&gt;
 <text x="-2.3114" y="-8.4074" size="2.0828" layer="96" ratio="6" rot="SR0">&gt;Value</text>
 <text x="1.016" y="8.89" size="0.6096" layer="97" ratio="6">Leave exposed pad floating.
 Do not connect to GND plane.</text>
+</symbol>
+<symbol name="LTST-S220KRKT">
+<wire x1="-2.54" y1="1.524" x2="-2.54" y2="0" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="0" x2="-2.54" y2="-1.524" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="-1.524" x2="0" y2="0" width="0.254" layer="94"/>
+<wire x1="0" y1="0" x2="-2.54" y2="1.524" width="0.254" layer="94"/>
+<wire x1="0" y1="1.524" x2="0" y2="0" width="0.254" layer="94"/>
+<wire x1="0" y1="0" x2="0" y2="-1.524" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="0" x2="-5.08" y2="0" width="0.1524" layer="94"/>
+<wire x1="0.889" y1="3.937" x2="-0.889" y2="1.905" width="0.254" layer="94"/>
+<text x="-5.08" y="5.08" size="1.778" layer="95">&gt;NAME</text>
+<text x="-5.08" y="-3.81" size="1.778" layer="96">&gt;VALUE</text>
+<wire x1="-0.3556" y1="4.0386" x2="-2.1336" y2="2.0066" width="0.254" layer="94"/>
+<wire x1="2.54" y1="0" x2="0" y2="0" width="0.1524" layer="94"/>
+<polygon width="0.1524" layer="94">
+<vertex x="-1.143" y="3.683"/>
+<vertex x="-0.5715" y="3.175"/>
+<vertex x="-0.1905" y="4.191"/>
+</polygon>
+<polygon width="0.1524" layer="94">
+<vertex x="0.127" y="3.6195"/>
+<vertex x="0.6985" y="3.1115"/>
+<vertex x="1.0795" y="4.191"/>
+</polygon>
+<pin name="C" x="5.08" y="0" visible="pad" length="short" direction="pas" rot="R180"/>
+<pin name="A" x="-7.62" y="0" visible="pad" length="short" direction="pas"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -26586,6 +26635,15 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <technology name=""/>
 </technologies>
 </device>
+<device name="-LTST-S220KRKT" package="LED_LTST-S220KRKT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 </devices>
 </deviceset>
 <deviceset name="M01" prefix="JP">
@@ -33051,6 +33109,32 @@ Simple slide switch. Spark Fun Electronics SKU : COM-00102</description>
 <attribute name="MANUFACTURER_PART_NUMBER" value="LM74810QDRRRQ1" constant="no"/>
 <attribute name="REFDES" value="RefDes" constant="no"/>
 <attribute name="TYPE" value="TYPE" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="LTST-S220KRKT" prefix="D">
+<description> &lt;a href="https://pricing.snapeda.com/parts/LTST-S220KRKT/Lite-On%20Inc./view-part?ref=eda"&gt;Check availability&lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="LTST-S220KRKT" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="LED_LTST-S220KRKT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="AVAILABILITY" value="In Stock"/>
+<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/LTST-S220KRKT/Lite-On/view-part/?ref=eda"/>
+<attribute name="DESCRIPTION" value="                                                      Red 631nm LED Indication - Discrete 2V 0805 (2012 Metric)                                              "/>
+<attribute name="MF" value="Lite-On Inc."/>
+<attribute name="MP" value="LTST-S220KRKT"/>
+<attribute name="PACKAGE" value="0805 Lite-On Inc."/>
+<attribute name="PRICE" value="None"/>
+<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/LTST-S220KRKT/Lite-On/view-part/?ref=snap"/>
 </technology>
 </technologies>
 </device>
