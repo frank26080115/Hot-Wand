@@ -22,3 +22,9 @@ The part numbers chosen within the BOM are selected to have the highest availabi
 The rotations in the component placement file should be correct for the provided BOM, but you should be careful and double check against JLCPCB's placement preview.
 
 If a part is dangerously low on stock at JLCPCB, they offer the option for you to pre-order the parts, which means "place a hold on these parts for me".
+
+## Cost Estimate
+
+A build batch of 5 units can cost $150 before taxes and before shipping
+
+This is only the cost for JLCPCB, there are additional costs for other components you have to source yourself and solder manually.

@@ -5,7 +5,9 @@
 - Thickness: 1.6 mm
 - Outer copper weight: 2 oz
 
-The 2 oz copper is intentional. Keep the other fabrication options at their defaults.
+Outer copper weight of 2 oz copper is preferred and deliberate for thermal design, it adds about $40 to the cost when building a batch of 5.
+
+Keep the other fabrication options at their defaults.
 
 ## PCBA specifications
 
@@ -22,3 +24,9 @@ The part numbers chosen within the BOM are selected to have the highest availabi
 The rotations in the component placement file should be correct for the provided BOM, but you should be careful and double check against JLCPCB's placement preview.
 
 If a part is dangerously low on stock at JLCPCB, they offer the option for you to pre-order the parts, which means "place a hold on these parts for me".
+
+## Cost Estimate
+
+A build batch of 5 units can cost $200 before taxes and before shipping
+
+This is only the cost for JLCPCB, there are additional costs for other components you have to source yourself and solder manually.
