@@ -158,7 +158,7 @@ Clean all metal shavings, debur all drilled and cut edges, dull all sharp edges.
 
 ## 9. Power MOSFET and Heatsink Assembly
 
-Drill and thread tap the heatsink. A 3D printed drilling template is provided. The thread tap is for a #4-40 thread.
+Drill and thread tap the heatsink. A 3D printed drilling template is provided. The thread tap is for a #4-40 thread. Remember to place the template correctly such that the final result would be optimized for upward airflow.
 
 Cut some of the fins off the heatsink where screws will sit over.
 

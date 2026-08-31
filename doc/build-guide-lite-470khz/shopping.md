@@ -20,7 +20,9 @@ Quantity: **one Diodes Incorporated DMTH64M2LPDWQ-13**. Install it at Q4 in the 
 
 ### Main 470 kHz RF MOSFET
 
-Quantity: **one**, installed at Q1 as the main RF power switch. **TODO: find the best part, maybe copy Radio Thermal's design**
+Quantity: **one**, installed at Q1 as the main RF power switch. Radio Thermal used `IRF640NPBF`. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/infineon-technologies/IRF640NPBF/811884).
+
+Alternative: [IXFP30N25X3](https://www.digikey.com/en/products/detail/ixys/IXFP30N25X3/7561333), it's expensive.
 
 ### USB-C connector
 

@@ -32,6 +32,10 @@ Make sure the components with polarity are installed correctly. The capacitors h
 
 The SMA coaxial connector is supposed to be soldered upside down, with the center pin on the bottom of the board.
 
+(For revision `20260820A` only) The power switch needs to have a direction selected, to choose which side means "ON" and which side means "OFF". I leave this up to the user. Solder between one of these two locations to make the choice.
+
+![](imgs/switch_dir_pick.png)
+
 ## 3. Microcontroller and Firmware Bring-Up
 
 WARNING: NEVER flash firmware while the main input power is connected. You can also just remove the microcontroller module before flashing it.
@@ -56,6 +60,8 @@ There are 4 custom inductors in this design. [Follow the instructions on how to 
 
 ![](./imgs/soldering_3.jpg)
 
+(DEVELOPMENT ONLY) If a LCR meter is available, record the number of winds for each individual inductor and the resulting inductance.
+
 ## 5. MOSFET Heatsink
 
 Assemble the MOSFET together with the heatsinks according to the diagrams:
@@ -63,6 +69,10 @@ Assemble the MOSFET together with the heatsinks according to the diagrams:
 ![](imgs/mosfet_heatsink_3dviews.png)
 
 ![](imgs/mosfet_heatsink_stack.png)
+
+The bottom 3 fins of the heatsink needs to be bent to avoid the 12V buck converter. You must do this before soldering.
+
+![](imgs/heatsink_inner_3fins_bent.png)
 
 Then solder the MOSFET to the circuit board.
 
@@ -73,6 +83,8 @@ WARNING: do NOT forget the thermal pad or the shoulder washer, as without them y
 ## 6. Solder Jumpers
 
 SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground return current. For normal use, these all need to be bridged (ie shorted-out) with solder.
+
+(DEVELOPMENT ONLY) At this point, full testing can happen, as long as tests are short enough as to not require a cooling fan.
 
 ## 7. Mounting Hardware
 
