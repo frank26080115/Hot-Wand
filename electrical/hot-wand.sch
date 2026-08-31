@@ -22782,9 +22782,9 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="SJ1" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="VR4" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="4K7">
+<part name="VR4" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="5K">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="TC33X-2-472E"/>
+<attribute name="PARTNUM" value="TC33X-2-502"/>
 </part>
 <part name="SJ2" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
 <attribute name="JLC-DNP" value="1"/>

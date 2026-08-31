@@ -54,6 +54,8 @@ It is recommended to solder female headers onto the Hot-Wand-Lite PCB where the 
 
 There are 4 custom inductors in this design. [Follow the instructions on how to create them (click here)](custom-indoctors.md), and then solder them to their perspective locations.
 
+![](./imgs/soldering_3.jpg)
+
 ## 5. MOSFET Heatsink
 
 Assemble the MOSFET together with the heatsinks according to the diagrams:
@@ -152,4 +154,4 @@ When finished, you can just connect the it to the SMA connector
 
 #### If using: Thermaltronics Handpiece
 
-Thermaltronics still sells their older SHP-K handpieces (meant for 470 kHz cartridges) for about $50-$60, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.
+Thermaltronics still sells their older SHP-K handpieces (meant for 470 kHz cartridges) for about $50 dollars, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.

@@ -2414,8 +2414,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="35.692" y="23.251" size="0.4064" layer="28" rot="MR180"/>
 <attribute name="JLC-DNP" value="1" x="36.6" y="21.6" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="VR4" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="4K7" x="109.1" y="8.5" smashed="yes" rot="R90">
-<attribute name="PARTNUM" value="TC33X-2-472E" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
+<element name="VR4" library="hot-wand" package="TRIM_35WR1KLFTR_V2" value="5K" x="109.1" y="8.5" smashed="yes" rot="R90">
+<attribute name="PARTNUM" value="TC33X-2-502" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="108.05" y="11.45" size="0.8128" layer="25"/>
 <attribute name="JLC-DNP" value="1" x="109.1" y="8.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>

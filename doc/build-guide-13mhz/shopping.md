@@ -88,15 +88,15 @@ Quantity: **one six-pin segment cut from a long 2.54 mm female breakaway socket 
 
 ### 10 kΩ trimmer
 
-Quantity: **one Bourns TC33X-2-103E**. Install it at VR1 for the adjustment assigned by the schematic. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-103E).
+Quantity: **one Bourns TC33X-2-103E**. Install it at VR1. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-103E).
 
 ### 1 kΩ trimmers
 
-Quantity: **two Bourns TC33X-2-102E**. Install them at VR2 and VR3 for calibration of the two sensing channels. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-102E).
+Quantity: **two Bourns TC33X-2-102E**. Install them at VR2 and VR3. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-102E).
 
-### 4.7 kΩ trimmer
+### 5 kΩ trimmer
 
-Quantity: **one Bourns TC33X-2-472E**. Install it at VR4 for its schematic adjustment. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-472E).
+Quantity: **one Bourns TC33X-2-502**. Install it at VR4. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=TC33X-2-502).
 
 ### Power-MOSFET thermistors
 

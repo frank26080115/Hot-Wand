@@ -78,10 +78,6 @@ Quantity: **one four-pin segment cut from the same 1-by-40, 2.54 mm right-angle 
 
 Quantity: **two additional 2.54 mm pull-tab jumper shunts**. Fit them across the two signal-to-ground pairs at JP6 when the output-level selection header is installed. They can come from the same bulk bag purchased for JP5; search for [bulk 2.54 mm pull-tab jumper caps on Amazon](https://www.amazon.com/s?k=2.54mm+jumper+caps+with+handle+pull+tab).
 
-### Optional indicator LED
-
-Quantity: **one 0603 LED**. Install it at LED2 only if the optional visual indication is wanted; it may be omitted without preventing normal operation. Choose a suitable low-current part using the [Digi-Key 0603 LED search](https://www.digikey.com/en/products/result?keywords=0603%20indicator%20LED).
-
 ## Custom inductors
 
 ### Kool Mu cores
@@ -171,6 +167,10 @@ Quantity: **enough PETG for the final plastic parts and enough PLA for the dispo
 ### Commercial 470 kHz handpiece
 
 If using the commercial path instead of the Radio Thermal handpiece. It holds Thermaltronics K-series cartridges; its original connector must be adapted or replaced to mate with the Hot Wand Lite's SMA output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/thermaltronics/SHP-KM/22491869).
+
+#### Mating SMA cable plug
+
+**Amphenol RF 901-9895-RFX**. This is a straight, in-line, standard-polarity SMA plug with a male center pin, so it mates with the female SMA jack at JP1. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/amphenol-rf/901-9895-RFX/272187).
 
 ### K-series soldering cartridge
 
