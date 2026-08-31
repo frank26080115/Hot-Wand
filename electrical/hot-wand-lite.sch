@@ -16761,6 +16761,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="IC1" library="hot-wand" deviceset="V_REG_78XX" device="-BUCK" value="12V R-78K12-2.0">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="R-78K12-2.0"/>
 </part>
 <part name="GND21" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND18" library="hot-wand" deviceset="GND" device=""/>
@@ -16787,6 +16788,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="JP3" library="hot-wand" deviceset="XT-CONNECTOR" device="-XT30PW">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="XT30PW-M"/>
 </part>
 <part name="GND23" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND24" library="hot-wand" deviceset="GND" device=""/>
@@ -16797,6 +16799,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="GND25" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q2" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3"/>
 </part>
 <part name="C21" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
@@ -16811,6 +16814,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="JP2" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="UJC-H-G-SMT-P6-TR"/>
 </part>
 <part name="Q6" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="2N7002K">
 <attribute name="JLCPARTNUM" value="C5224211;C54347659"/>
@@ -16827,6 +16831,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="GND30" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q4" library="hot-wand" deviceset="MOSFET-NCHAN-X2" device="-PPSO8X2" value="DMTH64M2LPDWQ-13">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="DMTH64M2LPDWQ-13"/>
 </part>
 <part name="R9" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K3">
 <attribute name="JLCPARTNUM" value="C23159"/>
@@ -16898,6 +16903,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="F1" library="hot-wand" deviceset="FUSE" device="X20MM">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="3518P"/>
 </part>
 <part name="GND2" library="hot-wand" deviceset="GND" device=""/>
 <part name="SUPPLY1" library="hot-wand" deviceset="24V" device=""/>
@@ -16951,6 +16957,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="SUPPLY3" library="hot-wand" deviceset="24V" device=""/>
 <part name="C12" library="hot-wand" deviceset="CAP_POL" device="PTH5" value="470u">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="UHW1H471MPD"/>
 </part>
 <part name="GND7" library="hot-wand" deviceset="GND" device=""/>
 <part name="IC2" library="hot-wand" deviceset="V_REG_LM1117" device="SOT223" value="AMS1117-5.0">
@@ -16998,6 +17005,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="C13" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470u">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="UHW1H471MPD"/>
 </part>
 <part name="R16" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
 <attribute name="JLCPARTNUM" value="C21190"/>
@@ -17022,6 +17030,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3"/>
 </part>
 <part name="JP4" library="hot-wand" deviceset="M02" device="PTH3">
 <attribute name="JLC-DNP" value="1"/>
@@ -17065,7 +17074,9 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLCPARTNUM" value="C23162"/>
 </part>
 <part name="GND38" library="hot-wand" deviceset="GND" device=""/>
-<part name="FAN1" library="hot-wand" deviceset="FAN-CONN-X4" device="-CONN-X4"/>
+<part name="FAN1" library="hot-wand" deviceset="FAN-CONN-X4" device="-CONN-X4">
+<attribute name="PARTNUM" value="0470531000"/>
+</part>
 <part name="SJ6" library="hot-wand" deviceset="SOLDERJUMPER_2WAY" device="S"/>
 <part name="SJ7" library="hot-wand" deviceset="SOLDERJUMPER_2WAY" device="S"/>
 <part name="GND39" library="hot-wand" deviceset="GND" device=""/>
@@ -17093,6 +17104,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="GND42" library="hot-wand" deviceset="GND" device=""/>
 <part name="Q3" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
 <attribute name="JLC-DNP" value="1"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3"/>
 </part>
 <part name="R30" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>

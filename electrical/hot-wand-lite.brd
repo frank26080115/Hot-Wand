@@ -1335,6 +1335,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="IC1" library="hot-wand" package="TO220-BUCK-12V" value="12V R-78K12-2.0" x="50" y="56.5" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="50" y="56.5" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="R-78K12-2.0" x="50" y="56.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="48.371" y="50.906" size="0.8128" layer="25" font="fixed" ratio="10" rot="R90"/>
 </element>
 <element name="JP1" library="hot-wand" package="SAMTEC_SMA-J-P-H-ST-EM1-LGRPAD" value="COAX-SMA" x="109.8" y="36" smashed="yes" rot="MR270">
@@ -1360,9 +1361,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/UJC-H-G-SMT-2-P6-TR/Same+Sky/view-part/?ref=eda" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="PACKAGE" value="None" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="JLC-DNP" value="1" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="PARTNUM" value="UJC-H-G-SMT-P6-TR" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="JP3" library="hot-wand" package="XT30PW" value="XT-CONNECTOR-XT30PW" x="2" y="53" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="2" y="53" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="XT30PW-M" x="2" y="53" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="L5" library="hot-wand" package="IND-KOOLMU" value="11u5" x="99" y="25" smashed="yes">
 <attribute name="NAME" x="93" y="26" size="0.8128" layer="25" font="fixed"/>
@@ -1405,6 +1408,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="Q2" library="hot-wand" package="POWERPAK-1212-8" value="SIS862ADN-T1-GE3" x="16.3" y="51.3" smashed="yes">
 <attribute name="JLC-DNP" value="1" x="16.3" y="51.3" size="1.778" layer="27" display="off"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3" x="16.3" y="51.3" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="16.2" y="49" size="0.8128" layer="25" align="center"/>
 </element>
 <element name="Q6" library="hot-wand" package="SOT23-3" value="2N7002K" x="22" y="39.9" smashed="yes" rot="MR0">
@@ -1415,6 +1419,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="Q4" library="hot-wand" package="POWERPAK-SO8-X2" value="DMTH64M2LPDWQ-13" x="15" y="40" smashed="yes">
 <attribute name="NAME" x="11.4946" y="43.00463125" size="0.8128" layer="25" font="fixed"/>
 <attribute name="JLC-DNP" value="1" x="15" y="40" size="1.778" layer="27" display="off"/>
+<attribute name="PARTNUM" value="DMTH64M2LPDWQ-13" x="15" y="40" size="1.778" layer="27" display="off"/>
 </element>
 <element name="R1" library="hot-wand" package="0805" value="100Ω" x="64" y="68.3" smashed="yes" rot="MR0">
 <attribute name="JLCPARTNUM" value="C441975" x="64" y="68.3" size="1.778" layer="28" rot="MR0" display="off"/>
@@ -1500,6 +1505,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="F1" library="hot-wand" package="FUSE_5MM" value="FUSEX20MM" x="24" y="68" smashed="yes" rot="R270">
 <attribute name="JLC-DNP" value="1" x="24" y="68" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="PARTNUM" value="3518P" x="24" y="68" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="C1" library="hot-wand" package="1206" value="15n" x="46" y="64.5" smashed="yes" rot="MR270">
 <attribute name="NAME" x="44.657" y="65.57" size="0.8128" layer="26" font="fixed" rot="MR270"/>
@@ -1569,6 +1575,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="64.982" y="46.105" size="0.8128" layer="27" rot="R270"/>
 <attribute name="NAME" x="64.138" y="42.221" size="0.8128" layer="25" font="fixed" rot="R225"/>
 <attribute name="JLC-DNP" value="1" x="59.2" y="45.5" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="UHW1H471MPD" x="59.2" y="45.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="IC2" library="hot-wand" package="SOT223" value="AMS1117-5.0" x="59" y="56.5" smashed="yes" rot="MR90">
 <attribute name="NAME" x="61.9915" y="54.1255" size="0.8128" layer="26" font="fixed" rot="MR270"/>
@@ -1633,6 +1640,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="C13" library="hot-wand" package="CPOL-RADIAL-1000UF-25V" value="470u" x="69" y="51.6" smashed="yes" rot="R270">
 <attribute name="JLC-DNP" value="1" x="69" y="51.6" size="0.8128" layer="27" rot="R270" display="off"/>
+<attribute name="PARTNUM" value="UHW1H471MPD" x="69" y="51.6" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="VALUE" x="63.218" y="51.195" size="0.8128" layer="27" rot="R90"/>
 <attribute name="NAME" x="64.321" y="55.262" size="0.8128" layer="25" rot="R45"/>
 </element>
@@ -1678,6 +1686,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="Q5" library="hot-wand" package="POWERPAK-1212-8" value="SIS862ADN-T1-GE3" x="19.6" y="46.7" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="19.6" y="46.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3" x="19.6" y="46.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="17.4" y="46.3" size="0.8128" layer="25" rot="R90" align="center"/>
 </element>
 <element name="JP4" library="hot-wand" package="1X02_LONGPADS" value="" x="104" y="47" rot="R90">
@@ -1741,6 +1750,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="FAN1" library="hot-wand" package="FAN-CONN-X4" value="FAN-CONN-X4-CONN-X4" x="22.3" y="5.8" smashed="yes" rot="R180">
 <attribute name="NAME" x="19.3" y="11.2" size="0.8128" layer="25"/>
+<attribute name="PARTNUM" value="0470531000" x="22.3" y="5.8" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="SJ6" library="hot-wand" package="SJ_3" value="" x="24.6" y="9.6" smashed="yes" rot="MR90">
 <attribute name="NAME" x="25.87" y="8.33" size="0.8128" layer="26" rot="MR90"/>
@@ -1787,6 +1797,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="Q3" library="hot-wand" package="POWERPAK-1212-8" value="SIS862ADN-T1-GE3" x="19.6" y="54.4" smashed="yes" rot="R270">
 <attribute name="JLC-DNP" value="1" x="19.6" y="54.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="PARTNUM" value="SIS862ADN-T1-GE3" x="19.6" y="54.4" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="NAME" x="22" y="53.2" size="0.8128" layer="25" rot="R90" align="center"/>
 </element>
 <element name="R32" library="hot-wand" package="0603-RES" value="2K" x="20" y="59.3" smashed="yes" rot="MR180">
