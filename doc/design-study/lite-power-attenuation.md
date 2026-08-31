@@ -27,14 +27,14 @@ But this won't work as is, I'm not dumb, I've already modeled out the way the RF
 ## Simulations
 
 When turning ON the RF wave input
-![](imgs/sim-lite-rfgen-start.png)
+![](../imgs/sim-lite-rfgen-start.png)
 -----
-![](imgs/sim-lite-rfgen-start-cap.png)
+![](../imgs/sim-lite-rfgen-start-cap.png)
 -----
 When turning OFF the RF wave input
-![](imgs/sim-lite-rfgen-off.png)
+![](../imgs/sim-lite-rfgen-off.png)
 -----
-![](imgs/sim-lite-rfgen-off-cap.png)
+![](../imgs/sim-lite-rfgen-off-cap.png)
 
 ## Final Implementation
 

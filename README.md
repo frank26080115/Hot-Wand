@@ -64,13 +64,15 @@ The RF soldering iron's station unit does not feature a temperature setting or e
 
 I've always liked the Metcal MX-5200 I have access to at work. I'm also a robot combat competitor, both in insect weight classes and also a part of a heavyweight battlebots team. Thus, I travel with my tools a lot, sometimes even flying to NHRL from California. And while I like my [iFixit soldering iron](https://eleccelerator.com/review-ifixit-soldering-iron/) for it's portability, I thought it'd be cool to have a portable RF soldering iron.
 
-While I designed this project, the cost started to balloon. At one point it was decided to drop the pretense that DIY is cheaper, and instead, build something I would rather own even more than the actual (gigantic) MX-5200.
+While designing this project, the cost started to balloon. At one point it was decided to drop the pretense that DIY is cheaper, and instead, build something I would rather own even more than the actual (gigantic) MX-5200.
 
 I also wanted to document this project in a way that makes it way more friendly for a DIY builder to actually build.
 
+Undertaking this project is not cheap, it requires a considerable amount of skill and for you to already have access to soldering equipment. You have been warned. If you need a good soldering iron for a reasonable cost, a Hakko FX-888DX or a iFixit Soldering Iron are still a good bets.
+
 ## Design Study
 
-Please see [my full design study (click here)](doc\design-study.md). This includes:
+Please see [my full design study (click here)](doc/design-study/design-study.md). This includes:
 
  * Dissection of SergeyMax's design
  * Analyzes other DIY builder's notes as they build SergeyMax's design
@@ -82,5 +84,5 @@ and please explore the [documentation directory itself](doc), as I might've writ
 
 ## Build Guides
 
- * [DIY build guide for the Hot Wand (13.56 MHz version)](doc\doc\build-guide-13mhz\build-guide.md)
+ * [DIY build guide for the Hot Wand (13.56 MHz version)](doc\build-guide-13mhz\build-guide.md)
  * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc\build-guide-lite-470khz\build-guide-lite.md)
