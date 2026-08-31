@@ -16927,8 +16927,8 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="PARTNUM" value="C3216C0G2E153J160AA"/>
 </part>
 <part name="C6" library="hot-wand" deviceset="CAP" device="1206" value="10n">
-<attribute name="JLCPARTNUM" value="C2261646"/>
-<attribute name="PARTNUM" value="GRM31B5C2E103JWA1L"/>
+<attribute name="JLCPARTNUM" value="C2261646;C2170837;C2175075"/>
+<attribute name="PARTNUM" value="C3216C0G2E103J115AA"/>
 </part>
 <part name="C7" library="hot-wand" deviceset="CAP" device="1206" value="10n">
 <attribute name="JLCPARTNUM" value="C2261646"/>

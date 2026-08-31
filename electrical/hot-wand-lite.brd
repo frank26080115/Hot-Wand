@@ -1538,8 +1538,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="C6" library="hot-wand" package="1206" value="10n" x="59.3" y="27.3" smashed="yes" rot="MR0">
 <attribute name="NAME" x="56.67" y="26.343" size="0.8128" layer="26" font="fixed" rot="MR0"/>
 <attribute name="VALUE" x="56.697" y="27.476" size="0.8128" layer="28" rot="MR0"/>
-<attribute name="JLCPARTNUM" value="C2261646" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PARTNUM" value="GRM31B5C2E103JWA1L" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C2261646;C2170837;C2175075" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="C3216C0G2E103J115AA" x="59.3" y="27.3" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C7" library="hot-wand" package="1206" value="10n" x="59.3" y="29.8" smashed="yes" rot="MR0">
 <attribute name="NAME" x="61.73" y="30.857" size="0.8128" layer="26" font="fixed" rot="MR180"/>
