@@ -17092,7 +17092,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLCPARTNUM" value="C133715"/>
 </part>
 <part name="GND40" library="hot-wand" deviceset="GND" device=""/>
-<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
+<part name="R12" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
 <attribute name="JLCPARTNUM" value="C31850"/>
 </part>
 <part name="U3" library="hot-wand" deviceset="LM74810QDRRRQ1" device="">
@@ -17106,23 +17106,23 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="SIS862ADN-T1-GE3"/>
 </part>
-<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
+<part name="R29" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>
 </part>
 <part name="GND41" library="hot-wand" deviceset="GND" device=""/>
 <part name="C25" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
-<part name="R31" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="56K">
+<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="56K">
 <attribute name="JLCPARTNUM" value="C23206"/>
 </part>
 <part name="C26" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
-<part name="R33" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
+<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
 <attribute name="JLCPARTNUM" value="C31850"/>
 </part>
-<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K">
+<part name="R31" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K">
 <attribute name="JLCPARTNUM" value="C22975"/>
 </part>
 <part name="GND43" library="hot-wand" deviceset="GND" device=""/>
@@ -17603,7 +17603,7 @@ from high battery voltage</text>
 <attribute name="JLCPARTNUM" x="27.94" y="-195.58" size="1.27" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND40" gate="1" x="27.94" y="-203.2"/>
-<instance part="R29" gate="G$1" x="76.2" y="-513.08" smashed="yes" rot="R90">
+<instance part="R12" gate="G$1" x="76.2" y="-513.08" smashed="yes" rot="R90">
 <attribute name="NAME" x="79.7814" y="-516.89" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="80.518" y="-511.81" size="1.778" layer="96" rot="R270"/>
 </instance>
@@ -17620,7 +17620,7 @@ from high battery voltage</text>
 <attribute name="VALUE" x="124.968" y="-475.996" size="1.778" layer="96"/>
 <attribute name="JLC-DNP" x="121.92" y="-477.52" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
-<instance part="R30" gate="G$1" x="129.54" y="-487.68">
+<instance part="R29" gate="G$1" x="129.54" y="-487.68">
 <attribute name="JLCPARTNUM" x="129.54" y="-487.68" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="GND41" gate="1" x="137.16" y="-530.86"/>
@@ -17628,7 +17628,7 @@ from high battery voltage</text>
 <attribute name="NAME" x="138.43" y="-484.759" size="1.778" layer="95"/>
 <attribute name="VALUE" x="144.272" y="-490.347" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R31" gate="G$1" x="139.7" y="-508" smashed="yes" rot="R180">
+<instance part="R30" gate="G$1" x="139.7" y="-508" smashed="yes" rot="R180">
 <attribute name="NAME" x="143.51" y="-504.4186" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="143.51" y="-502.158" size="1.778" layer="96" rot="R180"/>
 <attribute name="JLCPARTNUM" x="139.7" y="-508" size="1.778" layer="96" rot="R180" display="off"/>
@@ -17637,11 +17637,11 @@ from high battery voltage</text>
 <attribute name="NAME" x="148.59" y="-484.759" size="1.778" layer="95"/>
 <attribute name="VALUE" x="154.432" y="-490.347" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R33" gate="G$1" x="154.94" y="-520.7" smashed="yes">
+<instance part="R32" gate="G$1" x="154.94" y="-520.7" smashed="yes">
 <attribute name="NAME" x="151.13" y="-524.2814" size="1.778" layer="95"/>
 <attribute name="VALUE" x="156.21" y="-525.018" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R32" gate="G$1" x="154.94" y="-513.08" smashed="yes">
+<instance part="R31" gate="G$1" x="154.94" y="-513.08" smashed="yes">
 <attribute name="NAME" x="151.13" y="-516.6614" size="1.778" layer="95"/>
 <attribute name="VALUE" x="151.13" y="-511.556" size="1.778" layer="96"/>
 <attribute name="JLCPARTNUM" x="154.94" y="-513.08" size="1.778" layer="96" display="off"/>
@@ -17976,11 +17976,11 @@ from high battery voltage</text>
 <wire x1="132.08" y1="-523.24" x2="137.16" y2="-523.24" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="R32" gate="G$1" pin="2"/>
+<pinref part="R31" gate="G$1" pin="2"/>
 <pinref part="GND44" gate="1" pin="GND"/>
 <wire x1="160.02" y1="-513.08" x2="162.56" y2="-513.08" width="0.1524" layer="91"/>
 <wire x1="162.56" y1="-513.08" x2="162.56" y2="-520.7" width="0.1524" layer="91"/>
-<pinref part="R33" gate="G$1" pin="2"/>
+<pinref part="R32" gate="G$1" pin="2"/>
 <wire x1="162.56" y1="-520.7" x2="162.56" y2="-523.24" width="0.1524" layer="91"/>
 <wire x1="160.02" y1="-520.7" x2="162.56" y2="-520.7" width="0.1524" layer="91"/>
 <junction x="162.56" y="-520.7"/>
@@ -18801,7 +18801,7 @@ from high battery voltage</text>
 <junction x="104.14" y="-467.36"/>
 </segment>
 <segment>
-<pinref part="R29" gate="G$1" pin="2"/>
+<pinref part="R12" gate="G$1" pin="2"/>
 <wire x1="76.2" y1="-508" x2="76.2" y2="-505.46" width="0.1524" layer="91"/>
 <label x="76.2" y="-505.46" size="1.016" layer="95" rot="R90" xref="yes"/>
 </segment>
@@ -18811,7 +18811,7 @@ from high battery voltage</text>
 <pinref part="Q6" gate="G$1" pin="D"/>
 <pinref part="U3" gate="A" pin="EN_UVLO"/>
 <wire x1="45.72" y1="-520.7" x2="76.2" y2="-520.7" width="0.1524" layer="91"/>
-<pinref part="R29" gate="G$1" pin="1"/>
+<pinref part="R12" gate="G$1" pin="1"/>
 <wire x1="76.2" y1="-520.7" x2="86.36" y2="-520.7" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="-518.16" x2="76.2" y2="-520.7" width="0.1524" layer="91"/>
 <junction x="76.2" y="-520.7"/>
@@ -18825,7 +18825,7 @@ from high battery voltage</text>
 <wire x1="119.38" y1="-487.68" x2="121.92" y2="-487.68" width="0.1524" layer="91"/>
 <pinref part="Q3" gate="G$1" pin="G"/>
 <wire x1="121.92" y1="-487.68" x2="121.92" y2="-485.14" width="0.1524" layer="91"/>
-<pinref part="R30" gate="G$1" pin="1"/>
+<pinref part="R29" gate="G$1" pin="1"/>
 <wire x1="124.46" y1="-487.68" x2="121.92" y2="-487.68" width="0.1524" layer="91"/>
 <junction x="121.92" y="-487.68"/>
 </segment>
@@ -18849,28 +18849,28 @@ from high battery voltage</text>
 <net name="N$68" class="0">
 <segment>
 <pinref part="U3" gate="A" pin="SW"/>
-<pinref part="R31" gate="G$1" pin="2"/>
+<pinref part="R30" gate="G$1" pin="2"/>
 <wire x1="132.08" y1="-508" x2="134.62" y2="-508" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$71" class="0">
 <segment>
-<pinref part="R31" gate="G$1" pin="1"/>
+<pinref part="R30" gate="G$1" pin="1"/>
 <wire x1="144.78" y1="-508" x2="147.32" y2="-508" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="-508" x2="147.32" y2="-513.08" width="0.1524" layer="91"/>
-<pinref part="R32" gate="G$1" pin="1"/>
+<pinref part="R31" gate="G$1" pin="1"/>
 <wire x1="147.32" y1="-513.08" x2="149.86" y2="-513.08" width="0.1524" layer="91"/>
 <pinref part="U3" gate="A" pin="OV"/>
 <wire x1="132.08" y1="-513.08" x2="147.32" y2="-513.08" width="0.1524" layer="91"/>
 <junction x="147.32" y="-513.08"/>
-<pinref part="R33" gate="G$1" pin="1"/>
+<pinref part="R32" gate="G$1" pin="1"/>
 <wire x1="149.86" y1="-520.7" x2="147.32" y2="-520.7" width="0.1524" layer="91"/>
 <wire x1="147.32" y1="-520.7" x2="147.32" y2="-513.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$43" class="0">
 <segment>
-<pinref part="R30" gate="G$1" pin="2"/>
+<pinref part="R29" gate="G$1" pin="2"/>
 <pinref part="C25" gate="G$1" pin="2"/>
 <wire x1="134.62" y1="-487.68" x2="137.16" y2="-487.68" width="0.1524" layer="91"/>
 </segment>
