@@ -1612,7 +1612,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="88.916" y="4.903" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6629873" x="90.6" y="6.1" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="PARTNUM" value="QCCT102Q100J1GV001E" x="90.6" y="6.1" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC-DNP" value="2" x="90.6" y="6.1" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="D7" library="hot-wand" package="SOD123FL" value="1N4148W" x="96.2" y="3.2" smashed="yes" rot="MR90">
 <attribute name="NAME" x="95.2" y="5.5" size="0.8128" layer="26" font="vector" rot="MR270"/>
@@ -1743,7 +1742,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="90.062" y="32.7255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="90.116" y="34.003" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="31.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="31.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="L5" library="hot-wand" package="IND_T130-6_X2" value="400nH" x="93" y="36" smashed="yes">
 <attribute name="NAME" x="94" y="35" size="0.8128" layer="25" font="vector"/>
@@ -1755,40 +1753,33 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="98.016" y="51.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="97" y="49.4" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="DNP" value="1" x="97" y="49.4" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC-DNP" value="2" x="97" y="49.4" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C18" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="46.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="87.462" y="46.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="46.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="46.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C17" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="44.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="87.462" y="44.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="44.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="44.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C16" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="42.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="87.462" y="42.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="42.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="42.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C15" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="40.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="87.462" y="40.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="90.516" y="38.603" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="40.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="40.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="C14" library="hot-wand" package="0805" value="100pF 1000V" x="97" y="39.7" smashed="yes" rot="MR180">
 <attribute name="NAME" x="95.538" y="38.7745" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="93.284" y="37.697" size="0.8128" layer="28" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="97" y="39.7" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC-DNP" value="2" x="97" y="39.7" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C13" library="hot-wand" package="0805" value="100pF 1000V" x="89.1" y="48.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="87.462" y="48.0255" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="90.516" y="49.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="JLC-DNP" value="2" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="PARTNUM" value="QCCT102Q101J1GV001E" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="PLACEHOLDERPART" value="C28233" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
@@ -1902,12 +1893,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="61.838" y="60.5745" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="61.384" y="59.497" size="0.8128" layer="28" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="62.7" y="62.5" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC-DNP" value="2" x="62.7" y="62.5" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C40" library="hot-wand" package="0805" value="100pF" x="62.7" y="64.2" smashed="yes" rot="MR180">
 <attribute name="NAME" x="61.838" y="61.5745" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="62.7" y="64.2" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="JLC-DNP" value="2" x="62.7" y="64.2" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="C35" library="hot-wand" package="0603-CAP" value="100n" x="49.9" y="70.3" smashed="yes" rot="MR180">
 <attribute name="NAME" x="50.789" y="70.962" size="0.8128" layer="26" font="vector" rot="MR0"/>
@@ -2625,10 +2614,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="24.962" y="55.111" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="25.957" y="54.684" size="0.8128" layer="28" font="vector" rot="MR90"/>
 </element>
-<element name="C50" library="hot-wand" package="0603-CAP" value="100n" x="8.3" y="52.9" smashed="yes" rot="MR180">
-<attribute name="JLCPARTNUM" value="C14663" x="8.3" y="52.9" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="NAME" x="9.389" y="54.262" size="0.8128" layer="26" font="vector" rot="MR0"/>
-<attribute name="VALUE" x="9.416" y="55.357" size="0.8128" layer="28" font="vector" rot="MR0"/>
+<element name="C50" library="hot-wand" package="0603-CAP" value="100n" x="8.3" y="53.4" smashed="yes" rot="MR180">
+<attribute name="JLCPARTNUM" value="C14663" x="8.3" y="53.4" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="9.389" y="54.462" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="9.416" y="55.557" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="C52" library="hot-wand" package="0603-CAP" value="100n" x="19.6" y="49" smashed="yes" rot="MR0">
 <attribute name="JLCPARTNUM" value="C14663" x="19.6" y="49" size="1.778" layer="28" rot="MR0" display="off"/>
@@ -4534,7 +4523,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="13.9" y1="53" x2="14.85" y2="53.95" width="0.2032" layer="16"/>
 <wire x1="14.85" y1="53.95" x2="15.2" y2="53.95" width="0.2032" layer="16"/>
 <contactref element="C50" pad="1"/>
-<wire x1="7.45" y1="52.9" x2="7.45" y2="50.5" width="0.6" layer="16"/>
+<wire x1="7.45" y1="53.4" x2="7.45" y2="50.5" width="0.6" layer="16"/>
 <wire x1="7.45" y1="50.5" x2="8.5" y2="50.5" width="0.6" layer="16"/>
 </signal>
 <signal name="N$30">

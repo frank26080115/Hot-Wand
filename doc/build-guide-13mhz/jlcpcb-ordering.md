@@ -20,3 +20,5 @@ Sometimes, JLCPCB's parser misses the part number indicated and claims to not be
 The part numbers chosen within the BOM are selected to have the highest availability, but sometimes a part can still be out-of-stock. Handle this situation however you need to.
 
 The rotations in the component placement file should be correct for the provided BOM, but you should be careful and double check against JLCPCB's placement preview.
+
+If a part is dangerously low on stock at JLCPCB, they offer the option for you to pre-order the parts, which means "place a hold on these parts for me".

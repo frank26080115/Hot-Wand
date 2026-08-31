@@ -446,27 +446,27 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <smd name="2" x="5.55" y="0" dx="5" dy="3.1" layer="1"/>
 </package>
 <package name="LED_LTST-S220KRKT">
-<text x="-2.2225" y="0.9525" size="1.27" layer="25">&gt;NAME</text>
-<text x="-2.2225" y="-2.4925" size="1.27" layer="27">&gt;VALUE</text>
-<wire x1="-1.075" y1="0.25" x2="1.075" y2="0.25" width="0.127" layer="51"/>
-<wire x1="1.075" y1="0.25" x2="1.075" y2="-0.25" width="0.127" layer="51"/>
-<wire x1="1.075" y1="-0.25" x2="0.85" y2="-0.25" width="0.127" layer="51"/>
-<wire x1="0.85" y1="-0.25" x2="-0.85" y2="-0.25" width="0.127" layer="51"/>
-<wire x1="-0.85" y1="-0.25" x2="-1.075" y2="-0.25" width="0.127" layer="51"/>
+<text x="2.2225" y="-0.9525" size="0.8128" layer="25" rot="R180">&gt;NAME</text>
+<text x="2.2225" y="2.4925" size="0.8128" layer="27" rot="R180">&gt;VALUE</text>
+<wire x1="1.075" y1="-0.25" x2="-1.075" y2="-0.25" width="0.127" layer="51"/>
 <wire x1="-1.075" y1="-0.25" x2="-1.075" y2="0.25" width="0.127" layer="51"/>
-<wire x1="-0.185" y1="0.25" x2="0.185" y2="0.25" width="0.127" layer="21"/>
-<wire x1="-2.25" y1="0.75" x2="2.25" y2="0.75" width="0.05" layer="39"/>
-<wire x1="2.25" y1="0.75" x2="2.25" y2="-0.9" width="0.05" layer="39"/>
-<wire x1="2.25" y1="-0.9" x2="-2.25" y2="-0.9" width="0.05" layer="39"/>
-<wire x1="-2.25" y1="-0.9" x2="-2.25" y2="0.75" width="0.05" layer="39"/>
-<circle x="-2.5" y="0" radius="0.1" width="0.2" layer="21"/>
-<circle x="-2.5" y="0" radius="0.1" width="0.2" layer="51"/>
-<wire x1="-0.85" y1="-0.25" x2="-0.35" y2="-0.75" width="0.127" layer="51" curve="90"/>
-<wire x1="-0.35" y1="-0.75" x2="0.35" y2="-0.75" width="0.127" layer="51"/>
-<wire x1="0.35" y1="-0.75" x2="0.85" y2="-0.25" width="0.127" layer="51" curve="90"/>
-<wire x1="0.185" y1="-0.75" x2="-0.185" y2="-0.75" width="0.127" layer="21"/>
-<smd name="C" x="-1.25" y="0" dx="1.5" dy="1" layer="1"/>
-<smd name="A" x="1.25" y="0" dx="1.5" dy="1" layer="1"/>
+<wire x1="-1.075" y1="0.25" x2="-0.85" y2="0.25" width="0.127" layer="51"/>
+<wire x1="-0.85" y1="0.25" x2="0.85" y2="0.25" width="0.127" layer="51"/>
+<wire x1="0.85" y1="0.25" x2="1.075" y2="0.25" width="0.127" layer="51"/>
+<wire x1="1.075" y1="0.25" x2="1.075" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="0.185" y1="-0.25" x2="-0.185" y2="-0.25" width="0.127" layer="21"/>
+<wire x1="2.25" y1="-0.75" x2="-2.25" y2="-0.75" width="0.05" layer="39"/>
+<wire x1="-2.25" y1="-0.75" x2="-2.25" y2="0.9" width="0.05" layer="39"/>
+<wire x1="-2.25" y1="0.9" x2="2.25" y2="0.9" width="0.05" layer="39"/>
+<wire x1="2.25" y1="0.9" x2="2.25" y2="-0.75" width="0.05" layer="39"/>
+<circle x="2.5" y="0" radius="0.1" width="0.2" layer="21"/>
+<circle x="2.5" y="0" radius="0.1" width="0.2" layer="51"/>
+<wire x1="0.85" y1="0.25" x2="0.35" y2="0.75" width="0.127" layer="51" curve="90"/>
+<wire x1="0.35" y1="0.75" x2="-0.35" y2="0.75" width="0.127" layer="51"/>
+<wire x1="-0.35" y1="0.75" x2="-0.85" y2="0.25" width="0.127" layer="51" curve="90"/>
+<wire x1="-0.185" y1="0.75" x2="0.185" y2="0.75" width="0.127" layer="21"/>
+<smd name="A" x="1.25" y="0" dx="1.5" dy="1" layer="1" rot="R180"/>
+<smd name="C" x="-1.25" y="0" dx="1.5" dy="1" layer="1" rot="R180"/>
 </package>
 <package name="LED-0603">
 <wire x1="0.46" y1="0.17" x2="0" y2="0.17" width="0.2032" layer="21"/>
@@ -1307,9 +1307,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="19.684" y="53.483" size="0.254" layer="28" font="vector" rot="MR180"/>
 <attribute name="JLCPARTNUM" value="C14663" x="21.1" y="53.04" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="C20" library="hot-wand" package="0603-CAP" value="100n" x="8.3" y="52.9" smashed="yes" rot="MR180">
-<attribute name="JLCPARTNUM" value="C14663" x="8.3" y="52.9" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="NAME" x="9.389" y="54.262" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<element name="C20" library="hot-wand" package="0603-CAP" value="100n" x="8.3" y="53.4" smashed="yes" rot="MR180">
+<attribute name="JLCPARTNUM" value="C14663" x="8.3" y="53.4" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="9.289" y="54.362" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="9.416" y="55.357" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="C22" library="hot-wand" package="0603-CAP" value="100n" x="7.9" y="32.3" smashed="yes" rot="MR180">
@@ -1390,9 +1390,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C2453886" x="33" y="56" size="1.778" layer="27" display="off"/>
 <attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M" x="33" y="56" size="1.778" layer="27" display="off"/>
 </element>
-<element name="LED1" library="hot-wand" package="LED_LTST-S220KRKT" value="LED" x="110.8" y="42.2" smashed="yes" rot="MR270">
-<attribute name="JLCPARTNUM" value="C284935" x="110.8" y="42.2" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="NAME" x="110.5525" y="45.0775" size="0.8128" layer="26" rot="MR90"/>
+<element name="LED1" library="hot-wand" package="LED_LTST-S220KRKT" value="LED" x="110.8" y="42.2" smashed="yes" rot="MR90">
+<attribute name="JLCPARTNUM" value="C284935" x="110.8" y="42.2" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="NAME" x="110.7525" y="45.0775" size="0.8128" layer="26" rot="MR90"/>
+<attribute name="PARTNUM" value="LTST-S220KRKT" x="110.8" y="42.2" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
 <element name="PCB1" library="hot-wand" package="PCB-OUTLINE" value="PCB-OUTLINE" x="0" y="0" smashed="yes">
 <attribute name="JLC-DNP" value="1" x="0" y="0" size="1.778" layer="27" display="off"/>
@@ -1461,7 +1462,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="R5" library="hot-wand" package="0603-RES" value="470Ω" x="108.4" y="50.9" smashed="yes" rot="MR270">
 <attribute name="JLCPARTNUM" value="C23179" x="108.4" y="50.9" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="NAME" x="108.138" y="49.289" size="0.8128" layer="26" font="fixed" rot="MR270"/>
+<attribute name="NAME" x="108.238" y="49.289" size="0.8128" layer="26" font="fixed" rot="MR270"/>
 <attribute name="VALUE" x="108.843" y="52.216" size="0.254" layer="28" font="vector" rot="MR270"/>
 </element>
 <element name="R15" library="hot-wand" package="0603-RES" value="51K" x="16.4" y="27.3" smashed="yes" rot="MR270">
@@ -1505,7 +1506,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="43.524" y="65.597" size="0.8128" layer="28" rot="MR270"/>
 <attribute name="JLCPARTNUM" value="C3858208" x="46" y="64.5" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PARTNUM" value="C3216C0G2E153J160AA" x="46" y="64.5" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="JLC-DNP" value="2" x="46" y="64.5" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C2" library="hot-wand" package="1206" value="22n" x="36.1" y="37.3" smashed="yes" rot="MR270">
 <attribute name="NAME" x="35.743" y="40.13" size="0.8128" layer="26" font="fixed" rot="MR90"/>
@@ -1528,7 +1528,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="28.776" y="40.103" size="0.8128" layer="28" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C3858208" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PARTNUM" value="C3216C0G2E153J160AA" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="JLC-DNP" value="2" x="28.6" y="37.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="C6" library="hot-wand" package="1206" value="10n" x="59.3" y="27.3" smashed="yes" rot="MR0">
 <attribute name="NAME" x="56.67" y="26.343" size="0.8128" layer="26" font="fixed" rot="MR0"/>
@@ -1601,8 +1600,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="R6" library="hot-wand" package="0603-RES" value="470Ω" x="110.4" y="50.9" smashed="yes" rot="MR270">
 <attribute name="JLCPARTNUM" value="C23179" x="110.4" y="50.9" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="NAME" x="110.338" y="49.289" size="0.8128" layer="26" font="fixed" rot="MR270"/>
-<attribute name="VALUE" x="109.243" y="49.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="NAME" x="110.438" y="49.289" size="0.8128" layer="26" font="fixed" rot="MR270"/>
+<attribute name="VALUE" x="109.343" y="49.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
 <element name="LED2" library="hot-wand" package="LED-0603" value="LED" x="111" y="41.3" smashed="yes" rot="R180">
 <attribute name="JLC-DNP" value="1" x="111" y="41.3" size="1.778" layer="27" rot="R180" display="off"/>
@@ -2147,8 +2146,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="111.5" y1="29.6" x2="109" y2="29.6" width="0.4064" layer="16"/>
 <wire x1="111.5" y1="28" x2="109" y2="28" width="0.4064" layer="16"/>
 <wire x1="109" y1="28" x2="111.4" y2="28" width="0.4064" layer="1"/>
-<wire x1="109.1" y1="42.4" x2="107.1" y2="42.4" width="0.4064" layer="16"/>
-<wire x1="109.1" y1="44" x2="107" y2="44" width="0.4064" layer="16"/>
+<wire x1="109.7" y1="42.4" x2="107.1" y2="42.4" width="0.4064" layer="16"/>
+<wire x1="109.7" y1="44" x2="107" y2="44" width="0.4064" layer="16"/>
 <wire x1="107.1" y1="44" x2="109.6" y2="44" width="0.4064" layer="1"/>
 <wire x1="107" y1="42.4" x2="109.5" y2="42.4" width="0.4064" layer="1"/>
 <via x="106.9" y="42.4" extent="1-16" drill="0.3" shape="octagon"/>
@@ -2347,8 +2346,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="21.3" y="42.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="17.3" y="46" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="16.6" y="36.4" extent="1-16" drill="0.3" shape="octagon"/>
-<wire x1="108.7" y1="45.3" x2="108.7" y2="43.2" width="0.4064" layer="16"/>
-<wire x1="109" y1="45.2" x2="109" y2="43.1" width="0.4064" layer="16"/>
 <via x="111.4" y="49.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="111.4" y="52.4" extent="1-16" drill="0.3" shape="octagon"/>
 </signal>
@@ -2574,7 +2571,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="13.9" y1="53" x2="14.85" y2="53.95" width="0.2032" layer="16"/>
 <wire x1="14.85" y1="53.95" x2="15.2" y2="53.95" width="0.2032" layer="16"/>
 <contactref element="C20" pad="1"/>
-<wire x1="7.45" y1="52.9" x2="7.45" y2="50.5" width="0.6" layer="16"/>
+<wire x1="7.45" y1="53.4" x2="7.45" y2="50.5" width="0.6" layer="16"/>
 <wire x1="7.45" y1="50.5" x2="8.5" y2="50.5" width="0.6" layer="16"/>
 </signal>
 <signal name="N$30">
@@ -2745,10 +2742,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$46">
 <contactref element="R5" pad="2"/>
 <contactref element="LED1" pad="A"/>
-<wire x1="109.9" y1="42" x2="109.9" y2="48.55" width="0.254" layer="16"/>
-<wire x1="109.9" y1="48.55" x2="108.4" y2="50.05" width="0.254" layer="16"/>
-<wire x1="109.9" y1="42" x2="110.8" y2="41.1" width="0.254" layer="16"/>
-<wire x1="110.8" y1="41.1" x2="110.8" y2="40.95" width="0.254" layer="16"/>
+<wire x1="110.8" y1="47.65" x2="108.4" y2="50.05" width="0.254" layer="16"/>
+<wire x1="110.8" y1="47.65" x2="110.8" y2="43.45" width="0.254" layer="16"/>
 </signal>
 <signal name="N$57">
 <contactref element="R11" pad="2"/>
@@ -3376,8 +3371,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <approved hash="7,40,7d43dd4d5d4efd40"/>
 <approved hash="19,1,7ada46e646127a2e"/>
 <approved hash="19,1,76ca32c667f7bc07"/>
-<approved hash="19,1,728aed7dd330a131"/>
 <approved hash="19,1,42426e7e6e1e4222"/>
+<approved hash="19,1,728aed7dd330a131"/>
 <approved hash="19,1,0f99a7a5a6060e3a"/>
 <approved hash="19,16,e35a3ca5d90b4d09"/>
 <approved hash="19,16,82f14f28b8529182"/>
