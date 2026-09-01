@@ -220,6 +220,12 @@ Quantity: **two electrically insulating silicone TO-220 pads**. Place one betwee
 
 Quantity: **two nylon shoulder washers for #4 screws, approximately 3.7 mm outside diameter and 2 mm shoulder depth**. Fit one into each TO-220 tab hole to isolate its mounting screw. Shop for `12SWS0432` using the [Digi-Key search](https://www.digikey.com/en/products/result?keywords=12SWS0432).
 
+### Thermistors
+
+Quantity: **two TDK B57891M0103K000 NTC thermistors**. Epoxy one each to each of the TO-220 MOSFETs. Connect them using wires to THERM1 and THERM2 on the PCB. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/tdk/B57891M0103K000/3500546).
+
+Alternatives: `B57891M0103J000`, `B57891S0103F008`, `B57891S0103J008`, `B57891S0103H008`, `B57891S0103H009`
+
 ### #4-40 enclosure and heatsink screws
 
 ![#4-40 machine screws](../imgs-shopping/small/4-40-screws.s.jpg)

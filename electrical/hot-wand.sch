@@ -22797,11 +22797,11 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="GND57" library="hot-wand" deviceset="GND" device=""/>
 <part name="THERM1" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="BN35-3T103FB-100"/>
+<attribute name="PARTNUM" value="B57891M0103K000"/>
 </part>
 <part name="THERM2" library="hot-wand" deviceset="THERMISTOR-NTC" device="-TH-2MM" value="10K/~3950">
 <attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="BN35-3T103FB-100"/>
+<attribute name="PARTNUM" value="B57891M0103K000"/>
 </part>
 <part name="GND58" library="hot-wand" deviceset="GND" device=""/>
 <part name="P+16" library="hot-wand" deviceset="+12V" device=""/>
