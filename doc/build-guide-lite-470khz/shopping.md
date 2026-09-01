@@ -134,12 +134,6 @@ Quantity: **one small package of rigid two-part epoxy**. Use a small amount to j
 
 ## Cooling and enclosure hardware
 
-### Aluminum enclosure
-
-![Aluminum enclosure](../imgs-shopping/large/enclosure.jpg)
-
-Quantity: **one unpainted Hammond 1590T enclosure**. It is the chassis, shield, and mechanical protection for the finished unit; the project drilling templates are made for this box. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/hammond-manufacturing/1590T/131037).
-
 ### MOSFET heatsinks
 
 ![Boyd 504222B00000G heatsink](../imgs-shopping/small/heatsink-boyd-504222B00000G.s.jpg)
@@ -178,47 +172,11 @@ Quantity: **one #4-40-by-1/2-inch countersink screw**. It passes through the sho
 
 Quantity: **one #4-40 nylon-insert locknut**. It clamps the Q1 heatsink stack without loosening in service. Buy a small pack from [Amazon](https://www.amazon.com/s?k=%234-40+nylon+insert+locknuts), or use a local hardware store.
 
-### Brass PCB standoffs
-
-![](../imgs-shopping/small/brass-standoffs.jpg)
-
-Quantity: **four female-female M2.5 standoffs, 6 mm long with a 4.5 mm hex body, made of brass**. They space and support the PCB above the enclosure lid at the four mounting holes. Search for [M2.5-by-6 mm brass female-female standoffs on Amazon](https://www.amazon.com/s?k=M2.5+6mm+female+female+brass+standoff), checking the product drawing for the required body dimensions.
-
-### M2.5 PCB screws
+### M2.5 screws
 
 ![M2.5 screws](../imgs-shopping/small/m2.5-screws.s.jpg)
 
-Quantity: **eight M2.5-by-4 mm screws**. Use four to attach the standoffs to the PCB and four to attach the standoffs to the enclosure lid. Buy a small pack or metric electronics-hardware assortment from [Amazon](https://www.amazon.com/s?k=M2.5+x+4mm+screws).
-
-### Fan screws
-
-![M3 by 20 mm screws](../imgs-shopping/small/m3-20mm-screws.s.jpg)
-
-Quantity: **two M3-by-20 mm screws**. They pass through the fan and its printed mounting feature.
-
-This can be substituted liberally as long as you also substitute the nuts and washers these will screw into.
-
-### Fan washers
-
-![M3 flat washers](../imgs-shopping/small/m3-washers.s.jpg)
-
-Quantity: **four M3 flat washers**. They spread the fan-fastener load on the fan.
-
-This can be substituted liberally as long as they fit the screws being used with it.
-
-### Fan locknuts
-
-![Nylon-insert locknuts](../imgs-shopping/small/lock-nuts.s.jpg)
-
-Quantity: **four M3 nylon-insert locknuts**. They keep the fan fasteners from loosening under vibration.
-
-This can be substituted liberally as long as they fit the screws being used with it.
-
-### Rubber feet
-
-![Rubber feet](../imgs-shopping/small/rubber-feet.jpg)
-
-Quantity: **four self-adhesive rubber bumper feet**. Put them on the enclosure lid so the finished unit does not slide or rest directly on its screw heads. Buy a generic sheet or bulk pack of [small adhesive rubber feet from Amazon](https://www.amazon.com/s?k=small+self+adhesive+rubber+bumper+feet).
+Quantity: **eight M2.5-by-6 mm screws**. These are used to fasten the PCB and to fasten the box halves together. Buy a small pack or metric electronics-hardware assortment from [Amazon](https://www.amazon.com/s?k=M2.5+x+6mm+screws).
 
 ### Thermal paste
 
@@ -226,7 +184,7 @@ Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal p
 
 ### 3D-printer filament
 
-Quantity: **enough PETG for the final plastic parts and enough PLA for the disposable templates, if printing them yourself**. Use PETG for the intake grille and anything else that remains near the hot enclosure. PLA is adequate for drilling and cutting templates that are discarded after use. One standard spool of each is far more than a single unit consumes, so use filament already on hand or ask someone to print the parts.
+**Enough PETG for the plastic parts**. Avoid PLA as the device might get very warm.
 
 ## Handpiece and tip
 

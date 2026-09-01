@@ -86,51 +86,17 @@ SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground retu
 
 (DEVELOPMENT ONLY) At this point, full testing can happen, as long as tests are short enough as to not require a cooling fan.
 
-## 7. Mounting Hardware
+## 7. 3D Printed Box
 
-Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
+3D print the box, consisting of two parts: the body, and the bottom. Avoid using PLA for this, use something that can stand a bit more temperature. The design is meant to be printed without any supports.
 
-![](imgs/standoffs_3d.png)
+![](imgs/3dp_box_exploded.png)
 
-## 8. Printed Parts and Templates
+[Find the files required here (click here)](../../mechanical/lite)
 
-3D print: air intake grille
+(note: if you want a more expensive premium metal build, the Lite version PCB is compatible with the aluminum enclosure that the 13.56 MHz version uses, and you will need the brass standoffs and such)
 
-![](imgs/airintakegrille_labeled.png)
-
-3D printing material is PETG, or really anything that is more temperature resistant than PLA. Do not use PLA.
-
-Everything can be 3D printed using a 0.4mm or 0.6mm nozzle. Everything is designed to be printable without supports.
-
-3D print all drilling and cutting templates. These are to be printed using PLA.
-
-![](./imgs/cut_template.png)
-
-(note: the cut template for the bottom lid may be using a design with more holes meant for the 13.56 MHz version, skip drilling those holes)
-
-## 9. Enclosure Modification
-
-![](./imgs/enclosure_opening_labels.png)
-
-Drill and cut enclosure box and lid. Use the cutting and drilling templates to help. Thread tap enclosure box where needed. Please refer to diagram.
-
-(note: all holes start off with a 2.5mm drill bit, and if needed, a larger drill bit is used after)
-
-(note: the template is designed to be used with a drill press, the surface angles of the template are made so that holes being drilled are perpendicular to the box's tapered walls)
-
-The fan holes are the only holes that need to be larger than 2.5mm, they are supposed to be 3mm or 1/8" diameter holes.
-
-There is an area on the bottom lid where it will touch the SMA coaxial connector. You need to cut (or grind or file) this section slightly. See image
-
-![](imgs/bottom_lid_coax_notch.png)
-
-(note: the images here may not reflect the final design, for example, I may have enlarged the air outlet slits)
-
-Perform an inspection of 3D printed parts and make sure they fit on the enclosure, such that the cutouts are the right size and in the right positions. Additional cutting, grinding, and/or filing, maybe required to make adjustments.
-
-Clean all metal shavings, debur all drilled and cut edges, dull all sharp edges.
-
-## 10. Final Assembly and Testing
+## 8. Final Assembly and Testing
 
 **Perform a final review of all soldering, including test points, test resistors, solder jumpers.**
 
@@ -138,27 +104,19 @@ Clean the entire PCB, using an antistatic brush and rubbing alcohol.
 
 At this point, you may apply conformal coating over the circuit board if you wish.
 
-Fasten PCB to bottom lid, using the brass standoffs installed previously and M2.5 x 4mm screws.
+Fasten PCB to bottom lid using four M2.5 x 6mm screws.
 
-![](imgs/bottom_lid_screws_3d.png)
+![](imgs/3dp_box_screw_in_pcb.png)
 
-3D print the air intake grille. Assemble cooling fan and the air intake grille to the box. See diagram for details.
+Insert the cooling fan into the slot for the fan. Make sure the direction of airflow is towards the inside of the box. The fan should not need any fasteners, but you can use a small amount of hot glue to hold it in place (it will sit on the XT30 connector).
 
-![](../imgs/fan_fasteners.png)
+![](imgs/3dp_box_insert_fan.png)
 
-Drop the box over the whole assembly. The heatsink might touch the box, that's ok.
+Plug in the fan, making sure the polarity is correct.
 
-Bend the top two and bottom two heatsink fins outwards against the box wall. This prevents the MOSFET legs from being damaged if the box is dropped.
+Drop the box over the whole assembly. The heatsink might touch the box, that's ok. Use four M2.5 x 6mm screws to fasten the bottom lid to the box body.
 
-![](./imgs/bend_heatsink_fins.png)
-
-Using the screws that came with the purchase of the enclosure, screw the lid to the box.
-
-![](./imgs/screw_in_lid.png)
-
-Stick on some rubber feet to the bottom of the enclosure.
-
-<!-- TODO: photograph -->
+![](imgs/3dp_box_final_bottom_screws.png)
 
 ## Handpiece
 
