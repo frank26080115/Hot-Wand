@@ -20,3 +20,16 @@ eagle.epf
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+*.svg
+svg_preview
+*.XLN
+*.GML
+*.GTP
+*.GTS
+*.GTO
+*.GTL
+*.GBP
+*.GBS
+*.GBO
+*.GBL

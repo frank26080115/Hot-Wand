@@ -1,4 +1,0 @@
-# The packaged Gerber artifacts are intentionally versioned.
-!gerbers/
-!gerbers/**
-gerbers/svg_preview/
