@@ -2191,8 +2191,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="Q8" library="hot-wand" package="SOT23-3" value="2N7002K" x="22" y="41.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="23.778" y="41.1745" size="0.8128" layer="26" font="vector" rot="MR90"/>
-<attribute name="JLCPARTNUM" value="C5224211;C54347659" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="R28" library="hot-wand" package="0603-RES" value="4K7" x="22" y="38.8" smashed="yes" rot="MR180">
 <attribute name="NAME" x="20.289" y="38.362" size="0.8128" layer="26" font="vector" rot="MR0"/>
@@ -2458,9 +2458,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLC-DNP" value="1" x="107" y="43.6" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="Q9" library="hot-wand" package="SOT23-3" value="G3404" x="20.7" y="19" smashed="yes" rot="MR0">
-<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="18.922" y="19.6255" size="0.8128" layer="26" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C96615" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C96615" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="R44" library="hot-wand" package="0603-RES" value="4K7" x="20.7" y="16" smashed="yes" rot="MR0">
 <attribute name="NAME" x="18.889" y="16.062" size="0.8128" layer="26" font="vector" rot="MR0"/>

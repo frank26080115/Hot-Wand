@@ -16817,8 +16817,8 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="PARTNUM" value="UJC-H-G-SMT-P6-TR"/>
 </part>
 <part name="Q6" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="2N7002K">
-<attribute name="JLCPARTNUM" value="C5224211;C54347659"/>
-<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659"/>
+<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>
 <part name="GND28" library="hot-wand" deviceset="GND" device=""/>
 <part name="R7" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
@@ -17064,8 +17064,8 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLCPARTNUM" value="C441975"/>
 </part>
 <part name="Q7" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="G3404">
-<attribute name="JLCPARTNUM" value="C96615"/>
-<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C96615"/>
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>
 <part name="R27" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="470Ω">
 <attribute name="JLCPARTNUM" value="C23179"/>

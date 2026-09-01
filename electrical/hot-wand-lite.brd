@@ -1413,8 +1413,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </element>
 <element name="Q6" library="hot-wand" package="SOT23-3" value="2N7002K" x="22" y="39.9" smashed="yes" rot="MR0">
 <attribute name="NAME" x="23.778" y="39.5745" size="0.8128" layer="26" font="fixed" rot="MR90"/>
-<attribute name="JLCPARTNUM" value="C5224211;C54347659" x="22" y="39.9" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF" x="22" y="39.9" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659" x="22" y="39.9" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR" x="22" y="39.9" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="Q4" library="hot-wand" package="POWERPAK-SO8-X2" value="DMTH64M2LPDWQ-13" x="15" y="40" smashed="yes">
 <attribute name="NAME" x="11.4946" y="43.00463125" size="0.8128" layer="25" font="fixed"/>
@@ -1733,10 +1733,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="95.003" y="65.084" size="0.8128" layer="28" rot="MR90"/>
 </element>
 <element name="Q7" library="hot-wand" package="SOT23-3" value="G3404" x="27.8" y="2.9" smashed="yes" rot="MR270">
-<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="29.678" y="2.4745" size="0.8128" layer="26" rot="MR90"/>
 <attribute name="VALUE" x="27.9905" y="3.916" size="0.4064" layer="28" rot="MR270"/>
-<attribute name="JLCPARTNUM" value="C96615" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C96615" x="27.8" y="2.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="R27" library="hot-wand" package="0603-RES" value="470Ω" x="28.8" y="6.4" smashed="yes" rot="MR90">
 <attribute name="JLCPARTNUM" value="C23179" x="28.8" y="6.4" size="1.778" layer="28" rot="MR90" display="off"/>

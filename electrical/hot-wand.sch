@@ -22630,8 +22630,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="Q8" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="2N7002K">
-<attribute name="JLCPARTNUM" value="C5224211;C54347659"/>
-<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659"/>
+<attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>
 <part name="GND39" library="hot-wand" deviceset="GND" device=""/>
 <part name="R28" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
@@ -22817,8 +22817,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="Q9" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="G3404">
-<attribute name="JLCPARTNUM" value="C96615"/>
-<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A"/>
+<attribute name="JLCPARTNUM" value="C14498;C547263;C96615"/>
+<attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>
 <part name="R44" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="4K7">
 <attribute name="JLCPARTNUM" value="C23162"/>
