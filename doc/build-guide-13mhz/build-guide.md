@@ -68,9 +68,15 @@ Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of t
 
 ## 4. Controls and Firmware Bring-Up
 
-Populate the tactile button, OLED screen, and the coax connector. The OLED screen needs a right angled header (4 pins).
+Populate the tactile button, OLED screen, and the coax connector. The OLED screen needs a right angled header (4 pins), and when soldering, raise the header a bit.
 
 ![](./imgs/oled_prep.png)
+
+![](./imgs/oled_gap_large.png)
+
+![](./imgs/oled_gap_large_ctx.png)
+
+Make sure you trim off the protruding header from the bottom of the PCB.
 
 Populate the fan connector
 
