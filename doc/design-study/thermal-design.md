@@ -123,6 +123,4 @@ I've met with the developers of Radio Thermal, I commented on how big their desi
 
 In my design, there's still a fan and a heatsink (actually two heatsinks stuck together) on the MOSFET. The air is blowing against the heatsink and the toroids internally.
 
-![](../build-guide-lite-470khz/imgs/heatsink_sticking_out.png)
-
 ![](../build-guide-lite-470khz/imgs/cooling_airflow.png)

@@ -76,9 +76,7 @@ The bottom 3 fins of the heatsink needs to be bent to avoid the 12V buck convert
 
 Then solder the MOSFET to the circuit board.
 
-Using a multimeter, ensure that the MOSFET's drain tab is not continuous with the screw or heatsink.
-
-WARNING: do NOT forget the thermal pad or the shoulder washer, as without them you can cause a catastrophic high energy short circuit to ground when the circuit is powered up.
+WARNING: do NOT ever use the heatsink or the TO-220 as a ground, it is not ground, it is the drain of the MOSFET carrying high RF voltage.
 
 ## 6. Solder Jumpers
 
@@ -94,7 +92,7 @@ SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground retu
 
 [Find the files required here (click here)](../../mechanical/lite)
 
-(note: if you want a more expensive premium metal build, the Lite version PCB is compatible with the aluminum enclosure that the 13.56 MHz version uses, and you will need the brass standoffs and such)
+(note: if you want a more expensive premium metal build, the Lite version PCB is compatible with the aluminum enclosure that the 13.56 MHz version uses, and you will need the brass standoffs, and the heatsink stack needs to be insulated from the MOSFET)
 
 ## 8. Final Assembly and Testing
 
@@ -129,3 +127,9 @@ When finished, you can just connect the it to the SMA connector
 #### If using: Thermaltronics Handpiece
 
 Thermaltronics still sells their older SHP-K handpieces (meant for 470 kHz cartridges) for about $50 dollars, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.
+
+## Iron Stand
+
+Please see [this page about my 3D printed folding soldering stand](../build-guide-iron-stand.md)
+
+![](../imgs/stand/side_view_2.png)

@@ -198,6 +198,8 @@ Quantity: **one unpainted Hammond 1590T enclosure**. Shop at [Digi-Key](https://
 
 Quantity: **one HSB21-454515 heatsink, 45-by-45-by-15 mm**. It cools Q1 and Q2 and transfers their heat to the enclosure wall. Shop using the exact-part [Digi-Key search](https://www.digikey.com/en/products/result?keywords=HSB21-454515).
 
+(note: Uxcell on Amazon has 45mm x 45mm x 10mm heatsinks in packs of 5 for $8. This is compatible with our design, it is cheaper if you are using all 5, but it less effective at cooling.)
+
 ### Cooling fan
 
 ![](../imgs-shopping/small/cooling-fan.jpg)
@@ -234,7 +236,7 @@ Quantity: **six female-female M2.5 standoffs, 6 mm long with a 4.5 mm hex body, 
 
 ![M2.5 screws](../imgs-shopping/small/m2.5-screws.s.jpg)
 
-Quantity: **twelve M2.5-by-4 mm screws**. Use six to attach the standoffs to the PCB and six to attach the standoffs to the enclosure lid. Buy a small pack or metric electronics-hardware assortment from [Amazon](https://www.amazon.com/s?k=M2.5+x+4mm+screws).
+Quantity: **twelve M2.5-by-4 mm screws**. Use six to attach the standoffs to the PCB and six to attach the standoffs to the enclosure lid. Buy a small pack from [Amazon](https://www.amazon.com/s?k=M2.5+x+4mm+screws).
 
 ### Fan screws
 
@@ -278,13 +280,13 @@ Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal p
 
 ### High-temperature epoxy
 
-Quantity: **one small package of high-temperature two-part epoxy**. Use small amounts to secure the two thermistors in reliable thermal contact with Q1 and Q2, following the build guide and keeping it off electrical joints. A consumer metal-repair epoxy such as original J-B Weld is sufficient; search [Amazon](https://www.amazon.com/s?k=high+temperature+two+part+epoxy+metal), or buy it from an automotive or hardware store.
+Quantity: **one small package of high-temperature two-part epoxy**. Use small amounts to secure the two thermistors in reliable thermal contact with Q1 and Q2, following the build guide and keeping it off electrical joints. A consumer metal-repair epoxy such as original J-B Weld is sufficient; search [Amazon](https://www.amazon.com/s?k=high+temperature+two+part+epoxy), or buy it from an automotive or hardware store.
 
 ### Small cable ties
 
 ![Zip-ties](../imgs-shopping/small/zipties.jpg)
 
-Quantity: **at least two small cable ties; buy one inexpensive bulk bag**. They provide strain relief for the thermistor leads and the fan cable at the PCB tie-down features. Search for [4-inch nylon cable ties on Amazon](https://www.amazon.com/s?k=4+inch+nylon+cable+ties+bulk), or buy them from a local hardware store.
+Quantity: **at least two small cable ties; buy one inexpensive bulk bag**. They provide strain relief for the thermistor leads and the fan cable at the PCB tie-down features. Search for [4-inch nylon cable ties on Amazon](https://www.amazon.com/s?k=4+inch+nylon+cable+ties), or buy them from a local hardware store.
 
 ### 3D-printer filament
 

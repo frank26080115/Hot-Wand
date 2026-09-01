@@ -150,19 +150,7 @@ Quantity: **two tall stamped heatsinks for TO-220**. Stack them around Q1 as sho
 
 Quantity: **one Noctua NF-A4x10 PWM, 12 V, 40-by-40-by-10 mm fan**. Shop from [Noctua's product page](https://www.noctua.at/en/products/nf-a4x10-pwm).
 
-This can be substituted with any inexpensive 40 mm x 40 mm x 10 mm, 12 V, four-wire PWM cooling fan with the standard PC-fan connector and pinout.
-
-### TO-220/TO-247 thermal pad
-
-![TO-220 thermal pad](../imgs-shopping/small/thermal-pad.s.jpg)
-
-Quantity: **one electrically insulating silicone transistor pad sized to cover the final Q1 package**. Place it between Q1 and the heatsink; it is mandatory because the transistor's drain tab must remain electrically isolated from the mounting hardware. T-Global DC0011/06-TI900-0.12-2A is suitable if Q1 is TO-220; if the selected Q1 is TO-247, buy a larger pad or an insulating sheet that can be cut to size. Shop for the TO-220 pad at [Digi-Key](https://www.digikey.com/en/products/detail/t-global-technology/DC0011-06-TI900-0-12-2A/3466708).
-
-### Transistor shoulder washer
-
-![Nylon shoulder washer](../imgs-shopping/small/nylon-shoulder-washer.s.jpg)
-
-Quantity: **one nylon shoulder washer for a #4 screw, approximately 3.7 mm outside diameter and 2 mm shoulder depth**. Fit it into Q1's tab hole to isolate the screw from the drain tab. Confirm it fits the final Q1 package. Shop for 12SWS0432 using the [Digi-Key search](https://www.digikey.com/en/products/result?keywords=12SWS0432).
+This can be substituted with any inexpensive 40 mm x 40 mm x 10 mm, 12 V cooling fan.
 
 ### Q1 mounting screw
 
@@ -180,11 +168,11 @@ Quantity: **one #4-40 nylon-insert locknut**. It clamps the Q1 heatsink stack wi
 
 ![M2.5 screws](../imgs-shopping/small/m2.5-screws.s.jpg)
 
-Quantity: **eight M2.5-by-6 mm screws**. These are used to fasten the PCB and to fasten the box halves together. Buy a small pack or metric electronics-hardware assortment from [Amazon](https://www.amazon.com/s?k=M2.5+x+6mm+screws).
+Quantity: **eight M2.5-by-6 mm screws**. These are used to fasten the PCB and to fasten the box halves together. Buy a small pack from [Amazon](https://www.amazon.com/s?k=M2.5+x+6mm+screws), or use a local hardware store.
 
 ### Thermal paste
 
-Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal paste**. Apply it only at the metal-to-metal heatsink interfaces shown in the build guide; it is not a substitute for the electrically insulating pad at Q1. Any inexpensive generic paste is adequate. Search [Amazon](https://www.amazon.com/s?k=non+conductive+CPU+thermal+paste), and do not use liquid metal.
+Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal paste**. Apply it only at the metal-to-metal heatsink interfaces shown in the build guide. Any inexpensive generic paste is adequate. Search [Amazon](https://www.amazon.com/s?k=non+conductive+CPU+thermal+paste).
 
 ### 3D-printer filament
 

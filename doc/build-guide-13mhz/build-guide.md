@@ -247,3 +247,9 @@ Stick on some rubber feet to the bottom of the enclosure.
 ## 11. Enclosed Development
 
 (DEVELOPMENT ONLY) further firmware development
+
+## Iron Stand
+
+Please see [this page about my 3D printed folding soldering stand](../build-guide-iron-stand.md)
+
+![](../imgs/stand/side_view_2.png)

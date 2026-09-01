@@ -34,7 +34,7 @@ Realistically, the only configuration that actually works is:
 The jumpers near the output of the Hot Wand Lite is where you can select the power level. The levels are:
 
  * Sport (maximum always)
- * Normal (attempt to stay under 3A limit)
+ * Normal (attempt to stay under 5A limit)
  * Eco (60% power always)
 
 NOTE: These levels are not meant for saving battery power, they only exist so that if your power supply is not sufficient, you have an option to lower the power usage. In fact, theoretically if you are heating up a gigantic solder joint, using a higher power mode will use less total battery energy, because the heat will rise faster and less is being lost during that time. I would keep the configuration in Sport mode unless you have an insufficient power supply.
