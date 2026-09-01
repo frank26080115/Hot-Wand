@@ -138,7 +138,11 @@ Quantity: **one small package of rigid two-part epoxy**. Use a small amount to j
 
 ![Boyd 504222B00000G heatsink](../imgs-shopping/small/heatsink-boyd-504222B00000G.s.jpg)
 
-Quantity: **two Boyd 504222B00000G heatsinks**. Stack them around Q1 as shown in the Lite build guide to cool the main RF switch and brace it against the enclosure wall. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/boyd-laconia-llc/504222B00000G/5833).
+Quantity: **two tall stamped heatsinks for TO-220**. Stack them around Q1 as shown in the Lite build guide to cool the main RF switch and brace it against the enclosure wall.
+
+[Assmann WSW Components V2006B @ Digi-Key](https://www.digikey.com/en/products/detail/assmann-wsw-components/V2006B/3476155)
+
+[Boyd Laconia 504222B00000G @ Digi-Key](https://www.digikey.com/en/products/detail/boyd-laconia-llc/504222B00000G/5833)
 
 ### Cooling fan
 
