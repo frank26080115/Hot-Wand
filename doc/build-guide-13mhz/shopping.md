@@ -222,6 +222,8 @@ Quantity: **two nylon shoulder washers for #4 screws, approximately 3.7 mm outsi
 
 ### Thermistors
 
+![Thermistor](../imgs-shopping/small/ntc-thermistor.jpg)
+
 Quantity: **two TDK B57891M0103K000 NTC thermistors**. Epoxy one each to each of the TO-220 MOSFETs. Connect them using wires to THERM1 and THERM2 on the PCB. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/tdk/B57891M0103K000/3500546).
 
 Alternatives: `B57891M0103J000`, `B57891S0103F008`, `B57891S0103J008`, `B57891S0103H008`, `B57891S0103H009`
