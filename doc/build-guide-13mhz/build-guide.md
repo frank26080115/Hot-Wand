@@ -259,3 +259,7 @@ Stick on some rubber feet to the bottom of the enclosure.
 Please see [this page about my 3D printed folding soldering stand](../build-guide-iron-stand.md)
 
 ![](../imgs/stand/side_view_2.png)
+
+## Economy Build
+
+There's a cheaper way of building this project, using more 3D printed parts and less other hardware. [Please see this (click here) document if you are interested](econo-build.md)
