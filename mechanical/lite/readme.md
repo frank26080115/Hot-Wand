@@ -1,0 +1,1 @@
+this directory contains the 3D printed components used for the Hot Wand Lite 470 kHz version

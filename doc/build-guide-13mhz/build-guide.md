@@ -198,7 +198,7 @@ Bend the MOSFET legs, refer to the diagram. The goal is so that the heatsink can
 
 Solder MOSFETs to PCB, continue to adjust the angle of the MOSFET's legs as needed.
 
-Wire up the NTC thermistors and attach them to the MOSFET's plastic face. First, ziptie the wires of the NTC thermistors to the drain leg of the MOSFET. Then, use high temperature epoxy to adhere the bead of the NTC thermistor to the surface of the MOSFET. Please refer to photograph.
+Wire up the NTC thermistors and attach them to the MOSFET's plastic face. First, use high temperature RTV silicone to adhere the wires of the NTC thermistors a part of the PCB near the MOSFET. Then, use high temperature epoxy to adhere the bead of the NTC thermistor to the surface of the MOSFET. Note: this step takes many hours for the silicone and epoxy to cure, be patient. Please refer to photograph.
 
 Perform mandatory safety related firmware tests (tip detection, NTC thermistors, warning near 8S input voltages). These tests are to be done under unlimited current input power (the glass fuse is the protection now), but the buck converter should be set to a low setting.
 

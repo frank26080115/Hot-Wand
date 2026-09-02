@@ -290,11 +290,9 @@ Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal p
 
 Quantity: **one small package of high-temperature two-part epoxy**. Use small amounts to secure the two thermistors in reliable thermal contact with Q1 and Q2, following the build guide and keeping it off electrical joints. A consumer metal-repair epoxy such as original J-B Weld is sufficient; search [Amazon](https://www.amazon.com/s?k=high+temperature+two+part+epoxy), or buy it from an automotive or hardware store.
 
-### Small cable ties
+### Sensor-safe high-temperature RTV silicone
 
-![Zip-ties](../imgs-shopping/small/zipties.jpg)
-
-Quantity: **at least two small cable ties; buy one inexpensive bulk bag**. They provide strain relief for the thermistor leads and the fan cable at the PCB tie-down features. Search for [4-inch nylon cable ties on Amazon](https://www.amazon.com/s?k=4+inch+nylon+cable+ties), or buy them from a local hardware store.
+Quantity: **one small tube of Permatex Ultra Red RTV Silicone Gasket Maker**. Make sure the tube is labeled sensor-safe and non-corrosive. Do not substitute an acidic, acetic-cure RTV: its cure byproducts can corrode exposed copper and other electronics. Search [Amazon](https://www.amazon.com/s?k=Permatex+Ultra+Red+RTV+Silicone+Gasket+Maker), or buy it from an automotive-parts or hardware store.
 
 ### 3D-printer filament
 

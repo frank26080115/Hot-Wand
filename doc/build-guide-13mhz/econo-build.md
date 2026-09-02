@@ -68,7 +68,7 @@ Clean the entire PCB, using an antistatic brush and rubbing alcohol.
 
 At this point, you may apply conformal coating over the circuit board if you wish.
 
-Use M2.5 x 8mm screws to screw down the PCB. Brass standoffs are not used.
+Use **five** M2.5 x 8mm screws to screw down the PCB. Brass standoffs are not used. The screw near the F-type coax connector is installed, the screw near the buck converter is not installed.
 
 ![](imgs/econo_screw_down_pcb.png)
 
