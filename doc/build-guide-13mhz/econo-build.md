@@ -8,7 +8,7 @@ Do not buy any of the brass standoffs.
 
 Do not buy the aluminum enclosure.
 
-The screws used are `M2.5 x 8mm` and `#4-40 x 0.5 in`. There are no nuts or washers required at all.
+The screws used are `M2.5 x 8mm` and `#4-40 x 3/8 in`. There are no nuts or washers required at all.
 
 Do not buy thermal paste, it is not needed.
 
@@ -24,7 +24,27 @@ The heatsink needs a drilling template, you can print this out of PLA.
 
 ## MOSFET and Heatsink Mounting
 
+Drill and thread tap the heatsink. A 3D printed drilling template is provided. The thread tap is for a #4-40 thread. Remember to place the template correctly such that the final result would be optimized for upward airflow.
+
+Cut some of the fins off the heatsink where screws will sit over.
+
+Debur the cuts and clean any metal shavings from heatsink.
+
+Clean the surface of the heatsink and the back of both MOSFETs with rubbing alcohol.
+
+Place a silicone thermal pad between each MOSFET and the heatsink.
+
+Insert a nylon shoulder washer (for #4 screws with 3.7mm OD and 2mm depth) into the TO-220 tab's hole.
+
+Fasten the MOSFET to the heatsink using a #4-40 x 3/8 inch long screw through the nylon shoulder washer.
+
+DO NOT FORGET THE NYLON SHOULDER WASHERS! Or else you blow up your circuit as you short circuit the drain tab to ground.
+
 ![](imgs/econo_mosfet_stack.png)
+
+Before tightening completely, make sure the MOSFET legs are aligned with their perspective footprints on the circuit board. Tighten the screw completely after alignment is ensured.
+
+Check to make sure heatsink is not causing continuity problems. The drain tab of each MOSFET must not be conductive with the heatsink, nor with each other.
 
 The MOSFET legs do NOT need to be bent.
 
@@ -32,7 +52,7 @@ See original instructions about attaching the thermistors.
 
 ## Fan Installation
 
-The fan is inserted into the plastic enclosure and held in place using hot glue. No fasteners are used.
+The fan is inserted into the plastic enclosure and held in place using hot glue. No fasteners are used. The design has the fan resting on the XT30 connector, so there's no fear of it moving even if there are no fasteners.
 
 ![](imgs/econo_install_fan.png)
 
