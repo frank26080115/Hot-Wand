@@ -104,3 +104,37 @@ Measurements at 13.56 MHz of a STTC-147 tip
 | Cold                                | 42.3 | +j13 |     153 nH      | 1.4 |  -16 dB |
 | Warm<br />(below Curie temperature) | 55   | -j16 |     730 pF      | 1.1 |  -23 dB |
 | Hot<br />(above Curie temperature)  | 12   | +j24 |     280 nH      | 5.1 | -3.4 dB |
+
+## Relevant Patent
+
+[US Patent US4795886A, filed by Metcal in 1986](https://patents.google.com/patent/US4795886A/en), describes the first embodiment of this, although it was different.
+
+![](imgs/patent_US4795886A_diagrams.png)
+
+![](imgs/patent_US4795886A_diagram_2.png)
+
+![](imgs/patent_US4795886A_diagram_3.png)
+
+The patent’s preferred embodiment uses a directional coupler to measure reflected-voltage magnitude. It does not measure the phase of the reflected wave, so it does not obtain the complete complex reflection coefficient. Our implementation instead measures the phase relationship between load voltage and current, which is another indicator of the changing load impedance.
+
+> When the current to the load exceeds the desired constant magnitude, the voltage induced across coil 16 causes the regulator 17 to decrease the voltage fed to the collector of the final stage of the power supply, namely the Class C amplifier 12. To achieve this function, the detector, differential amplifier and regulator 17 has an adjustable reference voltage against which the voltage across coil 16 is compared. If the voltage across coil 16 exceeds the reference voltage, the regulator 17 lowers the collector voltage to the Class C amplifier 12, until the two volt ages are equal. Similarly, if the voltage across coil 16 is lower than the reference voltage, the regulator senses the difference and raises the voltage to the Class C amplifier until the voltage across coil 16 equals the reference voltage. If the Class C amplifier is of the vacuum tube type, the regulator 17 controls the plate voltage of that amplifier.
+
+Fun, our modern implementation adjusts the voltage being output by the buck converter. This is saying something similar, except it is only using voltage on the coil as the feedback signal, not the phase. (you can see why me and others have been confused by this current transformer's purpose)
+
+The patent's preferred embodiment turns off the RF for a fixed time duration when the iron tip is too hot (reflected voltage exceeds an adjustable threshold associated with a temperature near the effective Curie point)
+
+> When the reflected voltage signal from output 18 produces a voltage that exceeds the reference voltage from circuit 22, the Schmitt trigger produces an output signal which actuates a monostable 21b multivibrator which produces an output signal V_c of a predetermined length, to V_c can turn off the driver transistor by using it to bias the base of a common emitter amplifier stage.
+
+later
+
+> Since the cooling load is small the heater may still be at the effective Curie when time period to expires in which event the driver and Class C amplifier will be turned back on, but since there would then still be a reflected voltage at output 18 the multivibrator would be turned back on almost instantly starting a new off period for a time period to. Thus, the radio frequency power to heater 15 would be cycled on and off with the "off" periods being relatively long as compared to the "on" periods. On the other hand if the cooling load was large the same events would occur except that there would be greater cooling of heater 15 during the time periods to, and the "off" periods would usually be shorter than the "on" periods.
+
+Although it also mentions reducing the current as an alternative implementation
+
+> Instead of turning current on and off for controlling the temperature of the load 15, the apparatus may be designed to simply reduce the current.
+
+Interestingly, even though we think of these RF irons as having one fixed temperature as determined by the tip's Curie temperature, this patent also describes a way of controlling the temperature.
+
+> As the temperature approaches T_c, V_r will increase above this residual voltage. The threshold detector 21, 22 can be set to trigger at any temperature in the range perhaps T_3 to T_c. Thus we have available a range of possible operating temperatures near T_c.
+
+> Though it is theoretically possible to vary the operating temperature over the entire range from approximately T_3 to T_c it is probably desirable to maintain it substantially below the effective Curie temperature T_c at all times in order to maintain the good amplifier efficiency and stability referred to previously as one of the advantages of this approach. A large value of V_r, corresponds to a high degree of mismatch between the Class C amplifier 12 and the load 14, 15. This in turn lowers the efficiency of the amplifier output. Thus operation at temperatures ranging from T_3 up to a temperature T_4, at which amplifier efficiency and stability are still high, is desirable.
