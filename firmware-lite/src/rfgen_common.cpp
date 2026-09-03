@@ -29,10 +29,10 @@ static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
 #elif defined(HOT_WAND_TARGET_XIAO_SAMD21)
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
+#elif defined(HOT_WAND_TARGET_RP2040)
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint32_t kMaximumPwmTop   = UINT16_MAX;
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
 // The RMT carrier uses the 80 MHz APB clock. RMT durations are 15-bit.
 static constexpr uint32_t kEsp32RmtClockHz = 80000000u;
 static constexpr uint32_t kPwmPeriodClocks =

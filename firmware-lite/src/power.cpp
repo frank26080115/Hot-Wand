@@ -264,7 +264,7 @@ uint32_t pwrmgt_read_voltage_mv(void)
     }
 
     constexpr uint32_t kDividerTotalOhms      = kDividerUpperOhms + kDividerLowerOhms;
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
     const uint32_t     adcVoltageMv          = static_cast<uint32_t>(analogReadMilliVolts(ADC_PIN));
     const uint64_t     conversionNumerator   = static_cast<uint64_t>(adcVoltageMv) * kDividerTotalOhms;
     constexpr uint32_t kConversionDenominator = kDividerLowerOhms;
@@ -378,17 +378,17 @@ static void initialize_hardware()
 #if defined(HOT_WAND_TARGET_XIAO_SAMD21)
     // The SAMD21 core requires an explicit selection of its 3.3 V supply.
     analogReference(AR_DEFAULT);
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
+#elif defined(HOT_WAND_TARGET_RP2040)
     // RP2040 ADC reference selection is fixed in hardware; this Arduino core
     // intentionally has no analogReference() API.
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
     // Arduino-ESP32 supplies calibrated millivolt readings. Maximum attenuation
     // is required because the existing divider approaches the 3.3 V rail.
 #else
 #error "Unsupported target for power-management ADC setup"
 #endif
     analogReadResolution(12);
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
     analogSetPinAttenuation(ADC_PIN, ADC_11db);
 #endif
 

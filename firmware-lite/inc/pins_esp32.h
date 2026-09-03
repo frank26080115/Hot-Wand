@@ -56,6 +56,36 @@
 #define ADC_PIN 4
 #define ADC_UNUSED_PIN 8
 
+#elif defined(HOT_WAND_TARGET_ESP32C3_SUPERMINI)
+
+#define RFGEN_PIN 6
+#define BLINK_LED_PIN 3
+
+// Power-mode selection inputs. SEL2 selects Eco; SEL3 selects Sport.
+#define SEL2_PIN 10
+#define SEL3_PIN 9
+
+#define POWER_SWITCH_PIN 2
+#define FAN_CONTROL_PIN 0
+
+#define ADC_PIN 1
+#define ADC_UNUSED_PIN 7
+
+#elif defined(HOT_WAND_TARGET_WAVESHARE_ESP32C3_ZERO)
+
+#define RFGEN_PIN 20
+#define BLINK_LED_PIN 0
+
+// Power-mode selection inputs. SEL2 selects Eco; SEL3 selects Sport.
+#define SEL2_PIN 9
+#define SEL3_PIN 10
+
+#define POWER_SWITCH_PIN 1
+#define FAN_CONTROL_PIN 3
+
+#define ADC_PIN 2
+#define ADC_UNUSED_PIN 19
+
 #else
-#error "Select exactly one supported XIAO ESP32 target"
+#error "Select exactly one supported ESP32 target"
 #endif

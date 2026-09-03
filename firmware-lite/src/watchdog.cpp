@@ -42,7 +42,7 @@ void watchdog_feed()
     WDT->CLEAR.reg = WDT_CLEAR_CLEAR_KEY;
 }
 
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
+#elif defined(HOT_WAND_TARGET_RP2040)
 
 void watchdog_init()
 {
@@ -54,7 +54,7 @@ void watchdog_feed()
     rp2040.wdt_reset();
 }
 
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
 
 void watchdog_init()
 {

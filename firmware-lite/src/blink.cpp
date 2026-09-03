@@ -15,7 +15,7 @@
 
 #include "hotwandlite.h"
 
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
 #include <driver/gpio.h>
 #endif
 
@@ -110,11 +110,11 @@ void blink_init(void)
     PORT->Group[g_APinDescription[BLINK_LED_PIN].ulPort]
         .PINCFG[g_APinDescription[BLINK_LED_PIN].ulPin]
         .bit.DRVSTR = 1;
-#elif defined(HOT_WAND_TARGET_XIAO_RP2040) || defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
+#elif defined(HOT_WAND_TARGET_RP2040)
     // Select the 8 mA drive characteristic; total current sourced by all GPIO
     // and QSPI pins must remain below 50 mA.
     pinMode(BLINK_LED_PIN, OUTPUT_8MA);
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
     pinMode(BLINK_LED_PIN, OUTPUT);
     // Strongest drive is characterized at about 40 mA source current while
     // meeting VOH; it is a drive characteristic, not a current limiter.

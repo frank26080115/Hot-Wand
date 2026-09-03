@@ -1,4 +1,4 @@
-#if defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#if defined(HOT_WAND_TARGET_ESP32C3)
 
 /* ESP32-C3 platform hooks; the RMT engine is shared with ESP32-S3. */
 
