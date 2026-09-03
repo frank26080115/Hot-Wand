@@ -29,4 +29,4 @@ The strike plate can be made of something like a soda can if you don't want to p
 
 Assembly assumes to use M3 sized 16mm long plastite screws (McMaster-Carr `96817A107`) and M3 washers. You may substitute this as you wish, all the holes are a bit undersized in the design.
 
-The design is available [at Onshape (click here)](https://cad.onshape.com/documents/cfeb2fa9b83109508c6ff5e8/w/69b4ef0849f116bf37eeaccd/e/969a8f9c953454fe4aa374bb), public export permissions have been enabled. Static exported files have been saved to [this directory in the repo](mechanical\iron-stand) as well.
+The design is available [at Onshape (click here)](https://cad.onshape.com/documents/cfeb2fa9b83109508c6ff5e8/w/69b4ef0849f116bf37eeaccd/e/969a8f9c953454fe4aa374bb), public export permissions have been enabled. Static exported files have been saved to [this directory in the repo](../mechanical/stand) as well.

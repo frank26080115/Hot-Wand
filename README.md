@@ -84,5 +84,5 @@ and please explore the [documentation directory itself](doc), as I might've writ
 
 ## Build Guides
 
- * [DIY build guide for the Hot Wand (13.56 MHz version)](doc\build-guide-13mhz\build-guide.md)
- * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc\build-guide-lite-470khz\build-guide-lite.md)
+ * [DIY build guide for the Hot Wand (13.56 MHz version)](doc/build-guide-13mhz/build-guide.md)
+ * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc/build-guide-lite-470khz/build-guide-lite.md)
