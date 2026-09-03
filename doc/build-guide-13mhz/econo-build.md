@@ -22,6 +22,8 @@ Note: This design only works for a heatsink that is 45mm x 45mm x 15mm, `HSB21-4
 
 The box is designed as two pieces. 3D print them both out a temperature resistant material, such as PETG. See [this directory for the files you need](../../mechanical/econo)
 
+![](imgs/econo_3d_printed_box.png)
+
 * Box Body
 * Bottom Lid
 * Heatsink Drilling Template
