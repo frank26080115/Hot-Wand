@@ -18,9 +18,13 @@ Note: This design only works for a heatsink that is 45mm x 45mm x 15mm, `HSB21-4
 
 ## 3D Printed Box
 
-The box is designed as two pieces. 3D print them both out a temperature resistant material, such as PETG.
+The box is designed as two pieces. 3D print them both out a temperature resistant material, such as PETG. See [this directory for the files you need](../../mechanical/econo)
 
-The heatsink needs a drilling template, you can print this out of PLA.
+* Box Body
+* Bottom Lid
+* Heatsink Drilling Template
+
+The heatsink needs a drilling template, you can print this out of PLA because it'll be thrown away after you are done.
 
 ## MOSFET and Heatsink Mounting
 

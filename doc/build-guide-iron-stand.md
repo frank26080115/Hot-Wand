@@ -17,6 +17,8 @@ The pieces are named:
 * Tip Shroud
 * Left Foot, Right Foot
 
+The files are all [here in this directory](../mechanical/stand)
+
 It can house cylindrical magnets that are 1/2" in diameter and 1/4" thick, magnetized axially. (KJ Magnetics D84, D84AH, D84B-N52, etc)
 
 The design has the aluminum strike plate intentionally taking possible hits from the hot soldering iron tip, preventing the plastic from getting melted accidentally. However it is still advised to cover exposed plastic surfaces with aluminum foil tape for added protection.

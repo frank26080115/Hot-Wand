@@ -128,6 +128,8 @@ Short **SJ6** and **SJ7** and **SJ8** with solder.
 
 ![](./imgs/3d_printed_parts_dictionary.png)
 
+The files are all [here in this directory](../../mechanical/main)
+
 3D printing material is PETG, or really anything that is more temperature resistant than PLA. Do not use PLA.
 
 Everything can be 3D printed using a 0.4mm or 0.6mm nozzle. Everything is designed to be printable without supports.
