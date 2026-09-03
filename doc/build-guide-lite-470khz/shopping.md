@@ -168,7 +168,9 @@ Quantity: **one #4-40 nylon-insert locknut**. It clamps the Q1 heatsink stack wi
 
 ![M2.5 screws](../imgs-shopping/small/m2.5-screws.s.jpg)
 
-Quantity: **eight M2.5-by-6 mm screws**. These are used to fasten the PCB and to fasten the box halves together. Buy a small pack from [Amazon](https://www.amazon.com/s?k=M2.5+x+6mm+screws), or use a local hardware store.
+Quantity: **eight M2.5-by-8 mm screws**. These are used to fasten the PCB and to fasten the box halves together. Buy a small pack from [Amazon](https://www.amazon.com/s?k=M2.5+x+8mm+screws), or use a local hardware store.
+
+Alternatives: #2 x 5/16" thread forming screws or sheet metal screws or plastite screws, M2.5 x 8mm plastite screws
 
 ### Thermal paste
 

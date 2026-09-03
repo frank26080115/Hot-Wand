@@ -2,6 +2,8 @@
 
 There's a way to build the 13.56 MHz version of Hot Wand for cheap, using a 3D printed enclosure and skipping a lot of components.
 
+Due to the lack of an aluminum enclosure, this design relies heavily on the cooling fan for cooling. It also does not provide an RF shield between the inside and outside.
+
 If you wish to build this way, then you need to be smart and pay attention to both documents to figure out what to buy and what not to buy.
 
 Do not buy any of the brass standoffs.
@@ -73,6 +75,8 @@ Clean the entire PCB, using an antistatic brush and rubbing alcohol.
 At this point, you may apply conformal coating over the circuit board if you wish.
 
 Use **five** M2.5 x 8mm screws to screw down the PCB. Brass standoffs are not used. The screw near the F-type coax connector is installed, the screw near the buck converter is not installed.
+
+(alternatives: #2 x 5/16" thread forming screws or sheet metal screws or plastite screws, M2.5 x 8mm plastite screws)
 
 ![](imgs/econo_screw_down_pcb.png)
 
