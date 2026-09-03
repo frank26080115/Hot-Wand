@@ -3,7 +3,12 @@
 // Board-level pin assignments traced from electrical/hot-wand-lite.sch.
 // The XIAO boards share pad names and positions, but not GPIO numbers.
 
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3)
+#if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3)
+
+#warning "This target, ESP32S3, is experimental"
+#warning "The code has been written, but it's more expensive"
+#warning "So I never had a good reason to buy one and test it myself"
+#warning "Please just get a ESP32C3 instead of the S3"
 
 // XIAO D1, ESP32-S3 GPIO2. RMT signals can be routed through the GPIO matrix.
 #define RFGEN_PIN 2
@@ -30,7 +35,7 @@
 #define ADC_PIN 3
 #define ADC_UNUSED_PIN 7
 
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32C3)
+#elif defined(HOTWANDLITE_TARGET_XIAO_ESP32C3)
 
 // XIAO D1, ESP32-C3 GPIO3. RMT signals can be routed through the GPIO matrix.
 #define RFGEN_PIN 3
@@ -56,7 +61,7 @@
 #define ADC_PIN 4
 #define ADC_UNUSED_PIN 8
 
-#elif defined(HOT_WAND_TARGET_ESP32C3_SUPERMINI)
+#elif defined(HOTWANDLITE_TARGET_ESP32C3_SUPERMINI)
 
 #define RFGEN_PIN 6
 #define BLINK_LED_PIN 3
@@ -71,7 +76,7 @@
 #define ADC_PIN 1
 #define ADC_UNUSED_PIN 7
 
-#elif defined(HOT_WAND_TARGET_WAVESHARE_ESP32C3_ZERO)
+#elif defined(HOTWANDLITE_TARGET_WAVESHARE_ESP32C3_ZERO)
 
 #define RFGEN_PIN 20
 #define BLINK_LED_PIN 0

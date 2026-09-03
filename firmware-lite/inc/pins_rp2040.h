@@ -2,7 +2,7 @@
 
 // Board-level pin assignments traced from electrical/hot-wand-lite.sch.
 
-#if defined(HOT_WAND_TARGET_XIAO_RP2040)
+#if defined(HOTWANDLITE_TARGET_XIAO_RP2040)
 
 #define RFGEN_PIN D1
 
@@ -27,7 +27,7 @@
 #define ADC_PIN D2
 #define ADC_UNUSED_PIN D8
 
-#elif defined(HOT_WAND_TARGET_WAVESHARE_RP2040_ZERO)
+#elif defined(HOTWANDLITE_TARGET_WAVESHARE_RP2040_ZERO)
 
 // Both footprint pads are connected to the voltage-sense net. GPIO27 is ADC1;
 // GPIO2 is not ADC-capable and must remain high-impedance.

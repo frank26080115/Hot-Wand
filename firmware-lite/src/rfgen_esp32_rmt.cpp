@@ -12,7 +12,7 @@
  * high-power table.
  */
 
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
+#if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_MCU_ESP32C3)
 
 #include "rfgen_esp32_rmt.h"
 

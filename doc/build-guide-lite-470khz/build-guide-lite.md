@@ -44,9 +44,9 @@ Many microcontroller modules are compatible with this design:
 
  * Seeed Studio XIAO RP2040
  * Seeed Studio XIAO SAMD21
- * Seeed Studio XIAO ESP32-S3
  * Seeed Studio XIAO ESP32-C3
  * Waveshare RP2040 Zero (needs to be installed upside down)
+ * ESP32-C3 Super Mini
 
 Solder male headers to the microcontroller module (the headers should have been included with the microcontroller module).
 

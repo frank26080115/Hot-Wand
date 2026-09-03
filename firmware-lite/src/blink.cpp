@@ -15,7 +15,7 @@
 
 #include "hotwandlite.h"
 
-#if defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
+#if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_MCU_ESP32C3)
 #include <driver/gpio.h>
 #endif
 
@@ -103,18 +103,18 @@ void blink_init(void)
 #ifdef BLINK_XIAOBUILTIN_LED_PIN
     digitalWrite(BLINK_XIAOBUILTIN_LED_PIN, HIGH);
 #endif
-#if defined(HOT_WAND_TARGET_XIAO_SAMD21)
+#if defined(HOTWANDLITE_MCU_SAMD21)
     pinMode(BLINK_LED_PIN, OUTPUT);
     // High drive sources up to 7 mA while meeting VOH; the PA06 GPIO cluster
     // has a 14 mA maximum aggregate source current.
     PORT->Group[g_APinDescription[BLINK_LED_PIN].ulPort]
         .PINCFG[g_APinDescription[BLINK_LED_PIN].ulPin]
         .bit.DRVSTR = 1;
-#elif defined(HOT_WAND_TARGET_RP2040)
+#elif defined(HOTWANDLITE_MCU_RP2040)
     // Select the 8 mA drive characteristic; total current sourced by all GPIO
     // and QSPI pins must remain below 50 mA.
     pinMode(BLINK_LED_PIN, OUTPUT_8MA);
-#elif defined(HOT_WAND_TARGET_XIAO_ESP32S3) || defined(HOT_WAND_TARGET_ESP32C3)
+#elif defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_MCU_ESP32C3)
     pinMode(BLINK_LED_PIN, OUTPUT);
     // Strongest drive is characterized at about 40 mA source current while
     // meeting VOH; it is a drive characteristic, not a current limiter.

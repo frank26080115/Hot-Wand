@@ -2,7 +2,7 @@
 
 // Board-level pin assignments traced from electrical/hot-wand-lite.sch.
 
-#if HOT_WAND_TARGET_XIAO_SAMD21 == 1
+#if HOTWANDLITE_TARGET_XIAO_SAMD21 == 1
 
 // XIAO D1/A1 is SAMD21 PA04 and provides TCC0/WO[0].
 #define RFGEN_PIN D1
