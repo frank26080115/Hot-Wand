@@ -154,6 +154,8 @@ Quantity: **two TODO:TBD thermistors**. Install them at THERM1 and THERM2 agains
 
 Quantity: **one Molex 0470531000**. Install it at FAN1 for the 12 V PWM fan. It is the keyed four-position PC-fan header expected by the fan cable. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0470531000/2421261).
 
+Alternative: JST `B2B-XH-A`, which is a 2 pin XH header so it won't support PWM. It is used by cheaper fans like WINNSINN. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045).
+
 ### Optional indicator LEDs
 
 Quantity: **up to four 0603 LEDs**, one each for LED1 through LED4. They are visual indicators and the build guide permits them to be omitted; using different colors makes the indications easier to distinguish. Choose suitable low-current 0603 LEDs using the [Digi-Key 0603 LED search](https://www.digikey.com/en/products/result?keywords=0603%20indicator%20LED).
@@ -206,7 +208,7 @@ Quantity: **one HSB21-454515 heatsink, 45-by-45-by-15 mm**. It cools Q1 and Q2 a
 
 Quantity: **one Noctua NF-A4x10 PWM, 12 V, 40-by-40-by-10 mm fan**. Shop from [Noctua's product page](https://www.noctua.at/en/products/nf-a4x10-pwm).
 
-This can be substituted for any cheap 40mm x 40mm x 10mm 12V cooling fan.
+This can be substituted for any cheap 40mm x 40mm x 10mm 12V cooling fan. Such as [WINNSINN on Amazon](https://www.amazon.com/dp/B07DB5XQ23).
 
 ### TO-220 thermal pads
 

@@ -112,6 +112,8 @@ Insert the cooling fan into the slot for the fan. Make sure the direction of air
 
 Plug in the fan, making sure the polarity is correct.
 
+Make sure the fan wires are tidy and won't get jammed back into the fan blades once the box is closed, maybe use tape or zip-ties or something to keep the wires short and together.
+
 Drop the box over the whole assembly. The heatsink might touch the box, that's ok. Use four M2.5 x 6mm screws to fasten the bottom lid to the box body.
 
 ![](imgs/3dp_box_final_bottom_screws.png)

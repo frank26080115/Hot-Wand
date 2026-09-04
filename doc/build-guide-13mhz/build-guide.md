@@ -226,7 +226,9 @@ Clean the heatsink surface and the surface of the box where it will sit, use rub
 
 Apply thermal paste to the box where the heatsink will sit
 
-Plug in the fan to the circuit board
+Plug in the fan to the circuit board. Watch the polarity of the connector when plugging it in.
+
+Make sure the fan wires are tidy and won't get jammed back into the fan blades once the box is closed, maybe use tape or zip-ties or something to keep the wires short and together.
 
 Drop the box over the whole assembly
 
