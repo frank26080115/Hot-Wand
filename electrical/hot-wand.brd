@@ -2272,14 +2272,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="U4" library="hot-wand" package="OLED-0.91IN-VERT" value="SSD1306-4PIN-0.91N-VERT" x="51" y="1.7" smashed="yes">
 <attribute name="JLC-DNP" value="1" x="51" y="1.7" size="1.778" layer="27" display="off"/>
 </element>
-<element name="U3" library="hot-wand" package="SOP65P640X120-20N" value="STM32F030F4P6" x="42" y="18" smashed="yes" rot="MR270">
+<element name="U3" library="hot-wand" package="SOP65P640X120-20N" value="STM32F042F6P6" x="42" y="18" smashed="yes" rot="MR270">
 <attribute name="AVAILABILITY" value="In Stock" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="MF" value="STMicroelectronics" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="MP" value="STM32F030F4P6" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=snap" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="DESCRIPTION" value="                                                      ARM® Cortex®-M0 STM32F0 Microcontroller IC 32-Bit Single-Core 48MHz 16KB (16K x 8) FLASH                                              " x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="PRICE" value="None" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
-<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=eda" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="MP" value="STM32F042F6P6" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PACKAGE" value="TSSOP-20 STMicroelectronics" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="38.293409375" y="19.90588125" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="JLCPARTNUM" value="C2969989" x="42" y="18" size="1.778" layer="28" rot="MR270" display="off"/>

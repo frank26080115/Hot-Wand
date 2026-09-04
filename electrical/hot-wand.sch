@@ -10084,6 +10084,29 @@ Max Component Height - 25.57mm</description>
 <wire x1="-1" y1="1.8" x2="-2" y2="1.8" width="0.127" layer="21"/>
 <wire x1="-2" y1="1.8" x2="-2" y2="1.1" width="0.127" layer="21"/>
 </package>
+<package name="LED_LTST-S220KRKT">
+<text x="2.2225" y="-0.9525" size="0.8128" layer="25" rot="R180">&gt;NAME</text>
+<text x="2.2225" y="2.4925" size="0.8128" layer="27" rot="R180">&gt;VALUE</text>
+<wire x1="1.075" y1="-0.25" x2="-1.075" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="-1.075" y1="-0.25" x2="-1.075" y2="0.25" width="0.127" layer="51"/>
+<wire x1="-1.075" y1="0.25" x2="-0.85" y2="0.25" width="0.127" layer="51"/>
+<wire x1="-0.85" y1="0.25" x2="0.85" y2="0.25" width="0.127" layer="51"/>
+<wire x1="0.85" y1="0.25" x2="1.075" y2="0.25" width="0.127" layer="51"/>
+<wire x1="1.075" y1="0.25" x2="1.075" y2="-0.25" width="0.127" layer="51"/>
+<wire x1="0.185" y1="-0.25" x2="-0.185" y2="-0.25" width="0.127" layer="21"/>
+<wire x1="2.25" y1="-0.75" x2="-2.25" y2="-0.75" width="0.05" layer="39"/>
+<wire x1="-2.25" y1="-0.75" x2="-2.25" y2="0.9" width="0.05" layer="39"/>
+<wire x1="-2.25" y1="0.9" x2="2.25" y2="0.9" width="0.05" layer="39"/>
+<wire x1="2.25" y1="0.9" x2="2.25" y2="-0.75" width="0.05" layer="39"/>
+<circle x="2.5" y="0" radius="0.1" width="0.2" layer="21"/>
+<circle x="2.5" y="0" radius="0.1" width="0.2" layer="51"/>
+<wire x1="0.85" y1="0.25" x2="0.35" y2="0.75" width="0.127" layer="51" curve="90"/>
+<wire x1="0.35" y1="0.75" x2="-0.35" y2="0.75" width="0.127" layer="51"/>
+<wire x1="-0.35" y1="0.75" x2="-0.85" y2="0.25" width="0.127" layer="51" curve="90"/>
+<wire x1="-0.185" y1="0.75" x2="0.185" y2="0.75" width="0.127" layer="21"/>
+<smd name="A" x="1.25" y="0" dx="1.5" dy="1" layer="1" rot="R180"/>
+<smd name="C" x="-1.25" y="0" dx="1.5" dy="1" layer="1" rot="R180"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -19852,16 +19875,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <connect gate="G$1" pin="VSS" pad="15"/>
 </connects>
 <technologies>
-<technology name="">
-<attribute name="AVAILABILITY" value="In Stock"/>
-<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=eda"/>
-<attribute name="DESCRIPTION" value="                                                      ARM® Cortex®-M0 STM32F0 Microcontroller IC 32-Bit Single-Core 48MHz 16KB (16K x 8) FLASH                                              "/>
-<attribute name="MF" value="STMicroelectronics"/>
-<attribute name="MP" value="STM32F030F4P6"/>
-<attribute name="PACKAGE" value="TSSOP-20 STMicroelectronics"/>
-<attribute name="PRICE" value="None"/>
-<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/STM32F030F4P6/STMicroelectronics/view-part/?ref=snap"/>
-</technology>
+<technology name=""/>
 </technologies>
 </device>
 </devices>
@@ -21790,6 +21804,15 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <technology name=""/>
 </technologies>
 </device>
+<device name="-LTST-S220KRKT" package="LED_LTST-S220KRKT">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 </devices>
 </deviceset>
 <deviceset name="THERMISTOR-NTC" prefix="THERM" uservalue="yes">
@@ -22681,7 +22704,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="U4" library="hot-wand" deviceset="OLED-SSD1306-4PIN" device="-0.91N-VERT" value="SSD1306-4PIN-0.91N-VERT">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="U3" library="hot-wand" deviceset="STM32F030F4P6" device="">
+<part name="U3" library="hot-wand" deviceset="STM32F030F4P6" device="" value="STM32F042F6P6">
 <attribute name="JLCPARTNUM" value="C2969989"/>
 <attribute name="JLC_ROTATION" value="180"/>
 </part>
