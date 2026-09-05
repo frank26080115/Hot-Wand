@@ -115,6 +115,11 @@ def parse_args() -> argparse.Namespace:
         help="generate only CAM outputs and skip the SVG preview",
     )
     parser.add_argument(
+        "--ignore-undefined-layers",
+        action="store_true",
+        help="omit CAM layers that are not defined in the board file",
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="show eaglecon output for successful sections",
@@ -211,6 +216,45 @@ def parse_cam_job(path: Path) -> list[CamSection]:
         )
 
     return sections
+
+
+def omit_undefined_layers(
+    sections: list[CamSection],
+    board: Path,
+) -> list[CamSection]:
+    board_root = ET.parse(board).getroot()
+    defined_layers = {
+        layer.get("number")
+        for layer in board_root.findall("./drawing/layers/layer")
+        if layer.get("number")
+    }
+    filtered_sections: list[CamSection] = []
+
+    for section in sections:
+        layers = tuple(layer for layer in section.layers if layer in defined_layers)
+        omitted = tuple(layer for layer in section.layers if layer not in defined_layers)
+        if omitted:
+            print(
+                f"Warning: {section.name}: omitting undefined board "
+                f"layer(s) {', '.join(omitted)}."
+            )
+        if not layers:
+            raise ValueError(
+                f"CAM section {section.section_id!r} has no layers defined "
+                f"in {board}"
+            )
+        filtered_sections.append(
+            CamSection(
+                section_id=section.section_id,
+                name=section.name,
+                device=section.device,
+                output_template=section.output_template,
+                layers=layers,
+                values=section.values,
+            )
+        )
+
+    return filtered_sections
 
 
 def decimal_text(value: Decimal) -> str:
@@ -972,6 +1016,8 @@ def main() -> int:
         raise RuntimeError(f"Output path is not a directory: {output_dir}")
 
     sections = parse_cam_job(cam_job)
+    if args.ignore_undefined_layers:
+        sections = omit_undefined_layers(sections, board)
     relative_outputs = validate_unique_outputs(sections, board.stem)
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     build_dir = Path(

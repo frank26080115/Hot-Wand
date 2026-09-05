@@ -100,9 +100,9 @@ rem ---------------------------------------------------------------------------
 call :download_if_needed "%STAND_URL%" "%STAND_STEP%"
 if errorlevel 1 goto :failure_popd
 
-call :export_body "%STAND_STEP%" "Aluminum-Strike-Plate" "mechanical\stand\alu-strike-plate.step"
+call :export_body "%STAND_STEP%" "Strike-Plate" "mechanical\stand\strike-plate.step"
 if errorlevel 1 goto :failure_popd
-call :extract_largest_face "mechanical\stand\alu-strike-plate.step" "mechanical\stand\alu-strike-plate.dxf"
+call :extract_largest_face "mechanical\stand\strike-plate.step" "mechanical\stand\strike-plate.dxf"
 if errorlevel 1 goto :failure_popd
 call :export_body "%STAND_STEP%" "Handle-Rest" "mechanical\stand\handle-rest.step"
 if errorlevel 1 goto :failure_popd

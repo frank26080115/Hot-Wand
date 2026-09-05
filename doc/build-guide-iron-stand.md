@@ -13,7 +13,7 @@ It consists of mostly 3D printed components and one aluminum plate that is suppo
 The pieces are named:
 
 * Handle Rest
-* Aluminum Strike Plate
+* Strike Plate
 * Tip Shroud
 * Left Foot, Right Foot
 
@@ -21,11 +21,11 @@ The files are all [here in this directory](../mechanical/stand)
 
 It can house cylindrical magnets that are 1/2" in diameter and 1/4" thick, magnetized axially. (KJ Magnetics D84, D84AH, D84B-N52, etc)
 
-The design has the aluminum strike plate intentionally taking possible hits from the hot soldering iron tip, preventing the plastic from getting melted accidentally. However it is still advised to cover exposed plastic surfaces with aluminum foil tape for added protection.
+The design has the strike plate intentionally taking possible hits from the hot soldering iron tip, preventing the plastic from getting melted accidentally. However it is still advised to cover exposed plastic surfaces with aluminum foil tape for added protection.
 
-![](imgs/stand/alu_strike_plate.png)
+![](imgs/stand/strike_plate.png)
 
-The strike plate can be made of something like a soda can if you don't want to pay for it to be laser-cut or water-jet. The spacing for the magnet can be adapted.
+The strike plate is to be made with a heat resistant material. The strike plate can be made of something like a soda can if you don't want to pay for it to be laser-cut or water-jet. The spacing for the magnet can be adapted.
 
 Assembly assumes to use M3 sized 16mm long plastite screws (McMaster-Carr `96817A107`) and M3 washers. You may substitute this as you wish, all the holes are a bit undersized in the design.
 
