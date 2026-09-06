@@ -3,11 +3,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// Voltage ranges always select distinct low- and high-voltage patterns.
+// Voltage ranges select normal status patterns or the overvoltage warning.
 typedef enum
 {
     BLINK_VOLTAGE_LOW = 0,
     BLINK_VOLTAGE_HIGH,
+    BLINK_VOLTAGE_TOO_HIGH,
 } blink_voltage_t;
 
 // Power modes select the Eco, Normal, and Sport status patterns.

@@ -31,6 +31,16 @@ namespace
  * schematic. The conversion reconstructs the input voltage from their ratio.
  * SAMD21 and RP2040 targets use their nominal analog supply as ADC full scale;
  * ESP32 targets use the core's calibrated millivolt reading.
+ *
+ * Nominal maximum readable input with the 100 kohm / 4.7 kohm divider:
+ *   Seeed XIAO SAMD21:          73.5 V (3.3 V ADC full scale)
+ *   Seeed XIAO RP2040:          73.5 V (3.3 V ADC full scale)
+ *   Waveshare RP2040-Zero:      73.5 V (3.3 V ADC full scale)
+ *   Seeed XIAO ESP32-C3:        55.7 V (2.5 V at ADC_11db)
+ *   ESP32-C3 SuperMini:         55.7 V (2.5 V at ADC_11db)
+ * These are ADC measurement ceilings, not safe input-voltage ratings. Board,
+ * resistor-power, and component limits may be lower, and readings near an ADC
+ * endpoint may be less accurate.
  */
 constexpr uint32_t kAdcReferenceMv    = 3300;
 constexpr uint32_t kAdcMaximumReading = 4095;
@@ -46,6 +56,25 @@ constexpr uint32_t kVoltageThresholdMv   = 22000;
 constexpr uint32_t kVoltageHysteresisMv  = 500;
 constexpr uint32_t kLowToHighThresholdMv = kVoltageThresholdMv + (kVoltageHysteresisMv / 2);
 constexpr uint32_t kHighToLowThresholdMv = kVoltageThresholdMv - (kVoltageHysteresisMv / 2);
+
+/*
+ * RF is disabled when the reconstructed reading is above 30.0 V and remains
+ * disabled until it falls to 29.5 V. R21 (100 kohm, C25803) and R22 (4.7 kohm,
+ * C23162) are each specified at +/-1%. Including their worst-case opposing
+ * tolerances and ideal 12-bit quantization, the real connector-voltage ranges
+ * are approximately:
+ *   30.0 V trip:     29.42 V to 30.59 V
+ *   29.5 V recovery: 28.93 V to 30.08 V
+ * Thus 28.0 V has at least 1.42 V margin under those included errors. This is
+ * not an absolute guarantee: uncalibrated 3.3 V reference error on SAMD21 and
+ * RP2040 targets, and ADC gain, offset, nonlinearity, noise, and temperature
+ * drift on every target are not bounded here. Calibrate each assembled board
+ * if a guaranteed connector-voltage threshold is required.
+ */
+constexpr uint32_t kMaximumInputVoltageMv             = 30000;
+constexpr uint32_t kOvervoltageRecoveryHysteresisMv   = 500;
+constexpr uint32_t kOvervoltageRecoveryVoltageMv =
+    kMaximumInputVoltageMv - kOvervoltageRecoveryHysteresisMv;
 
 constexpr uint32_t kMinimumRfStartDelayMs      = 500;
 constexpr uint32_t kChangeSettleTimeMs         = 2000;
@@ -101,6 +130,7 @@ enum class VoltageRange : uint8_t
 {
     Low,
     High,
+    TooHigh,
 };
 
 enum class PowerMode : uint8_t
@@ -132,6 +162,7 @@ uint32_t g_powerChangedMs           = 0;
 uint32_t g_lastReportMs             = 0;
 uint32_t g_lastPowerSwitchSampleMs = 0;
 uint32_t g_lastVoltageSampleMs      = 0;
+uint32_t g_latestRawVoltageMv       = 0;
 uint32_t g_filteredVoltageMv        = 0;
 uint32_t g_lastNormalRfTrackingMs   = 0;
 
@@ -140,8 +171,10 @@ uint32_t g_lastNormalRfTrackingMs   = 0;
 // -----------------------------------------------------------------------------
 
 static void            apply_state(uint32_t currentTimeMs, uint32_t voltageMv);
-static VoltageRange    update_voltage_range(VoltageRange currentRange, uint32_t voltageMv);
-static VoltageRange    initial_voltage_range(uint32_t voltageMv);
+static VoltageRange    update_voltage_range(VoltageRange currentRange,
+                                            uint32_t     filteredVoltageMv,
+                                            uint32_t     protectionVoltageMv);
+static VoltageRange    initial_voltage_range(uint32_t filteredVoltageMv, uint32_t protectionVoltageMv);
 static void            initialize_hardware();
 static void            sample_power_switch(uint32_t currentTimeMs);
 static PowerMode       read_power_mode();
@@ -181,13 +214,15 @@ void pwrmgt_task(void)
     }
 
     const uint32_t  voltageMv     = pwrmgt_read_voltage_mv();
+    const uint32_t  protectionVoltageMv =
+        (g_latestRawVoltageMv > voltageMv) ? g_latestRawVoltageMv : voltageMv;
     const PowerMode powerMode     = read_power_mode();
 
     report_readings(currentTimeMs, voltageMv, powerMode);
 
     if (!g_inputStateInitialized)
     {
-        g_voltageRange          = initial_voltage_range(voltageMv);
+        g_voltageRange          = initial_voltage_range(voltageMv, protectionVoltageMv);
         g_powerMode             = powerMode;
         g_voltageChangedMs      = currentTimeMs;
         g_powerChangedMs        = currentTimeMs;
@@ -195,7 +230,8 @@ void pwrmgt_task(void)
     }
     else
     {
-        const VoltageRange voltageRange = update_voltage_range(g_voltageRange, voltageMv);
+        const VoltageRange voltageRange =
+            update_voltage_range(g_voltageRange, voltageMv, protectionVoltageMv);
         if (voltageRange != g_voltageRange)
         {
             g_voltageRange     = voltageRange;
@@ -207,6 +243,17 @@ void pwrmgt_task(void)
             g_powerMode      = powerMode;
             g_powerChangedMs = currentTimeMs;
         }
+    }
+
+    // Overvoltage shutdown uses the latest raw sample, so the voltage filter
+    // and ordinary two-second input settling delay cannot postpone cutoff.
+    if (g_voltageRange == VoltageRange::TooHigh)
+    {
+        if (!g_appliedStateValid || (g_appliedVoltageRange != VoltageRange::TooHigh))
+        {
+            apply_state(currentTimeMs, voltageMv);
+        }
+        return;
     }
 
     if (!g_appliedStateValid)
@@ -228,7 +275,8 @@ void pwrmgt_task(void)
     // In Normal mode the RF target follows the filtered battery voltage, but
     // no faster than the battery can realistically require. Mode changes and
     // initial startup are still applied immediately by apply_state().
-    if (powerIsStable && (g_powerMode == PowerMode::Normal) && (g_powerMode == g_appliedPowerMode) &&
+    if (powerIsStable && (g_voltageRange == g_appliedVoltageRange) &&
+        (g_powerMode == PowerMode::Normal) && (g_powerMode == g_appliedPowerMode) &&
         (static_cast<uint32_t>(currentTimeMs - g_lastNormalRfTrackingMs) >= kNormalRfTrackingIntervalMs))
     {
         rfgen_set(power_percent(g_powerMode, voltageMv));
@@ -251,6 +299,7 @@ uint32_t pwrmgt_read_voltage_mv(void)
     uint32_t simulatedVoltageMv = 0;
     if (testing_get_simulated_voltage_mv(&simulatedVoltageMv))
     {
+        g_latestRawVoltageMv = simulatedVoltageMv;
         return simulatedVoltageMv;
     }
 
@@ -278,7 +327,8 @@ uint32_t pwrmgt_read_voltage_mv(void)
     const uint32_t rawVoltageMv =
         static_cast<uint32_t>((conversionNumerator + (kConversionDenominator / 2)) / kConversionDenominator);
 
-    g_lastVoltageSampleMs = currentTimeMs;
+    g_lastVoltageSampleMs  = currentTimeMs;
+    g_latestRawVoltageMv   = rawVoltageMv;
     if (!g_voltageFilterInitialized)
     {
         // Seed from the first reading so the startup interlock is not spent
@@ -306,9 +356,12 @@ namespace
 {
 static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
 {
-    // A voltage-range-only change affects the status indication immediately,
-    // but Normal-mode RF voltage tracking remains on its five-second cadence.
-    if (!g_appliedStateValid || (g_powerMode != g_appliedPowerMode))
+    if (g_voltageRange == VoltageRange::TooHigh)
+    {
+        rfgen_set(0);
+    }
+    else if (!g_appliedStateValid || (g_appliedVoltageRange == VoltageRange::TooHigh) ||
+             (g_powerMode != g_appliedPowerMode))
     {
         rfgen_set(power_percent(g_powerMode, voltageMv));
         if (g_powerMode == PowerMode::Normal)
@@ -323,13 +376,25 @@ static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
     g_appliedStateValid   = true;
 }
 
-static VoltageRange update_voltage_range(VoltageRange currentRange, uint32_t voltageMv)
+static VoltageRange update_voltage_range(VoltageRange currentRange,
+                                         uint32_t     filteredVoltageMv,
+                                         uint32_t     protectionVoltageMv)
 {
-    if ((currentRange == VoltageRange::Low) && (voltageMv > kLowToHighThresholdMv))
+    if (currentRange == VoltageRange::TooHigh)
+    {
+        return (protectionVoltageMv <= kOvervoltageRecoveryVoltageMv)
+                   ? initial_voltage_range(filteredVoltageMv, protectionVoltageMv)
+                   : VoltageRange::TooHigh;
+    }
+    if (protectionVoltageMv > kMaximumInputVoltageMv)
+    {
+        return VoltageRange::TooHigh;
+    }
+    if ((currentRange == VoltageRange::Low) && (filteredVoltageMv > kLowToHighThresholdMv))
     {
         return VoltageRange::High;
     }
-    if ((currentRange == VoltageRange::High) && (voltageMv < kHighToLowThresholdMv))
+    if ((currentRange == VoltageRange::High) && (filteredVoltageMv < kHighToLowThresholdMv))
     {
         return VoltageRange::Low;
     }
@@ -338,10 +403,15 @@ static VoltageRange update_voltage_range(VoltageRange currentRange, uint32_t vol
     return currentRange;
 }
 
-static VoltageRange initial_voltage_range(uint32_t voltageMv)
+static VoltageRange initial_voltage_range(uint32_t filteredVoltageMv, uint32_t protectionVoltageMv)
 {
+    if (protectionVoltageMv > kMaximumInputVoltageMv)
+    {
+        return VoltageRange::TooHigh;
+    }
+
     // Exactly 22 V is classified Low; only readings above it start High.
-    return (voltageMv > kVoltageThresholdMv) ? VoltageRange::High : VoltageRange::Low;
+    return (filteredVoltageMv > kVoltageThresholdMv) ? VoltageRange::High : VoltageRange::Low;
 }
 
 // -----------------------------------------------------------------------------
@@ -449,7 +519,18 @@ static uint8_t power_percent(PowerMode powerMode, uint32_t voltageMv)
 
 static blink_voltage_t voltage_to_blink_mode(VoltageRange voltageRange)
 {
-    return (voltageRange == VoltageRange::High) ? BLINK_VOLTAGE_HIGH : BLINK_VOLTAGE_LOW;
+    switch (voltageRange)
+    {
+    case VoltageRange::TooHigh:
+        return BLINK_VOLTAGE_TOO_HIGH;
+
+    case VoltageRange::High:
+        return BLINK_VOLTAGE_HIGH;
+
+    case VoltageRange::Low:
+    default:
+        return BLINK_VOLTAGE_LOW;
+    }
 }
 
 static blink_power_t power_to_blink_mode(PowerMode powerMode)

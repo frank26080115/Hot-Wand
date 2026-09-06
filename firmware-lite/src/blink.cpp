@@ -29,7 +29,7 @@ constexpr uint32_t kShortPulseMs = 100;
 constexpr uint32_t kLongPulseMs  = 500;
 constexpr uint32_t kPauseMs      = 100;
 
-constexpr uint8_t kVoltageLevelCount = 2;
+constexpr uint8_t kVoltageLevelCount = 3;
 constexpr uint8_t kPowerLevelCount   = 3;
 constexpr uint8_t kPatternCount      = kVoltageLevelCount * kPowerLevelCount;
 
@@ -46,7 +46,7 @@ struct BlinkPattern
 {
     blink_voltage_t voltage;
     blink_power_t   power;
-    char            commands[8];
+    char            commands[11];
 };
 
 enum class PlaybackState : uint8_t
@@ -67,6 +67,9 @@ constexpr BlinkPattern kPatterns[kPatternCount] = {
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_ECO,    "LSPPP"  },
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_NORMAL, "LSSPP"  },
     {BLINK_VOLTAGE_HIGH, BLINK_POWER_SPORT,  "LPLP"   },
+    {BLINK_VOLTAGE_TOO_HIGH, BLINK_POWER_ECO,    "SSSSSPPPPP"},
+    {BLINK_VOLTAGE_TOO_HIGH, BLINK_POWER_NORMAL, "SSSSSPPPPP"},
+    {BLINK_VOLTAGE_TOO_HIGH, BLINK_POWER_SPORT,  "SSSSSPPPPP"},
 };
 
 // -----------------------------------------------------------------------------

@@ -865,7 +865,7 @@ Max Component Height - 1.45mm</description>
 <wire x1="11.8" y1="2" x2="11.8" y2="-2" width="0" layer="41"/>
 <wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
-<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
+<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260906A</text>
 </package>
 <package name="1206-SJ">
 <smd name="1" x="-1.2" y="0" dx="2" dy="1.8" layer="1"/>
@@ -1805,10 +1805,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="21.511" y="59.138" size="0.8128" layer="26" font="vector" rot="MR180"/>
 <attribute name="VALUE" x="21.584" y="60.243" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
-<element name="R32" library="hot-wand" package="0603-RES" value="22K" x="20" y="61.2" smashed="yes" rot="MR180">
-<attribute name="JLCPARTNUM" value="C31850" x="20" y="61.2" size="1.778" layer="28" rot="MR180" display="off"/>
-<attribute name="NAME" x="21.611" y="61.338" size="0.8128" layer="26" font="vector" rot="MR180"/>
-<attribute name="VALUE" x="21.584" y="62.443" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<element name="R32" library="hot-wand" package="0603-RES" value="DNP" x="20" y="61.2" smashed="yes" rot="MR180">
+<attribute name="DNP" value="1" x="20" y="61.2" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="NAME" x="21.611" y="61.838" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="21.584" y="62.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
 <element name="R29" library="hot-wand" package="0805" value="100Ω" x="21.5" y="56" smashed="yes" rot="MR180">
 <attribute name="JLCPARTNUM" value="C441975" x="21.5" y="56" size="1.778" layer="28" rot="MR180" display="off"/>
@@ -1830,8 +1830,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="24.962" y="55.111" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="25.957" y="54.684" size="0.8128" layer="28" font="vector" rot="MR90"/>
 </element>
-<element name="R30" library="hot-wand" package="0603-RES" value="56K" x="16.8" y="59.3" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C23206" x="16.8" y="59.3" size="1.778" layer="28" rot="MR0" display="off"/>
+<element name="R30" library="hot-wand" package="0603-RES" value="51K" x="16.8" y="59.3" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C23196" x="16.8" y="59.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="18.189" y="60.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="18.216" y="61.057" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>

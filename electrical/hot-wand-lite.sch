@@ -6811,7 +6811,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="11.8" y1="2" x2="11.8" y2="-2" width="0" layer="41"/>
 <wire x1="11.8" y1="-2" x2="-12.3" y2="-2" width="0" layer="41"/>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
-<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
+<text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260906A</text>
 </package>
 <package name="TO247-COMBO">
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
@@ -8223,7 +8223,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </symbol>
 <symbol name="PCB-ART-VERSION-LITE">
 <text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND LITE</text>
-<text x="-12.7" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260820A</text>
+<text x="-12.7" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260906A</text>
 <wire x1="-16.51" y1="2.54" x2="15.24" y2="2.54" width="0.254" layer="94"/>
 <wire x1="15.24" y1="2.54" x2="15.24" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="15.24" y1="-5.08" x2="-16.51" y2="-5.08" width="0.254" layer="94"/>
@@ -17113,14 +17113,14 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="C25" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
-<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="56K">
-<attribute name="JLCPARTNUM" value="C23206"/>
+<part name="R30" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="51K">
+<attribute name="JLCPARTNUM" value="C23196"/>
 </part>
 <part name="C26" library="hot-wand" deviceset="CAP" device="0603-CAP" value="100n">
 <attribute name="JLCPARTNUM" value="C14663"/>
 </part>
-<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
-<attribute name="JLCPARTNUM" value="C31850"/>
+<part name="R32" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="DNP">
+<attribute name="DNP" value="1"/>
 </part>
 <part name="R31" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K">
 <attribute name="JLCPARTNUM" value="C22975"/>
@@ -17174,9 +17174,10 @@ practically should keep it 6S</text>
 <text x="146.304" y="-542.036" size="1.27" layer="97" rot="R180" align="top-left">rated 60V max</text>
 <text x="138.176" y="-494.538" size="1.016" layer="97">50V each</text>
 <text x="138.176" y="-481.838" size="1.016" layer="97">inrush ~1A/30ms</text>
-<text x="149.86" y="-508" size="1.27" layer="97">OV cutoff: 38.8 V nominal, 37.0 V to 40.8 V worst-case</text>
+<text x="149.86" y="-508" size="1.27" layer="97">OV cutoff: 32.6 V nominal, 31.1 V to 34.2 V worst-case</text>
 <text x="165.1" y="-541.02" size="1.27" layer="97">this protects the AP53781
 from high battery voltage</text>
+<text x="15.24" y="-177.8" size="1.016" layer="97">VDS(peak) ~= 3.56 x Vin</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">

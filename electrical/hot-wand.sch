@@ -23070,6 +23070,7 @@ curr meas</text>
 <text x="181.356" y="-641.858" size="1.016" layer="97">this protects the AP53781
 from high battery voltage</text>
 <text x="130.556" y="-596.138" size="1.016" layer="97">50V each</text>
+<text x="81.28" y="-177.8" size="1.016" layer="97">VDS(peak) ~= 3.56 x Vin</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="289.56" y="-30.48"/>
