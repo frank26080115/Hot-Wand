@@ -17373,10 +17373,10 @@ from high battery voltage</text>
 <attribute name="NAME" x="186.69" y="-178.816" size="1.778" layer="95" rot="MR0"/>
 <attribute name="VALUE" x="186.944" y="-174.498" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="Q1" gate="G$1" x="12.7" y="-190.5" smashed="yes">
-<attribute name="NAME" x="7.62" y="-185.42" size="1.778" layer="95"/>
-<attribute name="VALUE" x="16.51" y="-184.912" size="1.778" layer="96" rot="R270"/>
-<attribute name="JLC-DNP" x="12.7" y="-190.5" size="1.27" layer="96" display="off"/>
+<instance part="Q1" gate="G$1" x="12.7" y="-187.96" smashed="yes">
+<attribute name="NAME" x="7.62" y="-182.88" size="1.778" layer="95"/>
+<attribute name="VALUE" x="16.51" y="-182.372" size="1.778" layer="96" rot="R270"/>
+<attribute name="JLC-DNP" x="12.7" y="-187.96" size="1.27" layer="96" display="off"/>
 </instance>
 <instance part="F1" gate="G$1" x="203.2" y="-548.64">
 <attribute name="JLC-DNP" x="203.2" y="-548.64" size="1.778" layer="96" display="off"/>
@@ -18066,8 +18066,8 @@ from high battery voltage</text>
 </segment>
 <segment>
 <pinref part="Q1" gate="G$1" pin="G"/>
-<wire x1="5.08" y1="-190.5" x2="2.54" y2="-190.5" width="0.1524" layer="91"/>
-<label x="2.54" y="-190.5" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="5.08" y1="-187.96" x2="2.54" y2="-187.96" width="0.1524" layer="91"/>
+<label x="2.54" y="-187.96" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="+12V" class="0">
@@ -18327,13 +18327,13 @@ from high battery voltage</text>
 <wire x1="152.4" y1="-566.42" x2="152.4" y2="-568.96" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="MOSFET-DRAIN" class="0">
 <segment>
 <pinref part="Q1" gate="G$1" pin="D"/>
 <pinref part="L1" gate="G$1" pin="2"/>
 <wire x1="12.7" y1="-175.26" x2="12.7" y2="-180.34" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="1"/>
-<wire x1="12.7" y1="-180.34" x2="12.7" y2="-185.42" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-180.34" x2="12.7" y2="-182.88" width="0.1524" layer="91"/>
 <wire x1="12.7" y1="-180.34" x2="27.94" y2="-180.34" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
 <wire x1="27.94" y1="-180.34" x2="45.72" y2="-180.34" width="0.1524" layer="91"/>
@@ -18359,7 +18359,7 @@ from high battery voltage</text>
 <junction x="27.94" y="-180.34"/>
 </segment>
 </net>
-<net name="N$3" class="0">
+<net name="M1" class="0">
 <segment>
 <pinref part="C2" gate="G$1" pin="2"/>
 <pinref part="L2" gate="G$1" pin="1"/>
@@ -18379,7 +18379,7 @@ from high battery voltage</text>
 <junction x="66.04" y="-180.34"/>
 </segment>
 </net>
-<net name="N$4" class="0">
+<net name="M2" class="0">
 <segment>
 <pinref part="L2" gate="G$1" pin="2"/>
 <pinref part="L3" gate="G$1" pin="1"/>
@@ -18398,7 +18398,7 @@ from high battery voltage</text>
 <junction x="101.6" y="-180.34"/>
 </segment>
 </net>
-<net name="N$5" class="0">
+<net name="M3" class="0">
 <segment>
 <pinref part="L3" gate="G$1" pin="2"/>
 <pinref part="L4" gate="G$1" pin="1"/>
@@ -18409,7 +18409,7 @@ from high battery voltage</text>
 <junction x="124.46" y="-180.34"/>
 </segment>
 </net>
-<net name="N$6" class="0">
+<net name="M4" class="0">
 <segment>
 <pinref part="L4" gate="G$1" pin="2"/>
 <pinref part="C10" gate="G$1" pin="2"/>
@@ -18425,7 +18425,7 @@ from high battery voltage</text>
 <junction x="152.4" y="-180.34"/>
 </segment>
 </net>
-<net name="N$7" class="0">
+<net name="RF-OUT" class="0">
 <segment>
 <pinref part="C10" gate="G$1" pin="1"/>
 <pinref part="JP1" gate="G$1" pin="1"/>
@@ -18594,13 +18594,14 @@ from high battery voltage</text>
 <wire x1="177.8" y1="-584.2" x2="180.34" y2="-584.2" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$11" class="0">
+<net name="MOSFET-SOURCE" class="0">
 <segment>
 <pinref part="Q1" gate="G$1" pin="S"/>
 <pinref part="SJ1" gate="A" pin="2"/>
+<wire x1="12.7" y1="-193.04" x2="12.7" y2="-195.58" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$12" class="0">
+<net name="RF-RETURN" class="0">
 <segment>
 <pinref part="JP1" gate="G$1" pin="2"/>
 <wire x1="180.34" y1="-182.88" x2="177.8" y2="-182.88" width="0.1524" layer="91"/>
