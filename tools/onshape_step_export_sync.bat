@@ -9,6 +9,7 @@ set "REPO_ROOT=%~dp0.."
 set "ONSHAPE_EXPORTER=%~dp0onshape_step_export.py"
 set "BODY_EXPORTER=%~dp0step_body_exporter.py"
 set "FACE_EXTRACTOR=%~dp0step_largest_face_extractor.py"
+set "MECH_DIFF_CLEANUP=%~dp0mech_git_diff_cleanup.py"
 set "TEMP_DIR=mechanical\temp_downloads"
 
 set "MAIN_URL=https://cad.onshape.com/documents/cc6f54d915a2fd2fc0c48bed/w/7a4e9b2004b48c29d2344960/e/7e597e7e1c496a051551f752"
@@ -111,6 +112,11 @@ if errorlevel 1 goto :failure_popd
 call :export_body "%STAND_STEP%" "Foot-Right" "mechanical\stand\foot-right.step"
 if errorlevel 1 goto :failure_popd
 call :export_body "%STAND_STEP%" "Foot-Left" "mechanical\stand\foot-left.step"
+if errorlevel 1 goto :failure_popd
+
+echo.
+echo Cleaning metadata-only mechanical export changes
+"%PYTHON_EXE%" -B "%MECH_DIFF_CLEANUP%"
 if errorlevel 1 goto :failure_popd
 
 echo.
