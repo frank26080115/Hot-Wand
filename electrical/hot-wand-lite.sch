@@ -17088,8 +17088,8 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLCPARTNUM" value="C64879"/>
 <attribute name="JLC_ROTATION" value="180"/>
 </part>
-<part name="D4" library="hot-wand" deviceset="TVS" device="SMC" value="SM15T150CA">
-<attribute name="JLCPARTNUM" value="C133715"/>
+<part name="D4" library="hot-wand" deviceset="TVS" device="SMC" value="SMCJ150CA">
+<attribute name="JLCPARTNUM" value="C2649864"/>
 </part>
 <part name="GND40" library="hot-wand" deviceset="GND" device=""/>
 <part name="R12" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
@@ -17917,6 +17917,10 @@ from high battery voltage</text>
 <wire x1="152.4" y1="-335.28" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
 <junction x="152.4" y="-335.28"/>
 <junction x="147.32" y="-335.28"/>
+<pinref part="SW1" gate="S" pin="S"/>
+<wire x1="154.94" y1="-327.66" x2="157.48" y2="-327.66" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="-327.66" x2="157.48" y2="-335.28" width="0.1524" layer="91"/>
+<junction x="157.48" y="-335.28"/>
 </segment>
 <segment>
 <pinref part="Q7" gate="G$1" pin="S"/>
@@ -18882,6 +18886,12 @@ from high battery voltage</text>
 <pinref part="C25" gate="G$1" pin="1"/>
 <pinref part="C26" gate="G$1" pin="2"/>
 <wire x1="144.78" y1="-487.68" x2="147.32" y2="-487.68" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="SW1" gate="S" pin="O"/>
+<wire x1="154.94" y1="-322.58" x2="155.194" y2="-322.58" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

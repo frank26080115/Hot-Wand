@@ -28,9 +28,12 @@ Quantity: **one Diodes Incorporated DMTH64M2LPDWQ-13**. Install it at Q4 in the 
 
 ![TO-220 MOSFET](../imgs-shopping/small/to-220.jpg)
 
-Quantity: **one**, installed at Q1 as the main RF power switch. Radio Thermal used `IRF640NPBF`. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/infineon-technologies/IRF640NPBF/811884).
+Quantity: **one**, installed at Q1 as the main RF power switch.
 
-Alternative: [IXFP30N25X3](https://www.digikey.com/en/products/detail/ixys/IXFP30N25X3/7561333), it's expensive.
+Pick from:
+* [IXFP26N30X3](https://www.digikey.com/en/products/detail/ixys/IXFP26N30X3/8032441), 300V VDS rating, "22 nC @ 10 V"
+* [IXFP30N25X3](https://www.digikey.com/en/products/detail/ixys/IXFP30N25X3/7561333), 250V VDS rating, "21 nC @ 10 V", more expensive, no reason to pick this over the above, but it will work
+* [IPW60R120CM8XKSA1](https://www.digikey.com/en/products/detail/infineon-technologies/IPW60R120CM8XKSA1/26424587), 600V VDS rating, "24 nC @ 10 V", there's no advantage to this part but I'm noting it down here as a comparable TO-247 part
 
 ### USB-C connector
 
