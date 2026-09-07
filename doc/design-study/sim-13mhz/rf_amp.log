@@ -1,0 +1,137 @@
+LTspice 26.0.2 for Windows
+Circuit: D:\GithubRepos\Hot-Wand\doc\design-study\sim-13mhz\rf_amp.net
+Start Time: Mon Sep  7 14:12:47 2026
+Options:plotwinsize=0 numdgt=7 reltol=1e-4
+
+.step vcc=15 tipstate=1
+solver = Normal
+Maximum thread count: 24
+tnom = 27
+temp = 25
+method = trap
+reltol = 0.0001
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=20 tipstate=1
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=25 tipstate=1
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=30 tipstate=1
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=15 tipstate=2
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=20 tipstate=2
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=25 tipstate=2
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=30 tipstate=2
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=15 tipstate=3
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=20 tipstate=3
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=25 tipstate=3
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=30 tipstate=3
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=15 tipstate=4
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=20 tipstate=4
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=25 tipstate=4
+.OP point found by inspection.
+.OP point found by inspection.
+
+.step vcc=30 tipstate=4
+.OP point found by inspection.
+.OP point found by inspection.
+Total elapsed time: 250.172 seconds.
+
+Files loaded:
+D:\GithubRepos\Hot-Wand\doc\design-study\sim-13mhz\rf_amp.net
+C:\Users\frank\AppData\Local\LTspice\lib\cmp\standard.mos
+
+
+Measurement: v_ds
+  step	MAX(V(Vds))	FROM	TO
+     1	70.2038480423	0	0.001
+     2	120.415537246	0	0.001
+     3	169.662826437	0	0.001
+     4	216.536935079	0	0.001
+     5	65.8521639387	0	0.001
+     6	84.8020506694	0	0.001
+     7	102.863678782	0	0.001
+     8	120.972123649	0	0.001
+     9	149.437700941	0	0.001
+    10	216.128069387	0	0.001
+    11	287.011579754	0	0.001
+    12	361.125457233	0	0.001
+    13	418.332568442	0	0.001
+    14	543.325374399	0	0.001
+    15	682.459877764	0	0.001
+    16	803.656851198	0	0.001
+
+Measurement: v_ds_last
+  step	MAX(V(Vds) )	FROM	TO
+     1	69.6417840262	0.00098	0.001
+     2	119.496890063	0.00098	0.001
+     3	168.441747464	0.00098	0.001
+     4	214.917450722	0.00098	0.001
+     5	65.850079039	0.00098	0.001
+     6	84.8020506336	0.00098	0.001
+     7	102.863678782	0.00098	0.001
+     8	120.972123649	0.00098	0.001
+     9	145.836519433	0.00098	0.001
+    10	210.867435836	0.00098	0.001
+    11	280.095636633	0.00098	0.001
+    12	352.551194263	0.00098	0.001
+    13	413.435029522	0.00098	0.001
+    14	531.46902846	0.00098	0.001
+    15	658.418094692	0.00098	0.001
+    16	650.933126222	0.00098	0.001
+
+Measurement: v_ds_prev
+  step	MAX(V(Vds) )	FROM	TO
+     1	69.6417840757	0.00096	0.00098
+     2	119.496890195	0.00096	0.00098
+     3	168.441747523	0.00096	0.00098
+     4	214.917456688	0.00096	0.00098
+     5	65.8512222234	0.00096	0.00098
+     6	84.8020506694	0.00096	0.00098
+     7	102.863678776	0.00096	0.00098
+     8	120.972123644	0.00096	0.00098
+     9	145.836520034	0.00096	0.00098
+    10	210.867436676	0.00096	0.00098
+    11	280.0956378	0.00096	0.00098
+    12	352.551195726	0.00096	0.00098
+    13	336.923477265	0.00096	0.00098
+    14	480.444934622	0.00096	0.00098
+    15	528.426483665	0.00096	0.00098
+    16	641.96467999	0.00096	0.00098
