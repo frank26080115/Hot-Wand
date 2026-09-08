@@ -16,6 +16,14 @@
 #define RFGEN_TABLE_CAPACITY             512
 #define RFGEN_FREQUENCY_HZ               470000
 
+#ifdef HOTWANDLITE_MCU_ESP32C3
+
+// these two special build paths fixes the problem of the RMT cutting off some carrier pulses
+#define RFGEN_ESP32C3_RMT_EXPLICIT_PULSES
+#define RFGEN_ESP32C3_MACRO_PULSE_BURSTS
+
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -23,6 +31,9 @@ extern "C"
 
 /* Request RF output power. Values above 100 are clamped to 100. */
 void rfgen_set(uint8_t power_percent);
+
+/* Service optional macro bursts on every loop, including serial test mode. */
+void rfgen_task(void);
 
 /* Print the currently generated DMA period table to Serial. */
 void rfgen_print_table(void);

@@ -9,6 +9,7 @@
  * modeled average-power calculation.
  */
 
+#include "rfgen.h"
 #include "rfgen_internal.h"
 
 #include <limits.h>
@@ -76,6 +77,13 @@ uint8_t g_normalizedPowerPercent = 0;
 uint8_t g_appliedPowerPercent    = 0;
 const uint32_t* g_activePeriodTable = nullptr;
 
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+constexpr uint32_t kMacroCycleUs = 200000u;
+bool g_macroActive = false;
+bool g_macroOn = false;
+uint32_t g_macroPhaseStartedUs = 0;
+#endif
+
 static uint64_t absolute_difference(uint64_t left, uint64_t right);
 static bool     candidate_is_better(uint64_t candidateNumerator,
                                     uint64_t candidateDenominator,
@@ -109,6 +117,10 @@ void rfgen_set(uint8_t powerPercent)
 
     if (normalizedPowerPercent == 0u)
     {
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+        g_macroActive = false;
+        g_macroOn = false;
+#endif
 #ifdef RFGEN_MUTED_DEBUG
         force_output_low();
 #else
@@ -127,7 +139,15 @@ void rfgen_set(uint8_t powerPercent)
 
     uint32_t* nextPeriodTable = inactive_period_table();
     uint16_t  nextPeriodCount = 0;
-    if (!rfgen_generate_period_table(normalizedPowerPercent,
+    uint8_t tablePowerPercent = normalizedPowerPercent;
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+    // High powers use continuous RF inside a software-controlled 200 ms cycle.
+    if (normalizedPowerPercent >= 80u)
+    {
+        tablePowerPercent = RFGEN_MAXIMUM_POWER_PERCENT;
+    }
+#endif
+    if (!rfgen_generate_period_table(tablePowerPercent,
                                      kPwmPeriodClocks,
                                      kMaximumPwmTop,
                                      nextPeriodTable,
@@ -150,7 +170,11 @@ void rfgen_set(uint8_t powerPercent)
     g_rfgenPeriodCount    = nextPeriodCount;
     g_appliedPowerPercent = normalizedPowerPercent;
 #else
-    const bool platformSucceeded = (g_appliedPowerPercent == 0u)
+    bool needsStart = (g_appliedPowerPercent == 0u);
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+    needsStart = needsStart || (g_macroActive && !g_macroOn);
+#endif
+    const bool platformSucceeded = needsStart
                                        ? rfgen_platform_start(nextPeriodTable, nextPeriodCount)
                                        : rfgen_platform_change(nextPeriodTable, nextPeriodCount);
     if (!platformSucceeded)
@@ -169,6 +193,46 @@ void rfgen_set(uint8_t powerPercent)
     g_activePeriodTable   = nextPeriodTable;
     g_rfgenPeriodCount    = nextPeriodCount;
     g_appliedPowerPercent = normalizedPowerPercent;
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+    g_macroActive = (normalizedPowerPercent >= 80u) && (normalizedPowerPercent < 100u);
+    g_macroOn = g_macroActive;
+    g_macroPhaseStartedUs = micros();
+#endif
+#endif
+}
+
+void rfgen_task(void)
+{
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS) && !defined(RFGEN_MUTED_DEBUG)
+    if (!g_macroActive)
+    {
+        return;
+    }
+    const uint32_t now = micros();
+    const uint32_t onUs = (kMacroCycleUs / 100u) * g_appliedPowerPercent;
+    const uint32_t phaseUs = g_macroOn ? onUs : (kMacroCycleUs - onUs);
+    // Unsigned subtraction handles micros() rollover. Start timing each phase
+    // at the actual transition so a delayed loop never skips the short OFF phase.
+    if (static_cast<uint32_t>(now - g_macroPhaseStartedUs) < phaseUs)
+    {
+        return;
+    }
+    if (g_macroOn)
+    {
+        // Stopping asynchronously may truncate the last pulse of this window.
+        rfgen_platform_stop();
+        g_macroOn = false;
+    }
+    else
+    {
+        if (!rfgen_platform_start(g_activePeriodTable, g_rfgenPeriodCount))
+        {
+            rfgen_set(0);
+            return;
+        }
+        g_macroOn = true;
+    }
+    g_macroPhaseStartedUs = micros();
 #endif
 }
 

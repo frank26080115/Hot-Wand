@@ -14,6 +14,8 @@
 
 #if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_MCU_ESP32C3)
 
+#include "rfgen.h"
+
 #include "rfgen_esp32_rmt.h"
 
 #include <Arduino.h>
@@ -48,6 +50,10 @@ struct RmtPattern
 {
     rmt_item32_t items[SOC_RMT_MEM_WORDS_PER_CHANNEL];
     uint8_t      itemCount;
+#if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
+    (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
+    bool         carrierEnabled;
+#endif
 };
 
 RmtPattern g_patterns[2]   = {};
@@ -102,6 +108,33 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
     {
         return false;
     }
+
+#if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
+    (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
+    pattern->carrierEnabled = true;
+    // A/B diagnostic: bypass carrier modulation when every edge fits in RAM.
+    // With the current power tables this covers 30-80% and continuous 100%.
+    // Longer patterns retain the carrier envelope and its known phase issue.
+    if (periodCount < SOC_RMT_MEM_WORDS_PER_CHANNEL)
+    {
+        for (uint16_t i = 0; i < periodCount; ++i)
+        {
+            const uint32_t duration = periodTable[i] + 1u;
+            if ((duration < kCarrierClocks) || ((duration % kCarrierClocks) != 0u) ||
+                ((duration - kCarrierHighClocks) > kMaximumDuration))
+            {
+                return false;
+            }
+            pattern->items[i].level0    = 1;
+            pattern->items[i].duration0 = kCarrierHighClocks;
+            pattern->items[i].level1    = 0;
+            pattern->items[i].duration1 = duration - kCarrierHighClocks;
+        }
+        pattern->itemCount      = static_cast<uint8_t>(periodCount);
+        pattern->carrierEnabled = false;
+        return true;
+    }
+#endif
 
     EnvelopeSegment segments[2u * SOC_RMT_MEM_WORDS_PER_CHANNEL] = {};
     uint16_t        segmentCount                                 = 0;
@@ -220,6 +253,14 @@ bool transmit_pattern(const RmtPattern& pattern)
     // which intentionally remains held during an indefinite loop. This makes
     // every later stop/change nonblocking on both the C3 and S3.
     if ((rmt_tx_stop(kRmtChannel) != ESP_OK) || (rmt_set_idle_level(kRmtChannel, true, RMT_IDLE_LEVEL_LOW) != ESP_OK) ||
+#if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
+    (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
+        (rmt_set_tx_carrier(kRmtChannel,
+                            pattern.carrierEnabled,
+                            kCarrierHighClocks,
+                            kCarrierLowClocks,
+                            RMT_CARRIER_LEVEL_HIGH) != ESP_OK) ||
+#endif
         (rmt_fill_tx_items(kRmtChannel, pattern.items, pattern.itemCount, 0u) != ESP_OK) ||
         (rmt_fill_tx_items(kRmtChannel, &terminator, 1u, pattern.itemCount) != ESP_OK) ||
         (rmt_set_tx_loop_mode(kRmtChannel, true) != ESP_OK) || (rmt_tx_start(kRmtChannel, true) != ESP_OK))

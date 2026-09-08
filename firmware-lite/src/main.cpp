@@ -37,6 +37,7 @@ void loop()
 {
     // Feed before every possible return path, including exclusive test mode.
     watchdog_feed();
+    rfgen_task();
 
     // A started test owns the application until the board is reset.
     if (testing_task())
