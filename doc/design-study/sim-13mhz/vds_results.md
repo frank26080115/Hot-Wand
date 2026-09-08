@@ -94,3 +94,89 @@ The active nested sweeps automatically run all 16 combinations:
 ```
 
 Measurements are written to `rf_amp.log`. `V_DS_LAST` and `V_DS_PREV` compare the final two 20 us windows; `V_DS` is the full-run maximum used in the main table.
+
+
+## With ES1J and SM15T150CA drain clamp
+
+Simulated on 2026-09-07 with LTspice 26.0.2. Runnable schematic: [rf_amp_with_tvs_clamp.asc](rf_amp_with_tvs_clamp.asc). Full 16-case measurement log: [rf_amp_with_tvs_clamp.log](rf_amp_with_tvs_clamp.log).
+
+This is a copy of the unclamped circuit above, with the drain-clamp branch restored according to [electrical/hot-wand.sch](../../../electrical/hot-wand.sch): **D4 (ES1J) anode at Vds, cathode at Clamp; TVS1 (bidirectional SM15T150CA) between Clamp and ground.** The MOSFET, gate drive, filter, load equivalents, losses, and simulation settings are unchanged. The added diode models are explicit datasheet-based approximations, not manufacturer SPICE models.
+
+### Clamped maximum VDS
+
+The same `.meas TRAN V_DS MAX V(Vds)` measures the full **0–1 ms** run, including startup, with a **200 ps** maximum timestep:
+
+| Tip condition | VCC = 15 V | VCC = 20 V | VCC = 25 V | VCC = 30 V |
+|---|---:|---:|---:|---:|
+| Cold | 62.5 V | 107.5 V | 154.7 V | 163.0 V |
+| Warm (below Curie) | 64.3 V | 83.4 V | 103.1 V | 123.9 V |
+| Hot (above Curie) | 138.0 V | 162.6 V | 169.6 V | 178.4 V |
+| Open output | 164.0 V | 184.4 V | 193.6 V | 191.5 V |
+
+For comparison, the final 20 us maxima (`V_DS_LAST`) are:
+
+| Tip condition | VCC = 15 V | VCC = 20 V | VCC = 25 V | VCC = 30 V |
+|---|---:|---:|---:|---:|
+| Cold | 62.3 V | 107.5 V | 154.4 V | 162.9 V |
+| Warm (below Curie) | 64.3 V | 83.4 V | 103.1 V | 123.9 V |
+| Hot (above Curie) | 136.4 V | 162.2 V | 169.0 V | 177.6 V |
+| Open output | 160.5 V | 182.2 V | 192.7 V | 184.7 V |
+
+The main sweep's largest peak is **193.6 V at 25 V with an open output**, but the finer-timestep 30 V open-output check below reaches **197.1 V**. Open-output full-run maxima are not monotonic with VCC in this finite-window simulation; do not infer that 30 V is safer than 25 V. The loaded cases have closely matching maxima in their last two measurement windows; the open cases retain envelope variation.
+
+### TVS and rectifier loading
+
+`P_TVS` is average power in the TVS's conducting branch over **980 us–1 ms**. Its separate ideal capacitance's reactive current is excluded:
+
+| Tip condition | VCC = 15 V | VCC = 20 V | VCC = 25 V | VCC = 30 V |
+|---|---:|---:|---:|---:|
+| Cold | <0.001 W | <0.001 W | <0.001 W | 0.930 W |
+| Warm (below Curie) | <0.001 W | <0.001 W | <0.001 W | <0.001 W |
+| Hot (above Curie) | <0.001 W | 1.663 W | 9.140 W | 23.717 W |
+| Open output | 0.085 W | 3.402 W | 9.886 W | 21.019 W |
+
+The sub-milliwatt entries are modeled leakage, not significant avalanche clamping. Even then, the clamp branch can change VDS through its capacitance and rectification. Real parts near the lower breakdown limit may conduct in cases shown here as leakage-only; this upper-knee fit is not a worst-case heating calculation.
+
+Additional measurements at **30 V**, from the main 200 ps sweep:
+
+| Tip condition | Peak TVS conduction current, full run | Peak ES1J forward current, full run | ES1J average terminal power, final 20 us |
+|---|---:|---:|---:|
+| Cold | 0.572 A | 1.845 A | 0.132 W |
+| Warm (below Curie) | <0.001 A | 0.246 A | 0.002 W |
+| Hot (above Curie) | 2.738 A | 5.500 A | 0.574 W |
+| Open output | 4.594 A | 5.538 A | 0.869 W |
+
+ES1J also carries charging current for the TVS capacitance, so its peak current differs from the TVS conduction peak. The ES1J power measurement is average terminal power, an estimate of dissipation rather than a thermal model. `E_TVS` records full-run absorbed energy: **23.31 mJ for hot / 30 V** and **20.63 mJ for open / 30 V** over this 1 ms run.
+
+The modeled clamp substantially reduces the excessive unclamped voltage, but **hot and open operation at 30 V impose about 24 W and 21 W of TVS dissipation**, respectively. These are substantial repetitive loads, not evidence of continuous safe operation. SM15T's 1500 W specification is a surge rating for a specified waveform, not a continuous dissipation rating. See the [ST SM15T datasheet](https://www.st.com/resource/en/datasheet/sm15t39ca.pdf).
+
+### Clamp-model assumptions
+
+- **TVS I–V fit:** the SM15T150CA datasheet specifies 128 V stand-off and 143–158 V breakdown at 1 mA (150 V typical). This model deliberately uses a **158 V knee**, plus **6.81 ohm** dynamic resistance, approximating the upper-voltage 10/1000 us curve: `V_TVS ≈ 158 + 6.81 × I_TVS`. A separate static check gave **207.04 V at 7.2 A**. This is not a validated RF model or a guaranteed worst-case RF clamp bound. Source: [ST SM15T datasheet](https://www.st.com/resource/en/datasheet/sm15t39ca.pdf).
+- **TVS capacitance:** `Ctvs=200p` is an assumed constant lumped capacitance, not a measured or guaranteed value. Breakdown is modeled symmetrically; leakage is approximated by 1 Gohm. There is no temperature dependence, package inductance, or self-heating.
+- **ES1J:** the junction model approximates 1.3 V at 1 A and 20 pF at 4 V; its static check gave **1.308 V at 1 A**. `TtES=15n` is an estimated SPICE transit time, **not** the datasheet's 35 ns reverse-recovery time. Recovery under the actual RF waveform has not been validated. Source: [Diodes Incorporated ES1J datasheet](https://www.diodes.com/datasheet/download/ES1J.pdf).
+
+Both diode approximations and the original MOSFET model remain fixed at **25 C**, with no thermal failure or MOSFET avalanche. Real gate shape, parasitics, device tolerances, temperature rise, and diode recovery can change the result. In particular, **197 V is too close to the MOSFET's 200 V rating for these simulations to establish a safe margin**. The open case is open from startup; it does not test a mid-run tip disconnection or a firmware shutdown delay.
+
+### Clamped timestep checks
+
+The four 30 V cases were rerun at 100 ps; the open case was additionally rerun at 50 ps:
+
+| Tip condition at 30 V | Main run, 200 ps | Check, 100 ps | Check, 50 ps |
+|---|---:|---:|---:|
+| Cold | 163.0 V | 163.1 V | Not run |
+| Warm (below Curie) | 123.9 V | 123.8 V | Not run |
+| Hot (above Curie) | 178.4 V | 178.4 V | Not run |
+| Open output | 191.5 V | 196.4 V | 197.1 V |
+
+The loaded-case peak differences between 200 ps and 100 ps are below 0.1%. The open-output peak is more sensitive: 191.5 → 196.4 → 197.1 V. At 50 ps its final-window maximum is 184.2 V, TVS average power is **21.08 W**, and ES1J average terminal power is **0.874 W**. These numerical checks support the broad comparison, not device-model accuracy or a guaranteed peak-voltage bound.
+
+### Run the clamped version again
+
+Open `rf_amp_with_tvs_clamp.asc` in LTspice and select Run, or use:
+
+```powershell
+Start-Process -FilePath 'C:\Users\frank\AppData\Local\Programs\ADI\LTspice\LTspice.exe' -ArgumentList '-b "D:\GithubRepos\Hot-Wand\doc\design-study\sim-13mhz\rf_amp_with_tvs_clamp.asc"' -WindowStyle Hidden -Wait
+```
+
+The active VCC and TipState sweeps run all 16 combinations. Measurements are written to `rf_amp_with_tvs_clamp.log`; `V_DS` remains the full-run maximum. The extra current, power, and energy directives are active in the schematic.
