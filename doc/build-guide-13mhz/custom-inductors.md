@@ -8,13 +8,15 @@ Remember that, one "turn" is defined as passing through the center of the toroid
 
 Both small custom inductors use the Fair-Rite 5961004901 toroid core, and 22 AWG solid core enamel coated wire (aka magnet wire).
 
-For the 9uH choke, use 10 turns.
+For the 9 uH choke, use 13 turns. The A_L of this toroid core is 80 +/- 25%, 13 turns is worst case 10.14 uH. Ending up with a slightly higher than specified inductance for these 9 uH chokes is not the end of the world.
 
-Equation for wire length: `(2 * 10) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.644) * 1.05`
+Do not tighten too hard, because these cores are uncoated, we don't want the edges to damage the wire enamel. You can also coat the cores with clear nail polish, remember to put the nail polish back after you are done.
 
-10 turns should be 242 mm of wire.
+Equation for wire length: `(2 * 13) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.644) * 1.05`
 
-If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, then use 15 turns.
+10 turns should be 308 mm of wire. I highly recommend cutting sections of 350 mm to make it easier to pull.
+
+If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, then use 15 turns as per original instructions.
 
 ## Current transformer
 
@@ -64,7 +66,7 @@ The totals below use the rounded cut lengths given above. The values calculated 
 
 For 22 AWG:
 
-`210 + 242 + 242 + 355 + 355 = 1404 mm = 1.404 m = 4.6 ft`
+`210 + 308 + 308 + 355 + 355 = 1536 mm = 1.536 m = 5.1 ft`
 
 This includes L8, both 9 uH chokes, and both current-transformer secondaries. It does not include the current transformer's short one-turn primary; reserve at least another 50 mm for it. The resulting planned requirement is approximately 1.41 m or 4.62 ft.
 
