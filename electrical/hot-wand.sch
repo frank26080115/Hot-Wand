@@ -9516,35 +9516,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="-3.2766" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Name</text>
 <text x="-1.7272" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Value</text>
 </package>
-<package name="FAN-20MM-TIEDOWN">
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21" style="shortdash"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
-<pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
-<pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
-<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
-<wire x1="-3.3" y1="10" x2="-3.3" y2="9" width="0.127" layer="21" style="shortdash"/>
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="-9" width="0.127" layer="21" style="shortdash"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V2">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<pad name="1" x="3.7" y="-6.2" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="3" x="3.7" y="6.2" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5" shape="octagon"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V3">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<hole x="3.7" y="8" drill="3"/>
-<hole x="3.7" y="-8" drill="3"/>
-</package>
 <package name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.5" layer="1" font="fixed" ratio="15" align="center">HOT WAND</text>
 <text x="0" y="0" size="2.5" layer="29" font="fixed" ratio="15" align="center">HOT WAND</text>
@@ -9552,7 +9523,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="9.8" y1="1.7" x2="9.8" y2="-1.7" width="0" layer="41"/>
 <wire x1="9.8" y1="-1.7" x2="-9.4" y2="-1.7" width="0" layer="41"/>
 <wire x1="-9.4" y1="-1.7" x2="-9.4" y2="1.7" width="0" layer="41"/>
-<text x="-9" y="-2.8" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260820A</text>
+<text x="-9" y="-2.8" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260910A</text>
 </package>
 <package name="TRIM_TC33X-2-103E">
 <description>&lt;b&gt;TC33X-2&lt;/b&gt;&lt;br&gt;
@@ -9574,18 +9545,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <smd name="1" x="-1.8" y="1" dx="1.2" dy="1.2" layer="1"/>
 <smd name="3" x="-1.8" y="-1" dx="1.2" dy="1.2" layer="1"/>
 <smd name="2" x="1.45" y="0" dx="1.5" dy="1.6" layer="1"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V4">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<pad name="1" x="-3.7" y="-8" drill="0.8" shape="offset"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" shape="offset" rot="R180"/>
-<pad name="3" x="-3.7" y="8" drill="0.8" shape="offset"/>
-<pad name="4" x="3.7" y="8" drill="0.8" shape="offset" rot="R180"/>
-<hole x="0" y="10" drill="3"/>
-<hole x="0" y="-10" drill="3"/>
 </package>
 <package name="STANDOFF-M2.5-4.5MMHEX">
 <pad name="1" x="0" y="0" drill="2.5" diameter="5.2" thermals="no"/>
@@ -10679,19 +10638,9 @@ Max Component Height - 25.57mm</description>
 <wire x1="-1.27" y1="-1.524" x2="1.524" y2="1.778" width="0.254" layer="94"/>
 <wire x1="1.524" y1="1.778" x2="2.54" y2="1.778" width="0.254" layer="94"/>
 </symbol>
-<symbol name="FAN-TIEDOWN">
-<wire x1="0" y1="0" x2="0" y2="10.16" width="0.254" layer="94"/>
-<wire x1="0" y1="10.16" x2="17.78" y2="10.16" width="0.254" layer="94"/>
-<wire x1="17.78" y1="10.16" x2="17.78" y2="0" width="0.254" layer="94"/>
-<wire x1="17.78" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
-<text x="2.54" y="2.54" size="5.08" layer="94">FAN</text>
-<text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
-<text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="1" x="20.32" y="7.62" visible="off" length="short" rot="R180"/>
-</symbol>
 <symbol name="PCB-ART-VERSION">
 <text x="0" y="0" size="2.54" layer="94" font="fixed" ratio="10" align="center">HOT WAND</text>
-<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260820A</text>
+<text x="-7.62" y="-2.54" size="1.27" layer="97" font="fixed" ratio="10" align="top-left">20260910A</text>
 <wire x1="-10.16" y1="2.54" x2="10.16" y2="2.54" width="0.254" layer="94"/>
 <wire x1="10.16" y1="2.54" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="10.16" y1="-5.08" x2="-10.16" y2="-5.08" width="0.254" layer="94"/>
@@ -21950,42 +21899,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </device>
 </devices>
 </deviceset>
-<deviceset name="FAN-TIEDOWN" prefix="FAN">
-<gates>
-<gate name="A" symbol="FAN-TIEDOWN" x="0" y="0"/>
-</gates>
-<devices>
-<device name="-20MM-V1" package="FAN-20MM-TIEDOWN">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V2" package="FAN-20MM-TIEDOWN-V2">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V3" package="FAN-20MM-TIEDOWN-V3">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V4" package="FAN-20MM-TIEDOWN-V4">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
 <deviceset name="PCB-ART-VERSION" prefix="PCB">
 <gates>
 <gate name="A" symbol="PCB-ART-VERSION" x="0" y="0"/>
@@ -22494,7 +22407,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="C8" library="hot-wand" deviceset="CAP" device="0603-CAP" value="3n3">
 <attribute name="JLCPARTNUM" value="C1613"/>
 </part>
-<part name="C2" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V">
+<part name="C2" library="hot-wand" deviceset="CAP_POL" device="PTH5" value="100uF 50V">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="EEU-FR1H101B;EEU-FR1J101B"/>
 </part>
@@ -22516,7 +22429,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R5" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
 <attribute name="JLCPARTNUM" value="C21190"/>
 </part>
-<part name="C4" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="100uF 50V">
+<part name="C4" library="hot-wand" deviceset="CAP_POL" device="PTH5" value="100uF 50V">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND3" library="hot-wand" deviceset="GND" device=""/>
@@ -22832,10 +22745,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
-<part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1">
-<attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="MS2006H12D-RSR"/>
-</part>
 <part name="PCB2" library="hot-wand" deviceset="PCB-ART-VERSION" device="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -22868,7 +22777,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="STANDOFF2" library="hot-wand" deviceset="STANDOFF" device="-M2.5-4.5MMHEX"/>
 <part name="GND61" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND1" library="hot-wand" deviceset="GND" device=""/>
-<part name="GND62" library="hot-wand" deviceset="GND" device=""/>
 <part name="SJ8" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="SJ6" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="R48" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="3K">
@@ -23037,7 +22945,6 @@ MCU can lower this to about 9V
 when voltage exceeds 24V</text>
 <text x="121.158" y="-34.036" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
 <text x="161.798" y="-14.478" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
-<text x="289.56" y="-415.544" size="0.8128" layer="97" rot="R180" align="top-left">MS2006H12D-RSR</text>
 <text x="312.42" y="-472.44" size="5.08" layer="97">Fan CTRL</text>
 <text x="312.42" y="-474.98" size="1.778" layer="97">(optional)</text>
 <text x="284.48" y="-320.04" size="1.778" layer="97">debug port</text>
@@ -23740,9 +23647,6 @@ from high battery voltage</text>
 <attribute name="PARTNUM" x="337.82" y="-408.94" size="1.778" layer="96" rot="R270" display="off"/>
 <attribute name="JLCPARTNUM" x="337.82" y="-408.94" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
-<instance part="FAN2" gate="A" x="271.78" y="-426.72" smashed="yes">
-<attribute name="NAME" x="271.78" y="-429.26" size="1.778" layer="95"/>
-</instance>
 <instance part="PCB2" gate="A" x="322.58" y="-25.4"/>
 <instance part="Q9" gate="G$1" x="327.66" y="-447.04" smashed="yes">
 <attribute name="NAME" x="326.898" y="-443.992" size="1.778" layer="95" rot="R90"/>
@@ -23781,7 +23685,6 @@ from high battery voltage</text>
 <instance part="GND1" gate="1" x="304.8" y="-27.94" smashed="yes">
 <attribute name="VALUE" x="307.34" y="-27.94" size="1.778" layer="96"/>
 </instance>
-<instance part="GND62" gate="1" x="292.1" y="-421.64"/>
 <instance part="SJ8" gate="A" x="35.56" y="-223.52"/>
 <instance part="SJ6" gate="A" x="58.42" y="-182.88" rot="R90"/>
 <instance part="R48" gate="G$1" x="165.1" y="-711.2" smashed="yes" rot="R270">
@@ -24435,10 +24338,6 @@ from high battery voltage</text>
 <segment>
 <pinref part="PCB1" gate="G$1" pin="1"/>
 <pinref part="GND1" gate="1" pin="GND"/>
-</segment>
-<segment>
-<pinref part="FAN2" gate="A" pin="1"/>
-<pinref part="GND62" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="JP5" gate="G$1" pin="2"/>
