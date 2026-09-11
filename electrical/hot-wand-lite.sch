@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,16 +53,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -5638,47 +5638,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="0.6" y1="1" x2="0.6" y2="-1" width="0.3048" layer="21"/>
 <wire x1="0.6" y1="-1" x2="-0.6" y2="0" width="0.3048" layer="21"/>
 </package>
-<package name="FAN-20MM-TIEDOWN">
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21" style="shortdash"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21" style="shortdash"/>
-<pad name="1" x="-3.7" y="-8" drill="0.8" diameter="1.5"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5"/>
-<pad name="3" x="-3.7" y="8" drill="0.8" diameter="1.5"/>
-<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5"/>
-<wire x1="-3.3" y1="10" x2="-3.3" y2="9" width="0.127" layer="21" style="shortdash"/>
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="-9" width="0.127" layer="21" style="shortdash"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V2">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<pad name="1" x="3.7" y="-6.2" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="3" x="3.7" y="6.2" drill="0.8" diameter="1.5" shape="octagon"/>
-<pad name="4" x="3.7" y="8" drill="0.8" diameter="1.5" shape="octagon"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V3">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<hole x="3.7" y="8" drill="3"/>
-<hole x="3.7" y="-8" drill="3"/>
-</package>
-<package name="FAN-20MM-TIEDOWN-V4">
-<wire x1="-3.3" y1="-10" x2="-3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="-3.3" y1="10" x2="3.3" y2="10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="10" x2="3.3" y2="-10" width="0.127" layer="21"/>
-<wire x1="3.3" y1="-10" x2="-3.3" y2="-10" width="0.127" layer="21"/>
-<pad name="1" x="-3.7" y="-8" drill="0.8" shape="offset"/>
-<pad name="2" x="3.7" y="-8" drill="0.8" shape="offset" rot="R180"/>
-<pad name="3" x="-3.7" y="8" drill="0.8" shape="offset"/>
-<pad name="4" x="3.7" y="8" drill="0.8" shape="offset" rot="R180"/>
-<hole x="0" y="10" drill="3"/>
-<hole x="0" y="-10" drill="3"/>
-</package>
 <package name="INF-PG-TO247-3">
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
 Max Component Height - 25.57mm</description>
@@ -8097,16 +8056,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="-2.921" y="-2.413"/>
 <vertex x="-2.413" y="-2.921"/>
 </polygon>
-</symbol>
-<symbol name="FAN-TIEDOWN">
-<wire x1="0" y1="0" x2="0" y2="10.16" width="0.254" layer="94"/>
-<wire x1="0" y1="10.16" x2="17.78" y2="10.16" width="0.254" layer="94"/>
-<wire x1="17.78" y1="10.16" x2="17.78" y2="0" width="0.254" layer="94"/>
-<wire x1="17.78" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
-<text x="2.54" y="2.54" size="5.08" layer="94">FAN</text>
-<text x="0" y="-2.54" size="1.778" layer="95">&gt;NAME</text>
-<text x="0" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="1" x="20.32" y="7.62" visible="off" length="short" rot="R180"/>
 </symbol>
 <symbol name="INDUCTOR">
 <wire x1="0" y1="5.08" x2="1.27" y2="3.81" width="0.254" layer="94" curve="-90" cap="flat"/>
@@ -14059,42 +14008,6 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 </device>
 </devices>
 </deviceset>
-<deviceset name="FAN-TIEDOWN" prefix="FAN">
-<gates>
-<gate name="A" symbol="FAN-TIEDOWN" x="0" y="0"/>
-</gates>
-<devices>
-<device name="-20MM-V1" package="FAN-20MM-TIEDOWN">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V2" package="FAN-20MM-TIEDOWN-V2">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V3" package="FAN-20MM-TIEDOWN-V3">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="-20MM-V4" package="FAN-20MM-TIEDOWN-V4">
-<connects>
-<connect gate="A" pin="1" pad="1 2 3 4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
 <deviceset name="INDUCTOR" prefix="L" uservalue="yes">
 <description>&lt;b&gt;Inductors&lt;/b&gt;
 Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly between part numbers.</description>
@@ -16869,15 +16782,10 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <attribute name="JLCPARTNUM" value="C13585"/>
 <attribute name="PARTNUM" value="MLASU31LBB5106KTNA01;GRT31CR61H106KE01K"/>
 </part>
-<part name="FAN2" library="hot-wand" deviceset="FAN-TIEDOWN" device="-20MM-V1" value="FAN-TIEDOWN-20MM-V1">
-<attribute name="JLC-DNP" value="1"/>
-<attribute name="PARTNUM" value="MS2006H12D-RSR"/>
-</part>
 <part name="R11" library="hot-wand" deviceset="RESISTOR" device="0805-RES" value="100Ω">
 <attribute name="JLCPARTNUM" value="C441975"/>
 </part>
 <part name="GND1" library="hot-wand" deviceset="GND" device=""/>
-<part name="GND36" library="hot-wand" deviceset="GND" device=""/>
 <part name="L5" library="hot-wand" deviceset="INDUCTOR" device="-KOOLMU" value="11u5">
 <attribute name="JLC-DNP" value="1"/>
 </part>
@@ -17003,7 +16911,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="R18" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="56K">
 <attribute name="JLCPARTNUM" value="C23206"/>
 </part>
-<part name="C13" library="hot-wand" deviceset="CAP_POL" device="PTH4" value="470u">
+<part name="C13" library="hot-wand" deviceset="CAP_POL" device="PTH5" value="470u">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="UHW1H471MPD"/>
 </part>
@@ -17138,7 +17046,6 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <text x="39.116" y="-542.544" size="1.016" layer="97" rot="R90" align="bottom-right">gate rated 20V
 thresh 2.1V</text>
 <text x="33.02" y="-304.8" size="5.08" layer="97">Microcontroller</text>
-<text x="157.48" y="-377.444" size="0.8128" layer="97" rot="R180" align="top-left">MS2006H12D-RSR</text>
 <text x="62.992" y="-387.35" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max
 14V UVLO</text>
 <text x="181.61" y="-621.284" size="1.778" layer="97" rot="R270" align="bottom-right">select 20V
@@ -17332,7 +17239,6 @@ from high battery voltage</text>
 <attribute name="PARTNUM" x="193.04" y="-386.08" size="1.778" layer="96" rot="R90" display="off"/>
 <attribute name="JLCPARTNUM" x="193.04" y="-386.08" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
-<instance part="FAN2" gate="A" x="139.7" y="-388.62"/>
 <instance part="R11" gate="G$1" x="160.02" y="-566.42" smashed="yes" rot="R180">
 <attribute name="NAME" x="163.83" y="-562.8386" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="163.83" y="-567.944" size="1.778" layer="96" rot="R180"/>
@@ -17341,7 +17247,6 @@ from high battery voltage</text>
 <instance part="GND1" gate="1" x="81.28" y="-134.62" smashed="yes">
 <attribute name="VALUE" x="83.82" y="-134.62" size="1.778" layer="96"/>
 </instance>
-<instance part="GND36" gate="1" x="160.02" y="-383.54"/>
 <instance part="L5" gate="G$1" x="149.86" y="-190.5" smashed="yes" rot="R180">
 <attribute name="NAME" x="144.78" y="-187.96" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="142.24" y="-187.96" size="1.778" layer="96" rot="R270"/>
@@ -17785,10 +17690,6 @@ from high battery voltage</text>
 <segment>
 <pinref part="PCB1" gate="G$1" pin="1"/>
 <pinref part="GND1" gate="1" pin="GND"/>
-</segment>
-<segment>
-<pinref part="FAN2" gate="A" pin="1"/>
-<pinref part="GND36" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="C1" gate="G$1" pin="2"/>
@@ -18478,11 +18379,6 @@ from high battery voltage</text>
 </net>
 <net name="SEL3" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="PA8_A4_D4_SDA"/>
-<wire x1="45.72" y1="-332.74" x2="43.18" y2="-332.74" width="0.1524" layer="91"/>
-<label x="43.18" y="-332.74" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="TVS5" gate="G$1" pin="2"/>
 <wire x1="246.38" y1="-320.04" x2="246.38" y2="-314.96" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="-314.96" x2="248.92" y2="-314.96" width="0.1524" layer="91"/>
@@ -18492,6 +18388,11 @@ from high battery voltage</text>
 <pinref part="R24" gate="G$1" pin="1"/>
 <wire x1="137.16" y1="-307.34" x2="134.62" y2="-307.34" width="0.1524" layer="91"/>
 <label x="134.62" y="-307.34" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PA11_A3_D3"/>
+<wire x1="45.72" y1="-330.2" x2="43.18" y2="-330.2" width="0.1524" layer="91"/>
+<label x="43.18" y="-330.2" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="SEL2" class="0">
@@ -18661,11 +18562,6 @@ from high battery voltage</text>
 </net>
 <net name="PWR-DIS" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="PA5_A9_D9_MISO"/>
-<wire x1="106.68" y1="-332.74" x2="109.22" y2="-332.74" width="0.1524" layer="91"/>
-<label x="109.22" y="-332.74" size="1.27" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="TVS6" gate="G$1" pin="2"/>
 <wire x1="256.54" y1="-320.04" x2="256.54" y2="-317.5" width="0.1524" layer="91"/>
 <wire x1="256.54" y1="-317.5" x2="259.08" y2="-317.5" width="0.1524" layer="91"/>
@@ -18675,6 +18571,11 @@ from high battery voltage</text>
 <pinref part="R25" gate="G$1" pin="1"/>
 <wire x1="127" y1="-347.98" x2="124.46" y2="-347.98" width="0.1524" layer="91"/>
 <label x="124.46" y="-347.98" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PB09_A7_D7_RX"/>
+<wire x1="106.68" y1="-325.12" x2="109.22" y2="-325.12" width="0.1524" layer="91"/>
+<label x="109.22" y="-325.12" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -18719,11 +18620,6 @@ from high battery voltage</text>
 </net>
 <net name="FAN" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="PB09_A7_D7_RX"/>
-<wire x1="106.68" y1="-325.12" x2="109.22" y2="-325.12" width="0.1524" layer="91"/>
-<label x="109.22" y="-325.12" size="1.27" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R27" gate="G$1" pin="2"/>
 <pinref part="R28" gate="G$1" pin="1"/>
 <wire x1="144.78" y1="-421.64" x2="142.24" y2="-421.64" width="0.1524" layer="91"/>
@@ -18735,6 +18631,11 @@ from high battery voltage</text>
 <wire x1="175.26" y1="-401.32" x2="175.26" y2="-398.78" width="0.1524" layer="91"/>
 <wire x1="175.26" y1="-398.78" x2="142.24" y2="-398.78" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="-398.78" x2="142.24" y2="-421.64" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PB08_A6_D6_TX"/>
+<wire x1="106.68" y1="-322.58" x2="109.22" y2="-322.58" width="0.1524" layer="91"/>
+<label x="109.22" y="-322.58" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="N$20" class="0">

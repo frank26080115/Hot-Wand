@@ -1,0 +1,32 @@
+#pragma once
+
+// PCB v2 pin assignments traced from electrical/hot-wand-lite.sch and .brd.
+// U1 pads: SEL3=4 (XIAO D3), PWR-DIS=8 (D7), FAN=7 (D6).
+
+#if HOTWANDLITE_TARGET_XIAO_SAMD21 == 1
+
+// XIAO D1/A1 is SAMD21 PA04 and provides TCC0/WO[0].
+#define RFGEN_PIN D1
+
+// The schematic's active-high LED net is XIAO D10/A10, SAMD21 PA06.
+#define BLINK_LED_PIN D10
+
+// XIAO's active-low onboard user LED is Arduino pin 13, SAMD21 PA17.
+#define BLINK_XIAOBUILTIN_LED_PIN LED_BUILTIN
+
+// Power-selection jumpers: names match their JP6 connector pin numbers.
+#define SEL2_PIN D5 // XIAO D5/A5, SAMD21 PA09.
+#define SEL3_PIN D3 // XIAO D3/A3, SAMD21 PA11.
+
+// Active-low power switch: XIAO D7/A7, SAMD21 PB09.
+#define POWER_SWITCH_PIN D7
+
+// Active-high fan control: XIAO D6/A6, SAMD21 PB08.
+#define FAN_CONTROL_PIN D6
+
+// Both footprint pads are connected to the voltage-sense net. This target uses
+// XIAO D8/A8 (SAMD21 PA07) for ADC and must leave D2 high-impedance.
+#define ADC_PIN D8
+#define ADC_UNUSED_PIN D2
+
+#endif

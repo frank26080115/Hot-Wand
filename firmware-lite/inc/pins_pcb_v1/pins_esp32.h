@@ -1,0 +1,4 @@
+#pragma once
+#if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3)
+#error ESP32 UNSUPPORTED ON PCB V1
+#endif
