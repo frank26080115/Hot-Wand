@@ -1,0 +1,26 @@
+* RF startup; electrically transcribed from from_discord_sept5_2026.asc
+Vcc Vdc 0 21
+Vdrive Vgs 0 PULSE(0 16 0 50n 50n 1.065u 2.13u) Rser=5
+L1 Vdc Vds 30u Rser=0.1 Rpar=0.1G
+M1 Vds Vgs 0 0 FDP18N20F
+C5 Vds 0 15n Rser=30m Rpar=1Meg
+C4 N001 Vds 86n Rser=30m Rpar=1Meg
+L2 N001 N002 3u Rser=0.03 Rpar=0.1G
+L3 N002 N003 3.2u Rser=0.03 Rpar=0.1G
+C1 N003 0 30n Rser=30m Rpar=100Meg
+L4 N003 N004 17u Rser=0.1 Rpar=0.1G
+C2 N004 0 7n Rser=50m Rpar=100Meg
+L5 N004 N005 17u Rser=0.1 Rpar=0.1G
+L6 N005 0 12u Rser=0.1 Rpar=0.1G
+C3 N005 N006 8n Rser=50m Rpar=0.1G
+Rcable0 N006 Vtip 0.5
+Ltip0 Vtip Rtip {L_tip} Rser=0.1 Rpar=100Meg
+Rtip0 Rtip 0 {R_tip}
+.param TipVal=1
+.param R_tip table(TipVal, 1,11.6, 2,14.0, 3,1.54, 4,1e8)
+.param L_tip table(TipVal, 1,5.5u, 2,7.2u, 3,1.7u, 4,0)
+.model FDP18N20F VDMOS(Rg=2.3 Vto=4 Rd=100m Rs=0m Rb=1.0m Kp=16 Cgdmax=0.5n Cgdmin=0.02n Cgs=1n Cjo=0.5n Is=0.2p tt=80n ksubthres=.1 mfg=Fairchild Vds=200 Ron=120m Qg=20n)
+.tran 0 1m 0 5n
+.options plotwinsize=0
+.save V(Vgs) V(Vds) V(Vdc) I(Vcc)
+.end
