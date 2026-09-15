@@ -1371,7 +1371,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="25.57283125" y="58.14403125" size="0.8128" layer="25" font="fixed" rot="R90"/>
 <attribute name="VALUE" x="26.39395" y="60.361459375" size="0.8128" layer="27" rot="R270"/>
 <attribute name="JLCPARTNUM" value="C2453886" x="33" y="56" size="1.778" layer="27" display="off"/>
-<attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M" x="33" y="56" size="1.778" layer="27" display="off"/>
+<attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M;SRP1265CC-330M" x="33" y="56" size="1.778" layer="27" display="off"/>
 </element>
 <element name="LED1" library="hot-wand" package="LED_LTST-S220KRKT" value="LED" x="110.8" y="42.2" smashed="yes" rot="MR90">
 <attribute name="JLCPARTNUM" value="C284935" x="110.8" y="42.2" size="1.778" layer="28" rot="MR90" display="off"/>

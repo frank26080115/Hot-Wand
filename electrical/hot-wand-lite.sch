@@ -16819,7 +16819,7 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="L1" library="hot-wand" deviceset="INDUCTOR" device="-PA4343" value="33u">
 <attribute name="JLCPARTNUM" value="C2453886"/>
-<attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M"/>
+<attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M;SRP1265CC-330M"/>
 </part>
 <part name="JP1" library="hot-wand" deviceset="COAX-SMA" device="-EDGE-LGRPAD" value="COAX-SMA">
 <attribute name="JLC-DNP" value="1"/>
