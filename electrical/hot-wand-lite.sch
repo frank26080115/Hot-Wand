@@ -17104,6 +17104,7 @@ practically should keep it 6S</text>
 <text x="165.1" y="-541.02" size="1.27" layer="97">this protects the AP53781
 from high battery voltage</text>
 <text x="15.24" y="-177.8" size="1.016" layer="97">VDS(peak) ~= 3.56 x Vin</text>
+<text x="157.48" y="-393.7" size="3.81" layer="97">Fan Ctrl</text>
 </plain>
 <instances>
 <instance part="PCB1" gate="G$1" x="66.04" y="-137.16">
@@ -18090,7 +18091,7 @@ from high battery voltage</text>
 <junction x="162.56" y="-477.52"/>
 </segment>
 </net>
-<net name="N$31" class="0">
+<net name="VIN-XT30" class="0">
 <segment>
 <wire x1="83.82" y1="-477.52" x2="81.28" y2="-477.52" width="0.1524" layer="91"/>
 <pinref part="JP3" gate="A" pin="P"/>
@@ -18129,7 +18130,7 @@ from high battery voltage</text>
 <junction x="66.04" y="-548.64"/>
 </segment>
 </net>
-<net name="N$36" class="0">
+<net name="U4-VGA" class="0">
 <segment>
 <pinref part="U4" gate="A" pin="VG_A"/>
 <wire x1="116.84" y1="-574.04" x2="116.84" y2="-561.34" width="0.1524" layer="91"/>
@@ -18137,7 +18138,7 @@ from high battery voltage</text>
 <wire x1="116.84" y1="-561.34" x2="119.38" y2="-561.34" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$37" class="0">
+<net name="U4-VGA-2" class="0">
 <segment>
 <pinref part="R9" gate="G$1" pin="1"/>
 <pinref part="Q4" gate="B" pin="G"/>
@@ -18157,7 +18158,7 @@ from high battery voltage</text>
 <junction x="149.86" y="-561.34"/>
 </segment>
 </net>
-<net name="N$39" class="0">
+<net name="USB-VBUS" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="VBUS"/>
 <wire x1="63.5" y1="-591.82" x2="91.44" y2="-591.82" width="0.1524" layer="91"/>
@@ -18206,7 +18207,7 @@ from high battery voltage</text>
 <wire x1="147.32" y1="-607.06" x2="147.32" y2="-619.76" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$42" class="0">
+<net name="U4-VSEL" class="0">
 <segment>
 <pinref part="U4" gate="A" pin="VSEL"/>
 <pinref part="R15" gate="G$1" pin="1"/>
@@ -18223,14 +18224,14 @@ from high battery voltage</text>
 <pinref part="R19" gate="G$1" pin="1"/>
 </segment>
 </net>
-<net name="N$41" class="0">
+<net name="USB-CC2" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="CC2"/>
 <pinref part="U4" gate="A" pin="CC2"/>
 <wire x1="63.5" y1="-601.98" x2="96.52" y2="-601.98" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$44" class="0">
+<net name="USB-CC1" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="CC1"/>
 <pinref part="U4" gate="A" pin="CC1"/>
@@ -18623,7 +18624,7 @@ from high battery voltage</text>
 <junction x="139.7" y="-347.98"/>
 </segment>
 </net>
-<net name="RF-GEN-" class="0">
+<net name="RF-GEN-PRE" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="PA4_A1_D1"/>
 <pinref part="R26" gate="G$1" pin="2"/>
@@ -18732,7 +18733,7 @@ from high battery voltage</text>
 <label x="76.2" y="-505.46" size="1.016" layer="95" rot="R90" xref="yes"/>
 </segment>
 </net>
-<net name="N$32" class="0">
+<net name="U3-EN" class="0">
 <segment>
 <pinref part="Q6" gate="G$1" pin="D"/>
 <pinref part="U3" gate="A" pin="EN_UVLO"/>
@@ -18744,7 +18745,7 @@ from high battery voltage</text>
 <wire x1="45.72" y1="-543.56" x2="45.72" y2="-520.7" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$66" class="0">
+<net name="U3-HGATE" class="0">
 <segment>
 <pinref part="U3" gate="A" pin="HGATE"/>
 <wire x1="119.38" y1="-490.22" x2="119.38" y2="-487.68" width="0.1524" layer="91"/>
@@ -18763,7 +18764,7 @@ from high battery voltage</text>
 <wire x1="104.14" y1="-490.22" x2="104.14" y2="-487.68" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$70" class="0">
+<net name="U3-DGATE" class="0">
 <segment>
 <pinref part="U3" gate="A" pin="DGATE"/>
 <wire x1="99.06" y1="-490.22" x2="99.06" y2="-487.68" width="0.1524" layer="91"/>
@@ -18779,7 +18780,7 @@ from high battery voltage</text>
 <wire x1="132.08" y1="-508" x2="134.62" y2="-508" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$71" class="0">
+<net name="U3-OV" class="0">
 <segment>
 <pinref part="R30" gate="G$1" pin="1"/>
 <wire x1="144.78" y1="-508" x2="147.32" y2="-508" width="0.1524" layer="91"/>

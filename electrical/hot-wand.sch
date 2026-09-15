@@ -22965,7 +22965,6 @@ when voltage exceeds 24V</text>
 <text x="121.158" y="-34.036" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
 <text x="161.798" y="-14.478" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
 <text x="312.42" y="-472.44" size="5.08" layer="97">Fan CTRL</text>
-<text x="312.42" y="-474.98" size="1.778" layer="97">(optional)</text>
 <text x="284.48" y="-320.04" size="1.778" layer="97">debug port</text>
 <text x="78.232" y="-420.37" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max
 14V UVLO</text>
@@ -24674,7 +24673,7 @@ from high battery voltage</text>
 <junction x="269.24" y="-246.38"/>
 </segment>
 </net>
-<net name="N$12" class="0">
+<net name="RF-FINAL" class="0">
 <segment>
 <pinref part="L6" gate="G$1" pin="2"/>
 <pinref part="T1" gate="G$1" pin="P2"/>
@@ -24795,7 +24794,7 @@ from high battery voltage</text>
 <junction x="88.9" y="-154.94"/>
 </segment>
 </net>
-<net name="N$13" class="0">
+<net name="Q1-VD" class="0">
 <segment>
 <pinref part="C9" gate="G$1" pin="1"/>
 <wire x1="71.12" y1="-139.7" x2="58.42" y2="-139.7" width="0.1524" layer="91"/>
@@ -24930,7 +24929,7 @@ from high battery voltage</text>
 <junction x="114.3" y="-256.54"/>
 </segment>
 </net>
-<net name="N$18" class="0">
+<net name="Q2-VD" class="0">
 <segment>
 <pinref part="L7" gate="G$1" pin="1"/>
 <pinref part="Q2" gate="G$1" pin="D"/>
@@ -25097,7 +25096,7 @@ from high battery voltage</text>
 <wire x1="127" y1="-20.32" x2="129.54" y2="-20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$23" class="0">
+<net name="BUCK-SWITCH-NODE" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="SW"/>
 <wire x1="127" y1="-27.94" x2="139.7" y2="-27.94" width="0.1524" layer="91"/>
@@ -25118,7 +25117,7 @@ from high battery voltage</text>
 <junction x="142.24" y="-20.32"/>
 </segment>
 </net>
-<net name="N$24" class="0">
+<net name="BUCK-1ST-STAGE" class="0">
 <segment>
 <wire x1="160.02" y1="-20.32" x2="162.56" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="+"/>
@@ -25381,7 +25380,7 @@ from high battery voltage</text>
 <junction x="175.26" y="-35.56"/>
 </segment>
 </net>
-<net name="N$31" class="0">
+<net name="VIN-XT30" class="0">
 <segment>
 <wire x1="76.2" y1="-579.12" x2="73.66" y2="-579.12" width="0.1524" layer="91"/>
 <pinref part="JP3" gate="A" pin="P"/>
@@ -25420,7 +25419,7 @@ from high battery voltage</text>
 <junction x="58.42" y="-650.24"/>
 </segment>
 </net>
-<net name="N$36" class="0">
+<net name="U7-VGA" class="0">
 <segment>
 <pinref part="U7" gate="A" pin="VG_A"/>
 <wire x1="109.22" y1="-675.64" x2="109.22" y2="-660.4" width="0.1524" layer="91"/>
@@ -25428,7 +25427,7 @@ from high battery voltage</text>
 <wire x1="109.22" y1="-660.4" x2="111.76" y2="-660.4" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$37" class="0">
+<net name="U7-VGA-2" class="0">
 <segment>
 <pinref part="R30" gate="G$1" pin="1"/>
 <pinref part="Q6" gate="B" pin="G"/>
@@ -25448,7 +25447,7 @@ from high battery voltage</text>
 <wire x1="177.292" y1="-660.4" x2="178.308" y2="-660.4" width="0.1524" layer="91" curve="-180"/>
 </segment>
 </net>
-<net name="N$39" class="0">
+<net name="USB-VBUS" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="VBUS"/>
 <wire x1="55.88" y1="-693.42" x2="83.82" y2="-693.42" width="0.1524" layer="91"/>
@@ -25497,7 +25496,7 @@ from high battery voltage</text>
 <wire x1="139.7" y1="-708.66" x2="139.7" y2="-713.74" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$42" class="0">
+<net name="U7-VSEL" class="0">
 <segment>
 <pinref part="U7" gate="A" pin="VSEL"/>
 <pinref part="R47" gate="G$1" pin="1"/>
@@ -25509,14 +25508,14 @@ from high battery voltage</text>
 <junction x="152.4" y="-698.5"/>
 </segment>
 </net>
-<net name="N$41" class="0">
+<net name="USB-CC2" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="CC2"/>
 <pinref part="U7" gate="A" pin="CC2"/>
 <wire x1="55.88" y1="-703.58" x2="88.9" y2="-703.58" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$44" class="0">
+<net name="USB-CC1" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="CC1"/>
 <pinref part="U7" gate="A" pin="CC1"/>
@@ -25600,7 +25599,7 @@ from high battery voltage</text>
 <junction x="223.52" y="-365.76"/>
 </segment>
 </net>
-<net name="N$33" class="0">
+<net name="MCU-OSC-OUT" class="0">
 <segment>
 <pinref part="Y1" gate="G$1" pin="1"/>
 <pinref part="U3" gate="G$1" pin="PF1/OSC_OUT"/>
@@ -25612,7 +25611,7 @@ from high battery voltage</text>
 <junction x="53.34" y="-342.9"/>
 </segment>
 </net>
-<net name="N$34" class="0">
+<net name="MCU-OSC-IN" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="PF0/OSC_IN"/>
 <wire x1="76.2" y1="-332.74" x2="33.02" y2="-332.74" width="0.1524" layer="91"/>
@@ -25672,7 +25671,7 @@ from high battery voltage</text>
 <wire x1="162.56" y1="-434.34" x2="162.56" y2="-454.66" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$26" class="0">
+<net name="MCU-BOOT0" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="BOOT0"/>
 <pinref part="SJ1" gate="1" pin="2"/>
@@ -25733,7 +25732,7 @@ from high battery voltage</text>
 <junction x="248.92" y="-439.42"/>
 </segment>
 </net>
-<net name="N$52" class="0">
+<net name="Q9-VD" class="0">
 <segment>
 <pinref part="Q9" gate="G$1" pin="D"/>
 <wire x1="327.66" y1="-441.96" x2="327.66" y2="-439.42" width="0.1524" layer="91"/>
@@ -25753,7 +25752,7 @@ from high battery voltage</text>
 <wire x1="317.5" y1="-447.04" x2="320.04" y2="-447.04" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$51" class="0">
+<net name="FAN-CTRL-SIG" class="0">
 <segment>
 <pinref part="R44" gate="G$1" pin="1"/>
 <wire x1="304.8" y1="-452.12" x2="304.8" y2="-447.04" width="0.1524" layer="91"/>
@@ -25765,6 +25764,9 @@ from high battery voltage</text>
 <wire x1="304.8" y1="-424.18" x2="304.8" y2="-447.04" width="0.1524" layer="91"/>
 <pinref part="SJ5" gate="G$1" pin="3"/>
 <wire x1="335.28" y1="-424.18" x2="304.8" y2="-424.18" width="0.1524" layer="91"/>
+<wire x1="304.8" y1="-424.18" x2="302.26" y2="-424.18" width="0.1524" layer="91"/>
+<junction x="304.8" y="-424.18"/>
+<label x="302.26" y="-424.18" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -25776,7 +25778,7 @@ from high battery voltage</text>
 <wire x1="289.56" y1="-264.16" x2="287.02" y2="-264.16" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$56" class="0">
+<net name="Q3-VB" class="0">
 <segment>
 <wire x1="307.34" y1="-264.16" x2="307.34" y2="-256.54" width="0.1524" layer="91"/>
 <pinref part="Q3" gate="G$1" pin="B"/>
@@ -25797,7 +25799,7 @@ from high battery voltage</text>
 <wire x1="162.56" y1="-668.02" x2="162.56" y2="-670.56" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$58" class="0">
+<net name="12V-FOR-GATE-DRIVER" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="VDD"/>
 <wire x1="53.34" y1="-251.46" x2="40.64" y2="-251.46" width="0.1524" layer="91"/>
@@ -25818,7 +25820,7 @@ from high battery voltage</text>
 <pinref part="SJ8" gate="A" pin="2"/>
 </segment>
 </net>
-<net name="N$59" class="0">
+<net name="Q1-VS" class="0">
 <segment>
 <pinref part="Q1" gate="G$1" pin="S"/>
 <wire x1="58.42" y1="-180.34" x2="58.42" y2="-177.8" width="0.1524" layer="91"/>
@@ -25913,7 +25915,7 @@ from high battery voltage</text>
 <wire x1="340.36" y1="-416.56" x2="340.36" y2="-419.1" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$54" class="0">
+<net name="U7-ISEL" class="0">
 <segment>
 <pinref part="U7" gate="A" pin="ISEL"/>
 <pinref part="JP5" gate="G$1" pin="1"/>
@@ -25966,7 +25968,7 @@ from high battery voltage</text>
 <label x="68.58" y="-607.06" size="1.016" layer="95" rot="R90" xref="yes"/>
 </segment>
 </net>
-<net name="N$32" class="0">
+<net name="U6-EN" class="0">
 <segment>
 <pinref part="Q8" gate="G$1" pin="D"/>
 <wire x1="38.1" y1="-645.16" x2="38.1" y2="-622.3" width="0.1524" layer="91"/>
@@ -25978,7 +25980,7 @@ from high battery voltage</text>
 <junction x="68.58" y="-622.3"/>
 </segment>
 </net>
-<net name="N$66" class="0">
+<net name="U6-HGATE" class="0">
 <segment>
 <pinref part="U6" gate="A" pin="HGATE"/>
 <wire x1="111.76" y1="-591.82" x2="111.76" y2="-589.28" width="0.1524" layer="91"/>
@@ -25990,14 +25992,14 @@ from high battery voltage</text>
 <junction x="114.3" y="-589.28"/>
 </segment>
 </net>
-<net name="N$69" class="0">
+<net name="U6-CAP" class="0">
 <segment>
 <pinref part="U6" gate="A" pin="CAP"/>
 <pinref part="C51" gate="G$1" pin="1"/>
 <wire x1="96.52" y1="-591.82" x2="96.52" y2="-589.28" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$70" class="0">
+<net name="U6-DGATE" class="0">
 <segment>
 <pinref part="U6" gate="A" pin="DGATE"/>
 <wire x1="91.44" y1="-591.82" x2="91.44" y2="-589.28" width="0.1524" layer="91"/>
@@ -26013,7 +26015,7 @@ from high battery voltage</text>
 <wire x1="124.46" y1="-609.6" x2="127" y2="-609.6" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$71" class="0">
+<net name="U6-OV" class="0">
 <segment>
 <pinref part="R53" gate="G$1" pin="1"/>
 <wire x1="137.16" y1="-609.6" x2="139.7" y2="-609.6" width="0.1524" layer="91"/>
