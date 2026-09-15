@@ -35,6 +35,12 @@ Pick from:
 * [IXFP30N25X3](https://www.digikey.com/en/products/detail/ixys/IXFP30N25X3/7561333), 250V VDS rating, "21 nC @ 10 V", more expensive, no reason to pick this over the above, but it will work
 * [IPW60R120CM8XKSA1](https://www.digikey.com/en/products/detail/infineon-technologies/IPW60R120CM8XKSA1/26424587), 600V VDS rating, "24 nC @ 10 V", there's no advantage to this part but I'm noting it down here as a comparable TO-247 part
 
+### Main Power Inductor
+
+![](../imgs-shopping/small/smd-inductor.jpg)
+
+Quantity: **one**, either a Pulse Electronics `PA4343.333NLT` [Digi-Key](https://www.digikey.com/en/products/detail/pulse-electronics/PA4343-333NLT/5641830) or a Bourns `SRP1265A-330M` [Digi-Key](https://www.digikey.com/en/products/detail/bourns-inc/SRP1265A-330M/4876718), populated as L1.
+
 ### USB-C connector
 
 ![USB-C connector](../imgs-shopping/small/usb-c.s.jpg)
@@ -69,7 +75,7 @@ Quantity: **two Nichicon UHW1H471MPD, 470 uF, 50 V capacitors**. Install them at
 
 ![PCB fuse clips](../imgs-shopping/small/fuse-holder.jpg)
 
-Quantity: **two Keystone 3518P clips**. Together they form the F1 holder for one 5-by-20 mm glass fuse. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/keystone-electronics/3518P/316011).
+Quantity: **two Eaton BK/1A3399-10-R**. Together they form the F1 holder for one 5-by-20 mm glass fuse. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/eaton-electronics-division/BK-1A3399-10-R/1023735).
 
 ### Input fuse
 
@@ -139,7 +145,7 @@ Quantity: **one small package of rigid two-part epoxy**. Use a small amount to j
 
 ### MOSFET heatsinks
 
-![Boyd 504222B00000G heatsink](../imgs-shopping/small/heatsink-boyd-504222B00000G.s.jpg)
+![heatsink](../imgs-shopping/small/heatsink-boyd-504222B00000G.s.jpg)
 
 Quantity: **two tall stamped heatsinks for TO-220**. Stack them around Q1 as shown in the Lite build guide to cool the main RF switch and brace it against the enclosure wall.
 

@@ -82,7 +82,7 @@ Quantity: **two Panasonic EEU-FR1H101B, 100 uF, 50 V capacitors**. Install them 
 
 ![PCB fuse clips](../imgs-shopping/small/fuse-holder.jpg)
 
-Quantity: **two Keystone 3518P clips**. Together they form the F1 holder for one 5-by-20 mm glass fuse. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/keystone-electronics/3518P/316011).
+Quantity: **two Eaton BK/1A3399-10-R**. Together they form the F1 holder for one 5-by-20 mm glass fuse. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/eaton-electronics-division/BK-1A3399-10-R/1023735).
 
 ### Input fuse
 
