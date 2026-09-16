@@ -10,11 +10,9 @@ Both small custom inductors use the Fair-Rite 5961004901 toroid core, and 22 AWG
 
 For the 9 uH choke, use 13 turns. The A_L of this toroid core is 80 +/- 25%, 13 turns is worst case 10.14 uH. Ending up with a slightly higher than specified inductance for these 9 uH chokes is not the end of the world.
 
-Do not tighten too hard, because these cores are uncoated, we don't want the edges to damage the wire enamel. You can also coat the cores with clear nail polish, remember to put the nail polish back after you are done.
-
 Equation for wire length: `(2 * 13) + T * (2 * ((16 - 9.6) / 2 + 6.35) + pi * 0.644) * 1.05`
 
-10 turns should be 308 mm of wire. I highly recommend cutting sections of 350 mm to make it easier to pull.
+13 turns should be 315 mm of wire. I highly recommend cutting sections of 350 mm to make it easier to pull.
 
 If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, then use 15 turns as per original instructions.
 
@@ -22,19 +20,21 @@ If you actually managed to get a `K16x8x6` identical to the one SergeyMax used, 
 
 The ratio is 1:14:14
 
-Uses the Fair-Rite 5961004901 toroid core and 22 AWG wire.
+Uses the Fair-Rite 5961004901 toroid core and 22 AWG enamel coated wire.
 
 The primary (the 1 in 1:14:14) is just a single wire crossing the inside of the toroid once. No crossing on the bottom/outside of the toroid.
 
-The wire length of each secondary should be about 355 mm. (there is an additional +8% to account for the twisting of the two wires)
+I recommend cutting off about 3 feet of 22 AWG enamel coated wire, and then folding all of it exactly in half as if it was a pair of wires, then twisting the pair together, evenly.
 
-Twist these two secondary wires together first, evenly, then wrap the result around the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+Then wrap the twisted-pair around the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
 
 Reference the following 3D model:
 
 ![](../imgs/current_transformer_winding_3d_1.png)
 
 ![](../imgs/current_transformer_winding_3d_2.png)
+
+You need to use a multimeter to confirm which wire is which before soldering the wire ends into the PCB.
 
 ## Large inductors
 
@@ -59,22 +59,6 @@ Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm 
 `(2 * 10) + 10 * sqrt((pi * (5 + 0.644))^2 + (10 / 10)^2) * 1.05`
 
 This gives approximately 207 mm, so cut about 210 mm of wire before winding.
-
-## Total wire used
-
-The totals below use the rounded cut lengths given above. The values calculated directly from the equations are within about 5 mm of these totals.
-
-For 22 AWG:
-
-`210 + 308 + 308 + 355 + 355 = 1536 mm = 1.536 m = 5.1 ft`
-
-This includes L8, both 9 uH chokes, and both current-transformer secondaries. It does not include the current transformer's short one-turn primary; reserve at least another 50 mm for it. The resulting planned requirement is approximately 1.41 m or 4.62 ft.
-
-For 16 AWG:
-
-`186 + 269 + 310 = 765 mm = 0.765 m = 2.51 ft`
-
-For one complete unit, the practical minimum purchase is 1.5 m (5 ft) of 22 AWG and 1 m (3.3 ft) of 16 AWG. To leave enough wire for trimming mistakes or rewinding an inductor, buy approximately 3 m (10 ft) of 22 AWG and 1.5 m (5 ft) of 16 AWG.
 
 ## Securing the Inductors
 
