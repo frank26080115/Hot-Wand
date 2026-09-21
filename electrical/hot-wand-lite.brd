@@ -36,8 +36,8 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
@@ -117,8 +117,8 @@
 </layers>
 <board>
 <plain>
-<wire x1="35.6" y1="55" x2="35.6" y2="58" width="0" layer="41"/>
-<wire x1="35.6" y1="58" x2="37.8" y2="58" width="0" layer="41"/>
+<wire x1="35.6" y1="54.2" x2="35.6" y2="58.8" width="0" layer="41"/>
+<wire x1="35.6" y1="58.8" x2="38.8" y2="58.8" width="0" layer="41"/>
 <wire x1="27.5" y1="37.5" x2="27.5" y2="37" width="0" layer="42"/>
 <wire x1="37.3" y1="37.5" x2="37.3" y2="37" width="0" layer="42"/>
 <wire x1="25.8" y1="34.4" x2="34.1" y2="34.4" width="0" layer="41"/>
@@ -401,17 +401,17 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <smd name="2C" x="11" y="0" dx="5" dy="2" layer="1" cream="no"/>
 <smd name="2D" x="11" y="0" dx="5" dy="2" layer="16" cream="no"/>
 </package>
-<package name="IND_PA4343.103NLT">
+<package name="IND_SRP1265A">
 <wire x1="-7" y1="-6.4" x2="-7" y2="6.4" width="0.127" layer="51"/>
 <wire x1="-7" y1="6.4" x2="7" y2="6.4" width="0.127" layer="51"/>
 <wire x1="7" y1="6.4" x2="7" y2="-6.4" width="0.127" layer="51"/>
 <wire x1="7" y1="-6.4" x2="-7" y2="-6.4" width="0.127" layer="51"/>
-<wire x1="-7" y1="-2" x2="-7" y2="-6.4" width="0.127" layer="21"/>
+<wire x1="-7" y1="-3" x2="-7" y2="-6.4" width="0.127" layer="21"/>
 <wire x1="-7" y1="-6.4" x2="7" y2="-6.4" width="0.127" layer="21"/>
-<wire x1="7" y1="-6.4" x2="7" y2="-2" width="0.127" layer="21"/>
-<wire x1="7" y1="2" x2="7" y2="6.4" width="0.127" layer="21"/>
+<wire x1="7" y1="-6.4" x2="7" y2="-3" width="0.127" layer="21"/>
+<wire x1="7" y1="3" x2="7" y2="6.4" width="0.127" layer="21"/>
 <wire x1="7" y1="6.4" x2="-7" y2="6.4" width="0.127" layer="21"/>
-<wire x1="-7" y1="6.4" x2="-7" y2="2" width="0.127" layer="21"/>
+<wire x1="-7" y1="6.4" x2="-7" y2="3" width="0.127" layer="21"/>
 <wire x1="-7.25" y1="-6.65" x2="-7.25" y2="-1.8" width="0.05" layer="39"/>
 <wire x1="-7.25" y1="-1.8" x2="-8.3" y2="-1.8" width="0.05" layer="39"/>
 <wire x1="-8.3" y1="-1.8" x2="-8.3" y2="1.8" width="0.05" layer="39"/>
@@ -426,8 +426,8 @@ Basic SMA packaged diode. Good for reverse polarization protection. Common part 
 <wire x1="7.25" y1="-6.65" x2="-7.25" y2="-6.65" width="0.05" layer="39"/>
 <text x="-6.35596875" y="7.62716875" size="1.271190625" layer="25">&gt;NAME</text>
 <text x="-6.361459375" y="-8.90605" size="1.272290625" layer="27">&gt;VALUE</text>
-<smd name="1" x="-5.55" y="0" dx="5" dy="3.1" layer="1"/>
-<smd name="2" x="5.55" y="0" dx="5" dy="3.1" layer="1"/>
+<smd name="1" x="-5.55" y="0" dx="5" dy="5" layer="1"/>
+<smd name="2" x="5.55" y="0" dx="5" dy="5" layer="1"/>
 </package>
 <package name="LED_LTST-S220KRKT">
 <text x="2.2225" y="-0.9525" size="0.8128" layer="25" rot="R180">&gt;NAME</text>
@@ -1367,9 +1367,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="33.9" y="31.5" size="0.8128" layer="27" font="fixed"/>
 <attribute name="JLC-DNP" value="1" x="41" y="33" size="1.778" layer="27" display="off"/>
 </element>
-<element name="L1" library="hot-wand" package="IND_PA4343.103NLT" value="33u" x="33" y="56" smashed="yes">
-<attribute name="NAME" x="25.57283125" y="58.14403125" size="0.8128" layer="25" font="fixed" rot="R90"/>
-<attribute name="VALUE" x="26.39395" y="60.361459375" size="0.8128" layer="27" rot="R270"/>
+<element name="L1" library="hot-wand" package="IND_SRP1265A" value="33u" x="33" y="56" smashed="yes">
+<attribute name="NAME" x="25.47283125" y="59.14403125" size="0.8128" layer="25" font="fixed" rot="R90"/>
+<attribute name="VALUE" x="26.49395" y="61.861459375" size="0.8128" layer="27" rot="R270"/>
 <attribute name="JLCPARTNUM" value="C2453886" x="33" y="56" size="1.778" layer="27" display="off"/>
 <attribute name="PARTNUM" value="PA4343.333NLT;SRP1265A-330M;SRP1265CC-330M" x="33" y="56" size="1.778" layer="27" display="off"/>
 </element>
@@ -1876,10 +1876,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="40" y="39" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="42.4" y="53" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="34.9" y="52.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="34.9" y="54" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="34.9" y="56" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="35" y="58" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="37.5" y="58.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="34.9" y="55" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="34.9" y="57" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="34.9" y="59" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="38.7" y="59.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="39.5" y="60.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="41.6" y="62.4" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="43.5" y="64.3" extent="1-16" drill="0.3" shape="octagon"/>
@@ -3381,17 +3381,24 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <approved hash="7,40,ccdf9c279143d65f"/>
 <approved hash="7,40,7d43dd4d5d4efd40"/>
 <approved hash="19,1,7ada46e646127a2e"/>
+<approved hash="19,1,54299ecd55566e75"/>
+<approved hash="19,1,0f9ea7a2a6320e0e"/>
+<approved hash="19,1,3f9fa3a3a2323e0e"/>
+<approved hash="19,1,2f9ae7a6e6362e0a"/>
+<approved hash="19,1,f79fbba3ba33f60f"/>
+<approved hash="19,1,3f9eafa2ae323e0e"/>
+<approved hash="19,1,2f9a63a662362e0a"/>
+<approved hash="19,1,728aed7dd330a131"/>
 <approved hash="19,1,76ca32c667f7bc07"/>
 <approved hash="19,1,42426e7e6e1e4222"/>
-<approved hash="19,1,728aed7dd330a131"/>
 <approved hash="19,1,0f99a7a5a6060e3a"/>
 <approved hash="19,16,e35a3ca5d90b4d09"/>
-<approved hash="19,16,82f14f28b8529182"/>
 <approved hash="19,16,56327b1186684f42"/>
+<approved hash="19,16,82f14f28b8529182"/>
 <approved hash="19,16,232942174df62cc8"/>
-<approved hash="19,16,728aed7dd330a131"/>
 <approved hash="19,16,76ca32c667f7bc07"/>
 <approved hash="19,16,42426e7e6e1e4222"/>
+<approved hash="19,16,728aed7dd330a131"/>
 <approved hash="19,16,0f99a7a5a6060e3a"/>
 </errors>
 </board>

@@ -10076,6 +10076,34 @@ Max Component Height - 25.57mm</description>
 <pad name="1B" x="-5" y="0" drill="1" shape="octagon"/>
 <pad name="2B" x="5" y="0" drill="1" shape="octagon"/>
 </package>
+<package name="IND_SRP1265A">
+<wire x1="-7" y1="-6.4" x2="-7" y2="6.4" width="0.127" layer="51"/>
+<wire x1="-7" y1="6.4" x2="7" y2="6.4" width="0.127" layer="51"/>
+<wire x1="7" y1="6.4" x2="7" y2="-6.4" width="0.127" layer="51"/>
+<wire x1="7" y1="-6.4" x2="-7" y2="-6.4" width="0.127" layer="51"/>
+<wire x1="-7" y1="-3" x2="-7" y2="-6.4" width="0.127" layer="21"/>
+<wire x1="-7" y1="-6.4" x2="7" y2="-6.4" width="0.127" layer="21"/>
+<wire x1="7" y1="-6.4" x2="7" y2="-3" width="0.127" layer="21"/>
+<wire x1="7" y1="3" x2="7" y2="6.4" width="0.127" layer="21"/>
+<wire x1="7" y1="6.4" x2="-7" y2="6.4" width="0.127" layer="21"/>
+<wire x1="-7" y1="6.4" x2="-7" y2="3" width="0.127" layer="21"/>
+<wire x1="-7.25" y1="-6.65" x2="-7.25" y2="-1.8" width="0.05" layer="39"/>
+<wire x1="-7.25" y1="-1.8" x2="-8.3" y2="-1.8" width="0.05" layer="39"/>
+<wire x1="-8.3" y1="-1.8" x2="-8.3" y2="1.8" width="0.05" layer="39"/>
+<wire x1="-8.3" y1="1.8" x2="-7.25" y2="1.8" width="0.05" layer="39"/>
+<wire x1="-7.25" y1="1.8" x2="-7.25" y2="6.65" width="0.05" layer="39"/>
+<wire x1="-7.25" y1="6.65" x2="7.25" y2="6.65" width="0.05" layer="39"/>
+<wire x1="7.25" y1="6.65" x2="7.25" y2="1.8" width="0.05" layer="39"/>
+<wire x1="7.25" y1="1.8" x2="8.3" y2="1.8" width="0.05" layer="39"/>
+<wire x1="8.3" y1="1.8" x2="8.3" y2="-1.8" width="0.05" layer="39"/>
+<wire x1="8.3" y1="-1.8" x2="7.25" y2="-1.8" width="0.05" layer="39"/>
+<wire x1="7.25" y1="-1.8" x2="7.25" y2="-6.65" width="0.05" layer="39"/>
+<wire x1="7.25" y1="-6.65" x2="-7.25" y2="-6.65" width="0.05" layer="39"/>
+<text x="-6.35596875" y="7.62716875" size="1.271190625" layer="25">&gt;NAME</text>
+<text x="-6.361459375" y="-8.90605" size="1.272290625" layer="27">&gt;VALUE</text>
+<smd name="1" x="-5.55" y="0" dx="5" dy="5" layer="1"/>
+<smd name="2" x="5.55" y="0" dx="5" dy="5" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -10554,7 +10582,7 @@ Max Component Height - 25.57mm</description>
 <pin name="PA9/USART1_TX/TIM1_CH2/I2C1_SCL" x="53.34" y="0" length="middle" rot="R180"/>
 <pin name="PA10/USART1_RX/TIM1_CH3/I2C1_SDA" x="53.34" y="-2.54" length="middle" rot="R180"/>
 <pin name="PA13/IR_OUT/SWDIO" x="53.34" y="-7.62" length="middle" rot="R180"/>
-<pin name="PA14/USART1_TX/SWCLK" x="53.34" y="-12.7" length="middle" rot="R180"/>
+<pin name="PA14/USART2_TX/SWCLK" x="53.34" y="-12.7" length="middle" rot="R180"/>
 </symbol>
 <symbol name="ABM8-27.120MHZ-10-D1G-T">
 <wire x1="-1.397" y1="2.54" x2="1.397" y2="2.54" width="0.4064" layer="94"/>
@@ -13538,6 +13566,15 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 </technologies>
 </device>
 <device name="-PA4343" package="IND_PA4343.103NLT">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-SRP1265A" package="IND_SRP1265A">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -19827,7 +19864,7 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <connect gate="G$1" pin="PA1/ADC_IN1" pad="7"/>
 <connect gate="G$1" pin="PA10/USART1_RX/TIM1_CH3/I2C1_SDA" pad="18"/>
 <connect gate="G$1" pin="PA13/IR_OUT/SWDIO" pad="19"/>
-<connect gate="G$1" pin="PA14/USART1_TX/SWCLK" pad="20"/>
+<connect gate="G$1" pin="PA14/USART2_TX/SWCLK" pad="20"/>
 <connect gate="G$1" pin="PA2/USART1_TX/ADC_IN2" pad="8"/>
 <connect gate="G$1" pin="PA3/USART1_RX/ADC_IN3" pad="9"/>
 <connect gate="G$1" pin="PA4/TIM14_CH1/ADC_IN4" pad="10"/>
@@ -25540,7 +25577,7 @@ from high battery voltage</text>
 </net>
 <net name="SWCLK" class="0">
 <segment>
-<pinref part="U3" gate="G$1" pin="PA14/USART1_TX/SWCLK"/>
+<pinref part="U3" gate="G$1" pin="PA14/USART2_TX/SWCLK"/>
 <wire x1="167.64" y1="-353.06" x2="177.8" y2="-353.06" width="0.1524" layer="91"/>
 <label x="177.8" y="-353.06" size="1.016" layer="95" xref="yes"/>
 </segment>
