@@ -42,6 +42,7 @@ static volatile bool rfgen_active;
 
 static void rfgen_pin_low(void);
 static void rfgen_fault(void);
+static void rfgen_start_impl(bool bypass_tip_detector);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -102,12 +103,22 @@ bool rfgen_clock_init(void)
 
 void rfgen_start(void)
 {
+    rfgen_start_impl(false);
+}
+
+void rfgen_start_with_tip_bypass_for_test(void)
+{
+    rfgen_start_impl(true);
+}
+
+static void rfgen_start_impl(bool bypass_tip_detector)
+{
     GPIO_InitTypeDef gpio_cfg = {0};
     uint32_t         interrupt_state;
 
     /* The tip detector and emergency-stop latch independently inhibit RF.
      * Recheck both at the final hardware-enable boundary below. */
-    if (rfgen_has_fault() || !rfgen_tip_allows_start())
+    if (rfgen_has_fault() || (!bypass_tip_detector && !rfgen_tip_allows_start()))
     {
         rfgen_stop();
         return;
@@ -177,7 +188,7 @@ void rfgen_start(void)
      */
     interrupt_state = __get_PRIMASK();
     __disable_irq();
-    if (rfgen_has_fault() || !rfgen_tip_allows_start())
+    if (rfgen_has_fault() || (!bypass_tip_detector && !rfgen_tip_allows_start()))
     {
         rfgen_stop();
         if (interrupt_state == 0)

@@ -27,11 +27,28 @@
 #define UART_DEBUG_TASK_PERIOD_MS 200
 #define UART_DEBUG_VALUE_CAPACITY 8
 
+/* PA14/AF1 is not routed to the same peripheral on these pin-compatible MCUs:
+ *   STM32F030F4/F6: USART1_TX
+ *   STM32F042F4/F6: USART2_TX
+ *
+ * Configuring the wrong USART still changes PA14 from SWCLK to AF1 (and thus
+ * disconnects SWD), but no UART data reaches the pin. Keep the instance,
+ * peripheral clock, and GPIO alternate-function selection paired below. */
+#if defined(HOT_WAND_TARGET_STM32F042)
+#define UART_TX_INSTANCE USART2
+#define UART_TX_GPIO_AF  GPIO_AF1_USART2
+#elif defined(HOT_WAND_TARGET_STM32F030)
+#define UART_TX_INSTANCE USART1
+#define UART_TX_GPIO_AF  GPIO_AF1_USART1
+#else
+#error "Debug UART mapping is missing for the selected Hot Wand target"
+#endif
+
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
-static UART_HandleTypeDef uart1;
+static UART_HandleTypeDef uart_tx;
 static bool               uart_allowed;
 static bool               uart_initialized;
 static uint32_t           uart_debug_last_task_ms;
@@ -40,7 +57,7 @@ static uint32_t           uart_debug_last_task_ms;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static bool USART1_TX_Init(void);
+static bool UART_TX_Init(void);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -61,12 +78,12 @@ void UART_Write(const char* text)
         return;
     }
 
-    if (!uart_initialized && !USART1_TX_Init())
+    if (!uart_initialized && !UART_TX_Init())
     {
         return;
     }
 
-    if (HAL_UART_Transmit(&uart1, (const uint8_t*)text, (uint16_t)length, HAL_MAX_DELAY) != HAL_OK)
+    if (HAL_UART_Transmit(&uart_tx, (const uint8_t*)text, (uint16_t)length, HAL_MAX_DELAY) != HAL_OK)
     {
         return;
     }
@@ -157,7 +174,14 @@ void UART_debug_task(void)
 
 void UART_SetAllowed(bool allowed)
 {
+#if defined(HOT_WAND_SWD_DEBUG) && HOT_WAND_SWD_DEBUG
+    /* UART TX shares PA14 with SWCLK. A debugger build must never hand the
+     * pin to a USART, even if a test or the boot button requests output. */
+    (void)allowed;
+    uart_allowed = false;
+#else
     uart_allowed = allowed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -168,36 +192,40 @@ void HAL_UART_MspInit(UART_HandleTypeDef* handle)
 {
     GPIO_InitTypeDef gpio = {0};
 
-    if (handle->Instance != USART1)
+    if (handle->Instance != UART_TX_INSTANCE)
     {
         return;
     }
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
+#if defined(HOT_WAND_TARGET_STM32F042)
+    __HAL_RCC_USART2_CLK_ENABLE();
+#else
     __HAL_RCC_USART1_CLK_ENABLE();
+#endif
 
     gpio.Pin       = UART_TX_PINn;
     gpio.Mode      = GPIO_MODE_AF_PP;
     gpio.Pull      = GPIO_NOPULL;
     gpio.Speed     = GPIO_SPEED_FREQ_HIGH;
-    gpio.Alternate = GPIO_AF1_USART1;
+    gpio.Alternate = UART_TX_GPIO_AF;
     HAL_GPIO_Init(UART_TX_GPIOx, &gpio);
 }
 
-static bool USART1_TX_Init(void)
+static bool UART_TX_Init(void)
 {
-    uart1.Instance                    = USART1;
-    uart1.Init.BaudRate               = 115200;
-    uart1.Init.WordLength             = UART_WORDLENGTH_8B;
-    uart1.Init.StopBits               = UART_STOPBITS_1;
-    uart1.Init.Parity                 = UART_PARITY_NONE;
-    uart1.Init.Mode                   = UART_MODE_TX;
-    uart1.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
-    uart1.Init.OverSampling           = UART_OVERSAMPLING_16;
-    uart1.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
-    uart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+    uart_tx.Instance                    = UART_TX_INSTANCE;
+    uart_tx.Init.BaudRate               = 115200;
+    uart_tx.Init.WordLength             = UART_WORDLENGTH_8B;
+    uart_tx.Init.StopBits               = UART_STOPBITS_1;
+    uart_tx.Init.Parity                 = UART_PARITY_NONE;
+    uart_tx.Init.Mode                   = UART_MODE_TX;
+    uart_tx.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
+    uart_tx.Init.OverSampling           = UART_OVERSAMPLING_16;
+    uart_tx.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
+    uart_tx.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 
-    if (HAL_UART_Init(&uart1) != HAL_OK)
+    if (HAL_UART_Init(&uart_tx) != HAL_OK)
     {
         return false;
     }

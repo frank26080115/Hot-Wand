@@ -50,9 +50,11 @@ cmake-build-*/
 # Generated IDE, index, and CMake data
 .vscode/
 .idea/
+.ws/
 .cache/
 .clangd/
 .deps/
+st-link_gdbserver_log.txt
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake

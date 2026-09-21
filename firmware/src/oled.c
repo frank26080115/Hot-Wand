@@ -66,10 +66,10 @@ OLED_Handle       oled;
 static uint8_t      OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argument, void* data);
 static uint8_t      OLED_GPIOAndDelayCallback(u8x8_t* u8x8, uint8_t message, uint8_t argument, void* data);
 static OLED_Handle* OLED_FromU8x8(u8x8_t* u8x8);
-static bool         OLED_I2CTransmit(uint16_t address, const uint8_t* data, uint8_t length);
-static bool         OLED_I2CWaitFor(uint32_t flag);
+static bool         OLED_I2CTransmit(OLED_Handle* oled, uint16_t address, const uint8_t* data, uint8_t length);
+static bool         OLED_I2CWaitFor(OLED_Handle* oled, uint32_t flag, OLED_Error timeout_error);
 static void         OLED_I2CClearErrors(void);
-static void         OLED_SetTransportError(OLED_Handle* oled);
+static void         OLED_SetTransportError(OLED_Handle* oled, OLED_Error error, uint32_t i2c_status);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -276,10 +276,14 @@ static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argum
         return 1;
 
     case U8X8_MSG_BYTE_SEND:
-        if ((oled->transfer_active == 0) || ((argument > 0) && (data == NULL)) ||
-            (argument > (uint8_t)(OLED_I2C_TRANSFER_CAPACITY - oled->transfer_length)))
+        if ((oled->transfer_active == 0) || ((argument > 0) && (data == NULL)))
         {
-            OLED_SetTransportError(oled);
+            OLED_SetTransportError(oled, OLED_ERROR_TRANSFER_STATE, I2C1->ISR);
+            return 0;
+        }
+        if (argument > (uint8_t)(OLED_I2C_TRANSFER_CAPACITY - oled->transfer_length))
+        {
+            OLED_SetTransportError(oled, OLED_ERROR_TRANSFER_CAPACITY, I2C1->ISR);
             return 0;
         }
 
@@ -293,7 +297,7 @@ static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argum
     case U8X8_MSG_BYTE_END_TRANSFER:
         if (oled->transfer_active == 0)
         {
-            OLED_SetTransportError(oled);
+            OLED_SetTransportError(oled, OLED_ERROR_TRANSFER_STATE, I2C1->ISR);
             return 0;
         }
 
@@ -305,9 +309,11 @@ static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argum
         }
 
         if ((oled->transfer_length > 0) &&
-            !OLED_I2CTransmit((uint16_t)u8x8_GetI2CAddress(u8x8), oled->transfer_buffer, oled->transfer_length))
+            !OLED_I2CTransmit(oled,
+                              (uint16_t)u8x8_GetI2CAddress(u8x8),
+                              oled->transfer_buffer,
+                              oled->transfer_length))
         {
-            OLED_SetTransportError(oled);
             return 0;
         }
 
@@ -354,14 +360,14 @@ static OLED_Handle* OLED_FromU8x8(u8x8_t* u8x8)
     return (OLED_Handle*)u8x8_GetUserPtr(u8x8);
 }
 
-static bool OLED_I2CTransmit(uint16_t address, const uint8_t* data, uint8_t length)
+static bool OLED_I2CTransmit(OLED_Handle* oled, uint16_t address, const uint8_t* data, uint8_t length)
 {
     OLED_I2CClearErrors();
     I2C1->CR2 = (uint32_t)address | ((uint32_t)length << I2C_CR2_NBYTES_Pos) | I2C_CR2_AUTOEND | I2C_CR2_START;
 
     while (length-- != 0)
     {
-        if (!OLED_I2CWaitFor(I2C_ISR_TXIS))
+        if (!OLED_I2CWaitFor(oled, I2C_ISR_TXIS, OLED_ERROR_I2C_TX_TIMEOUT))
         {
             OLED_I2CClearErrors();
             return false;
@@ -369,7 +375,7 @@ static bool OLED_I2CTransmit(uint16_t address, const uint8_t* data, uint8_t leng
         I2C1->TXDR = *data++;
     }
 
-    if (!OLED_I2CWaitFor(I2C_ISR_STOPF))
+    if (!OLED_I2CWaitFor(oled, I2C_ISR_STOPF, OLED_ERROR_I2C_STOP_TIMEOUT))
     {
         OLED_I2CClearErrors();
         return false;
@@ -378,7 +384,7 @@ static bool OLED_I2CTransmit(uint16_t address, const uint8_t* data, uint8_t leng
     return true;
 }
 
-static bool OLED_I2CWaitFor(uint32_t flag)
+static bool OLED_I2CWaitFor(OLED_Handle* oled, uint32_t flag, OLED_Error timeout_error)
 {
     uint32_t start = systick_get_ms();
     uint32_t status;
@@ -386,8 +392,30 @@ static bool OLED_I2CWaitFor(uint32_t flag)
     do
     {
         status = I2C1->ISR;
-        if ((status & (I2C_ISR_NACKF | I2C_ISR_BERR | I2C_ISR_ARLO | I2C_ISR_OVR)) != 0)
+        oled->last_i2c_status = status;
+        if ((status & I2C_ISR_NACKF) != 0)
         {
+            OLED_SetTransportError(oled, OLED_ERROR_I2C_NACK, status);
+            return false;
+        }
+        if ((status & I2C_ISR_BERR) != 0)
+        {
+            OLED_SetTransportError(oled, OLED_ERROR_I2C_BUS, status);
+            return false;
+        }
+        if ((status & I2C_ISR_ARLO) != 0)
+        {
+            OLED_SetTransportError(oled, OLED_ERROR_I2C_ARBITRATION, status);
+            return false;
+        }
+        if ((status & I2C_ISR_OVR) != 0)
+        {
+            OLED_SetTransportError(oled, OLED_ERROR_I2C_OVERRUN, status);
+            return false;
+        }
+        if ((flag != I2C_ISR_STOPF) && ((status & I2C_ISR_STOPF) != 0))
+        {
+            OLED_SetTransportError(oled, OLED_ERROR_I2C_UNEXPECTED_STOP, status);
             return false;
         }
 
@@ -397,20 +425,24 @@ static bool OLED_I2CWaitFor(uint32_t flag)
         }
     } while ((uint32_t)(systick_get_ms() - start) < OLED_I2C_TIMEOUT_MS);
 
+    OLED_SetTransportError(oled, timeout_error, status);
     return false;
 }
 
 static void OLED_I2CClearErrors(void)
 {
-    SET_BIT(I2C1->CR2, I2C_CR2_STOP);
+    /* STOP is a transfer command, not an error-clear bit. Requesting it while
+     * idle can race the next START and terminate the new transfer before TXIS. */
     WRITE_REG(I2C1->ICR,
               I2C_ICR_ADDRCF | I2C_ICR_NACKCF | I2C_ICR_STOPCF | I2C_ICR_BERRCF | I2C_ICR_ARLOCF | I2C_ICR_OVRCF |
                   I2C_ICR_PECCF | I2C_ICR_TIMOUTCF | I2C_ICR_ALERTCF);
 }
 
-static void OLED_SetTransportError(OLED_Handle* oled)
+static void OLED_SetTransportError(OLED_Handle* oled, OLED_Error error, uint32_t i2c_status)
 {
     oled->transport_ok    = 0;
     oled->transfer_active = 0;
     oled->transfer_length = 0;
+    oled->error           = error;
+    oled->last_i2c_status = i2c_status;
 }

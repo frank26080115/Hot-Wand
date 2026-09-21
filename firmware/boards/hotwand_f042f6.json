@@ -9,6 +9,12 @@
   },
   "debug": {
     "jlink_device": "STM32F042F6",
+    "openocd_extra_args": [
+      "-c",
+      "adapter speed 100",
+      "-c",
+      "reset_config srst_only srst_nogate connect_assert_srst"
+    ],
     "openocd_target": "stm32f0x",
     "svd_path": "STM32F042x.svd"
   },

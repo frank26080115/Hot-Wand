@@ -37,6 +37,8 @@ static IWDG_HandleTypeDef watchdog_handle;
 // Main Flow
 // -----------------------------------------------------------------------------
 
+#if TEST_WATCHDOG_ENABLED
+
 bool watchdog_init(void)
 {
     /* DBGMCU freeze bits survive system reset. Safety takes priority over
@@ -56,3 +58,4 @@ void watchdog_feed(void)
 {
     HAL_IWDG_Refresh(&watchdog_handle);
 }
+#endif

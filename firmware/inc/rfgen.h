@@ -13,6 +13,9 @@ bool rfgen_has_fault(void);
 bool rfgen_has_clock_fault(void);
 bool rfgen_is_active(void);
 void rfgen_start(void);
+/* Bring-up-only entry point: retains clock and emergency-stop checks, but
+ * deliberately ignores the external tip-presence interlock. */
+void rfgen_start_with_tip_bypass_for_test(void);
 void rfgen_stop(void);
 /* Immediately disables TIM1 and latches RF restart inhibition until reset. */
 void rfgen_emergency_stop(void);

@@ -4,6 +4,7 @@
 
 #include "tests.h"
 
+#include "adc.h"
 #include "battery.h"
 #include "button.h"
 #include "fan.h"
@@ -24,6 +25,7 @@
 #include "watchdog.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 // -----------------------------------------------------------------------------
@@ -31,12 +33,19 @@
 // -----------------------------------------------------------------------------
 
 #define TEST_STATUS_INTERVAL_MS               100
+#define TEST_WATCHDOG_FEED_DURATION_MS        5000
 #define TEST_RFGEN_BURST_DURATION_MS          1000
+/* Set to 1 only when the RF/tip-detection hardware is absent during bring-up. */
+#define TEST_RFGEN_BYPASS_TIP_DETECTOR         1
 #define TEST_PWRLVL_75_PERCENT_CCR            24
 #define TEST_NVM_VERBOSE_SAVE_COUNT           4
 #define TEST_BATTERY_GUESS_MINIMUM_MILLIVOLTS 14000
 #define TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS 36000
 #define TEST_BATTERY_GUESS_STEP_MILLIVOLTS    250
+
+#if (TEST_RFGEN_BYPASS_TIP_DETECTOR != 0) && (TEST_RFGEN_BYPASS_TIP_DETECTOR != 1)
+#error "TEST_RFGEN_BYPASS_TIP_DETECTOR must be 0 or 1"
+#endif
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -53,6 +62,7 @@ extern const uint8_t __nvm_page_end__;
 static void test_fan_pin_init(void);
 #endif
 static void      test_report_tip_state(bool triggered);
+static bool      test_rfgen_try_start(void);
 static void      test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* settings);
 static bool      test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right);
 static uintptr_t test_nvm_page_start(void);
@@ -81,6 +91,9 @@ static void      test_battery_guess_write_row(uint8_t                battery_mod
  * PA14 is shared by UART TX and SWCLK. Each UART test leaves UART disabled
  * until a physical button action explicitly opts in and sacrifices SWD.
  */
+#if defined(HOT_WAND_SWD_DEBUG) && HOT_WAND_SWD_DEBUG
+__attribute__((noinline, used))
+#endif
 void test_run(void)
 {
     /* Only one test can be enabled at a time by uncommenting it. */
@@ -91,6 +104,8 @@ void test_run(void)
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
+    // test_bringup_tipdet();
+    // test_bringup_watchdog_simple();
     // test_rfgen();
     // test_rfgen_burst();
     // test_watchdog_rf_reset();
@@ -102,9 +117,26 @@ void test_run(void)
 void test_bringup_systick(void)
 {
     char     timestamp[12];
-    uint32_t last_report_ms = systick_get_ms() - TEST_STATUS_INTERVAL_MS;
+    uint32_t last_report_ms;
 
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    if (!rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
     UART_SetAllowed(false);
+    last_report_ms = systick_get_ms() - TEST_STATUS_INTERVAL_MS;
 
     for (;;)
     {
@@ -128,6 +160,15 @@ void test_bringup_button(void)
 {
     char timestamp[12];
 
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    btn_init();
     UART_SetAllowed(false);
     btn_has_short_press(true);
 
@@ -154,6 +195,16 @@ void test_bringup_button(void)
 
 void test_bringup_adc(void)
 {
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    adc_init();
+    btn_init();
     UART_SetAllowed(false);
     btn_has_short_press(true);
 
@@ -175,6 +226,25 @@ void test_bringup_fan(void)
 {
     bool fan_pin_owned = false;
 
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+#if FAN_PWM_ENABLED
+    if (!rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+#endif
+    btn_init();
+
     /* Prevent the production temperature task from fighting direct control. */
     fan_stop();
 
@@ -195,7 +265,7 @@ void test_bringup_fan(void)
                 fan_pin_owned = true;
             }
 #if FAN_PWM_ENABLED
-            fanpwm_set(100);
+            fanpwm_set(50);
 #else
             HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, GPIO_PIN_SET);
 #endif
@@ -216,6 +286,16 @@ void test_bringup_fan(void)
 
 void test_bringup_pwrlvl(void)
 {
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
     pwrlvl_init();
     TIM3->CCR1 = 0;
 
@@ -232,6 +312,16 @@ void test_bringup_pwrlvl_min(void)
 {
     bool minimum_applied = false;
 
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
     pwrlvl_init();
     TIM3->CCR1 = 0;
 
@@ -258,6 +348,24 @@ void test_bringup_pwrlvl_min(void)
 
 void test_bringup_oled(void)
 {
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Inspect oled.error and oled.last_i2c_status in the debugger. */
+        for (;;)
+        {
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+
     for (;;)
     {
         /* show_fault() is terminal and services IWDG after making RF safe. */
@@ -265,12 +373,176 @@ void test_bringup_oled(void)
     }
 }
 
+void test_bringup_tipdet(void)
+{
+    char     input_voltage[10];
+    char     output_voltage[10];
+    size_t   voltage_length;
+    uint32_t last_refresh_ms;
+    u8g2_t*  graphics;
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    adc_init();
+    btn_init();
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Inspect oled.error and oled.last_i2c_status in the debugger. */
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    tipdetect_init();
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+
+    last_refresh_ms = systick_get_ms() - TEST_STATUS_INTERVAL_MS;
+
+    for (;;)
+    {
+        uint32_t now;
+
+        btn_task();
+        tipdetect_task();
+        now = systick_get_ms();
+
+        if ((uint32_t)(now - last_refresh_ms) >= TEST_STATUS_INTERVAL_MS)
+        {
+            last_refresh_ms = now;
+
+            input_voltage[0] = 'I';
+            millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), &input_voltage[1], 1, &voltage_length);
+            input_voltage[voltage_length + 1] = 'V';
+            input_voltage[voltage_length + 2] = '\0';
+
+            output_voltage[0] = 'O';
+            millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), &output_voltage[1], 1, &voltage_length);
+            output_voltage[voltage_length + 1] = 'V';
+            output_voltage[voltage_length + 2] = '\0';
+
+            /* The production detector intentionally latches a missing tip.
+             * Clear that latch when the input is safely high so this bring-up
+             * display follows both unplug and replug transitions. */
+            tipdetect_reset();
+
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, input_voltage);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, output_voltage);
+            u8g2_DrawStr(graphics,
+                         1,
+                         OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT),
+                         tipdetect_has_triggered() ? "NO TIP" : "TIP");
+            if (btn_is_down())
+            {
+                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), "BTN");
+            }
+            OLED_SendBuffer(&oled);
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_bringup_watchdog_simple(void)
+{
+    char     elapsed_seconds[12];
+    size_t   elapsed_length;
+    uint32_t started_ms;
+    uint32_t last_refresh_ms;
+    u8g2_t*  graphics;
+
+    HAL_Init();
+    rfgen_stop();
+    systick_init();
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Inspect oled.error and oled.last_i2c_status in the debugger. */
+        for (;;)
+        {
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+        }
+    }
+
+    /* Start the watchdog only after display setup so the visible counter and
+     * watchdog timeout begin together. */
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+
+    started_ms      = systick_get_ms();
+    last_refresh_ms = started_ms - TEST_STATUS_INTERVAL_MS;
+
+    for (;;)
+    {
+        uint32_t now        = systick_get_ms();
+        uint32_t elapsed_ms = now - started_ms;
+
+        if (elapsed_ms < TEST_WATCHDOG_FEED_DURATION_MS)
+        {
+            watchdog_feed();
+        }
+
+        if ((uint32_t)(now - last_refresh_ms) >= TEST_STATUS_INTERVAL_MS)
+        {
+            last_refresh_ms = now;
+            millivolts_to_str(elapsed_ms, elapsed_seconds, 1, &elapsed_length);
+            elapsed_seconds[elapsed_length++] = 's';
+            elapsed_seconds[elapsed_length]   = '\0';
+
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, elapsed_seconds);
+            OLED_SendBuffer(&oled);
+        }
+
+        HAL_Delay(1);
+    }
+}
+
 void test_rfgen(void)
 {
     bool enabled = false;
 
-    UART_SetAllowed(false);
+    HAL_Init();
     rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
+    tipdetect_init();
+#endif
 
     for (;;)
     {
@@ -278,11 +550,7 @@ void test_rfgen(void)
 
         if (button_down && !enabled)
         {
-            /* The first RF-enable press permanently opts in to UART for the
-             * remainder of this non-returning test. */
-            UART_SetAllowed(true);
-            rfgen_start();
-            enabled = true;
+            enabled = test_rfgen_try_start();
         }
         else if (!button_down && enabled)
         {
@@ -290,7 +558,6 @@ void test_rfgen(void)
             enabled = false;
         }
 
-        UART_debug_task();
         HAL_Delay(1);
         watchdog_feed();
     }
@@ -302,11 +569,29 @@ void test_rfgen_burst(void)
     bool     burst_active     = false;
     bool     last_tip_state;
 
-    UART_SetAllowed(false);
+    HAL_Init();
     rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
+    tipdetect_init();
+#endif
+    I2C1_Init();
+    OLED_Init(&oled, &i2c1);
+    OLED_ConfigureGraphics(&oled);
+    UART_SetAllowed(false);
     btn_has_short_press(true);
+    last_tip_state = false;
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
     last_tip_state = tipdetect_has_triggered();
     test_report_tip_state(last_tip_state);
+#endif
 
     for (;;)
     {
@@ -314,28 +599,34 @@ void test_rfgen_burst(void)
         bool     tip_state;
 
         btn_task();
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
         tipdetect_task();
+#endif
         now = systick_get_ms();
 
         if (btn_has_short_press(true))
         {
             UART_SetAllowed(true);
-            tipdetect_reset();
-            rfgen_start();
             burst_started_ms = now;
-            burst_active     = true;
+            burst_active     = test_rfgen_try_start();
 
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
             /* Report even when reset leaves the detector state unchanged. */
             last_tip_state = tipdetect_has_triggered();
             test_report_tip_state(last_tip_state);
+#endif
         }
 
+#if TEST_RFGEN_BYPASS_TIP_DETECTOR
+        tip_state = false;
+#else
         tip_state = tipdetect_has_triggered();
         if (tip_state != last_tip_state)
         {
             last_tip_state = tip_state;
             test_report_tip_state(tip_state);
         }
+#endif
 
         if (burst_active && (tip_state || ((uint32_t)(now - burst_started_ms) >= TEST_RFGEN_BURST_DURATION_MS)))
         {
@@ -350,8 +641,19 @@ void test_rfgen_burst(void)
 
 void test_watchdog_rf_reset(void)
 {
-    UART_SetAllowed(false);
+#if TEST_WATCHDOG_ENABLED
+    HAL_Init();
     rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+    tipdetect_init();
+    UART_SetAllowed(false);
     btn_has_short_press(true);
 
     for (;;)
@@ -384,6 +686,15 @@ void test_watchdog_rf_reset(void)
         HAL_Delay(1);
         watchdog_feed();
     }
+#else
+    /* This test deliberately relies on IWDG to terminate active RF. Refuse to
+     * arm RF when the test-wide watchdog switch is off. */
+    HAL_Init();
+    rfgen_stop();
+    for (;;)
+    {
+    }
+#endif
 }
 
 void test_nvm_simple(void)
@@ -392,9 +703,18 @@ void test_nvm_simple(void)
     hotwand_setup_nvm_t next;
     uint16_t            sequence = 0;
 
-    UART_SetAllowed(false);
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    btn_init();
     btn_has_short_press(true);
     nvm_init();
+    UART_SetAllowed(false);
 
     for (;;)
     {
@@ -430,9 +750,18 @@ void test_nvm_full_page(void)
     uint16_t            sequence;
     uint16_t            trace;
 
-    UART_SetAllowed(false);
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    btn_init();
     btn_has_short_press(true);
     nvm_init();
+    UART_SetAllowed(false);
 
     /* Do absolutely nothing until a press opts in to UART and flash writes. */
     for (;;)
@@ -530,8 +859,17 @@ void test_battery_guess(void)
     uint8_t         battery_mode;
     bool            valid;
 
-    UART_SetAllowed(false);
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    btn_init();
     btn_has_short_press(true);
+    UART_SetAllowed(false);
 
     /* PA14 remains available for SWD until a deliberate press starts the
      * test and opts in to UART output. */
@@ -606,6 +944,22 @@ static void test_report_tip_state(bool triggered)
     u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "TIP");
     u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, triggered ? "FAULT" : "OK");
     OLED_SendBuffer(&oled);
+}
+
+static bool test_rfgen_try_start(void)
+{
+#if TEST_RFGEN_BYPASS_TIP_DETECTOR
+    rfgen_start_with_tip_bypass_for_test();
+#else
+    /* A deliberate press may clear a startup tip-disconnect latch, but only
+     * while the live TIP_DET input confirms a present tip. */
+    tipdetect_reset();
+    rfgen_start();
+#endif
+
+    /* Both start paths remain fail-closed for clock and emergency-stop
+     * faults. Returning the real state also permits a held-button retry. */
+    return rfgen_is_active();
 }
 
 static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* settings)

@@ -138,6 +138,20 @@ bool battery_guess(uint16_t battery_millivolts, uint8_t selected_battery_mode, b
         pessimistic_cell_count = limits->maximum_cell_count;
     }
 
+    /* Enforce the configured cell-count floor. In particular, LiFe modes are
+     * restricted to 6S through 9S and must never be interpreted as 4S or 5S.
+     * Clamping each end independently preserves a valid ambiguous range such
+     * as 6S through 7S. A pack below the minimum 6S voltage becomes 6S with a
+     * per-cell voltage below the cutoff, causing battery_check() to fail. */
+    if (optimistic_cell_count < limits->minimum_cell_count)
+    {
+        optimistic_cell_count = limits->minimum_cell_count;
+    }
+    if (pessimistic_cell_count < limits->minimum_cell_count)
+    {
+        pessimistic_cell_count = limits->minimum_cell_count;
+    }
+
     guess->optimistic_cell_count           = (uint16_t)optimistic_cell_count;
     guess->pessimistic_cell_count          = (uint16_t)pessimistic_cell_count;
     guess->optimistic_millivolts_per_cell  = (uint16_t)((uint32_t)battery_millivolts / optimistic_cell_count);

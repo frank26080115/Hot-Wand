@@ -3,9 +3,9 @@
  *
  * PA13 cannot expose an ordinary timer channel on the STM32F030 or STM32F042,
  * but its IR_OUT alternate function combines TIM17 channel 1 with the TIM16
- * channel 1 modulation envelope. Holding TIM17 active and running TIM16 in
- * PWM2 mode turns that infrared path into an ordinary approximately 25 kHz
- * output.
+ * channel 1 modulation envelope. Holding TIM16's envelope active and running
+ * the documented TIM17 carrier input in PWM mode turns that infrared path
+ * into an ordinary approximately 25 kHz output.
  *
  * Production fan control deliberately leaves this module dormant for its
  * configured startup window, preserving SWD access before PA13 is claimed at
@@ -37,7 +37,7 @@
 #define FANPWM_TIMER_PERIOD         (FANPWM_PERIOD_TICKS - 1)
 #define FANPWM_MAX_DUTY_PERCENT     100
 #define FANPWM_PERCENT_ROUNDING     (FANPWM_MAX_DUTY_PERCENT / 2)
-#define FANPWM_CARRIER_TIMER_PERIOD 1
+#define FANPWM_ENVELOPE_TIMER_PERIOD 1
 
 /*
  * 27.12 MHz / 1085 is approximately 24995.4 Hz. An exact 25 kHz period is not
@@ -136,7 +136,7 @@ void fanpwm_set(uint8_t duty_percent)
      * boundary. Do not force an update here: preserving the current period
      * avoids a shortened output pulse during a duty change.
      */
-    TIM16->CCR1 = fanpwm_duty_to_compare(fanpwm_mode, duty_percent);
+    TIM17->CCR1 = fanpwm_duty_to_compare(fanpwm_mode, duty_percent);
 }
 
 // -----------------------------------------------------------------------------
@@ -180,44 +180,39 @@ static void fanpwm_configure_timers(fanpwm_mode_t mode)
     __HAL_RCC_TIM16_RELEASE_RESET();
     __HAL_RCC_TIM17_RELEASE_RESET();
 
-    /*
-     * TIM17 is IR_OUT's carrier input. Forced-active OC1 holds that input high
-     * continuously, leaving TIM16's inverted envelope as the only waveform.
-     * The counter remains enabled because IR_OUT is defined in terms of an
-     * active timer channel, even though forced-active mode does not need a
-     * meaningful carrier frequency.
-     */
-    TIM17->CR1   = 0;
-    TIM17->PSC   = 0;
-    TIM17->ARR   = FANPWM_CARRIER_TIMER_PERIOD;
-    TIM17->RCR   = 0;
-    TIM17->CCR1  = 0;
-    TIM17->CCMR1 = TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_0;
-    TIM17->CCER  = TIM_CCER_CC1E;
-    TIM17->BDTR  = TIM_BDTR_MOE;
-    TIM17->CNT   = 0;
-    TIM17->EGR   = TIM_EGR_UG;
-    TIM17->SR    = 0;
-    TIM17->CR1   = TIM_CR1_CEN;
-
-    /*
-     * IR_OUT is inverted relative to TIM16's modulation envelope. PWM2 makes
-     * the resulting PA13 high time grow with CCR1, so direct mode can use the
-     * intuitive zero-through-period compare range. OC1 preload provides
-     * glitch-free changes on natural period boundaries.
-     */
-    TIM16->CR1   = TIM_CR1_ARPE;
+    /* TIM16 is the IRTIM modulation envelope. Force it active so the TIM17
+     * carrier passes through continuously. The counter stays enabled because
+     * IRTIM is specified in terms of an enabled timer output channel. */
+    TIM16->CR1   = 0;
     TIM16->PSC   = 0;
-    TIM16->ARR   = FANPWM_TIMER_PERIOD;
+    TIM16->ARR   = FANPWM_ENVELOPE_TIMER_PERIOD;
     TIM16->RCR   = 0;
-    TIM16->CCR1  = zero_compare;
-    TIM16->CCMR1 = TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_0 | TIM_CCMR1_OC1PE;
+    TIM16->CCR1  = 0;
+    TIM16->CCMR1 = TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_0;
     TIM16->CCER  = TIM_CCER_CC1E;
     TIM16->BDTR  = TIM_BDTR_MOE;
     TIM16->CNT   = 0;
     TIM16->EGR   = TIM_EGR_UG;
     TIM16->SR    = 0;
-    SET_BIT(TIM16->CR1, TIM_CR1_CEN);
+    TIM16->CR1   = TIM_CR1_CEN;
+
+    /* TIM17 is the documented IRTIM carrier source. IR_OUT is inverted
+     * relative to the carrier, so CC1P inverts OC1 before it reaches IRTIM;
+     * the two inversions make PA13 high time grow directly with CCR1. This
+     * also guarantees that a zero-percent direct command leaves PA13 low.
+     * OC1 preload keeps duty changes glitch-free. */
+    TIM17->CR1   = TIM_CR1_ARPE;
+    TIM17->PSC   = 0;
+    TIM17->ARR   = FANPWM_TIMER_PERIOD;
+    TIM17->RCR   = 0;
+    TIM17->CCR1  = zero_compare;
+    TIM17->CCMR1 = TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1PE;
+    TIM17->CCER  = TIM_CCER_CC1E | TIM_CCER_CC1P;
+    TIM17->BDTR  = TIM_BDTR_MOE;
+    TIM17->CNT   = 0;
+    TIM17->EGR   = TIM_EGR_UG;
+    TIM17->SR    = 0;
+    TIM17->CR1   = TIM_CR1_CEN;
 }
 
 static uint16_t fanpwm_duty_to_compare(fanpwm_mode_t mode, uint8_t duty_percent)

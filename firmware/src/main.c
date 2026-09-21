@@ -73,6 +73,8 @@ static void Error_Handler(void);
 
 int main(void)
 {
+    test_run(); // if a test is enabled, it does its own initialization and never returns
+
     battery_guess_t     battery_guess_result;
     hotwand_setup_nvm_t settings;
     uint32_t            random_seed;
@@ -167,8 +169,6 @@ int main(void)
     settings.fan_mode = fan_normalize_mode(settings.fan_mode);
     fan_init(settings.fan_mode, settings.fan_sig_inv != 0);
     display_last_frame_ms = systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
-
-    test_run(); // if the test is enabled, then this will never return
 
     for (;;)
     {

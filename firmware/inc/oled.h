@@ -11,10 +11,26 @@
 #define OLED_I2C_ADDRESS_U8G2      ((uint8_t)(OLED_I2C_ADDRESS_7BIT << 1))
 #define OLED_I2C_TRANSFER_CAPACITY 32
 
+typedef enum
+{
+    OLED_ERROR_NONE = 0,
+    OLED_ERROR_TRANSFER_STATE,
+    OLED_ERROR_TRANSFER_CAPACITY,
+    OLED_ERROR_I2C_NACK,
+    OLED_ERROR_I2C_BUS,
+    OLED_ERROR_I2C_ARBITRATION,
+    OLED_ERROR_I2C_OVERRUN,
+    OLED_ERROR_I2C_UNEXPECTED_STOP,
+    OLED_ERROR_I2C_TX_TIMEOUT,
+    OLED_ERROR_I2C_STOP_TIMEOUT
+} OLED_Error;
+
 typedef struct
 {
     u8g2_t             graphics;
     I2C_HandleTypeDef* i2c;
+    uint32_t           last_i2c_status;
+    OLED_Error         error;
     uint8_t            transfer_buffer[OLED_I2C_TRANSFER_CAPACITY];
     uint8_t            transfer_length;
     uint8_t            transfer_active;

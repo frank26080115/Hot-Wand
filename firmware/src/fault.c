@@ -112,7 +112,7 @@ void show_fault(const char* text, bool allow_button_reset)
                 fault_reset_if_button_pressed();
             }
             HAL_Delay(1);
-            watchdog_feed();
+			watchdog_feed();
         }
     }
 
