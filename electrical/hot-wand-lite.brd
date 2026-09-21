@@ -36,8 +36,8 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
@@ -208,6 +208,12 @@
 <vertex x="64" y="66"/>
 <vertex x="64" y="72"/>
 </polygon>
+<rectangle x1="56" y1="18.6" x2="58" y2="22.1" layer="30"/>
+<rectangle x1="72" y1="18.9" x2="74" y2="22.1" layer="30"/>
+<rectangle x1="73" y1="32.8" x2="75" y2="35.7" layer="30"/>
+<rectangle x1="89" y1="32.9" x2="91" y2="36.3" layer="30"/>
+<rectangle x1="90" y1="24.7" x2="92" y2="28.1" layer="30"/>
+<rectangle x1="105.9" y1="23.9" x2="108.1" y2="29.1" layer="30"/>
 </plain>
 <libraries>
 <library name="hot-wand">
