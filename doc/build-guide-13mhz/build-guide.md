@@ -62,7 +62,7 @@ Add the custom cut copper fins to the buck converter heat dissipation area.  [Cl
 
 Do not make the fins block the area where the brass standoff and screw is supposed to go! We are soldering on the fins first before the standoffs are attached because it is easier to solder this way, without the huge thermal mass of the standoff.
 
-Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Align the one of the flat faces of the hexagonal standoff parallel to the nearest edge of the PCB. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
+Attach all brass standoffs (M2.5 thread, 6mm long, 4.5mm hex) to the bottom of the circuit board, using M2.5 x 4mm screws. Use low or medium strength thread-locker if available. Using tooth-lock washers is also optional and can help.
 
 ![](./imgs/standoffs_3d.png)
 
@@ -217,6 +217,10 @@ At this point, you may apply conformal coating over the circuit board if you wis
 Fasten PCB to bottom lid, using the brass standoffs installed previously and M2.5 x 4mm screws.
 
 ![](./imgs/bottom_lid_screws_3d.png)
+
+**Addendum:** you might need to grind away some of the metal too close to the standoffs. See the following photo:
+
+<!-- TODO photo -->
 
 Assemble cooling fan and the air intake grille to the box. See diagram for details.
 

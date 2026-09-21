@@ -19,6 +19,8 @@ The pieces are named:
 
 The files are all [here in this directory](../mechanical/stand)
 
+There are two versions: 16mm for handpieces with a 16mm diameter flange (Metcal, Radio Thermal). 18mm for handpieces with a 18mm diameter flange (Thermaltronics). Only one piece, the handle-rest, has this variation.
+
 It can house cylindrical magnets that are 1/2" in diameter and 1/4" thick, magnetized axially. (KJ Magnetics D84, D84AH, D84B-N52, etc)
 
 The design has the strike plate intentionally taking possible hits from the hot soldering iron tip, preventing the plastic from getting melted accidentally. However it is still advised to cover exposed plastic surfaces with aluminum foil tape for added protection.

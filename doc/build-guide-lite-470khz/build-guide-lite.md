@@ -70,7 +70,7 @@ Assemble the MOSFET together with the heatsinks according to the diagrams:
 
 ![](imgs/mosfet_heatsink_stack.png)
 
-The bottom 3 fins of the heatsink needs to be bent to avoid the 12V buck converter. You must do this before soldering.
+The bottom 3 fins of the heatsink needs to be bent to avoid the 12V buck converter, use a gentle curved bend to avoid snapping the aluminum. There's 1 bottom fin that needs to be snapped off so it doesn't hit the SMD inductor. You must do this before soldering.
 
 ![](imgs/heatsink_inner_3fins_bent.png)
 

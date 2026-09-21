@@ -18,5 +18,8 @@ env/
 dist/
 *.egg-info/
 
+# CubeIDE workspace
+.fwws
+
 # Affinity temporary lock files
 *.af~lock~
