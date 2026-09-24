@@ -28,16 +28,8 @@ namespace
 {
 constexpr rmt_channel_t kRmtChannel        = RMT_CHANNEL_0;
 constexpr uint32_t      kRmtClockHz        = 80000000u;
-constexpr uint32_t      kCarrierClocks     = (kRmtClockHz + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
-constexpr uint16_t      kCarrierHighClocks = static_cast<uint16_t>(kCarrierClocks / 2u);
-constexpr uint16_t      kCarrierLowClocks  = static_cast<uint16_t>(kCarrierClocks - kCarrierHighClocks);
 constexpr uint16_t      kMaximumDuration   = 0x7FFFu;
-constexpr uint16_t      kMaximumAlignedDuration =
-    static_cast<uint16_t>((kMaximumDuration / kCarrierClocks) * kCarrierClocks);
 
-static_assert(kCarrierClocks == 170u, "Unexpected ESP32 RMT carrier period");
-static_assert(kCarrierHighClocks == 85u, "Unexpected ESP32 RMT high time");
-static_assert(kCarrierLowClocks == 85u, "Unexpected ESP32 RMT low time");
 static_assert(SOC_RMT_MEM_WORDS_PER_CHANNEL >= 48, "ESP32 RMT channel memory is too small");
 
 struct EnvelopeSegment
@@ -50,10 +42,9 @@ struct RmtPattern
 {
     rmt_item32_t items[SOC_RMT_MEM_WORDS_PER_CHANNEL];
     uint8_t      itemCount;
-#if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
-    (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
+    uint16_t     highClocks;
+    uint16_t     lowClocks;
     bool         carrierEnabled;
-#endif
 };
 
 RmtPattern g_patterns[2]   = {};
@@ -61,15 +52,18 @@ int8_t     g_activePattern = -1;
 bool       g_initialized   = false;
 bool       g_running       = false;
 
-bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool level, uint32_t duration);
+bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool level, uint32_t duration,
+                    uint32_t carrierClocks);
 bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPattern* pattern);
-bool initialize_hardware();
+bool initialize_hardware(const RmtPattern& pattern);
 bool transmit_pattern(const RmtPattern& pattern);
 void force_idle_low();
 
-bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool level, uint32_t duration)
+bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool level, uint32_t duration,
+                    uint32_t carrierClocks)
 {
-    if ((duration == 0u) || ((duration % kCarrierClocks) != 0u))
+    const uint32_t maximumAlignedDuration = (kMaximumDuration / carrierClocks) * carrierClocks;
+    if ((duration == 0u) || ((duration % carrierClocks) != 0u))
     {
         return duration == 0u;
     }
@@ -77,10 +71,10 @@ bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool leve
     while (duration > 0u)
     {
         if ((*segmentCount > 0u) && (segments[*segmentCount - 1u].level == level) &&
-            (segments[*segmentCount - 1u].duration < kMaximumAlignedDuration))
+            (segments[*segmentCount - 1u].duration < maximumAlignedDuration))
         {
             EnvelopeSegment& tail      = segments[*segmentCount - 1u];
-            const uint32_t   available = kMaximumAlignedDuration - tail.duration;
+            const uint32_t   available = maximumAlignedDuration - tail.duration;
             const uint32_t   addition  = (duration < available) ? duration : available;
             tail.duration              = static_cast<uint16_t>(tail.duration + addition);
             duration -= addition;
@@ -92,7 +86,7 @@ bool append_segment(EnvelopeSegment* segments, uint16_t* segmentCount, bool leve
             return false;
         }
 
-        const uint32_t chunk             = (duration < kMaximumAlignedDuration) ? duration : kMaximumAlignedDuration;
+        const uint32_t chunk             = (duration < maximumAlignedDuration) ? duration : maximumAlignedDuration;
         segments[*segmentCount].duration = static_cast<uint16_t>(chunk);
         segments[*segmentCount].level    = level;
         ++(*segmentCount);
@@ -109,9 +103,18 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
         return false;
     }
 
+    // The common generator always starts its table with a full carrier period.
+    const uint32_t carrierClocks = periodTable[0] + 1u;
+    if ((carrierClocks < 2u) || (carrierClocks > kMaximumDuration / 2u))
+    {
+        return false;
+    }
+    pattern->highClocks = static_cast<uint16_t>(carrierClocks / 2u);
+    pattern->lowClocks = static_cast<uint16_t>(carrierClocks - pattern->highClocks);
+    pattern->carrierEnabled = true;
+
 #if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
     (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
-    pattern->carrierEnabled = true;
     // A/B diagnostic: bypass carrier modulation when every edge fits in RAM.
     // With the current power tables this covers 30-80% and continuous 100%.
     // Longer patterns retain the carrier envelope and its known phase issue.
@@ -120,15 +123,15 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
         for (uint16_t i = 0; i < periodCount; ++i)
         {
             const uint32_t duration = periodTable[i] + 1u;
-            if ((duration < kCarrierClocks) || ((duration % kCarrierClocks) != 0u) ||
-                ((duration - kCarrierHighClocks) > kMaximumDuration))
+            if ((duration < carrierClocks) || ((duration % carrierClocks) != 0u) ||
+                ((duration - pattern->highClocks) > kMaximumDuration))
             {
                 return false;
             }
             pattern->items[i].level0    = 1;
-            pattern->items[i].duration0 = kCarrierHighClocks;
+            pattern->items[i].duration0 = pattern->highClocks;
             pattern->items[i].level1    = 0;
-            pattern->items[i].duration1 = duration - kCarrierHighClocks;
+            pattern->items[i].duration1 = duration - pattern->highClocks;
         }
         pattern->itemCount      = static_cast<uint8_t>(periodCount);
         pattern->carrierEnabled = false;
@@ -142,13 +145,13 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
     for (uint16_t index = 0; index < periodCount; ++index)
     {
         const uint32_t duration = periodTable[index] + 1u;
-        if ((duration < kCarrierClocks) || ((duration % kCarrierClocks) != 0u))
+        if ((duration < carrierClocks) || ((duration % carrierClocks) != 0u))
         {
             return false;
         }
 
-        if (!append_segment(segments, &segmentCount, true, kCarrierClocks) ||
-            !append_segment(segments, &segmentCount, false, duration - kCarrierClocks))
+        if (!append_segment(segments, &segmentCount, true, carrierClocks, carrierClocks) ||
+            !append_segment(segments, &segmentCount, false, duration - carrierClocks, carrierClocks))
         {
             return false;
         }
@@ -159,16 +162,16 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
     if ((segmentCount & 1u) != 0u)
     {
         if ((segmentCount >= (2u * SOC_RMT_MEM_WORDS_PER_CHANNEL)) ||
-            (segments[segmentCount - 1u].duration < (2u * kCarrierClocks)))
+            (segments[segmentCount - 1u].duration < (2u * carrierClocks)))
         {
             return false;
         }
 
         EnvelopeSegment& tail          = segments[segmentCount - 1u];
-        uint16_t         firstDuration = static_cast<uint16_t>((tail.duration / 2u / kCarrierClocks) * kCarrierClocks);
+        uint16_t         firstDuration = static_cast<uint16_t>((tail.duration / 2u / carrierClocks) * carrierClocks);
         if (firstDuration == 0u)
         {
-            firstDuration = static_cast<uint16_t>(kCarrierClocks);
+            firstDuration = static_cast<uint16_t>(carrierClocks);
         }
 
         segments[segmentCount].duration = static_cast<uint16_t>(tail.duration - firstDuration);
@@ -200,7 +203,7 @@ bool encode_pattern(const uint32_t* periodTable, uint16_t periodCount, RmtPatter
     return true;
 }
 
-bool initialize_hardware()
+bool initialize_hardware(const RmtPattern& pattern)
 {
     digitalWrite(RFGEN_PIN, LOW);
     pinMode(RFGEN_PIN, OUTPUT);
@@ -211,7 +214,7 @@ bool initialize_hardware()
     config.flags                          = 0u;
     config.tx_config.loop_en              = true;
     config.tx_config.carrier_en           = true;
-    config.tx_config.carrier_freq_hz      = kRmtClockHz / kCarrierClocks;
+    config.tx_config.carrier_freq_hz      = kRmtClockHz / (pattern.highClocks + pattern.lowClocks);
     config.tx_config.carrier_duty_percent = 50u;
     config.tx_config.carrier_level        = RMT_CARRIER_LEVEL_HIGH;
     config.tx_config.idle_output_en       = true;
@@ -230,7 +233,7 @@ bool initialize_hardware()
     }
 
     if ((rmt_set_source_clk(kRmtChannel, RMT_BASECLK_APB) != ESP_OK) ||
-        (rmt_set_tx_carrier(kRmtChannel, true, kCarrierHighClocks, kCarrierLowClocks, RMT_CARRIER_LEVEL_HIGH) !=
+        (rmt_set_tx_carrier(kRmtChannel, true, pattern.highClocks, pattern.lowClocks, RMT_CARRIER_LEVEL_HIGH) !=
          ESP_OK) ||
         (rmt_set_idle_level(kRmtChannel, true, RMT_IDLE_LEVEL_LOW) != ESP_OK))
     {
@@ -253,14 +256,11 @@ bool transmit_pattern(const RmtPattern& pattern)
     // which intentionally remains held during an indefinite loop. This makes
     // every later stop/change nonblocking on both the C3 and S3.
     if ((rmt_tx_stop(kRmtChannel) != ESP_OK) || (rmt_set_idle_level(kRmtChannel, true, RMT_IDLE_LEVEL_LOW) != ESP_OK) ||
-#if defined(RFGEN_ESP32C3_RMT_EXPLICIT_PULSES) || \
-    (defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS))
         (rmt_set_tx_carrier(kRmtChannel,
                             pattern.carrierEnabled,
-                            kCarrierHighClocks,
-                            kCarrierLowClocks,
+                            pattern.highClocks,
+                            pattern.lowClocks,
                             RMT_CARRIER_LEVEL_HIGH) != ESP_OK) ||
-#endif
         (rmt_fill_tx_items(kRmtChannel, pattern.items, pattern.itemCount, 0u) != ESP_OK) ||
         (rmt_fill_tx_items(kRmtChannel, &terminator, 1u, pattern.itemCount) != ESP_OK) ||
         (rmt_set_tx_loop_mode(kRmtChannel, true) != ESP_OK) || (rmt_tx_start(kRmtChannel, true) != ESP_OK))
@@ -298,7 +298,7 @@ bool start(const uint32_t* periodTable, uint16_t periodCount)
         return false;
     }
 
-    if (!g_initialized && !initialize_hardware())
+    if (!g_initialized && !initialize_hardware(g_patterns[nextPattern]))
     {
         return false;
     }

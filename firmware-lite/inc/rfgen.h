@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /*
@@ -31,6 +32,12 @@ extern "C"
 
 /* Request RF output power. Values above 100 are clamped to 100. */
 void rfgen_set(uint8_t power_percent);
+
+/* Set carrier frequency in Hz, rounded to whole timer clocks. Preserves power.
+ * Returns false for unsupported frequencies or a failed restart (output off).
+ * A running output is briefly stopped; the setting lasts until reset.
+ */
+bool rfgen_set_freq(uint32_t frequency_hz);
 
 /* Service optional macro bursts on every loop, including serial test mode. */
 void rfgen_task(void);

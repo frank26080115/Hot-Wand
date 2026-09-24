@@ -25,25 +25,26 @@
 // -----------------------------------------------------------------------------
 
 #ifdef RFGEN_UNIT_TEST
-static constexpr uint32_t kPwmPeriodClocks = 102u;
+static constexpr uint32_t kPwmClockHz      = 48000000u;
 static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
 #elif defined(HOTWANDLITE_MCU_SAMD21)
-static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
+static constexpr uint32_t kPwmClockHz      = F_CPU;
 static constexpr uint32_t kMaximumPwmTop   = 0xFFFFFFu;
 #elif defined(HOTWANDLITE_MCU_RP2040)
-static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
+static constexpr uint32_t kPwmClockHz      = F_CPU;
 static constexpr uint32_t kMaximumPwmTop   = UINT16_MAX;
 #elif defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_MCU_ESP32C3)
 // The RMT carrier uses the 80 MHz APB clock. RMT durations are 15-bit.
-static constexpr uint32_t kEsp32RmtClockHz = 80000000u;
-static constexpr uint32_t kPwmPeriodClocks =
-    (kEsp32RmtClockHz + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
+static constexpr uint32_t kPwmClockHz = 80000000u;
 static constexpr uint32_t kMaximumPwmTop = 0x7FFFu;
 #else
 #error "Select exactly one supported microcontroller"
 #endif
 
-static constexpr uint32_t kPwmTop = kPwmPeriodClocks - 1u;
+static constexpr uint32_t kDefaultPeriodClocks = (kPwmClockHz + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
+// Leave room for two minimum blanks per timer entry, including RMT encoding.
+static constexpr uint32_t kMaximumPeriodClocks = (kMaximumPwmTop + 1u) / (2u * RFGEN_MINIMUM_BLANK_PERIOD_COUNT);
+static uint32_t g_pwmPeriodClocks = kDefaultPeriodClocks;
 
 static_assert(RFGEN_STARTUP_PERIOD_COUNT > 0u, "RF startup run must not be empty");
 static_assert(RFGEN_STARTUP_PERIOD_COUNT < RFGEN_TABLE_CAPACITY, "RF table must leave room for a blank");
@@ -58,8 +59,8 @@ static_assert((RFGEN_CONTINUOUS_POWER_PERCENT * (RFGEN_STARTUP_PERIOD_COUNT + RF
 static_assert(RFGEN_CONTINUOUS_POWER_PERCENT <= RFGEN_MAXIMUM_POWER_PERCENT,
               "Continuous RF threshold exceeds the public range");
 static_assert(RFGEN_TABLE_CAPACITY <= UINT16_MAX, "RF DMA table count does not fit uint16_t");
-static_assert(kPwmPeriodClocks > 1u, "RF PWM period is too short");
-static_assert(kPwmTop <= kMaximumPwmTop, "RF PWM period does not fit the target counter");
+static_assert(kDefaultPeriodClocks > 1u, "RF PWM period is too short");
+static_assert(kDefaultPeriodClocks <= kMaximumPeriodClocks, "RF PWM period does not fit the target counter");
 
 // -----------------------------------------------------------------------------
 // Shared waveform and state
@@ -108,6 +109,37 @@ static void force_output_low();
 // Public API
 // -----------------------------------------------------------------------------
 
+bool rfgen_set_freq(uint32_t frequencyHz)
+{
+    if (frequencyHz == 0u)
+    {
+        return false;
+    }
+    const uint32_t periodClocks = static_cast<uint32_t>(
+        (static_cast<uint64_t>(kPwmClockHz) + frequencyHz / 2u) / frequencyHz);
+    if ((periodClocks < 2u) || (periodClocks > kMaximumPeriodClocks))
+    {
+        return false;
+    }
+    if (periodClocks == g_pwmPeriodClocks)
+    {
+        return true;
+    }
+
+    const uint8_t powerPercent = g_appliedPowerPercent;
+    if (powerPercent != 0u)
+    {
+        rfgen_set(0);
+    }
+    g_pwmPeriodClocks = periodClocks;
+    if (powerPercent != 0u)
+    {
+        // Restart so every backend updates both the period and pulse width.
+        rfgen_set(powerPercent);
+    }
+    return g_appliedPowerPercent == powerPercent;
+}
+
 void rfgen_set(uint8_t powerPercent)
 {
     const uint8_t normalizedPowerPercent = rfgen_normalize_power_percent(powerPercent);
@@ -148,7 +180,7 @@ void rfgen_set(uint8_t powerPercent)
     }
 #endif
     if (!rfgen_generate_period_table(tablePowerPercent,
-                                     kPwmPeriodClocks,
+                                     g_pwmPeriodClocks,
                                      kMaximumPwmTop,
                                      nextPeriodTable,
                                      RFGEN_TABLE_CAPACITY,
@@ -247,11 +279,15 @@ void rfgen_print_table(void)
     Serial.print(g_appliedPowerPercent);
     Serial.print(", entries=");
     Serial.println(g_rfgenPeriodCount);
+    Serial.print("RFGEN frequency Hz=");
+    Serial.print(kPwmClockHz / g_pwmPeriodClocks);
+    Serial.print(", period clocks=");
+    Serial.println(g_pwmPeriodClocks);
 
     for (uint16_t index = 0; index < g_rfgenPeriodCount; ++index)
     {
         const uint32_t top            = g_activePeriodTable[index];
-        const uint32_t carrierPeriods = (top + 1u) / kPwmPeriodClocks;
+        const uint32_t carrierPeriods = (top + 1u) / g_pwmPeriodClocks;
 
         Serial.print(index);
         Serial.print(": TOP=");
@@ -541,6 +577,7 @@ static void force_output_low()
 #ifdef RFGEN_UNIT_TEST
 void rfgen_test_reset_state(void)
 {
+    g_pwmPeriodClocks        = kDefaultPeriodClocks;
     g_requestedPowerPercent  = 0;
     g_normalizedPowerPercent = 0;
     g_appliedPowerPercent    = 0;

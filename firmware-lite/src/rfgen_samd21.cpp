@@ -43,12 +43,9 @@ void rfgen_platform_stop(void) {}
 // GCLK0 is 48 MHz. 102 clocks produce approximately 470.588 kHz.
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint32_t kPwmInitialTop   = kPwmPeriodClocks - 1u;
-static constexpr uint32_t kPwmHighClocks   = kPwmPeriodClocks / 2u;
 static constexpr uint32_t kPwmMaximumTop   = TCC_PER_PER_Msk;
 
 static_assert(F_CPU == 48000000, "RF generator timer settings require a 48 MHz CPU clock");
-static_assert(kPwmHighClocks == 51, "Unexpected SAMD21 RF pulse width");
-static_assert(kPwmHighClocks <= kPwmInitialTop, "RF PWM must include a low interval");
 static_assert(RFGEN_TABLE_CAPACITY <= UINT16_MAX, "RF table does not fit a DMA descriptor");
 
 // -----------------------------------------------------------------------------
@@ -222,7 +219,8 @@ static bool initialize_dma(const uint32_t* periodTable, uint16_t periodCount)
 
 static bool validate_table(const uint32_t* periodTable, uint16_t periodCount)
 {
-    if ((periodTable == nullptr) || (periodCount == 0u) || (periodCount > RFGEN_TABLE_CAPACITY))
+    if ((periodTable == nullptr) || (periodCount == 0u) || (periodCount > RFGEN_TABLE_CAPACITY) ||
+        (periodTable[0] == 0u))
     {
         return false;
     }
@@ -230,7 +228,7 @@ static bool validate_table(const uint32_t* periodTable, uint16_t periodCount)
     for (uint16_t index = 0; index < periodCount; ++index)
     {
         const uint32_t top = periodTable[index];
-        if ((top < kPwmHighClocks) || (top > kPwmMaximumTop))
+        if ((top < periodTable[0]) || (top > kPwmMaximumTop))
         {
             return false;
         }
@@ -271,7 +269,7 @@ static bool start_output(const uint32_t* periodTable, uint16_t periodCount)
     wait_for_tcc0_sync();
 
     // The fixed pulse width becomes active at the next PWM boundary.
-    TCC0->CCB[0].reg = kPwmHighClocks;
+    TCC0->CCB[0].reg = (periodTable[0] + 1u) / 2u;
     while (TCC0->SYNCBUSY.bit.CCB0 != 0u)
     {
     }

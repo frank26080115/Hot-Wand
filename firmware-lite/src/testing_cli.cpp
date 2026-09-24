@@ -47,6 +47,7 @@ uint32_t g_simulatedVoltageMv       = 0;
 uint32_t g_lastVoltageReportMs     = 0;
 
 static void set_power_command(SerialCommands* sender);
+static void set_freq_command(SerialCommands* sender);
 static void enable_voltage_command(SerialCommands* sender);
 static void simulate_mode_command(SerialCommands* sender);
 static void simulate_voltage_command(SerialCommands* sender);
@@ -56,6 +57,7 @@ static void report_voltage(uint32_t currentTimeMs, uint32_t voltageMv);
 static const char* simulated_mode_name(uint8_t modeNumber);
 
 SerialCommand powerCommand("power", set_power_command);
+SerialCommand freqCommand("freq", set_freq_command);
 SerialCommand voltageCommand("voltage", enable_voltage_command);
 SerialCommand simulateModeCommand("simmode", simulate_mode_command);
 SerialCommand simulateVoltageCommand("simvoltage", simulate_voltage_command);
@@ -81,6 +83,7 @@ SerialCommand simulateVoltageCommand("simvoltage", simulate_voltage_command);
 void cli_init()
 {
     testingCli.AddCommand(&powerCommand);
+    testingCli.AddCommand(&freqCommand);
     testingCli.AddCommand(&voltageCommand);
     testingCli.AddCommand(&simulateModeCommand);
     testingCli.AddCommand(&simulateVoltageCommand);
@@ -187,6 +190,37 @@ static void set_power_command(SerialCommands* sender)
     sender->GetSerial()->println('%');
 }
 
+static void set_freq_command(SerialCommands* sender)
+{
+    char* argument = sender->Next();
+    if ((argument == nullptr) || (sender->Next() != nullptr))
+    {
+        sender->GetSerial()->println("ERROR: usage: freq <hertz>");
+        return;
+    }
+
+    errno = 0;
+    char* end = nullptr;
+    const unsigned long frequencyHz = strtoul(argument, &end, 10);
+    if ((errno == ERANGE) || (end == argument) || (*end != '\0') || (*argument == '-') ||
+        (frequencyHz == 0u) || (frequencyHz > UINT32_MAX))
+    {
+        sender->GetSerial()->println("ERROR: frequency must be a positive integer in hertz");
+        return;
+    }
+
+    start_testing(sender);
+    if (!rfgen_set_freq(static_cast<uint32_t>(frequencyHz)))
+    {
+        sender->GetSerial()->println("ERROR: unsupported frequency or RF restart failed");
+        return;
+    }
+    sender->GetSerial()->print("OK: RF frequency requested: ");
+    sender->GetSerial()->print(frequencyHz);
+    sender->GetSerial()->println(" Hz");
+    rfgen_print_table();
+}
+
 static void enable_voltage_command(SerialCommands* sender)
 {
     if (sender->Next() != nullptr)
@@ -259,7 +293,7 @@ static void unrecognized_command(SerialCommands* sender, const char* command)
 {
     sender->GetSerial()->print("ERROR: unknown test command: ");
     sender->GetSerial()->println(command);
-    sender->GetSerial()->println("Commands: power <percent>, voltage, simmode <0-2>, simvoltage <mV>");
+    sender->GetSerial()->println("Commands: power <percent>, freq <hertz>, voltage, simmode <0-2>, simvoltage <mV>");
 }
 
 static void start_testing(SerialCommands* sender)

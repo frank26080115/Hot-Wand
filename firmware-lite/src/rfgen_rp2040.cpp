@@ -47,11 +47,8 @@ void rfgen_platform_stop(void) {}
 // One undivided 133 MHz PWM period is 283 clocks, or about 469.965 kHz.
 static constexpr uint32_t kPwmPeriodClocks = (F_CPU + (RFGEN_FREQUENCY_HZ / 2u)) / RFGEN_FREQUENCY_HZ;
 static constexpr uint16_t kPwmInitialTop   = static_cast<uint16_t>(kPwmPeriodClocks - 1u);
-static constexpr uint16_t kPwmHighClocks   = static_cast<uint16_t>(kPwmPeriodClocks / 2u);
 
 static_assert(F_CPU == 133000000, "RF generator timer settings require a 133 MHz CPU clock");
-static_assert(kPwmHighClocks == 141, "Unexpected RP2040 RF pulse width");
-static_assert(kPwmHighClocks <= kPwmInitialTop, "RF PWM must include a low interval");
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -195,7 +192,8 @@ static bool initialize_dma()
 
 static bool validate_table(const uint32_t* periodTable, uint16_t periodCount)
 {
-    if ((periodTable == nullptr) || (periodCount == 0u) || (periodCount > RFGEN_TABLE_CAPACITY))
+    if ((periodTable == nullptr) || (periodCount == 0u) || (periodCount > RFGEN_TABLE_CAPACITY) ||
+        (periodTable[0] == 0u))
     {
         return false;
     }
@@ -203,7 +201,7 @@ static bool validate_table(const uint32_t* periodTable, uint16_t periodCount)
     for (uint16_t index = 0; index < periodCount; ++index)
     {
         const uint32_t top = periodTable[index];
-        if ((top < kPwmHighClocks) || (top > UINT16_MAX))
+        if ((top < periodTable[0]) || (top > UINT16_MAX))
         {
             return false;
         }
@@ -250,7 +248,7 @@ static void start_output(const uint32_t* periodTable, uint16_t periodCount)
     g_pwmRunning = true;
 
     // The fixed pulse width becomes active at the next PWM boundary.
-    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, kPwmHighClocks);
+    pwm_set_chan_level(g_pwmSlice, g_pwmChannel, static_cast<uint16_t>((periodTable[0] + 1u) / 2u));
 }
 
 static void configure_dma_loop(const uint32_t* periodTable, uint16_t periodCount)
