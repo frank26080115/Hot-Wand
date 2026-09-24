@@ -198,8 +198,10 @@ static void rfgen_start_impl(bool bypass_tip_detector)
         return;
     }
 
-    SET_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+    /* Start counting while MOE still holds PB1 at its low idle level.
+     * This avoids exposing the stopped timer state as the first pulse. */
     SET_BIT(TIM1->CR1, TIM_CR1_CEN);
+    SET_BIT(TIM1->BDTR, TIM_BDTR_MOE);
     rfgen_active = true;
 
     /* PRIMASK blocks the tip interrupt but cannot block CSS's NMI. Catch a

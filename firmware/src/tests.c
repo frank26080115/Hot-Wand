@@ -18,6 +18,7 @@
 #include "pins.h"
 #include "pwrlvl.h"
 #include "rfgen.h"
+#include "splash.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
 #include "tipdetect.h"
@@ -104,7 +105,8 @@ void test_run(void)
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
-    // test_bringup_tipdet();
+    // test_bringup_oled_kiddiepool();
+    // test_bringup_oled_inputs();
     // test_bringup_watchdog_simple();
     // test_rfgen();
     // test_rfgen_burst();
@@ -373,11 +375,77 @@ void test_bringup_oled(void)
     }
 }
 
-void test_bringup_tipdet(void)
+void test_bringup_oled_kiddiepool(void)
+{
+    uint8_t splash_index = 0;
+    u8g2_t* graphics;
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Inspect oled.error and oled.last_i2c_status in the debugger. */
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+
+    btn_has_short_press(true);
+    u8g2_SetDrawColor(graphics, 1);
+    u8g2_SetBitmapMode(graphics, 0);
+    u8g2_ClearBuffer(graphics);
+    u8g2_DrawXBMP(graphics, 0, 0, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT, splash_screens[splash_index]);
+    OLED_SendBuffer(&oled);
+
+    for (;;)
+    {
+        btn_task();
+
+        if (btn_has_short_press(true))
+        {
+            ++splash_index;
+            if (splash_index >= SPLASH_SCREEN_COUNT)
+            {
+                splash_index = 0;
+            }
+
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawXBMP(graphics, 0, 0, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT, splash_screens[splash_index]);
+            OLED_SendBuffer(&oled);
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_bringup_oled_inputs(void)
 {
     char     input_voltage[10];
     char     output_voltage[10];
-    size_t   voltage_length;
+    char     current[10];
+    char     thermistor_1[10];
+    char     thermistor_2[10];
+    size_t   value_length;
     uint32_t last_refresh_ms;
     u8g2_t*  graphics;
 
@@ -427,14 +495,31 @@ void test_bringup_tipdet(void)
             last_refresh_ms = now;
 
             input_voltage[0] = 'I';
-            millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), &input_voltage[1], 1, &voltage_length);
-            input_voltage[voltage_length + 1] = 'V';
-            input_voltage[voltage_length + 2] = '\0';
+            millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), &input_voltage[1], 1, &value_length);
+            input_voltage[value_length + 1] = 'V';
+            input_voltage[value_length + 2] = '\0';
 
             output_voltage[0] = 'O';
-            millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), &output_voltage[1], 1, &voltage_length);
-            output_voltage[voltage_length + 1] = 'V';
-            output_voltage[voltage_length + 2] = '\0';
+            millivolts_to_str(adc_to_millivolts(BUCK_SENS_IDX), &output_voltage[1], 1, &value_length);
+            output_voltage[value_length + 1] = 'V';
+            output_voltage[value_length + 2] = '\0';
+
+            current[0] = 'C';
+            milliamps_to_str(adc_to_milliamps(CURR_SENS_IDX), &current[1], 1, &value_length);
+            current[value_length + 1] = 'A';
+            current[value_length + 2] = '\0';
+
+            thermistor_1[0] = 'T';
+            thermistor_1[1] = ' ';
+            celcius_to_str(adc_to_celcius(THERM_1_IDX), &thermistor_1[2], &value_length);
+            thermistor_1[value_length + 2] = 'C';
+            thermistor_1[value_length + 3] = '\0';
+
+            thermistor_2[0] = 'T';
+            thermistor_2[1] = ' ';
+            celcius_to_str(adc_to_celcius(THERM_2_IDX), &thermistor_2[2], &value_length);
+            thermistor_2[value_length + 2] = 'C';
+            thermistor_2[value_length + 3] = '\0';
 
             /* The production detector intentionally latches a missing tip.
              * Clear that latch when the input is safely high so this bring-up
@@ -444,13 +529,16 @@ void test_bringup_tipdet(void)
             u8g2_ClearBuffer(graphics);
             u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, input_voltage);
             u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, output_voltage);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), current);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), thermistor_1);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (4 * OLED_TEXT_LINE_HEIGHT), thermistor_2);
             u8g2_DrawStr(graphics,
                          1,
-                         OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT),
+                         OLED_FIRST_TEXT_BASELINE + (5 * OLED_TEXT_LINE_HEIGHT),
                          tipdetect_has_triggered() ? "NO TIP" : "TIP");
             if (btn_is_down())
             {
-                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), "BTN");
+                u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (6 * OLED_TEXT_LINE_HEIGHT), "BTN");
             }
             OLED_SendBuffer(&oled);
         }
