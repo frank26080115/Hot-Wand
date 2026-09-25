@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,16 +53,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -136,18 +136,18 @@
 <wire x1="112" y1="5" x2="111" y2="5" width="0.1" layer="20"/>
 <wire x1="111" y1="5" x2="107" y2="1" width="0.1" layer="20" curve="90"/>
 <wire x1="107" y1="1" x2="107" y2="0" width="0.1" layer="20"/>
-<pad name="1" x="8" y="67.4" drill="2.5" diameter="5.2" thermals="no"/>
-<pad name="2" x="8" y="4.6" drill="2.5" diameter="5.2" thermals="no"/>
-<pad name="3" x="104" y="67.4" drill="2.5" diameter="5.2" thermals="no"/>
-<pad name="4" x="104" y="4.6" drill="2.5" diameter="5.2" thermals="no"/>
-<circle x="8" y="4.6" radius="3" width="0.1" layer="39"/>
-<circle x="104" y="4.6" radius="3" width="0.1" layer="39"/>
-<circle x="104" y="67.4" radius="3" width="0.1" layer="39"/>
-<circle x="8" y="67.4" radius="3" width="0.1" layer="39"/>
-<circle x="8" y="67.4" radius="3" width="0" layer="29"/>
-<circle x="8" y="4.6" radius="3" width="0" layer="29"/>
-<circle x="104" y="4.6" radius="3" width="0" layer="29"/>
-<circle x="104" y="67.4" radius="3" width="0" layer="29"/>
+<pad name="1" x="8" y="67.4" drill="2.5" diameter="4.2" thermals="no"/>
+<pad name="2" x="8" y="4.6" drill="2.5" diameter="4.2" thermals="no"/>
+<pad name="3" x="104" y="67.4" drill="2.5" diameter="4.2" thermals="no"/>
+<pad name="4" x="104" y="4.6" drill="2.5" diameter="4.2" thermals="no"/>
+<circle x="8" y="4.6" radius="2.5" width="0.01" layer="39"/>
+<circle x="104" y="4.6" radius="2.5" width="0.01" layer="39"/>
+<circle x="104" y="67.4" radius="2.5" width="0.01" layer="39"/>
+<circle x="8" y="67.4" radius="2.5" width="0.01" layer="39"/>
+<circle x="8" y="67.4" radius="2.5" width="0" layer="29"/>
+<circle x="8" y="4.6" radius="2.5" width="0" layer="29"/>
+<circle x="104" y="4.6" radius="2.5" width="0" layer="29"/>
+<circle x="104" y="67.4" radius="2.5" width="0" layer="29"/>
 </package>
 <package name="XFORMER-K16X8X6-1:14:14">
 <pad name="P2" x="0" y="3.8" drill="1" diameter="2.54" shape="octagon" thermals="no"/>
@@ -4293,15 +4293,13 @@ Max Component Height - 1.45mm</description>
 <wire x1="-3.2258" y1="10.127" x2="-3.2258" y2="4.031" width="0.2032" layer="21"/>
 <wire x1="-3.2258" y1="4.031" x2="3.2258" y2="4.031" width="0.2032" layer="21"/>
 <wire x1="-2.921" y1="9.812" x2="-2.921" y2="-9.619" width="0.2032" layer="51"/>
-<wire x1="-2.921" y1="-9.619" x2="0.254" y2="-9.619" width="0.2032" layer="51"/>
-<wire x1="0.254" y1="-9.619" x2="2.794" y2="-9.619" width="0.2032" layer="51"/>
-<wire x1="2.794" y1="-9.619" x2="2.794" y2="9.177" width="0.2032" layer="51"/>
-<wire x1="2.794" y1="9.177" x2="2.794" y2="9.812" width="0.2032" layer="51"/>
+<wire x1="-2.921" y1="-9.619" x2="2.794" y2="-9.619" width="0.2032" layer="51"/>
+<wire x1="2.794" y1="-9.619" x2="2.794" y2="9.812" width="0.2032" layer="51"/>
 <wire x1="2.794" y1="9.812" x2="-2.921" y2="9.812" width="0.2032" layer="51"/>
-<pad name="1" x="0" y="-10" drill="2.5" diameter="3.556"/>
-<pad name="2" x="0" y="-4.158" drill="2.5" diameter="3.556"/>
-<pad name="4" x="0" y="10" drill="2.5" diameter="3.556" rot="R180"/>
-<pad name="3" x="0" y="4.158" drill="2.5" diameter="3.556" rot="R180"/>
+<pad name="1" x="0" y="-10.3" drill="2.5" diameter="3.556"/>
+<pad name="2" x="0" y="-4.658" drill="2.5" diameter="3.556"/>
+<pad name="4" x="0" y="10.3" drill="2.5" diameter="3.556" rot="R180"/>
+<pad name="3" x="0" y="4.658" drill="2.5" diameter="3.556" rot="R180"/>
 </package>
 <package name="AG">
 <description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
@@ -8500,10 +8498,10 @@ diameter 3.3 mm, vertical, grid 10.16 mm</description>
 <smd name="2" x="-2.67" y="0.635" dx="1.27" dy="0.61" layer="1"/>
 <smd name="3" x="-2.67" y="-0.635" dx="1.27" dy="0.61" layer="1"/>
 <smd name="4" x="-2.67" y="-1.905" dx="1.27" dy="0.61" layer="1"/>
-<smd name="5" x="2.795" y="-1.905" dx="1.02" dy="0.61" layer="1"/>
-<smd name="6" x="2.795" y="-0.635" dx="1.02" dy="0.61" layer="1"/>
-<smd name="7" x="2.795" y="0.635" dx="1.02" dy="0.61" layer="1"/>
-<smd name="8" x="2.795" y="1.905" dx="1.02" dy="0.61" layer="1"/>
+<smd name="5" x="2.9" y="-1.905" dx="1.2" dy="0.61" layer="1"/>
+<smd name="6" x="2.9" y="-0.635" dx="1.2" dy="0.61" layer="1"/>
+<smd name="7" x="2.9" y="0.635" dx="1.2" dy="0.61" layer="1"/>
+<smd name="8" x="2.9" y="1.905" dx="1.2" dy="0.61" layer="1"/>
 <smd name="10" x="0.69" y="1.15" dx="3.81" dy="1.7" layer="1"/>
 <smd name="9" x="0.69" y="-1.15" dx="3.81" dy="1.7" layer="1"/>
 <wire x1="-1.6" y1="2.4" x2="-1.6" y2="-2.4" width="0.3" layer="21"/>
@@ -10104,6 +10102,14 @@ Max Component Height - 25.57mm</description>
 <smd name="1" x="-5.55" y="0" dx="5" dy="5" layer="1"/>
 <smd name="2" x="5.55" y="0" dx="5" dy="5" layer="1"/>
 </package>
+<package name="0805-L">
+<wire x1="-0.3" y1="0.6" x2="0.3" y2="0.6" width="0.1524" layer="21"/>
+<wire x1="-0.3" y1="-0.6" x2="0.3" y2="-0.6" width="0.1524" layer="21"/>
+<smd name="1" x="-1" y="0" dx="1" dy="1.2" layer="1"/>
+<smd name="2" x="1" y="0" dx="1" dy="1.2" layer="1"/>
+<text x="-0.762" y="0.8255" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-1.016" y="-1.397" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -10848,6 +10854,15 @@ Standard 0603 ceramic capacitor, and 0.1" leaded capacitor.</description>
 </technologies>
 </device>
 <device name="0805" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0805-L" package="0805-L">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -12548,6 +12563,15 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <technology name=""/>
 </technologies>
 </device>
+<device name="0805-L" package="0805-L">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="0603-RES" package="0603-RES">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
@@ -13413,6 +13437,15 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 </technologies>
 </device>
 <device name="0805" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0805-L" package="0805-L">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -21863,6 +21896,15 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <technology name=""/>
 </technologies>
 </device>
+<device name="0805-L" package="0805-L">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="0603-RES" package="0603-RES">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
@@ -22203,7 +22245,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="T1" library="hot-wand" deviceset="XFORMER-1:14:14" device="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C33" library="hot-wand" deviceset="CAP" device="0805" value="10pF 500V">
+<part name="C33" library="hot-wand" deviceset="CAP" device="0805-L" value="10pF 500V">
 <attribute name="JLCPARTNUM" value="C6629873"/>
 <attribute name="PARTNUM" value="QCCT102Q100J1GV001E"/>
 </part>
@@ -22255,74 +22297,74 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R22" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="2K2">
 <attribute name="JLCPARTNUM" value="C4190"/>
 </part>
-<part name="C27" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C27" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C28" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C28" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C29" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C29" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C30" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C30" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C31" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C31" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C32" library="hot-wand" deviceset="CAP" device="0805" value="DNP">
+<part name="C32" library="hot-wand" deviceset="CAP" device="0805-L" value="DNP">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="GND12" library="hot-wand" deviceset="GND" device=""/>
 <part name="L6" library="hot-wand" deviceset="INDUCTOR" device="-T130-6" value="540nH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C20" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C20" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 <attribute name="PARTNUM" value="QCCT102Q470J1GV001E"/>
 </part>
-<part name="C21" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C21" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C22" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C22" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C23" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C23" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C24" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C24" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
-<part name="C25" library="hot-wand" deviceset="CAP" device="0805" value="47pF 1000V">
+<part name="C25" library="hot-wand" deviceset="CAP" device="0805-L" value="47pF 1000V">
 <attribute name="JLCPARTNUM" value="C6366545"/>
 </part>
 <part name="GND11" library="hot-wand" deviceset="GND" device=""/>
-<part name="C26" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C26" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
 <part name="L5" library="hot-wand" deviceset="INDUCTOR" device="-T130-6" value="400nH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C19" library="hot-wand" deviceset="CAP" device="0805" value="DNP">
+<part name="C19" library="hot-wand" deviceset="CAP" device="0805-L" value="DNP">
 <attribute name="DNP" value="1"/>
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C18" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C18" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C17" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C17" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C16" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C16" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C15" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C15" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C14" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C14" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C13" library="hot-wand" deviceset="CAP" device="0805" value="100pF 1000V">
+<part name="C13" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF 1000V">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 <attribute name="PARTNUM" value="QCCT102Q101J1GV001E"/>
 <attribute name="PLACEHOLDERPART" value="C28233"/>
@@ -22331,19 +22373,19 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="L4" library="hot-wand" deviceset="INDUCTOR" device="-T130-6" value="180nH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C9" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C9" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
-<part name="C10" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C10" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
-<part name="C11" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C11" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
-<part name="C12" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C12" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
@@ -22394,21 +22436,21 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="L7" library="hot-wand" deviceset="INDUCTOR" device="-K16X8X6" value="9uH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C38" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C38" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
-<part name="C37" library="hot-wand" deviceset="CAP" device="0805" value="100nF">
+<part name="C37" library="hot-wand" deviceset="CAP" device="0805-L" value="100nF">
 <attribute name="JLCPARTNUM" value="C5182461"/>
 <attribute name="PARTNUM" value="CHV0805N250104KXT;MBASQ21GAB7104KTCA01;MBASQ21GAB7104MTCA01"/>
 </part>
 <part name="L8" library="hot-wand" deviceset="L-US" device="IND-10X6MM" value="180nH">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="C39" library="hot-wand" deviceset="CAP" device="0805" value="100pF">
+<part name="C39" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
-<part name="C40" library="hot-wand" deviceset="CAP" device="0805" value="100pF">
+<part name="C40" library="hot-wand" deviceset="CAP" device="0805-L" value="100pF">
 <attribute name="JLCPARTNUM" value="C6958299"/>
 </part>
 <part name="GND18" library="hot-wand" deviceset="GND" device=""/>
@@ -24605,6 +24647,22 @@ from high battery voltage</text>
 <wire x1="309.88" y1="-233.68" x2="309.88" y2="-228.6" width="0.1524" layer="91"/>
 <wire x1="309.88" y1="-228.6" x2="314.96" y2="-228.6" width="0.1524" layer="91"/>
 <junction x="314.96" y="-228.6"/>
+<pinref part="R20" gate="G$1" pin="1"/>
+<wire x1="284.48" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
+<pinref part="R19" gate="G$1" pin="1"/>
+<wire x1="284.48" y1="-241.3" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
+<pinref part="VR2" gate="G$1" pin="S"/>
+<wire x1="299.72" y1="-238.76" x2="299.72" y2="-246.38" width="0.1524" layer="91"/>
+<wire x1="299.72" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
+<junction x="287.02" y="-241.3"/>
+<pinref part="VR2" gate="G$1" pin="A"/>
+<wire x1="292.1" y1="-233.68" x2="287.02" y2="-233.68" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="-233.68" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="-241.3" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
+<junction x="287.02" y="-246.38"/>
+<wire x1="292.1" y1="-233.68" x2="307.34" y2="-233.68" width="0.1524" layer="91"/>
+<junction x="292.1" y="-233.68"/>
+<junction x="307.34" y="-233.68"/>
 </segment>
 <segment>
 <pinref part="P+7" gate="G$1" pin="3.3V"/>
@@ -25677,23 +25735,6 @@ from high battery voltage</text>
 <label x="177.8" y="-337.82" size="1.016" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="N$45" class="0">
-<segment>
-<pinref part="R20" gate="G$1" pin="1"/>
-<wire x1="284.48" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
-<pinref part="R19" gate="G$1" pin="1"/>
-<wire x1="284.48" y1="-241.3" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
-<pinref part="VR2" gate="G$1" pin="S"/>
-<wire x1="299.72" y1="-238.76" x2="299.72" y2="-246.38" width="0.1524" layer="91"/>
-<wire x1="299.72" y1="-246.38" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
-<junction x="287.02" y="-241.3"/>
-<pinref part="VR2" gate="G$1" pin="A"/>
-<wire x1="292.1" y1="-233.68" x2="287.02" y2="-233.68" width="0.1524" layer="91"/>
-<wire x1="287.02" y1="-233.68" x2="287.02" y2="-241.3" width="0.1524" layer="91"/>
-<wire x1="287.02" y1="-241.3" x2="287.02" y2="-246.38" width="0.1524" layer="91"/>
-<junction x="287.02" y="-246.38"/>
-</segment>
-</net>
 <net name="N$47" class="0">
 <segment>
 <pinref part="R40" gate="G$1" pin="2"/>
@@ -25806,15 +25847,6 @@ from high battery voltage</text>
 <label x="302.26" y="-424.18" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$8" class="0">
-<segment>
-<pinref part="R22" gate="G$1" pin="1"/>
-<wire x1="284.48" y1="-256.54" x2="287.02" y2="-256.54" width="0.1524" layer="91"/>
-<wire x1="287.02" y1="-264.16" x2="287.02" y2="-256.54" width="0.1524" layer="91"/>
-<pinref part="VR3" gate="G$1" pin="A"/>
-<wire x1="289.56" y1="-264.16" x2="287.02" y2="-264.16" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="Q3-VB" class="0">
 <segment>
 <wire x1="307.34" y1="-264.16" x2="307.34" y2="-256.54" width="0.1524" layer="91"/>
@@ -25826,6 +25858,14 @@ from high battery voltage</text>
 <wire x1="297.18" y1="-259.08" x2="297.18" y2="-256.54" width="0.1524" layer="91"/>
 <wire x1="297.18" y1="-256.54" x2="307.34" y2="-256.54" width="0.1524" layer="91"/>
 <junction x="307.34" y="-256.54"/>
+<pinref part="R22" gate="G$1" pin="1"/>
+<wire x1="284.48" y1="-256.54" x2="287.02" y2="-256.54" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="-264.16" x2="287.02" y2="-256.54" width="0.1524" layer="91"/>
+<pinref part="VR3" gate="G$1" pin="A"/>
+<wire x1="289.56" y1="-264.16" x2="287.02" y2="-264.16" width="0.1524" layer="91"/>
+<wire x1="289.56" y1="-264.16" x2="304.8" y2="-264.16" width="0.1524" layer="91"/>
+<junction x="289.56" y="-264.16"/>
+<junction x="304.8" y="-264.16"/>
 </segment>
 </net>
 <net name="N$57" class="0">
