@@ -39,6 +39,14 @@
 /* Set to 1 only when the RF/tip-detection hardware is absent during bring-up. */
 #define TEST_RFGEN_BYPASS_TIP_DETECTOR         1
 #define TEST_PWRLVL_75_PERCENT_CCR            24
+/* PA14 is SWCLK as well as UART TX. Keep UART off for GDB builds. */
+#ifndef TEST_PWRLVL_SWEEP_UART
+#define TEST_PWRLVL_SWEEP_UART                 0
+#endif
+#define TEST_PWRLVL_SWEEP_START_DELAY_MS      5000
+#define TEST_PWRLVL_SWEEP_STEP_DELAY_MS       1000
+#define TEST_PWRLVL_SWEEP_PERIOD_COUNTS       32
+#define TEST_PWRLVL_SWEEP_ROW_COUNT           (TEST_PWRLVL_SWEEP_PERIOD_COUNTS + 1)
 #define TEST_NVM_VERBOSE_SAVE_COUNT           4
 #define TEST_BATTERY_GUESS_MINIMUM_MILLIVOLTS 14000
 #define TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS 36000
@@ -48,12 +56,32 @@
 #error "TEST_RFGEN_BYPASS_TIP_DETECTOR must be 0 or 1"
 #endif
 
+#if (TEST_PWRLVL_SWEEP_UART != 0) && (TEST_PWRLVL_SWEEP_UART != 1)
+#error "TEST_PWRLVL_SWEEP_UART must be 0 or 1"
+#endif
+#if TEST_PWRLVL_SWEEP_UART && defined(HOT_WAND_SWD_DEBUG) && HOT_WAND_SWD_DEBUG
+#error "The PWM sweep UART mode cannot share PA14 with SWD debugging"
+#endif
+
+typedef struct
+{
+    uint8_t  compare;
+    uint8_t  duty_percent;
+    uint16_t output_millivolts;
+} test_pwrlvl_sweep_row_t;
+
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
 extern const uint8_t __nvm_page_start__;
 extern const uint8_t __nvm_page_end__;
+
+/* GDB: p test_pwrlvl_sweep_count; p test_pwrlvl_sweep_rows; p test_pwrlvl_sweep_complete.
+ * Count is published only after the corresponding row has been filled. */
+volatile test_pwrlvl_sweep_row_t test_pwrlvl_sweep_rows[TEST_PWRLVL_SWEEP_ROW_COUNT];
+volatile uint8_t                 test_pwrlvl_sweep_count;
+volatile bool                    test_pwrlvl_sweep_complete;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -114,6 +142,7 @@ void test_run(void)
     // test_nvm_simple();
     // test_nvm_full_page();
     // test_battery_guess();
+    // test_pwrlvl_sweep();
 }
 
 void test_bringup_systick(void)
@@ -345,6 +374,88 @@ void test_bringup_pwrlvl_min(void)
 
         HAL_Delay(1);
         watchdog_feed();
+    }
+}
+
+void test_pwrlvl_sweep(void)
+{
+    uint32_t boot_ms;
+    uint32_t step_ms;
+    uint8_t  compare;
+
+    HAL_Init();
+    boot_ms = systick_get_ms();
+    rfgen_stop();
+    if (!rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    adc_init();
+    pwrlvl_init();
+    TIM3->CCR1 = 0;
+
+    test_pwrlvl_sweep_count    = 0;
+    test_pwrlvl_sweep_complete = false;
+#if TEST_PWRLVL_SWEEP_UART
+    UART_SetAllowed(true);
+    UART_Write("compare,duty_percent,output_millivolts\r\n");
+#endif
+
+    /* Leave the buck at its pot-adjusted idle voltage for five seconds from
+     * boot. The ADC also has time to fill its filtered voltage reading. */
+    while ((uint32_t)(systick_get_ms() - boot_ms) < TEST_PWRLVL_SWEEP_START_DELAY_MS)
+    {
+        HAL_Delay(1);
+    }
+
+    for (compare = 0; compare < TEST_PWRLVL_SWEEP_ROW_COUNT; ++compare)
+    {
+        if (compare != 0)
+        {
+            if (compare == TEST_PWRLVL_SWEEP_PERIOD_COUNTS)
+            {
+                /* Full duty is held high continuously at the final setting. */
+                pwrlvl_force_minimum();
+            }
+            else
+            {
+                TIM3->CCR1 = compare;
+            }
+
+            step_ms = systick_get_ms();
+            while ((uint32_t)(systick_get_ms() - step_ms) < TEST_PWRLVL_SWEEP_STEP_DELAY_MS)
+            {
+                HAL_Delay(1);
+            }
+        }
+
+        test_pwrlvl_sweep_rows[compare].compare             = compare;
+        test_pwrlvl_sweep_rows[compare].duty_percent        =
+            (uint8_t)(((uint16_t)compare * 100 + (TEST_PWRLVL_SWEEP_PERIOD_COUNTS / 2)) /
+                      TEST_PWRLVL_SWEEP_PERIOD_COUNTS);
+        test_pwrlvl_sweep_rows[compare].output_millivolts = adc_to_millivolts(BUCK_SENS_IDX);
+        test_pwrlvl_sweep_count                           = compare + 1;
+
+#if TEST_PWRLVL_SWEEP_UART
+        test_uart_write_number(compare);
+        UART_Write(",");
+        test_uart_write_number(test_pwrlvl_sweep_rows[compare].duty_percent);
+        UART_Write(",");
+        test_uart_write_number(test_pwrlvl_sweep_rows[compare].output_millivolts);
+        UART_Write("\r\n");
+#endif
+    }
+
+    test_pwrlvl_sweep_complete = true;
+
+    /* Keep maximum attenuation and the completed table available to GDB.
+     * Do not start the watchdog: a debugger halt must not erase the results. */
+    for (;;)
+    {
+        HAL_Delay(1);
     }
 }
 

@@ -5,17 +5,22 @@
 Populate power input MOSFETs, these PowerPAK MOSFETs are hand soldered with a soldering iron (not hot air). For each of the three MOSFETs, follow these steps:
 
 1. brush the bottom of the MOSFET with flux, brush the PCB footprint with flux
-2. apply a **very thin** layer of solder to the center pad of the MOSFET footprint on the PCB (not the MOSFET itself)
-3. brush some more flux onto the PCB footprint
-4. solder pin 1 of the MOSFET to the PCB, ensuring it is on straight
-5. solder pins 2, 3, 4 of the MOSFET onto the PCB
-6. solder pins 5 thru 8 of the MOSFET all in one go, apply extra solder as the wicking action will pull solder underneath the MOSFET (this is why we prepped the center pad first)
+2. brush some more flux onto the PCB footprint
+3. solder pin 1 of the MOSFET to the PCB, ensuring it is on straight and flat against the PCB
+4. solder pins 2, 3, 4 of the MOSFET onto the PCB
+5. solder pins 5 thru 8 of the MOSFET all in one go, apply extra solder as the wicking action will pull solder underneath the MOSFET
 
 ## Testing Note: Voltage Measurement Points
 
 During assembly, it is recommended that you test the power supplies as they are added. Using a multimeter, these are the points that are convenient to test each important voltage node.
 
 [![](./imgs/voltage_measurement_nodes_200.png)](./imgs/voltage_measurement_nodes_800.png)
+
+### Repeated XT30 Power Tests
+
+For repeated power-up tests, leave the XT30 connector mated and switch the bench supply output on and off. Avoid rapidly unplugging and reconnecting XT30 while the bulk capacitor or U6 gate-drive capacitors may still be charged. A quick reconnect can behave differently from a fully discharged start and may spark at the connector.
+
+If Q5 appears shorted in an unpowered resistance check, first disconnect every power source and verify that DC-IN and Q5 gate-to-source voltage have discharged. Recheck Q5 before assuming the MOSFET has failed. A connector spark by itself does not establish whether the inrush limiter is working.
 
 ## PCB Cooling Fins near Buck Converter
 

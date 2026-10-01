@@ -60,6 +60,38 @@
 #define TEMPERATURE_SHUTDOWN_TIME_MS     1000
 #define TEMPERATURE_HYSTERYSIS_C         5
 
+/* Model parameters, not measured thermal properties: drain 60 W plus stored
+ * energy / 20 s. From empty, 80 W reaches warning in about 20.4 s and 100 W
+ * in about 7.7 s; 60 W runs indefinitely. At sustained 100 W, energy tends
+ * toward 800 J, equivalent to 200 C on the virtual scale. */
+#define LEAKY_BUCKET_LEAK_MW             60000UL
+#define LEAKY_BUCKET_WARNING_ENERGY_UJ   256000000UL
+#define LEAKY_BUCKET_COOLING_TIME_MS      20000UL
+#define LEAKY_BUCKET_EMPTY_TEMPERATURE_C 25U
+
+/* 111 C allows the existing >110 C shutdown check to fire. Set this to 81 C
+ * to limit the bucket to recoverable derating instead. */
+#ifndef LEAKY_BUCKET_MAX_TEMPERATURE_C
+#define LEAKY_BUCKET_MAX_TEMPERATURE_C 111U
+#endif
+
+#if (LEAKY_BUCKET_MAX_TEMPERATURE_C < TEMPERATURE_HOT_WARNING_THRESH_C + 1U) ||                        \
+    (LEAKY_BUCKET_MAX_TEMPERATURE_C > 65535U)
+#error "LEAKY_BUCKET_MAX_TEMPERATURE_C must reach the warning and fit in uint16_t"
+#endif
+
+#if (LEAKY_BUCKET_LEAK_MW == 0) || (LEAKY_BUCKET_WARNING_ENERGY_UJ == 0) ||                              \
+    (LEAKY_BUCKET_COOLING_TIME_MS == 0) ||                                                                \
+    (LEAKY_BUCKET_EMPTY_TEMPERATURE_C >= TEMPERATURE_HOT_WARNING_THRESH_C) ||                           \
+    (TEMPERATURE_HOT_WARNING_THRESH_C + 1 >= TEMPERATURE_SHUTDOWN_THRESH_C)
+#error "Invalid leaky-bucket parameters or virtual temperature"
+#endif
+
+#if (LEAKY_BUCKET_LEAK_MW < 60000UL) || (LEAKY_BUCKET_LEAK_MW >= 80000UL) ||                            \
+    (LEAKY_BUCKET_COOLING_TIME_MS < 10000UL) || (LEAKY_BUCKET_COOLING_TIME_MS > 1000000UL)
+#error "Invalid leaky-bucket drain or cooling time"
+#endif
+
 /* The regular build owns PA13 through the TIM16/TIM17 IR_OUT PWM path. The
  * fallback build overrides this to zero and retains only direct GPIO modes. */
 #ifndef FAN_PWM_ENABLED

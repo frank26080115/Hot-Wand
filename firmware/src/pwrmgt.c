@@ -18,6 +18,7 @@
 #include "button.h"
 #include "conf.h"
 #include "fault.h"
+#include "leaky_bucket.h"
 #include "miscutils.h"
 #include "pins.h"
 #include "pwrlvl.h"
@@ -184,7 +185,8 @@ void pwrmgt_task(void)
         return;
     }
 
-    highest_temperature = 0;
+    leaky_bucket_task();
+    highest_temperature = leaky_bucket_get_temperature_c();
     for (adc_idx = THERM_1_IDX; adc_idx <= MCU_TEMP_IDX; ++adc_idx)
     {
         temperature = adc_to_celcius(adc_idx);

@@ -9,6 +9,7 @@ void test_bringup_adc(void);
 void test_bringup_fan(void);
 void test_bringup_pwrlvl(void);
 void test_bringup_pwrlvl_min(void);
+void test_pwrlvl_sweep(void);
 void test_bringup_oled(void);
 void test_bringup_oled_kiddiepool(void);
 void test_bringup_oled_inputs(void);

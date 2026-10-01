@@ -1,0 +1,51 @@
+* Nominal Hot-Wand Lite PCB; capacitor-bank names use PCB references
+* ESR, DCR and FDP18N20F model inherited from Discord simulation, not measured
+* D3/D4 clamp, avalanche, core saturation and thermal feedback are NOT modeled
+Vcc supply 0 {supply} Rser=50m
+Cbulk supply 0 940u Rser=50m
+* 12 V drive; 50% at source midpoints (pulse plateau excludes rise time)
+* Each split driver path has one 3.6 ohm resistor; 5 ohm includes assumed driver impedance
+Vdrive gate 0 PULSE(0 12 0 50n 50n {0.5/f-50n} {1/f}) Rser=5
+L1 supply drain 33u Rser=0.1 Rpar=100Meg
+M1 drain gate 0 0 FDP18N20F
+C1 drain 0 {15n+cd} Rser=30m Rpar=1Meg
+C2to5 drain m1 {81n+cs} Rser=30m Rpar=1Meg
+L2 m1 m2 {6.2u*scale2} Rser=60m Rpar=100Meg
+C6to8 m2 0 {30n+cm} Rser=30m Rpar=100Meg
+L3 m2 m3 {16.9u*scale3} Rser=0.1 Rpar=100Meg
+C9 m3 0 {6.8n+ci} Rser=50m Rpar=100Meg
+L4 m3 m4 {16.9u*scale4} Rser=0.1 Rpar=100Meg
+L5 m4 0 {11.5u*scale5} Rser=0.1 Rpar=100Meg
+CacrossL5 m4 0 {1f+cl} Rser=50m
+C10to11 m4 out {7.8n+co} Rser=50m Rpar=100Meg
+* cp=0 represented by a negligible 1 fF shunt
+Cextra out 0 {1f+cp} Rser=50m
+Rcable out tip 0.5
+Ltip tip rtip {L_tip} Rser=0.1 Rpar=100Meg
+Rtip rtip 0 {R_tip}
+.param R_tip=table(TipVal,1,11.6,2,14,3,1.54)
+.param L_tip=table(TipVal,1,5.5u,2,7.2u,3,1.7u)
+.model FDP18N20F VDMOS(Rg=2.3 Vto=4 Rd=100m Rs=0m Rb=1.0m Kp=16 Cgdmax=0.5n Cgdmin=0.02n Cgs=1n Cjo=0.5n Is=0.2p tt=80n ksubthres=.1 mfg=Fairchild Vds=200 Ron=120m Qg=20n)
+.param f=table(Case,0,470000,1,470000,2,470000,3,470000,4,470000,5,470000,6,470000,7,470000,8,470000,9,470000,10,470000,11,470000,12,470000,13,470000,14,470000,15,470000,16,470000)
+.param cd=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param cs=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param cm=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param ci=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param co=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param cp=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param cl=table(Case,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0)
+.param supply=table(Case,0,20,1,20,2,20,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,20,12,20,13,20,14,20,15,20,16,20)
+.step param Case list 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+.step param TipVal list 1 2 3
+.tran 0 {400/f} 0 1e-08
+.options plotwinsize=0 numdgt=7
+.save V(gate) V(drain) V(rtip) I(Rtip) V(supply) I(Vcc) Id(M1) I(C10to11) V(m4) V(out)
+.meas TRAN ptip AVG (V(rtip)*I(Rtip)) FROM {360/f} TO {400/f}
+.meas TRAN pin AVG (-V(supply)*I(Vcc)) FROM {360/f} TO {400/f}
+.meas TRAN pq AVG (V(drain)*Id(M1)) FROM {360/f} TO {400/f}
+.meas TRAN vpeak MAX V(drain)
+.param scale2=table(Case,0,1,1,0.95,2,1.02,3,1.05,4,1.1,5,1,6,1,7,1,8,1,9,1,10,1,11,1,12,1,13,1,14,1,15,1,16,1)
+.param scale3=table(Case,0,1,1,1,2,1,3,1,4,1,5,0.95,6,1.02,7,1.05,8,1.1,9,1,10,1,11,1,12,1,13,1,14,1,15,1,16,1)
+.param scale4=table(Case,0,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9,0.95,10,1.02,11,1.05,12,1.1,13,1,14,1,15,1,16,1)
+.param scale5=table(Case,0,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9,1,10,1,11,1,12,1,13,0.95,14,1.02,15,1.05,16,1.1)
+.end
