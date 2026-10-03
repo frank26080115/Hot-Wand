@@ -71,13 +71,13 @@ The first line will always say "SETUP", the second line will always be a blank s
 
 From the third line and onwards, the subject title of the item will be displayed, followed by a "  =  " line, then the value of the item.
 
-Long hold press cycles the value.
+Long hold press cycles the value. (duration specified in configuration header)
 
-Short press cycles the subject.
+Short press cycles the subject. (duration specified in configuration header)
 
-The two "SAVE AND EXIT" and "EXIT NO SAVE" are the last subjects and will perform the actions indicated
+The two "SAVE AND EXIT" and "EXIT NO SAVE" are the last subjects and will perform the actions indicated. ("exit" meaning full device reset)
 
-A 5 minute inactivity timeout will cause the device to enter sleep mode (without saving) to prevent OLED burn-in.
+A 5 minute inactivity (no button press of any kind) timeout will cause the device to enter sleep mode (without saving) to prevent OLED burn-in.
 
 # Firmware Code Modules
 

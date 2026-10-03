@@ -132,7 +132,7 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_BATTERY_MODE] =
         {
                                           .title     = "BATT\nMODE",
-                                          .items     = "NONE|LiPo|LiPo\nSAFER|LiHV|LiHV\nSAFER|LiFE|LiFE\nSAFER",
+                                          .items     = "NONE|LIPO|LIPO\nSAFER|LIHV|LIHV\nSAFER|LIFE|LIFE\nSAFER",
                                           .items_cnt = 7,
                                           },
     [SETUP_ITEM_INPUT_V_CALIB] =
@@ -157,7 +157,7 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
                                           },
     [SETUP_ITEM_EXIT_NO_SAVE] =
         {
-                                          .title     = "EXIT\nDON'T\nSAVE",
+                                          .title     = "EXIT\nNO\nSAVE",
                                           .items     = "",
                                           .items_cnt = 0,
                                           },
@@ -513,9 +513,10 @@ static void setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibra
 
 static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
 {
-    if (save)
+    if (save && !nvm_save(settings))
     {
-        nvm_save(settings);
+        /* A failed write must not look like a successful save after reboot. */
+        show_fault("SAVE\nFAULT", true);
     }
 
     NVIC_SystemReset();

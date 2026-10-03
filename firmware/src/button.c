@@ -24,6 +24,25 @@
  * shared IRQ must preserve the tip detector's highest maskable priority. */
 #define BTN_EXTI_IRQ_PRIORITY 0
 
+#ifndef BTN_SWD_TEST_HARNESS
+#define BTN_SWD_TEST_HARNESS 0
+#endif
+
+#if (BTN_SWD_TEST_HARNESS != 0) && (BTN_SWD_TEST_HARNESS != 1)
+#error "BTN_SWD_TEST_HARNESS must be 0 or 1"
+#endif
+
+#if BTN_SWD_TEST_HARNESS
+/* The host writes one aligned word through SWD. UINT32_MAX means no command;
+ * zero releases the automatic boot hold; a positive value requests a press
+ * lasting that many firmware milliseconds. Write only when state is IDLE. */
+#define BTN_SWD_NO_COMMAND UINT32_MAX
+#define BTN_SWD_BOOT_HELD  0
+#define BTN_SWD_IDLE       1
+#define BTN_SWD_DOWN       2
+#define BTN_SWD_RELEASING  3
+#endif
+
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
@@ -40,6 +59,18 @@ static volatile uint32_t               btn_last_short_press_ms;
 static volatile uint32_t               btn_consecutive_presses;
 static volatile btn_short_press_mode_t btn_short_press_mode = BTN_SHORT_PRESS_ON_PRESS;
 
+#if BTN_SWD_TEST_HARNESS
+/* Externally visible, volatile words remain addressable through the ELF's
+ * symbols even with LTO. The harness build enters setup with a held button. */
+volatile uint32_t btn_swd_test_command_ms __attribute__((used, externally_visible)) = BTN_SWD_NO_COMMAND;
+volatile uint32_t btn_swd_test_state __attribute__((used, externally_visible))      = BTN_SWD_BOOT_HELD;
+volatile uint32_t btn_swd_test_completed __attribute__((used, externally_visible));
+
+static uint32_t btn_swd_press_started_ms;
+static uint32_t btn_swd_press_duration_ms;
+static bool     btn_swd_virtual_down = true;
+#endif
+
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
@@ -48,6 +79,9 @@ static void btn_accept_down(uint32_t now);
 static void btn_accept_release(void);
 static void btn_record_short_press(uint32_t now);
 static bool btn_get_event(volatile bool* event, bool clear_flag);
+#if BTN_SWD_TEST_HARNESS
+static void btn_swd_task(uint32_t now);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -80,7 +114,17 @@ void btn_init(void)
     __HAL_GPIO_EXTI_CLEAR_IT(BTN_PINn);
 
     now                     = systick_get_ms();
+#if BTN_SWD_TEST_HARNESS
+    /* Every reset begins with a synthetic held button. A zero command from
+     * SWD releases it after the setup screen has appeared. */
+    btn_swd_test_command_ms = BTN_SWD_NO_COMMAND;
+    btn_swd_test_state      = BTN_SWD_BOOT_HELD;
+    btn_swd_test_completed  = 0;
+    btn_swd_virtual_down    = true;
+    btn_down                = true;
+#else
     btn_down                = (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
+#endif
     btn_release_pending     = false;
     btn_short_press         = false;
     btn_long_press          = false;
@@ -117,7 +161,12 @@ void btn_task(void)
     __disable_irq();
     now = systick_get_ms();
 
+#if BTN_SWD_TEST_HARNESS
+    btn_swd_task(now);
+    pin_is_down = btn_swd_virtual_down;
+#else
     pin_is_down = (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
+#endif
 
     if (btn_down && btn_release_pending)
     {
@@ -168,6 +217,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
     {
         return;
     }
+
+#if BTN_SWD_TEST_HARNESS
+    /* The test image takes button edges only from the SWD-driven virtual pin.
+     * Physical EXTI traffic must not disturb its state machine. */
+    return;
+#endif
 
     now         = systick_get_ms();
     pin_is_down = (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
@@ -230,7 +285,11 @@ bool btn_is_down(void)
         return false;
     }
 
+#if BTN_SWD_TEST_HARNESS
+    return btn_swd_virtual_down;
+#else
     return HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET;
+#endif
 }
 
 bool btn_has_short_press(bool clear_flag)
@@ -284,6 +343,74 @@ void btn_reset_consecutive_presses(void)
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
+
+#if BTN_SWD_TEST_HARNESS
+static void btn_swd_task(uint32_t now)
+{
+    uint32_t command_ms;
+
+    if (btn_swd_test_state == BTN_SWD_BOOT_HELD)
+    {
+        if (btn_swd_test_command_ms == 0)
+        {
+            btn_swd_test_command_ms = BTN_SWD_NO_COMMAND;
+            btn_swd_virtual_down    = false;
+            btn_release_since_ms    = now;
+            btn_release_pending     = true;
+            btn_swd_test_state      = BTN_SWD_RELEASING;
+        }
+        return;
+    }
+
+    if (btn_swd_test_state == BTN_SWD_DOWN)
+    {
+        if ((uint32_t)(now - btn_swd_press_started_ms) >= btn_swd_press_duration_ms)
+        {
+            btn_swd_virtual_down = false;
+            btn_release_since_ms = now;
+            btn_release_pending  = true;
+            btn_swd_test_state   = BTN_SWD_RELEASING;
+        }
+        return;
+    }
+
+    if (btn_swd_test_state == BTN_SWD_RELEASING)
+    {
+        /* btn_task() completes the ordinary release debounce below. */
+        if (!btn_down && !btn_release_pending)
+        {
+            btn_swd_test_state = BTN_SWD_IDLE;
+            ++btn_swd_test_completed;
+        }
+        return;
+    }
+
+    if (btn_swd_test_state != BTN_SWD_IDLE)
+    {
+        return;
+    }
+
+    command_ms = btn_swd_test_command_ms;
+    if (command_ms == BTN_SWD_NO_COMMAND)
+    {
+        return;
+    }
+
+    btn_swd_test_command_ms = BTN_SWD_NO_COMMAND;
+    if (command_ms == 0)
+    {
+        return;
+    }
+
+    /* Drive the normal edge and duration logic. The host supplies a duration,
+     * but all event timing and release debounce run on the target's tick. */
+    btn_swd_press_duration_ms = command_ms;
+    btn_swd_press_started_ms  = now;
+    btn_swd_virtual_down      = true;
+    btn_accept_down(now);
+    btn_swd_test_state = BTN_SWD_DOWN;
+}
+#endif
 
 static void btn_accept_down(uint32_t now)
 {

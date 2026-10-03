@@ -30,7 +30,7 @@
 #define SETUP_MENU_TIMEOUT_MS (5 * 60 * 1000)
 #endif
 
-#define SETUP_HOLD_DURATION_MS 5000
+#define SETUP_HOLD_DURATION_MS 3000
 
 #if SETUP_HOLD_DURATION_MS == 0
 #error "SETUP_HOLD_DURATION_MS must be nonzero"

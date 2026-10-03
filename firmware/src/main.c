@@ -73,7 +73,9 @@ static void Error_Handler(void);
 
 int main(void)
 {
+#if !defined(BTN_SWD_TEST_HARNESS) || !BTN_SWD_TEST_HARNESS
     test_run(); // if a test is enabled, it does its own initialization and never returns
+#endif
 
     battery_guess_t     battery_guess_result;
     hotwand_setup_nvm_t settings;

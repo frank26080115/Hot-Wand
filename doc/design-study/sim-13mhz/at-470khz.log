@@ -1,0 +1,47 @@
+LTspice 26.0.2 for Windows
+Circuit: D:\GithubRepos\Hot-Wand\doc\design-study\sim-13mhz\at-470khz.cir
+Start Time: Thu Oct  1 21:03:50 2026
+Options:plotwinsize=0 numdgt=7
+
+.step tipval=1
+solver = Normal
+Maximum thread count: 24
+tnom = 27
+temp = 27
+method = trap
+Direct Newton iteration succeeded in finding operating point.
+
+.step tipval=2
+Direct Newton iteration succeeded in finding operating point.
+
+.step tipval=3
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 5.567 seconds.
+
+Files loaded:
+D:\GithubRepos\Hot-Wand\doc\design-study\sim-13mhz\at-470khz.cir
+
+
+Measurement: ptip
+  step	AVG((V(rtip)*I(Rtip)) )	FROM	TO
+     1	14.3241522998	0.000769911504424	0.000855457227138
+     2	12.1437117361	0.000769911504424	0.000855457227138
+     3	15.7600332558	0.000769911504424	0.000855457227138
+
+Measurement: pin
+  step	AVG((-V(supply)*I(Vcc)) )	FROM	TO
+     1	16.2775389849	0.000769911504424	0.000855457227138
+     2	13.9771442985	0.000769911504424	0.000855457227138
+     3	29.773958107	0.000769911504424	0.000855457227138
+
+Measurement: pq
+  step	AVG((V(drain)*Id(M1)) )	FROM	TO
+     1	0.867580639968	0.000769911504424	0.000855457227138
+     2	0.95218150287	0.000769911504424	0.000855457227138
+     3	6.81012634003	0.000769911504424	0.000855457227138
+
+Measurement: vpeak
+  step	MAX(V(drain))	FROM	TO
+     1	402.357154825	0	0.000855457227138
+     2	418.17888549	0	0.000855457227138
+     3	595.668411066	0	0.000855457227138

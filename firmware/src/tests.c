@@ -128,6 +128,7 @@ void test_run(void)
     /* Only one test can be enabled at a time by uncommenting it. */
     // test_bringup_systick();
     // test_bringup_button();
+    test_bringup_oled_button();
     // test_bringup_adc();
     // test_bringup_fan();
     // test_bringup_pwrlvl();
@@ -217,6 +218,131 @@ void test_bringup_button(void)
         else if (!btn_is_down())
         {
             UART_SetAllowed(false);
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_bringup_oled_button(void)
+{
+    char                   short_line[]        = "SH: 0";
+    char                   long_line[]         = "LN: 0";
+    const char*            mode_line           = "(RLS)";
+    btn_short_press_mode_t short_mode          = BTN_SHORT_PRESS_ON_RELEASE;
+    uint32_t               release_started_ms  = 0;
+    bool                   mode_toggle_pending = false;
+    bool                   release_timing      = false;
+    u8g2_t*                graphics;
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+
+    /* Start in release mode so a long hold does not also count as short. */
+    btn_set_short_press_mode(short_mode);
+    btn_has_short_press(true);
+    btn_has_long_press(true);
+
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Inspect oled.error and oled.last_i2c_status in the debugger. */
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+
+    /* The 6x10 font includes parentheses and fits each line on the display. */
+    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+    u8g2_ClearBuffer(graphics);
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, short_line);
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, mode_line);
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), long_line);
+    OLED_SendBuffer(&oled);
+
+    for (;;)
+    {
+        bool changed = false;
+
+        btn_task();
+        if (btn_has_short_press(true))
+        {
+            bool wrapped = short_line[4] == '9';
+
+            short_line[4] = wrapped ? '1' : (char)(short_line[4] + 1);
+            changed       = true;
+            if (wrapped)
+            {
+                if (short_mode == BTN_SHORT_PRESS_ON_RELEASE)
+                {
+                    /* This event followed a debounced release, so switching
+                     * to down-edge mode cannot recount the same press. */
+                    short_mode = BTN_SHORT_PRESS_ON_PRESS;
+                    mode_line  = "(DWN)";
+                    btn_set_short_press_mode(short_mode);
+                }
+                else
+                {
+                    /* Keep down-edge mode through this press's release.
+                     * Switching now would count its release a second time. */
+                    mode_toggle_pending = true;
+                    release_timing      = false;
+                }
+            }
+        }
+        if (btn_has_long_press(true))
+        {
+            long_line[4] = (long_line[4] == '9') ? '1' : (char)(long_line[4] + 1);
+            changed      = true;
+        }
+
+        if (mode_toggle_pending)
+        {
+            if (btn_is_down())
+            {
+                release_timing = false;
+            }
+            else if (!release_timing)
+            {
+                release_started_ms = systick_get_ms();
+                release_timing     = true;
+            }
+            else if ((uint32_t)(systick_get_ms() - release_started_ms) >= BTN_DEBOUNCE_MS)
+            {
+                short_mode = BTN_SHORT_PRESS_ON_RELEASE;
+                mode_line  = "(RLS)";
+                btn_set_short_press_mode(short_mode);
+                mode_toggle_pending = false;
+                changed             = true;
+            }
+        }
+
+        if (changed)
+        {
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, short_line);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, mode_line);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), long_line);
+            OLED_SendBuffer(&oled);
         }
 
         HAL_Delay(1);

@@ -5,6 +5,7 @@
 void test_run(void);
 void test_bringup_systick(void);
 void test_bringup_button(void);
+void test_bringup_oled_button(void);
 void test_bringup_adc(void);
 void test_bringup_fan(void);
 void test_bringup_pwrlvl(void);
