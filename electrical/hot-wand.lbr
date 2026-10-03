@@ -16546,8 +16546,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-2" y="-3" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
 <package name="IND-KOOLMU">
-<pad name="1" x="8" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2" x="-8" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="1" x="8" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2" x="-8" y="0" drill="1" diameter="2" shape="octagon"/>
 <wire x1="-7" y1="3" x2="-7" y2="16" width="0.127" layer="21"/>
 <wire x1="-7" y1="16" x2="7" y2="16" width="0.127" layer="21"/>
 <wire x1="7" y1="16" x2="7" y2="3" width="0.127" layer="21"/>
@@ -16558,10 +16558,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
 <package name="IND-KOOLMU-2W">
-<pad name="2B" x="8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2A" x="13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1B" x="-8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1A" x="-13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="2B" x="8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2A" x="13.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1B" x="-8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1A" x="-13.5" y="0" drill="1" diameter="2" shape="octagon"/>
 <wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
 <wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
 <wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>

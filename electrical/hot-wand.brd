@@ -8,7 +8,7 @@
 </settings>
 <grid distance="0.1" unitdist="mm" unit="mm" style="lines" multiple="10" display="yes" altdistance="0.02" altunitdist="mm" altunit="mm"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
 <layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
 <layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
@@ -3607,8 +3607,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <vertex x="85" y="2.1"/>
 <vertex x="76.9" y="2.1"/>
 </polygon>
-<wire x1="86.5" y1="2.3" x2="89.5" y2="5.3" width="0.6" layer="16"/>
-<wire x1="89.5" y1="5.3" x2="89.5" y2="6.1" width="0.6" layer="16"/>
+<wire x1="86.5" y1="2.3" x2="89.3" y2="5.1" width="0.6" layer="16"/>
+<wire x1="89.3" y1="5.1" x2="89.3" y2="5.8" width="0.6" layer="16"/>
+<wire x1="89.3" y1="5.8" x2="89.370709375" y2="5.970709375" width="0.6" layer="16" curve="-45"/>
+<wire x1="89.370709375" y1="5.970709375" x2="89.5" y2="6.1" width="0.6" layer="16"/>
 <wire x1="68.5" y1="7.5" x2="68.5" y2="14" width="0.8128" layer="16"/>
 <wire x1="68.5" y1="14" x2="66.7" y2="15.8" width="0.8128" layer="16"/>
 <wire x1="66.7" y1="15.8" x2="64.2" y2="15.8" width="0.8128" layer="16"/>

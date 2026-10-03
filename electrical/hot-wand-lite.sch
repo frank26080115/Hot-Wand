@@ -6227,8 +6227,8 @@ chip</description>
 <text x="-1.7272" y="-0.635" size="1.27" layer="27" ratio="6" rot="SR0">&gt;Value</text>
 </package>
 <package name="IND-KOOLMU">
-<pad name="1" x="8" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2" x="-8" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="1" x="8" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2" x="-8" y="0" drill="1" diameter="2" shape="octagon"/>
 <wire x1="-7" y1="3" x2="-7" y2="16" width="0.127" layer="21"/>
 <wire x1="-7" y1="16" x2="7" y2="16" width="0.127" layer="21"/>
 <wire x1="7" y1="16" x2="7" y2="3" width="0.127" layer="21"/>
@@ -6239,10 +6239,10 @@ chip</description>
 <text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
 <package name="IND-KOOLMU-2W">
-<pad name="2B" x="8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2A" x="13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1B" x="-8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1A" x="-13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
+<pad name="2B" x="8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2A" x="13.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1B" x="-8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1A" x="-13.5" y="0" drill="1" diameter="2" shape="octagon"/>
 <wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
 <wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
 <wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>
@@ -7840,6 +7840,14 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <smd name="1" x="-5.55" y="0" dx="5" dy="5" layer="1"/>
 <smd name="2" x="5.55" y="0" dx="5" dy="5" layer="1"/>
 </package>
+<package name="0805-L">
+<wire x1="-0.3" y1="0.6" x2="0.3" y2="0.6" width="0.1524" layer="21"/>
+<wire x1="-0.3" y1="-0.6" x2="0.3" y2="-0.6" width="0.1524" layer="21"/>
+<smd name="1" x="-1" y="0" dx="1" dy="1.2" layer="1"/>
+<smd name="2" x="1" y="0" dx="1" dy="1.2" layer="1"/>
+<text x="-0.762" y="0.8255" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-1.016" y="-1.397" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="PCB-OUTLINE">
@@ -8595,6 +8603,15 @@ Standard 0603 ceramic capacitor, and 0.1" leaded capacitor.</description>
 <technology name=""/>
 </technologies>
 </device>
+<device name="0805-L" package="0805-L">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="PTH3" package="CAP-PTH-LARGE">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
@@ -8722,6 +8739,15 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </technologies>
 </device>
 <device name="0805-RES" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0805-L" package="0805-L">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -14151,6 +14177,15 @@ Basic Inductor/Choke - 0603 and 1206. Footprints are not proven and vary greatly
 </technologies>
 </device>
 <device name="0805" package="0805">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="0805-L" package="0805-L">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
