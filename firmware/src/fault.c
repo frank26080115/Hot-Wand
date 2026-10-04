@@ -30,7 +30,6 @@ device It is animated in a way that prevents OLED burn-in, and it can be dimmed 
 // Configuration
 // -----------------------------------------------------------------------------
 
-#define FAULT_DISPLAY_HEIGHT        32
 #define FAULT_FONT_ASCENT           8
 #define FAULT_REFRESH_INTERVAL_MS   200
 #define FAULT_SHIFT_INTERVAL_MS     5000
@@ -77,6 +76,7 @@ void show_fault(const char* text, bool allow_button_reset)
     uint32_t last_refresh_ms;
     uint32_t last_shift_ms;
     int16_t  text_height;
+    int16_t  display_height;
     int16_t  lower_offset;
     int16_t  upper_offset;
     int16_t  y_offset = 0;
@@ -116,16 +116,19 @@ void show_fault(const char* text, bool allow_button_reset)
         }
     }
 
-    text_height = (int16_t)((fault_count_message_lines(text) + 1) * OLED_TEXT_LINE_HEIGHT);
-    if (text_height <= FAULT_DISPLAY_HEIGHT)
+    /* Graphics coordinates follow the configured OLED rotation. Use its
+     * logical height (128 in portrait mode), not the controller's native 32. */
+    display_height = (int16_t)u8g2_GetDisplayHeight(graphics);
+    text_height    = (int16_t)((fault_count_message_lines(text) + 1) * OLED_TEXT_LINE_HEIGHT);
+    if (text_height <= display_height)
     {
         lower_offset = 0;
-        upper_offset = (int16_t)(FAULT_DISPLAY_HEIGHT - text_height);
+        upper_offset = (int16_t)(display_height - text_height);
         direction    = 1;
     }
     else
     {
-        lower_offset = (int16_t)(FAULT_DISPLAY_HEIGHT - text_height);
+        lower_offset = (int16_t)(display_height - text_height);
         upper_offset = 0;
         direction    = -1;
     }

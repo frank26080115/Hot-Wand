@@ -14,3 +14,8 @@ extern const uint8_t splash_pcb2[SPLASH_BITMAP_BYTES];
 extern const uint8_t splash_spark1[SPLASH_BITMAP_BYTES];
 
 extern const uint8_t* const splash_screens[SPLASH_SCREEN_COUNT];
+
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+/* Calibration target used only by camera-assisted firmware test images. */
+extern const uint8_t splash_fiducial[SPLASH_BITMAP_BYTES];
+#endif

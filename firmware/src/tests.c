@@ -128,12 +128,13 @@ void test_run(void)
     /* Only one test can be enabled at a time by uncommenting it. */
     // test_bringup_systick();
     // test_bringup_button();
-    test_bringup_oled_button();
+    // test_bringup_oled_button();
     // test_bringup_adc();
     // test_bringup_fan();
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
+    // test_bringup_oled_fiducial();
     // test_bringup_oled_kiddiepool();
     // test_bringup_oled_inputs();
     // test_bringup_watchdog_simple();
@@ -611,6 +612,85 @@ void test_bringup_oled(void)
         show_fault("HELLO\nWORLD", false);
     }
 }
+
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+/* GDB/script: set var vision_test_fiducial_press = 1
+ * The word is deliberately visible in the test ELF even with LTO. It models
+ * a new button press without changing the SWD button harness's boot hold. */
+volatile uint32_t vision_test_fiducial_press __attribute__((used, externally_visible));
+
+void vision_test_fiducial_gate(void)
+{
+    /* The SWD menu harness intentionally ignores PA7 events, but a human
+     * press must still be able to dismiss this camera target in that image. */
+    bool button_was_down = btn_is_down() || (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
+
+    /* This is the first frame in a vision-test boot. No timer dismisses it:
+     * the host can take and inspect as many stills as camera setup needs. */
+    OLED_ShowFiducial();
+
+    for (;;)
+    {
+        bool button_down;
+
+        btn_task();
+        button_down = btn_is_down() || (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
+
+        /* A fresh physical down edge or one SWD write advances boot. An
+         * already-held boot button must not hide the fiducial immediately. */
+        if ((vision_test_fiducial_press != 0) || (button_down && !button_was_down))
+        {
+            break;
+        }
+
+        button_was_down = button_down;
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+
+    vision_test_fiducial_press = 0;
+    btn_has_short_press(true);
+    btn_has_long_press(true);
+
+    /* Remove the target before the Setup hold prompt or normal boot draws. */
+    u8g2_ClearBuffer(OLED_GetGraphics(&oled));
+    OLED_SendBuffer(&oled);
+}
+
+void test_bringup_oled_fiducial(void)
+{
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init())
+    {
+        for (;;)
+        {
+        }
+    }
+
+    systick_init();
+    btn_init();
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        /* Preserve SWD access and feed IWDG if the display cannot start. */
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+
+    /* Dedicated camera setup image: show only the calibration target until
+     * a new button press or a GDB write, then leave the OLED blank. */
+    vision_test_fiducial_gate();
+    for (;;)
+    {
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+#endif
 
 void test_bringup_oled_kiddiepool(void)
 {

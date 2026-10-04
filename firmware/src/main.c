@@ -73,7 +73,9 @@ static void Error_Handler(void);
 
 int main(void)
 {
-#if !defined(BTN_SWD_TEST_HARNESS) || !BTN_SWD_TEST_HARNESS
+#if defined(HOT_WAND_FIDUCIAL_ONLY) && HOT_WAND_FIDUCIAL_ONLY
+    test_bringup_oled_fiducial(); // camera focus/exposure image; never returns
+#elif !defined(BTN_SWD_TEST_HARNESS) || !BTN_SWD_TEST_HARNESS
     test_run(); // if a test is enabled, it does its own initialization and never returns
 #endif
 
@@ -106,6 +108,12 @@ int main(void)
         Error_Handler();
     }
     OLED_ConfigureGraphics(&oled);
+
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+    /* Put the calibration target on the OLED before any normal boot graphics.
+     * SWD dismissal preserves the harness's synthetic boot hold for Setup Menu. */
+    vision_test_fiducial_gate();
+#endif
 
     nvm_init();
     if (!nvm_read(&settings))

@@ -10,6 +10,13 @@
 
 #include <string.h>
 
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+/* SWD reads this snapshot, never u8g2's buffer while a redraw is underway. */
+volatile uint32_t vision_test_oled_sent_generation __attribute__((used, externally_visible));
+volatile uint8_t  vision_test_oled_sent_framebuffer[OLED_VISION_FRAMEBUFFER_BYTES]
+    __attribute__((used, externally_visible));
+#endif
+
 // -----------------------------------------------------------------------------
 // Configuration
 // -----------------------------------------------------------------------------
@@ -164,6 +171,25 @@ bool OLED_SendBuffer(OLED_Handle* oled)
 
     oled->transport_ok = 1;
     u8g2_SendBuffer(&oled->graphics);
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+    if (oled->transport_ok != 0)
+    {
+        const uint8_t* source = u8g2_GetBufferPtr(&oled->graphics);
+        uint16_t       index;
+
+        if (source != NULL)
+        {
+            /* A host read accepts only matching even generations. Mark the
+             * copy in progress before changing any mirrored pixel byte. */
+            ++vision_test_oled_sent_generation;
+            for (index = 0; index < OLED_VISION_FRAMEBUFFER_BYTES; ++index)
+            {
+                vision_test_oled_sent_framebuffer[index] = source[index];
+            }
+            ++vision_test_oled_sent_generation;
+        }
+    }
+#endif
     return oled->transport_ok != 0;
 }
 
@@ -185,6 +211,26 @@ void show_splash(void)
     u8g2_DrawXBMP(graphics, 0, 0, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT, splash_screens[splash_index]);
     OLED_SendBuffer(&oled);
 }
+
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+void OLED_ShowFiducial(void)
+{
+    u8g2_t* graphics = OLED_GetGraphics(&oled);
+
+    if (graphics == NULL)
+    {
+        return;
+    }
+
+    /* Use the same orientation and XBM pixel order as the ordinary splashes.
+     * This target fills the whole portrait OLED for camera calibration. */
+    u8g2_ClearBuffer(graphics);
+    u8g2_SetDrawColor(graphics, 1);
+    u8g2_SetBitmapMode(graphics, 0);
+    u8g2_DrawXBMP(graphics, 0, 0, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT, splash_fiducial);
+    OLED_SendBuffer(&oled);
+}
+#endif
 
 // -----------------------------------------------------------------------------
 // Getters and Setters
