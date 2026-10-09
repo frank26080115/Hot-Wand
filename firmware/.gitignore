@@ -67,3 +67,9 @@ compile_commands.json
 *.swp
 *.swo
 *~
+
+# Local CubeIDE register-view state
+/.settings/com.st.stm32cube.ide.mcu.sfrview.prefs
+
+# Dated setup-menu hardware test captures
+/tools/auto_testing/setup-menu-*/

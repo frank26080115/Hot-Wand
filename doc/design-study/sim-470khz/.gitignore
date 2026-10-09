@@ -1,0 +1,8 @@
+# Local overtemperature experiments
+/overtemperature/
+
+# Local RF source-resistance and startup experiments
+/rf_amp_sim_with_src_resis*
+/startup_metrics.json
+/startup_rf*
+/startup_supply_ramp*

@@ -1,1 +1,4 @@
 *.lbr
+
+# Generated Eagle library import scripts
+*.scr

@@ -46,7 +46,7 @@ def cycles(t, current, drain):
     return np.array(rows)
 
 
-def render(stem, ramp=False):
+def render(stem, ramp=False, title=None):
     d = read_raw(HERE / f"{stem}.raw")
     t, gate, drain, current = d["time"], d["v(vgs)"], d["v(vds)"], -d["i(vcc)"]
     stats = cycles(t, current, drain)
@@ -95,7 +95,7 @@ def render(stem, ramp=False):
                        facecolor="#101a29", edgecolor="#586477", fontsize=10, ncol=2)
     for label in legend.get_texts():
         label.set_color("#eef4ff")
-    kind = "20 µs supply ramp (LTspice startup)" if ramp else "RF enabled with 21 V supply established"
+    kind = title or ("20 µs supply ramp (LTspice startup)" if ramp else "RF enabled with 21 V supply established")
     fig.suptitle(f"470 kHz RF startup — {kind}\nCold tip: 11.6 Ω + 5.5 µH  |  30 cycles = 63.9 µs", color="#eef4ff", fontsize=15)
     fig.savefig(HERE / f"{stem}.png", dpi=160)
     plt.close(fig)
@@ -103,6 +103,16 @@ def render(stem, ramp=False):
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stem", help="Render one RAW file basename and save separate metrics")
+    parser.add_argument("--title", help="Description displayed above the plot")
+    args = parser.parse_args()
+    if args.stem:
+        result = render(args.stem, title=args.title)
+        (HERE / f"{args.stem}_metrics.json").write_text(json.dumps(result, indent=2) + "\n")
+        print(json.dumps(result, indent=2))
+        raise SystemExit(0)
     results = {stem: render(stem, ramp) for stem, ramp in
                [("startup_rf", False), ("startup_supply_ramp", True)]}
     (HERE / "startup_metrics.json").write_text(json.dumps(results, indent=2) + "\n")
