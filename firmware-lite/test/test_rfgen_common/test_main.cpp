@@ -247,6 +247,80 @@ void test_runtime_transition_order_and_repetition()
 }
 
 #ifndef RFGEN_MUTED_DEBUG
+void test_frequency_defaults_rounding_and_off_state()
+{
+    reset_fixture();
+    rfgen_set(50);
+    TEST_ASSERT_EQUAL_UINT32(101, g_platformTable[0]);
+    rfgen_set(0);
+    g_eventCount = 0;
+
+    TEST_ASSERT_TRUE(rfgen_set_freq(476000));
+    TEST_ASSERT_EQUAL_UINT8(0, g_eventCount);
+    TEST_ASSERT_TRUE(g_outputIsLow);
+    rfgen_set(50);
+    // 48 MHz / 476000 rounds to 101 clocks, including the blank's timebase.
+    TEST_ASSERT_EQUAL_UINT32(100, g_platformTable[0]);
+    TEST_ASSERT_EQUAL_UINT32(8u * 101u - 1u, g_platformTable[g_rfgenPeriodCount - 1u]);
+    rfgen_set(0);
+    rfgen_set(50);
+    TEST_ASSERT_EQUAL_UINT32(100, g_platformTable[0]);
+}
+
+void test_frequency_restart_preserves_power_and_skips_equivalent_requests()
+{
+    reset_fixture();
+    rfgen_set(75);
+    g_eventCount = 0;
+    TEST_ASSERT_TRUE(rfgen_set_freq(500000));
+    TEST_ASSERT_EQUAL_UINT8(2, g_eventCount);
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Stop), static_cast<int>(g_events[0]));
+    TEST_ASSERT_EQUAL_INT(static_cast<int>(Event::Start), static_cast<int>(g_events[1]));
+    TEST_ASSERT_EQUAL_UINT16(35, g_rfgenPeriodCount);
+    TEST_ASSERT_EQUAL_UINT32(95, g_platformTable[0]);
+    TEST_ASSERT_EQUAL_UINT32(8u * 96u - 1u, g_platformTable[g_rfgenPeriodCount - 1u]);
+
+    g_eventCount = 0;
+    TEST_ASSERT_TRUE(rfgen_set_freq(500001));
+    rfgen_set(75);
+    TEST_ASSERT_EQUAL_UINT8(0, g_eventCount);
+    rfgen_set(100);
+    TEST_ASSERT_EQUAL_UINT32(95, g_platformTable[0]);
+    TEST_ASSERT_EQUAL_UINT16(12, g_rfgenPeriodCount);
+
+    TEST_ASSERT_TRUE(rfgen_set_freq(RFGEN_FREQUENCY_HZ));
+    TEST_ASSERT_EQUAL_UINT32(101, g_platformTable[0]);
+}
+
+void test_invalid_frequencies_leave_waveform_unchanged()
+{
+    reset_fixture();
+    rfgen_set(50);
+    const uint32_t* previousTable = g_platformTable;
+    g_eventCount = 0;
+    TEST_ASSERT_FALSE(rfgen_set_freq(0));
+    TEST_ASSERT_FALSE(rfgen_set_freq(1));
+    TEST_ASSERT_FALSE(rfgen_set_freq(UINT32_MAX));
+    TEST_ASSERT_EQUAL_UINT8(0, g_eventCount);
+    TEST_ASSERT_EQUAL_PTR(previousTable, g_platformTable);
+    TEST_ASSERT_FALSE(g_outputIsLow);
+}
+
+void test_frequency_restart_failure_leaves_output_off()
+{
+    reset_fixture();
+    rfgen_set(50);
+    g_eventCount = 0;
+    g_platformStarts = false;
+    TEST_ASSERT_FALSE(rfgen_set_freq(500000));
+    TEST_ASSERT_TRUE(g_outputIsLow);
+    TEST_ASSERT_EQUAL_UINT16(0, g_rfgenPeriodCount);
+
+    g_platformStarts = true;
+    rfgen_set(50);
+    TEST_ASSERT_EQUAL_UINT32(95, g_platformTable[0]);
+}
+
 void test_platform_start_failure_returns_to_off()
 {
     reset_fixture();
@@ -329,6 +403,10 @@ int main(int, char**)
     RUN_TEST(test_print_samd21_tables_in_five_percent_steps);
     RUN_TEST(test_runtime_transition_order_and_repetition);
 #ifndef RFGEN_MUTED_DEBUG
+    RUN_TEST(test_frequency_defaults_rounding_and_off_state);
+    RUN_TEST(test_frequency_restart_preserves_power_and_skips_equivalent_requests);
+    RUN_TEST(test_invalid_frequencies_leave_waveform_unchanged);
+    RUN_TEST(test_frequency_restart_failure_leaves_output_off);
     RUN_TEST(test_platform_start_failure_returns_to_off);
     RUN_TEST(test_platform_change_failure_keeps_previous_waveform);
 #endif
