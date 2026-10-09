@@ -138,3 +138,35 @@ Interestingly, even though we think of these RF irons as having one fixed temper
 > As the temperature approaches T_c, V_r will increase above this residual voltage. The threshold detector 21, 22 can be set to trigger at any temperature in the range perhaps T_3 to T_c. Thus we have available a range of possible operating temperatures near T_c.
 
 > Though it is theoretically possible to vary the operating temperature over the entire range from approximately T_3 to T_c it is probably desirable to maintain it substantially below the effective Curie temperature T_c at all times in order to maintain the good amplifier efficiency and stability referred to previously as one of the advantages of this approach. A large value of V_r, corresponds to a high degree of mismatch between the Class C amplifier 12 and the load 14, 15. This in turn lowers the efficiency of the amplifier output. Thus operation at temperatures ranging from T_3 up to a temperature T_4, at which amplifier efficiency and stability are still high, is desirable.
+
+## Fooling Around with Dummy Load
+
+I built a dummy load, it has uses two 100 ohm 50W resistors in parallel to create a 50 ohm 100W rated load, mounted to a big heatsink that can be optionally air-cooled (although I don't think it needs it for short tests). In series with this resistance is a 146 nH air core inductor (Wurth Elektronik 7449150146). I built this in a way that the inductor can be shorted out or have capacitors attached.
+
+These tests were performed on a **Metcal MX-5200**, operating at 13.56 MHz. The power numbers below are the MX-5200's displayed readings.
+
+```text
+Z(L parallel C) = j*omega*L / (1 - omega^2*L*C)
+Zload = 50 + Z(L parallel C)
+phase = atan(Im(Zload) / Re(Zload))
+```
+
+Positive phase means voltage leads current (inductive load); negative phase means current leads voltage (capacitive load).
+
+| Dummy-load configuration | MX-5200 displayed power number | Calculated nominal load at 13.56 MHz | Calculated phase |
+| --- | ---: | ---: | ---: |
+| Inductor bypass jumpers open; inductor in series | 40 | `50 + j12.44 ohms` | +14.0 degrees |
+| Inductor bypass jumpers shorted | 50 | `50 + j0 ohms` | 0.0 degrees |
+| 2,000 pF in parallel with the inductor; bypass open | 56 | `50 - j11.11 ohms` | -12.5 degrees |
+| 500 pF in parallel with the inductor; bypass open | 18 | `50 + j26.46 ohms` | +27.9 degrees |
+| 300 pF in parallel with the inductor; bypass open | 20 | `50 + j18.24 ohms` | +20.0 degrees |
+
+For comparison, the measured STTC-147 tip impedances in the Iron Tip Model section above represent these phases:
+
+| Tip temperature state | Previously reported measured impedance at 13.56 MHz | Phase calculated from that impedance | Comparison with the dummy load |
+| --- | ---: | ---: | --- |
+| Cold | `42.3 + j13 ohms` | +17.1 degrees | The unmodified inductive dummy load has almost the same reactance; the 300 pF case has a somewhat larger inductive phase. Both retain 50 ohms of resistance rather than 42.3 ohms. |
+| Warm, below Curie | `55 - j16 ohms` | -16.2 degrees | The 2,000 pF case is a nearby capacitive test point, with somewhat smaller resistance and capacitive reactance magnitude. |
+| Hot, above Curie | `12 + j24 ohms` | +63.4 degrees | The 500 pF case has a similar reactance magnitude, but its much higher resistance gives a far smaller phase angle. It does not reproduce the hot-tip load. |
+
+Within these five MX-5200 tests, indicated power falls as the nominal load becomes more inductive: 50 with bypass, 40 with the inductor alone, 20 with 300 pF, and 18 with 500 pF. The capacitive 2,000 pF case gives the highest reading, 56. This ordering is consistent with reduced power for increasingly lagging load current and greater power for leading load current, but it does not identify the MX-5200's detector implementation or isolate regulation from RF matching effects.
