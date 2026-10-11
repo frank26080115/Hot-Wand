@@ -1,9 +1,195 @@
 # Lite 470 kHz overtemperature investigation
 
-Study date: 2026-09-22. Results are candidate bench modifications, not validated
+Initial study: 2026-09-22. Latest bench report and fine-trim recompute: 2026-10-10.
+Results are candidate bench modifications, not validated
 temperature settings or a guaranteed safe operating envelope.
 
-## Recommended first experiment
+## 2026-10-10 progress: smaller idle correction
+
+On the same circuit, the user fitted a **new SHP-P and a PM75CH178 cartridge**.
+Reported idle input draw is approximately **18 W**, with the tip **possibly
+reaching 410 C**. This is encouraging compared with the earlier approximately
+30 W / 470 C condition, which turned the tip blue and raised concern about
+damage to components. No component damage was confirmed in this report.
+These are different cartridge/handpiece conditions, not an A/B test of an
+electrical modification; the improvement cannot be assigned to a tuning change.
+
+The present objective is only **another 5-10 C reduction at idle**, roughly
+400-405 C if the 410 C reading is confirmed, while retaining as much cold
+heating and recovery power as possible. This is a relative tuning target, not
+a verified cartridge setpoint. Today's supply voltage, RF mode, actual carrier,
+fitted C11 value, and measured L2 were not supplied; record them before using
+the comparisons below. The earlier 20 V condition is a simulation assumption,
+not a newly confirmed bench condition.
+
+The three candidate methods remain:
+
+- Reduce the C10/C11 output bank by removing or replacing **C11 (1 nF)**.
+  For this smaller correction, a near-original replacement is preferable to
+  immediate full removal if the original 1 nF is still fitted.
+- Shift carrier frequency in small available steps; its usefulness depends
+  strongly on the capacitor configuration.
+- Increase **L2**, the first series matching inductor (nominal 6.2 uH), by
+  bringing its turns slightly closer together. Establish the actual inductance
+  change by measurement; squeezing is not a calibrated adjustment. **L1 is
+  the supply choke and is not the inductor meant here.**
+
+### Scale of the remaining correction
+
+For an illustrative 25 C ambient, a constant-conductance heat-loss model gives
+`P_loss = G * (T_tip - T_ambient)`. Moving from 410 C to 405/400 C reduces
+required steady heating by approximately **1.3% / 2.6%**. A constant-emissivity,
+pure-radiation calculation, using absolute kelvin temperatures in
+`P_loss = K * (T_tip^4 - T_ambient^4)`, gives **3.0% / 5.9%**. These examples
+suggest starting with a **few percent hot-heating reduction**, not the earlier
+40% modeled reduction from complete C11 removal. They are not bounds on this
+assembly: convection, handpiece conduction and the cartridge's changing
+electrical impedance are unmeasured.
+
+The 18 W USB input reading includes amplifier, cable and other losses. Do not
+multiply it by these percentages to prescribe a wattage target, or infer a
+temperature change from lower input power alone. Confirm settled temperature
+and cold heating/recovery on the actual PM75CH178.
+
+### Small electrical recompute
+
+One-at-a-time reruns use the same inherited **STP-CN04** cold/just-below-Curie/
+above-Curie impedances, 20 V continuous RF, nominal inductors and 470.000 kHz
+unless stated otherwise. **Neither SHP-P nor PM75CH178 impedance has been
+measured or substituted into the model.** These are sensitivity comparisons,
+not predictions of the new cartridge's temperature. Powers are `Rtip`
+dissipation, not USB input power.
+
+With the original C11 fitted:
+
+| Single change | Cold W | Just below Curie W | Above Curie W | Hot reduction | Cold reduction |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Original 1 nF C11, 470 kHz | 65.78 | 77.66 | 5.727 | reference | reference |
+| C11 replaced by 950 pF | 64.71 | 77.09 | 5.587 | 2.4% | 1.6% |
+| C11 replaced by 900 pF | 63.63 | 76.48 | 5.449 | 4.8% | 3.3% |
+| C11 replaced by 820 pF | 61.86 | 75.43 | 5.235 | 8.6% | 6.0% |
+| C11 removed; C10 unchanged (6.8 nF total) | 42.85 | 59.69 | 3.419 | 40.3% | 34.9% |
+| Original bank + 47 nF in series; equivalent total 6.6898 nF | 40.47 | 57.01 | 3.223 | 43.7% | 38.5% |
+| L2 +0.5%, 6.231 uH | 64.55 | 75.66 | 5.602 | 2.2% | 1.9% |
+| L2 +1%, 6.262 uH | 63.32 | 73.64 | 5.481 | 4.3% | 3.7% |
+| L2 +2%, 6.324 uH | 60.80 | 69.56 | 5.250 | 8.3% | 7.6% |
+| 170 clocks, 470.588 kHz | 65.64 | 76.96 | 5.720 | 0.1% | 0.2% |
+| 168 clocks, 476.190 kHz | 64.27 | 69.26 | 5.708 | 0.3% | 2.3% |
+| 166 clocks, 481.928 kHz | 62.30 | 60.34 | 5.766 | -0.7% (increase) | 5.3% |
+
+### Radio Thermal authors' 47 nF series suggestion
+
+The user shared the bench observations with the Radio Thermal authors, **not
+this analysis**. Their response, as quoted by the user:
+
+> it seems like a 47nF capacitor in series with the tip should be enough to reduce the power consumption while at full temperature by about 50%
+
+For ideal capacitors, adding 47 nF in series with the **original C10 || C11
+bank** is equivalent to reducing that bank's capacitance:
+
+```text
+Cbank = 6.8 nF + 1.0 nF = 7.8 nF
+Ceq   = Cbank * 47 nF / (Cbank + 47 nF)
+      = 6.689781 nF
+C11 replacement, with C10 fixed = Ceq - 6.8 nF
+                               = -0.110219 nF = -110.219 pF
+```
+
+**There is no passive C11-only replacement that gives this exact equivalent
+with C10 left at 6.8 nF.** Removing C11 gives 6.8 nF, only 1.65% above the
+6.6898 nF target, and is the closest achievable C11-only change. To realize
+the exact nominal capacitance without a series part, remove C11 and reduce
+C10 to 6.6898 nF total. Replacing C11 by 910 pF instead gives 7.710 nF; that
+is a much smaller trim than the authors' suggested series change.
+
+This calculation assumes the original 1 nF C11 is still fitted. If it is
+already removed, adding 47 nF in series with the remaining 6.8 nF gives
+`6.8 * 47 / (6.8 + 47) = 5.94052 nF`; that is a different operating point,
+not the 6.6898 nF row above. The equivalence is for ideal series capacitance;
+an actual additional capacitor, cable and mounting introduce their own losses
+and parasitics.
+
+The added rows use the existing `verify.csv` high-resolution runs (800 cycles,
+5 ns maximum timestep), including its exact `series47n` equivalent. In this
+inherited load model, the series suggestion reduces **above-Curie tip heating
+by 43.7%**, but **total hot input power by 23.6%**. For clarity, the input
+comparison is:
+
+| Modification at 20 V / 470 kHz continuous | Cold input W | Just below Curie input W | Above Curie input W | Hot input reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Original bank | 78.28 | 94.74 | 10.605 | reference |
+| C11 removed, C10 unchanged | 50.50 | 70.57 | 8.275 | 22.0% |
+| Original bank + 47 nF in series / 6.6898 nF equivalent | 47.78 | 67.29 | 8.102 | 23.6% |
+
+The authors' approximately 50% estimate is retained as their advice based on
+the reported hardware observations. This model does not reproduce the actual
+18 W idle input or PM75CH178 impedance, so it cannot verify that estimate for
+the new setup. The calculated series equivalent is a substantially larger
+attenuation than the fine 900-950 pF C11 trims; compare cold heating and
+recovery as well as idle draw when evaluating it.
+
+**If C11 is still 1 nF, first try about 950 pF effective C11, then 900 pF
+only if needed.** Keep C10, L2 and carrier fixed. For example, short-mounted
+820+130 pF or 820+82 pF in parallel give nominal 950 or 902 pF; the 900 pF
+simulation is an approximate comparison for the latter. Use C0G/NP0 parts
+with suitable RF current capability and voltage rating, and account for
+tolerance and mounting parasitics. A 50 pF trim is only 0.64% of the complete
+7.8 nF bank, so actual component values matter. Relative to baseline, the
+950/900 pF candidates retain 98.4%/96.7% of modeled cold heating and
+99.3%/98.5% just below Curie. Full removal is now too coarse as a first trial.
+
+L2 +0.5% is an alternative fine adjustment, followed by +1% if needed. Those
+are only +0.031/+0.062 uH from a nominal 6.2 uH baseline, much smaller than
+the earlier +0.1 to +0.3 uH trials. Fixture repeatability may limit resolution;
+do not treat an unresolvable LCR reading as a precise setting. The model costs
+2.6%/5.2% of just-below-Curie heating for these two L2 steps, so C11 trimming
+has the better hot-versus-useful-heating tradeoff among these original-bank
+candidates. Winding parasitics and loss can change that result on the bench.
+
+With **C11 already removed**, the local sensitivity changes:
+
+| Single change from C11-removed baseline | Cold W | Just below Curie W | Above Curie W | Hot reduction | Cold reduction |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Baseline, 470 kHz | 42.85 | 59.69 | 3.419 | reference | reference |
+| L2 +0.5%, 6.231 uH | 41.84 | 58.17 | 3.327 | 2.7% | 2.4% |
+| L2 +1%, 6.262 uH | 40.86 | 56.68 | 3.238 | 5.3% | 4.7% |
+| 170 clocks, 470.588 kHz | 42.75 | 59.41 | 3.404 | 0.5% | 0.2% |
+| 168 clocks, 476.190 kHz | 42.12 | 56.74 | 3.300 | 3.5% | 1.7% |
+| 166 clocks, 481.928 kHz | 41.95 | 53.93 | 3.265 | 4.5% | 2.1% |
+
+If the present board has C11 removed and runs at 170 clocks, **try 168 clocks
+first**, keeping the inductors fixed. From that actual 170-clock reference,
+the modeled hot reduction is 3.1%, with 1.5% less cold and 4.5% less
+just-below-Curie heating. This is a more useful frequency tradeoff than with
+the original bank. Check recovery before considering 166 clocks. If C11 has
+an intermediate replacement value, neither table directly applies; use that
+value in a rerun rather than combining the percentages above.
+
+The fine capacitor candidates raise modeled hot drain peak from 119.7 V to
+120.4/121.2 V and MOSFET drain loss from 0.716 W to 0.741/0.766 W. Small L2
+increases instead slightly reduce those hot-state quantities. With C11 removed,
+170 to 168 clocks reduces modeled hot peak from 131.0 to 125.7 V and MOSFET
+drain loss from 1.176 to 0.899 W. A lower USB reading can therefore partly
+reflect lower amplifier loss rather than lower tip heating. The earlier model
+omissions and waveform checks still apply.
+
+Make one change at a time, reuse the electrical screening below and the
+[L2 adjustment procedure](../lite-inductor-tuning.md), and stop tuning when a
+repeatable 5-10 C idle improvement is achieved with acceptable recovery.
+Record an unchanged-configuration baseline, settled candidate, restored
+baseline and repeated candidate using the same tip contact, airflow and
+soldering load. Confirm the approximate 410 C reading before pursuing a 5 C
+difference. Continuous results do not qualify Eco operation.
+
+Local reproduction: `python doc/design-study/sim-470khz/overtemperature/fine_idle_sweep.py`
+and the same command with `--without-c11`. Each run uses 800 carrier cycles,
+a 5 ns maximum timestep and a final 40-cycle average; adjacent steady-window
+power changes were below 0.006%. The script, case lists, netlists, logs and
+CSV results are retained locally under the already Git-ignored
+`sim-470khz/overtemperature/` directory. Thermal estimates above use only the
+stated illustrative heat-loss formulas.
+
+## Initial recommendation for the earlier 470 C condition
 
 **Remove C11 (1 nF), leave C10 (6.8 nF) fitted, and keep the carrier at its
 original approximately 470 kHz.** C10 and C11 are parallel between `M4` and
@@ -108,6 +294,7 @@ maximum timestep; final powers average the last 40 cycles.
 | C11 replaced by 470 pF, 20 V | 53.7 | 69.8 | 4.38 |
 | C11 replaced by 220 pF, 20 V | 47.8 | 64.7 | 3.84 |
 | **C11 removed, 20 V** | **42.9** | **59.7** | **3.42** |
+| Original bank + 47 nF in series (6.6898 nF equivalent), 20 V | 40.5 | 57.0 | 3.22 |
 | Add 22 nF across C2-C5, 20 V | 53.6 | 58.5 | 4.67 |
 | Add 47 nF across C2-C5, 20 V | 45.7 | 47.6 | 4.07 |
 | Add 100 nF across C2-C5, 20 V | 37.8 | 37.5 | 3.47 |
