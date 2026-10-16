@@ -193,9 +193,9 @@ Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal p
 
 ### Commercial 470 kHz handpiece
 
-![Thermaltronics SHP-K handpiece](../imgs-shopping/large/shp-k.png)
+![Thermaltronics SHP-P handpiece](../imgs-shopping/large/shp-ps.png)
 
-If using the commercial path instead of the Radio Thermal handpiece. It holds Thermaltronics K-series cartridges; its original connector must be adapted or replaced to mate with the Hot Wand Lite's SMA output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/thermaltronics/SHP-KM/22491869).
+If using the commercial path instead of the Radio Thermal handpiece. It holds Thermaltronics P-series cartridges; its original connector must be adapted or replaced to mate with the Hot Wand Lite's SMA output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/thermaltronics/SHP-P/22491407).
 
 #### Mating SMA cable plug
 
@@ -203,8 +203,10 @@ If using the commercial path instead of the Radio Thermal handpiece. It holds Th
 
 **Amphenol RF 901-9895-RFX**. This is a straight, in-line, standard-polarity SMA plug with a male center pin, so it mates with the female SMA jack at JP1. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/amphenol-rf/901-9895-RFX/272187).
 
-### K-series soldering cartridge
+Cheaper options: [Amazon link](https://www.amazon.com/Create-idea-Connetor-1-7x4-2mm-Broadcast/dp/B0FFMS9N7T/ref=sr_1_9) ; [Amazon link](https://www.amazon.com/Maxmoral-Straight-Connector-Coaxial-Adapter/dp/B071SDWFYJ/ref=sr_1_21)
 
-![Thermaltronics K-series cartridges](../imgs-shopping/large/k-series-tips.png)
+### P-series soldering cartridge
 
-If using the SHP-KM path. Select the geometry and temperature that suit the work; K75C002 is one example, not a universal choice. Browse the [Thermaltronics K-series catalog](https://www.thermaltronics.com/k_series.php).
+![Thermaltronics P-series cartridges](../imgs-shopping/large/p-series-tips.jpg)
+
+If using the SHP-P path. Select the geometry and temperature that suit the work; PM75CH004 is one example, not a universal choice. Browse the [Thermaltronics P-series catalog](https://www.thermaltronics.com/p_series.php).

@@ -128,7 +128,16 @@ When finished, you can just connect the it to the SMA connector
 
 #### If using: Thermaltronics Handpiece
 
-Thermaltronics still sells their older SHP-K handpieces (meant for 470 kHz cartridges) for about $50 dollars, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.
+Thermaltronics still sells their older SHP-P handpieces (meant for 470 kHz cartridges) for about $50 dollars, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.
+
+If you cut off the original connector and strip the wires, the red wire is the positive signal, black is the negative signal, green and shield are ground. So in practice for this project:
+
+ * red is soldered to the center pin
+ * black, green, and shield, are all soldered to the SMA connector's ground
+
+![](../bld-photos/shp-wires-stripped.jpg)
+
+![](../bld-photos/shp-wires-soldered.jpg)
 
 ## Iron Stand
 
