@@ -172,9 +172,9 @@ For the current transformer that's supposed to use the same toroid core, no chan
 
 For the three large inductors, I purchased the same toroid cores T130-6 from Amidon as SergeyMax specified. The instructions are to use 16 AWG wire, and the turns are 4, 6, and 7. There's no point in attempting to wind these differently, as each turn results in such a huge difference in inductance, that you should just follow the instructions and hope for the best.
 
-In Radio Thermal's design, they used the Kool Mu 0077932A7 core, with Aₗ = 32 nH/turn², +/- 8%. The first core is actually two of these cores epoxied together in a stack, making it roughly Aₗ = 64 nH/turn².
+Hot Wand Lite uses one Kool Mu 0077932A7 core per custom inductor (L2 through L5), with Aₗ = 32 nH/turn², +/- 8%.
 
-For 6.2 uH: 10 turns if using 2 cores, 14 turns if using 1 core
+For 6.2 uH (L2): 14 turns on one core
 
 For 16.9 uH: 22 to 24 turns (choose 23 if no measurement)
 
