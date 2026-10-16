@@ -8,34 +8,34 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
-<layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
-<layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
-<layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
-<layer number="6" name="Route6" color="1" fill="8" visible="no" active="no"/>
-<layer number="7" name="Route7" color="4" fill="8" visible="no" active="no"/>
-<layer number="8" name="Route8" color="1" fill="2" visible="no" active="no"/>
-<layer number="9" name="Route9" color="4" fill="2" visible="no" active="no"/>
-<layer number="10" name="Route10" color="1" fill="7" visible="no" active="no"/>
-<layer number="11" name="Route11" color="4" fill="7" visible="no" active="no"/>
-<layer number="12" name="Route12" color="1" fill="5" visible="no" active="no"/>
-<layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
-<layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
-<layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="no"/>
+<layer number="3" name="Route3" color="4" fill="3" visible="yes" active="no"/>
+<layer number="4" name="Route4" color="1" fill="4" visible="yes" active="no"/>
+<layer number="5" name="Route5" color="4" fill="4" visible="yes" active="no"/>
+<layer number="6" name="Route6" color="1" fill="8" visible="yes" active="no"/>
+<layer number="7" name="Route7" color="4" fill="8" visible="yes" active="no"/>
+<layer number="8" name="Route8" color="1" fill="2" visible="yes" active="no"/>
+<layer number="9" name="Route9" color="4" fill="2" visible="yes" active="no"/>
+<layer number="10" name="Route10" color="1" fill="7" visible="yes" active="no"/>
+<layer number="11" name="Route11" color="4" fill="7" visible="yes" active="no"/>
+<layer number="12" name="Route12" color="1" fill="5" visible="yes" active="no"/>
+<layer number="13" name="Route13" color="4" fill="5" visible="yes" active="no"/>
+<layer number="14" name="Route14" color="1" fill="6" visible="yes" active="no"/>
+<layer number="15" name="Route15" color="4" fill="6" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -44,8 +44,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -53,16 +53,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
@@ -17020,9 +17020,11 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="SJ4" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="SJ5" library="hot-wand" deviceset="SJ-SMALL" device="-1206-SJ"/>
 <part name="R19" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="51K">
+<attribute name="DNP" value="1"/>
 <attribute name="JLCPARTNUM" value="C23196"/>
 </part>
 <part name="R20" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="1K">
+<attribute name="DNP" value="1"/>
 <attribute name="JLCPARTNUM" value="C21190"/>
 </part>
 <part name="Q5" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="-POWERPAK1212-8" value="SIS862ADN-T1-GE3">
@@ -17124,6 +17126,9 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 </part>
 <part name="GND43" library="hot-wand" deviceset="GND" device=""/>
 <part name="GND44" library="hot-wand" deviceset="GND" device=""/>
+<part name="SJ8" library="hot-wand" deviceset="SJ-SMALL" device="-2S" value="SJ-SMALL-2S"/>
+<part name="SJ9" library="hot-wand" deviceset="SJ-SMALL" device="-2S" value="SJ-SMALL-2S"/>
+<part name="GND26" library="hot-wand" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17155,8 +17160,8 @@ if 1 core
 <text x="152.4" y="-195.58" size="0.6096" layer="97" align="top-left">Kool Mu 0077932A7
 22 AWG
 19 ± 1 turns</text>
-<text x="184.404" y="-579.374" size="1.778" layer="97" align="bottom-right">3A default</text>
-<text x="172.974" y="-592.074" size="1.778" layer="97" rot="R180" align="bottom-right">5A selected</text>
+<text x="186.944" y="-569.214" size="1.778" layer="97" align="bottom-right">3A option</text>
+<text x="183.134" y="-586.994" size="1.778" layer="97" rot="R180" align="bottom-right">5A option</text>
 <text x="180.34" y="-190.5" size="0.6096" layer="97" align="top-left">4x 0R1
 for measurement</text>
 <text x="199.644" y="-621.284" size="1.778" layer="97" rot="R270" align="bottom-right">select 28V
@@ -17493,16 +17498,16 @@ from high battery voltage</text>
 <attribute name="VALUE" x="161.544" y="-618.49" size="1.778" layer="96" rot="R270"/>
 <attribute name="JLCPARTNUM" x="160.02" y="-622.3" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
-<instance part="R13" gate="G$1" x="172.72" y="-584.2" smashed="yes">
-<attribute name="NAME" x="168.91" y="-587.7814" size="1.778" layer="95"/>
-<attribute name="VALUE" x="168.91" y="-582.676" size="1.778" layer="96"/>
-<attribute name="JLCPARTNUM" x="172.72" y="-584.2" size="1.778" layer="96" display="off"/>
+<instance part="R13" gate="G$1" x="175.26" y="-574.04" smashed="yes">
+<attribute name="NAME" x="171.45" y="-577.6214" size="1.778" layer="95"/>
+<attribute name="VALUE" x="171.45" y="-572.516" size="1.778" layer="96"/>
+<attribute name="JLCPARTNUM" x="175.26" y="-574.04" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="GND9" gate="1" x="193.04" y="-589.28"/>
-<instance part="R14" gate="G$1" x="185.42" y="-584.2" smashed="yes">
-<attribute name="NAME" x="181.61" y="-587.7814" size="1.778" layer="95"/>
-<attribute name="VALUE" x="181.61" y="-582.676" size="1.778" layer="96"/>
-<attribute name="JLCPARTNUM" x="185.42" y="-584.2" size="1.778" layer="96" display="off"/>
+<instance part="GND9" gate="1" x="195.58" y="-579.12"/>
+<instance part="R14" gate="G$1" x="187.96" y="-574.04" smashed="yes">
+<attribute name="NAME" x="184.15" y="-577.6214" size="1.778" layer="95"/>
+<attribute name="VALUE" x="184.15" y="-572.516" size="1.778" layer="96"/>
+<attribute name="JLCPARTNUM" x="187.96" y="-574.04" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="SJ1" gate="A" x="12.7" y="-198.12" rot="R90"/>
 <instance part="SJ2" gate="A" x="172.72" y="-185.42" rot="R180"/>
@@ -17513,11 +17518,13 @@ from high battery voltage</text>
 <attribute name="NAME" x="191.9986" y="-605.79" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="197.104" y="-605.79" size="1.778" layer="96" rot="R270"/>
 <attribute name="JLCPARTNUM" x="195.58" y="-609.6" size="1.778" layer="96" rot="R270" display="off"/>
+<attribute name="DNP" x="195.58" y="-609.6" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="R20" gate="G$1" x="195.58" y="-622.3" smashed="yes" rot="R270">
 <attribute name="NAME" x="191.9986" y="-618.49" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="197.104" y="-618.49" size="1.778" layer="96" rot="R270"/>
 <attribute name="JLCPARTNUM" x="195.58" y="-622.3" size="1.778" layer="96" rot="R270" display="off"/>
+<attribute name="DNP" x="195.58" y="-622.3" size="1.778" layer="96" rot="R270" display="off"/>
 </instance>
 <instance part="Q5" gate="G$1" x="177.8" y="-548.64" smashed="yes" rot="MR90">
 <attribute name="NAME" x="175.006" y="-547.624" size="1.778" layer="95" rot="MR0"/>
@@ -17644,6 +17651,9 @@ from high battery voltage</text>
 </instance>
 <instance part="GND43" gate="1" x="157.48" y="-492.76"/>
 <instance part="GND44" gate="1" x="162.56" y="-525.78"/>
+<instance part="SJ8" gate="A" x="172.72" y="-629.92"/>
+<instance part="SJ9" gate="A" x="175.26" y="-589.28"/>
+<instance part="GND26" gate="1" x="180.34" y="-594.36"/>
 </instances>
 <busses>
 </busses>
@@ -17755,6 +17765,9 @@ from high battery voltage</text>
 <junction x="152.4" y="-629.92"/>
 <pinref part="R16" gate="G$1" pin="2"/>
 <wire x1="160.02" y1="-627.38" x2="160.02" y2="-629.92" width="0.1524" layer="91"/>
+<pinref part="SJ8" gate="A" pin="1"/>
+<wire x1="170.18" y1="-629.92" x2="160.02" y2="-629.92" width="0.1524" layer="91"/>
+<junction x="160.02" y="-629.92"/>
 </segment>
 <segment>
 <pinref part="GND32" gate="1" pin="GND"/>
@@ -17849,8 +17862,8 @@ from high battery voltage</text>
 <segment>
 <pinref part="R14" gate="G$1" pin="2"/>
 <pinref part="GND9" gate="1" pin="GND"/>
-<wire x1="190.5" y1="-584.2" x2="193.04" y2="-584.2" width="0.1524" layer="91"/>
-<wire x1="193.04" y1="-584.2" x2="193.04" y2="-586.74" width="0.1524" layer="91"/>
+<wire x1="193.04" y1="-574.04" x2="195.58" y2="-574.04" width="0.1524" layer="91"/>
+<wire x1="195.58" y1="-574.04" x2="195.58" y2="-576.58" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="SJ1" gate="A" pin="1"/>
@@ -17997,6 +18010,12 @@ from high battery voltage</text>
 <pinref part="GND43" gate="1" pin="GND"/>
 <wire x1="154.94" y1="-487.68" x2="157.48" y2="-487.68" width="0.1524" layer="91"/>
 <wire x1="157.48" y1="-487.68" x2="157.48" y2="-490.22" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SJ9" gate="A" pin="2"/>
+<pinref part="GND26" gate="1" pin="GND"/>
+<wire x1="177.8" y1="-589.28" x2="180.34" y2="-589.28" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="-589.28" x2="180.34" y2="-591.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+24V" class="0">
@@ -18458,8 +18477,12 @@ from high battery voltage</text>
 <segment>
 <wire x1="177.8" y1="-637.54" x2="185.42" y2="-637.54" width="0.1524" layer="91"/>
 <pinref part="R18" gate="G$1" pin="2"/>
-<wire x1="177.8" y1="-637.54" x2="177.8" y2="-627.38" width="0.1524" layer="91"/>
+<wire x1="177.8" y1="-637.54" x2="177.8" y2="-629.92" width="0.1524" layer="91"/>
 <label x="185.42" y="-637.54" size="1.27" layer="95" xref="yes"/>
+<pinref part="SJ8" gate="A" pin="2"/>
+<wire x1="177.8" y1="-629.92" x2="177.8" y2="-627.38" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="-629.92" x2="177.8" y2="-629.92" width="0.1524" layer="91"/>
+<junction x="177.8" y="-629.92"/>
 </segment>
 <segment>
 <wire x1="228.6" y1="-601.98" x2="226.06" y2="-601.98" width="0.1524" layer="91"/>
@@ -18561,14 +18584,22 @@ from high battery voltage</text>
 </net>
 <net name="USB-I-SEL" class="0">
 <segment>
-<label x="160.02" y="-591.82" size="1.27" layer="95" xref="yes"/>
+<label x="172.72" y="-584.2" size="1.27" layer="95" xref="yes"/>
 <pinref part="U4" gate="A" pin="ISEL"/>
 <wire x1="139.7" y1="-591.82" x2="144.78" y2="-591.82" width="0.1524" layer="91"/>
 <wire x1="144.78" y1="-591.82" x2="144.78" y2="-584.2" width="0.1524" layer="91"/>
 <pinref part="R13" gate="G$1" pin="1"/>
-<wire x1="144.78" y1="-584.2" x2="167.64" y2="-584.2" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="-584.2" x2="160.02" y2="-584.2" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-584.2" x2="160.02" y2="-574.04" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="-574.04" x2="170.18" y2="-574.04" width="0.1524" layer="91"/>
 <junction x="144.78" y="-591.82"/>
-<wire x1="160.02" y1="-591.82" x2="144.78" y2="-591.82" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="-584.2" x2="170.18" y2="-584.2" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-584.2" x2="170.18" y2="-589.28" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-589.28" x2="170.18" y2="-591.82" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="-591.82" x2="144.78" y2="-591.82" width="0.1524" layer="91"/>
+<pinref part="SJ9" gate="A" pin="1"/>
+<wire x1="172.72" y1="-589.28" x2="170.18" y2="-589.28" width="0.1524" layer="91"/>
+<junction x="170.18" y="-589.28"/>
 </segment>
 <segment>
 <pinref part="JP5" gate="G$1" pin="1"/>
@@ -18587,7 +18618,7 @@ from high battery voltage</text>
 <segment>
 <pinref part="R13" gate="G$1" pin="2"/>
 <pinref part="R14" gate="G$1" pin="1"/>
-<wire x1="177.8" y1="-584.2" x2="180.34" y2="-584.2" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="-574.04" x2="182.88" y2="-574.04" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="MOSFET-SOURCE" class="0">

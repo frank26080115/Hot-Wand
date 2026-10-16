@@ -855,6 +855,22 @@ Max Component Height - 1.45mm</description>
 <wire x1="-12.3" y1="-2" x2="-12.3" y2="2" width="0" layer="41"/>
 <text x="-12" y="-2.6" size="1" layer="21" font="fixed" ratio="10" align="top-left">20260906A</text>
 </package>
+<package name="SJ_2S">
+<description>Small solder jumper with big paste layer so it will short during reflow.</description>
+<wire x1="0.8" y1="-1" x2="-0.8" y2="-1" width="0.1524" layer="21"/>
+<wire x1="0.8" y1="1" x2="1.1" y2="0.75" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.1" y1="0.75" x2="-0.8" y2="1" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-1.1" y1="-0.75" x2="-0.8" y2="-1" width="0.1524" layer="21" curve="90.114706"/>
+<wire x1="0.8" y1="-1" x2="1.1" y2="-0.75" width="0.1524" layer="21" curve="90"/>
+<wire x1="1.1" y1="-0.75" x2="1.1" y2="0.75" width="0.1524" layer="21"/>
+<wire x1="-1.1" y1="-0.75" x2="-1.1" y2="0.75" width="0.1524" layer="21"/>
+<wire x1="-0.8" y1="1" x2="0.8" y2="1" width="0.1524" layer="21"/>
+<smd name="1" x="-0.4119" y="0" dx="0.635" dy="1.27" layer="1"/>
+<smd name="2" x="0.4119" y="0" dx="0.635" dy="1.27" layer="1"/>
+<text x="-0.9498" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-0.9498" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.2192" y1="-1.143" x2="1.2192" y2="1.143" layer="31"/>
+</package>
 <package name="1206-SJ">
 <smd name="1" x="-1.2" y="0" dx="2" dy="1.8" layer="1"/>
 <smd name="2" x="1.2" y="0" dx="2" dy="1.8" layer="1"/>
@@ -1633,15 +1649,15 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="NAME" x="17.138" y="22.289" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="16.143" y="22.116" size="0.8128" layer="28" font="vector" rot="MR270"/>
 </element>
-<element name="R13" library="hot-wand" package="0603-RES" value="24K" x="12.4" y="23" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C23352" x="12.4" y="23" size="0.8128" layer="28" rot="MR0" display="off"/>
-<attribute name="NAME" x="11.211" y="22.038" size="0.8128" layer="26" font="vector" rot="MR180"/>
-<attribute name="VALUE" x="11.184" y="20.943" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<element name="R13" library="hot-wand" package="0603-RES" value="24K" x="12.4" y="23.2" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C23352" x="12.4" y="23.2" size="0.8128" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="11.211" y="22.238" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="11.184" y="21.143" size="0.8128" layer="28" font="vector" rot="MR180"/>
 </element>
-<element name="R14" library="hot-wand" package="0603-RES" value="2K" x="9" y="21.3" smashed="yes" rot="MR0">
-<attribute name="JLCPARTNUM" value="C22975" x="9" y="21.3" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="NAME" x="9.889" y="22.162" size="0.8128" layer="26" font="vector" rot="MR0"/>
-<attribute name="VALUE" x="9.816" y="23.257" size="0.8128" layer="28" font="vector" rot="MR0"/>
+<element name="R14" library="hot-wand" package="0603-RES" value="2K" x="9" y="21.5" smashed="yes" rot="MR0">
+<attribute name="JLCPARTNUM" value="C22975" x="9" y="21.5" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="9.889" y="22.362" size="0.8128" layer="26" font="vector" rot="MR0"/>
+<attribute name="VALUE" x="9.816" y="23.457" size="0.8128" layer="28" font="vector" rot="MR0"/>
 </element>
 <element name="SJ1" library="hot-wand" package="1206-SJ" value="SJ-SMALL-1206-SJ" x="55.4" y="68.8" smashed="yes" rot="R180">
 <attribute name="NAME" x="57.2" y="67.3" size="0.8128" layer="25" font="fixed" rot="R180"/>
@@ -1662,11 +1678,13 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C23196" x="18.8" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="18.762" y="29.011" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="VALUE" x="19.857" y="29.484" size="0.8128" layer="28" font="vector" rot="MR90"/>
+<attribute name="DNP" value="1" x="18.8" y="27.3" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="R20" library="hot-wand" package="0603-RES" value="1K" x="18.8" y="23.9" smashed="yes" rot="MR270">
 <attribute name="JLCPARTNUM" value="C21190" x="18.8" y="23.9" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="NAME" x="18.838" y="22.389" size="0.8128" layer="26" font="vector" rot="MR270"/>
 <attribute name="VALUE" x="19.743" y="22.316" size="0.8128" layer="28" font="vector" rot="MR270"/>
+<attribute name="DNP" value="1" x="18.8" y="23.9" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="Q5" library="hot-wand" package="POWERPAK-1212-8" value="SIS862ADN-T1-GE3" x="19.6" y="46.7" smashed="yes" rot="R90">
 <attribute name="JLC-DNP" value="1" x="19.6" y="46.7" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1818,6 +1836,12 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C23196" x="16.8" y="59.3" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="18.189" y="60.062" size="0.8128" layer="26" font="vector" rot="MR0"/>
 <attribute name="VALUE" x="18.216" y="61.057" size="0.8128" layer="28" font="vector" rot="MR0"/>
+</element>
+<element name="SJ8" library="hot-wand" package="SJ_2S" value="SJ-SMALL-2S" x="4.3" y="7.1" smashed="yes" rot="MR90">
+<attribute name="NAME" x="5.4502" y="8.03" size="0.8128" layer="26" rot="MR180"/>
+</element>
+<element name="SJ9" library="hot-wand" package="SJ_2S" value="SJ-SMALL-2S" x="9" y="19.5" smashed="yes" rot="MR270">
+<attribute name="NAME" x="10.2502" y="19.03" size="0.8128" layer="26" rot="MR180"/>
 </element>
 </elements>
 <signals>
@@ -2352,6 +2376,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="87.1" y="50.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="87.1" y="48.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="85.6" y="47.4" extent="1-16" drill="0.3" shape="octagon"/>
+<contactref element="SJ8" pad="1"/>
+<contactref element="SJ9" pad="2"/>
 </signal>
 <signal name="+24V">
 <contactref element="F1" pad="4"/>
@@ -2982,7 +3008,11 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <wire x1="21.2" y1="14.58" x2="19.22" y2="12.6" width="0.4064" layer="16"/>
 <wire x1="19.22" y1="12.6" x2="9.9" y2="12.6" width="0.4064" layer="16"/>
 <wire x1="9.9" y1="12.6" x2="5" y2="7.7" width="0.4064" layer="16"/>
-<wire x1="5" y1="7.7" x2="1.846" y2="7.7" width="0.4064" layer="16"/>
+<wire x1="5" y1="7.7" x2="4.1119" y2="7.7" width="0.4064" layer="16"/>
+<contactref element="SJ8" pad="2"/>
+<wire x1="3.5" y1="7.7" x2="1.846" y2="7.7" width="0.4064" layer="16"/>
+<wire x1="4.3" y1="7.5119" x2="4.1119" y2="7.7" width="0.4064" layer="16"/>
+<wire x1="4.1119" y1="7.7" x2="3.5" y2="7.7" width="0.4064" layer="16"/>
 </signal>
 <signal name="SEL3">
 <wire x1="101" y1="62.1" x2="90" y2="62.1" width="0.4064" layer="1"/>
@@ -3059,13 +3089,17 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="USB-I-SEL">
 <contactref element="U4" pad="5"/>
 <contactref element="R13" pad="1"/>
-<wire x1="13.75" y1="28.3" x2="13.75" y2="23" width="0.3048" layer="16"/>
-<wire x1="13.75" y1="23" x2="13.75" y2="22.15" width="0.3048" layer="16"/>
-<wire x1="13.25" y1="23" x2="13.75" y2="23" width="0.3048" layer="16"/>
+<wire x1="13.75" y1="28.3" x2="13.75" y2="23.2" width="0.3048" layer="16"/>
+<wire x1="13.75" y1="23.2" x2="13.75" y2="22.15" width="0.3048" layer="16"/>
+<wire x1="13.25" y1="23.2" x2="13.75" y2="23.2" width="0.3048" layer="16"/>
 <contactref element="JP5" pad="1"/>
 <wire x1="2.2" y1="20.4" x2="2.3" y2="20.3" width="0.3048" layer="16"/>
-<wire x1="2.3" y1="20.3" x2="11.9" y2="20.3" width="0.3048" layer="16"/>
+<wire x1="2.3" y1="20.3" x2="8.1" y2="20.3" width="0.3048" layer="16"/>
 <wire x1="11.9" y1="20.3" x2="13.75" y2="22.15" width="0.3048" layer="16"/>
+<contactref element="SJ9" pad="1"/>
+<wire x1="9" y1="19.9119" x2="8.7119" y2="20.3" width="0.254" layer="16"/>
+<wire x1="8.1" y1="20.3" x2="11.9" y2="20.3" width="0.3048" layer="16"/>
+<wire x1="8.7119" y1="20.3" x2="8.1" y2="20.3" width="0.254" layer="16"/>
 </signal>
 <signal name="N$9">
 <contactref element="R16" pad="1"/>
@@ -3075,7 +3109,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <signal name="N$10">
 <contactref element="R13" pad="2"/>
 <contactref element="R14" pad="1"/>
-<wire x1="11.55" y1="23" x2="9.85" y2="21.3" width="0.3048" layer="16"/>
+<wire x1="11.55" y1="23.2" x2="9.85" y2="21.5" width="0.3048" layer="16"/>
 </signal>
 <signal name="MOSFET-SOURCE">
 <contactref element="Q1" pad="3B"/>
