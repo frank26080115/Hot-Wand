@@ -56,11 +56,11 @@ It is recommended to solder female headers onto the Hot-Wand-Lite PCB where the 
 
 ## 4. Custom Inductors
 
-There are 4 custom inductors in this design. [Follow the instructions on how to create them (click here)](custom-indoctors.md), and then solder them to their perspective locations.
+There are 4 custom inductors in this design, each wound on one Kool Mu core. [Follow the winding instructions](custom-inductors.md), and then solder them to their respective locations (L2 through L5).
 
 ![](./imgs/soldering_3.jpg)
 
-(DEVELOPMENT ONLY) If a LCR meter is available, record the number of winds for each individual inductor and the resulting inductance.
+Use an LCR meter with at least a 100 kHz test mode to measure each inductor before soldering it in. Record the turn count and measured inductance; see the [measurement instructions](custom-inductors.md#measuring-the-inductors).
 
 ## 5. MOSFET Heatsink
 
@@ -128,7 +128,7 @@ When finished, you can just connect the it to the SMA connector
 
 #### If using: Thermaltronics Handpiece
 
-Thermaltronics still sells their older SHP-P handpieces (meant for 470 kHz cartridges) for about $50 dollars, but they have a weird big connector. You can either cut off the connector and solder on a SMA connector, or make some sort of adapter by yourself.
+Use a Thermaltronics SHP-P handpiece with P-series cartridges for the commercial handpiece option. Adapt its original connector to the Hot Wand Lite's SMA output, or replace it with an SMA cable plug.
 
 If you cut off the original connector and strip the wires, the red wire is the positive signal, black is the negative signal, green and shield are ground. So in practice for this project:
 
@@ -138,6 +138,23 @@ If you cut off the original connector and strip the wires, the red wire is the p
 ![](../bld-photos/shp-wires-stripped.jpg)
 
 ![](../bld-photos/shp-wires-soldered.jpg)
+
+## Tip Temperature Check
+
+**Check the tip temperature with a dedicated soldering iron thermometer before putting the finished build into normal use.** Melting solder is not enough to verify temperature regulation. The cartridge's temperature series should not be treated as a guaranteed upper limit on idle temperature. [See the shopping guide for inexpensive thermometer options](shopping.md#soldering-iron-thermometer).
+
+Correct inductances are part of getting the intended temperature regulation. Verify the temperature on your own build even when following the specified component values.
+
+**Do not skip both inductance measurements and the tip temperature check. Building this without either check is asking for an overheated tip, even if it appears to solder normally.**
+
+1. Fit a good wire sensor according to the thermometer's instructions. Check the battery and temperature units before starting.
+2. Connect the handpiece and cartridge with the Hot Wand switched off, then power up with the cooling fan working. Use the supply voltage and power setting you intend to use for soldering.
+3. Clean the tip and wet its working surface with a little fresh solder. Gently touch that surface to the sensor's center measuring point, so the solder makes good thermal contact. Do not push hard on the thin wires or touch the thermometer's plastic body with the hot tip.
+4. Wait for the reading to settle, lift the tip away, and repeat a few times. Between readings, let the iron idle in its stand without soldering anything. Check again after several minutes, since the first reading after warm-up may miss a later rise in idle temperature. Do not leave the iron unattended during this test.
+5. Compare the repeatable readings with the manufacturer's specified temperature range for the exact cartridge, allowing for the thermometer's stated accuracy. Record the cartridge, supply voltage, power setting, and temperature. Repeat for each supply voltage and power setting you intend to use, and after changing cartridges or tuning the circuit.
+6. If the temperature keeps climbing or is above the specified range beyond measurement uncertainty, switch off and investigate before normal use. Recheck the sensor and solder contact, and replace a worn sensor if readings are inconsistent. Do not assume a lower power setting fixes the problem without measuring again.
+
+For the general wire-sensor measurement method, see the [Hakko thermometer instructions](https://www.hakko.com/english/support/doc/result.php?mode=download&seq=7026). Follow the instructions supplied with your particular thermometer.
 
 ## Iron Stand
 

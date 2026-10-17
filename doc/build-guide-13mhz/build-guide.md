@@ -262,6 +262,19 @@ Stick on some rubber feet to the bottom of the enclosure.
 
 (DEVELOPMENT ONLY) further firmware development
 
+## Tip Temperature Check
+
+**Check the tip temperature with a dedicated soldering iron thermometer before putting the finished build into normal use.** Melting solder is not enough to verify temperature regulation. The cartridge's temperature series should not be treated as a guaranteed upper limit on idle temperature. [See the shopping guide for inexpensive thermometer options](shopping.md#soldering-iron-thermometer).
+
+1. Fit a good wire sensor according to the thermometer's instructions. Check the battery and temperature units before starting.
+2. Connect the handpiece and cartridge with the Hot Wand switched off, then power up with the cooling fan working. Use the supply voltage and power setting you intend to use for soldering.
+3. Clean the tip and wet its working surface with a little fresh solder. Gently touch that surface to the sensor's center measuring point, so the solder makes good thermal contact. Do not push hard on the thin wires or touch the thermometer's plastic body with the hot tip.
+4. Wait for the reading to settle, lift the tip away, and repeat a few times. Between readings, let the iron idle in its stand without soldering anything. Check again after several minutes, since the first reading after warm-up may miss a later rise in idle temperature. Do not leave the iron unattended during this test.
+5. Compare the repeatable readings with the manufacturer's specified temperature range for the exact cartridge, allowing for the thermometer's stated accuracy. Record the cartridge, supply voltage, power setting, and temperature. Repeat for each supply voltage and power setting you intend to use, and after changing cartridges or tuning the circuit.
+6. If the temperature keeps climbing or is above the specified range beyond measurement uncertainty, switch off and investigate before normal use. Recheck the sensor and solder contact, and replace a worn sensor if readings are inconsistent. Do not assume a lower power setting fixes the problem without measuring again.
+
+For the general wire-sensor measurement method, see the [Hakko thermometer instructions](https://www.hakko.com/english/support/doc/result.php?mode=download&seq=7026). Follow the instructions supplied with your particular thermometer.
+
 ## Iron Stand
 
 Please see [this page about my 3D printed folding soldering stand](../build-guide-iron-stand.md)

@@ -1,7 +1,7 @@
 # Lite inductor adjustment experiment
 
 2026-09-26. Initial recommendation: increase **L2**, the nominal 6.2 uH
-series inductor wound on two stacked cores. Make small, reversible adjustments
+series inductor wound on one Kool Mu 0077932A7 core. Make small, reversible adjustments
 to winding spacing, with electrical measurements before accepting a lower tip
 temperature as an improvement.
 

@@ -300,6 +300,19 @@ Quantity: **one small tube of Permatex Ultra Red RTV Silicone Gasket Maker**. Ma
 
 Quantity: **enough PETG for the final plastic parts and enough PLA for the disposable templates, if printing them yourself**. Use PETG for the faceplate, airflow parts, and anything that remains near the hot enclosure. PLA is adequate for drilling and cutting templates that are discarded after use. One standard spool of each is far more than a single unit consumes, so use filament already on hand or ask someone to print the parts.
 
+## Test equipment
+
+### Soldering iron thermometer
+
+Quantity: **one dedicated soldering iron tip thermometer**. I would consider this required for checking a finished build. The tip can idle hotter than its cartridge's specified temperature range, so do not assume that heating up and melting solder means everything is working correctly. One thermometer can be shared between builds.
+
+Two economical options:
+
+* [YWBL-WH soldering iron thermometer on Amazon](https://www.amazon.com/YWBL-WH-Soldering-Temperature-Thermometer-Measuring/dp/B081GGBDP1)
+* [lehaha soldering iron thermometer on Amazon](https://www.amazon.com/lehaha-Soldering-Temperature-Thermometer-Welding/dp/B08NP2YCXL)
+
+Buy one, not both. Check whether the listing includes the battery and replaceable wire sensors, and buy a few spare sensors that fit the thermometer. These sensors are consumables. Use the thermometer's own instructions for fitting them. See the [tip temperature check in the build guide](build-guide.md#tip-temperature-check).
+
 ## Handpiece and tip
 
 Choose **one** of the handpiece systems below. The Thermaltronics, Metcal, and Hakko choices all use a standard F-type RF connection and operate at 13.56 MHz. Thermaltronics and Metcal share the STTC/SMTC cartridge ecosystem, while the Hakko FX-1001 uses its own T31 cartridges.

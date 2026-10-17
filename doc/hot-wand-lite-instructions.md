@@ -2,6 +2,10 @@
 
 Hot-Wand Lite is the simpler cheaper 470 kHz version of Hot-Wand.
 
+## Handpiece and Cartridges
+
+Use a Thermaltronics SHP-P handpiece with Thermaltronics P-series cartridges. The handpiece connector must be adapted or replaced to connect to the Lite's SMA output; see the [handpiece assembly instructions](build-guide-lite-470khz/build-guide-lite.md#handpiece).
+
 # Operating Instructions
 
 ## Powering by Battery

@@ -129,17 +129,13 @@ Quantity: **two additional 2.54 mm pull-tab jumper shunts**. Fit them across the
 
 ![Kool Mu toroid core](../imgs-shopping/small/koolmu-toroid.jpg)
 
-Quantity: **five Magnetics 0077932A7 Kool Mu cores**. Use two stacked cores for L2 and one core each for L3, L4, and L5. The material, dimensions, and nominal 32 nH/turn² factor determine the winding instructions. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/magnetics-a-division-of-spang-co/0077932A7/18626819).
+Quantity: **four Magnetics 0077932A7 Kool Mu cores**. Use one core each for L2, L3, L4, and L5. See the [winding instructions](custom-inductors.md) for turn counts and wire lengths. The material, dimensions, and nominal 32 nH/turn² factor determine the winding instructions. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/magnetics-a-division-of-spang-co/0077932A7/18626819).
 
 ### 22 AWG magnet wire
 
 ![Magnet wire](../imgs-shopping/small/magnet-wire.s.jpg)
 
 Quantity: **at least 5 m (16.4 ft) of solid 22 AWG enamelled copper magnet wire**. It winds L2 through L5 and leaves useful margin for trimming, measurement corrections, or one rewind. A small hobby spool is much more economical than distributor-cut wire; search for [22 AWG enamelled copper magnet wire on Amazon](https://www.amazon.com/s?k=22+AWG+enameled+copper+magnet+wire). Make sure it is solid copper, not copper-clad aluminum.
-
-### Core-stacking epoxy
-
-Quantity: **one small package of rigid two-part epoxy**. Use a small amount to join the two 0077932A7 cores used by L2 before winding them; the joint must be thin enough that the winding-length guidance remains useful. An inexpensive consumer epoxy is sufficient; search [Amazon](https://www.amazon.com/s?k=two+part+epoxy+small+package), or buy it from a local hardware store.
 
 ## Cooling and enclosure hardware
 
@@ -189,11 +185,32 @@ Quantity: **one small tube of ordinary non-electrically-conductive CPU thermal p
 
 **Enough PETG for the plastic parts**. Avoid PLA as the device might get very warm.
 
+## Test equipment
+
+**Do not skip both inductance measurements and the tip temperature check. Building this without either check is asking for an overheated tip, even if it appears to solder normally.**
+
+### LCR meter
+
+Quantity: **one LCR meter with at least a 100 kHz test mode**. It is nearly impossible to get these custom inductors right from turn counts alone. I used the **FNIRSI LC1020E**, which has a 100 kHz mode. See the [FNIRSI product page](https://www.fnirsi.com/products/lc1020e), or buy it from [Amazon](https://www.amazon.com/FNIRSI-LC1020E-Capacitor-Component-Calibration/dp/B0FL7QG7MX). If substituting another meter, check its test frequencies; an inductance range on a multimeter or a low-frequency component tester is not enough.
+
+See the [brief measurement instructions](custom-inductors.md#measuring-the-inductors). One meter can be shared between builds.
+
+### Soldering iron thermometer
+
+Quantity: **one dedicated soldering iron tip thermometer**. I would consider this required for checking a finished build. The tip can idle hotter than its cartridge's specified temperature range, so do not assume that heating up and melting solder means everything is working correctly. One thermometer can be shared between builds.
+
+Two economical options:
+
+* [YWBL-WH soldering iron thermometer on Amazon](https://www.amazon.com/YWBL-WH-Soldering-Temperature-Thermometer-Measuring/dp/B081GGBDP1)
+* [lehaha soldering iron thermometer on Amazon](https://www.amazon.com/lehaha-Soldering-Temperature-Thermometer-Welding/dp/B08NP2YCXL)
+
+Buy one, not both. Check whether the listing includes the battery and replaceable wire sensors, and buy a few spare sensors that fit the thermometer. These sensors are consumables. Use the thermometer's own instructions for fitting them. See the [tip temperature check in the build guide](build-guide-lite.md#tip-temperature-check).
+
 ## Handpiece and tip
 
 ### Commercial 470 kHz handpiece
 
-![Thermaltronics SHP-P handpiece](../imgs-shopping/large/shp-ps.png)
+![Thermaltronics SHP-P handpiece](../imgs-shopping/large/shp-p.png)
 
 If using the commercial path instead of the Radio Thermal handpiece. It holds Thermaltronics P-series cartridges; its original connector must be adapted or replaced to mate with the Hot Wand Lite's SMA output. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/thermaltronics/SHP-P/22491407).
 
