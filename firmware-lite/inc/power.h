@@ -13,6 +13,10 @@ uint32_t pwrmgt_read_voltage_mv(void);
 // Enforce the RF startup delay, monitor inputs, and update RF and LED state.
 void pwrmgt_task(void);
 
+#ifdef POWER_UNIT_TEST
+void pwrmgt_test_reset_state(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

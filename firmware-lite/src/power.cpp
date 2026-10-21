@@ -90,6 +90,16 @@ constexpr uint32_t kNormalRfTrackingIntervalMs = 5000;
  */
 constexpr uint8_t  kEcoRfPowerPercent              = 70;
 constexpr uint8_t  kSportRfPowerPercent            = 100;
+
+// Sport soft start: requested RF power, not measured watts or temperature.
+constexpr uint32_t kSportRampThresholdMv           = 27000;
+constexpr uint8_t  kSportRampStartPowerPercent     = 40;
+constexpr uint32_t kSportRampDurationMs            = 10000;
+static_assert(kSportRampDurationMs > 0, "Sport ramp duration must be positive");
+static_assert(kSportRampStartPowerPercent >= RFGEN_MINIMUM_POWER_PERCENT &&
+                  kSportRampStartPowerPercent <= kSportRfPowerPercent,
+              "Sport ramp start power is outside the supported range");
+
 constexpr uint32_t kNormalFullPowerVoltageMv       = 21000;
 constexpr uint8_t  kNormalFullPowerPercent         = 100;
 constexpr uint32_t kNormalReferenceVoltageMv       = 36000;
@@ -151,6 +161,10 @@ bool g_powerSwitchSampled       = false;
 bool g_voltageFilterInitialized = false;
 bool g_shutdownRequested        = false;
 bool g_shutdownApplied          = false;
+bool g_rfStartPending           = true;
+bool g_sportRampActive          = false;
+uint32_t g_sportRampStartedMs   = 0;
+uint8_t g_sportRampPowerPercent = 0;
 
 VoltageRange g_voltageRange        = VoltageRange::Low;
 VoltageRange g_appliedVoltageRange = VoltageRange::Low;
@@ -171,6 +185,7 @@ uint32_t g_lastNormalRfTrackingMs   = 0;
 // -----------------------------------------------------------------------------
 
 static void            apply_state(uint32_t currentTimeMs, uint32_t voltageMv);
+static void            service_sport_ramp(uint32_t currentTimeMs);
 static VoltageRange    update_voltage_range(VoltageRange currentRange,
                                             uint32_t     filteredVoltageMv,
                                             uint32_t     protectionVoltageMv);
@@ -184,6 +199,35 @@ static blink_power_t   power_to_blink_mode(PowerMode powerMode);
 static void            report_readings(uint32_t currentTimeMs, uint32_t voltageMv, PowerMode powerMode);
 static const char*     power_mode_name(PowerMode powerMode);
 } // namespace
+
+#ifdef POWER_UNIT_TEST
+void pwrmgt_test_reset_state(void)
+{
+    g_hardwareInitialized = false;
+    g_inputStateInitialized = false;
+    g_appliedStateValid = false;
+    g_powerSwitchSampled = false;
+    g_voltageFilterInitialized = false;
+    g_shutdownRequested = false;
+    g_shutdownApplied = false;
+    g_rfStartPending = true;
+    g_sportRampActive = false;
+    g_sportRampStartedMs = 0;
+    g_sportRampPowerPercent = 0;
+    g_voltageRange = VoltageRange::Low;
+    g_appliedVoltageRange = VoltageRange::Low;
+    g_powerMode = PowerMode::Normal;
+    g_appliedPowerMode = PowerMode::Normal;
+    g_voltageChangedMs = 0;
+    g_powerChangedMs = 0;
+    g_lastReportMs = 0;
+    g_lastPowerSwitchSampleMs = 0;
+    g_lastVoltageSampleMs = 0;
+    g_latestRawVoltageMv = 0;
+    g_filteredVoltageMv = 0;
+    g_lastNormalRfTrackingMs = 0;
+}
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -203,6 +247,10 @@ void pwrmgt_task(void)
             blink_set_enabled(false);
             g_appliedStateValid = false;
             g_shutdownApplied = true;
+            g_rfStartPending = true;
+            g_sportRampActive = false;
+            g_inputStateInitialized = false;
+            g_voltageFilterInitialized = false;
         }
         return;
     }
@@ -271,6 +319,21 @@ void pwrmgt_task(void)
 
     const bool voltageIsStable = static_cast<uint32_t>(currentTimeMs - g_voltageChangedMs) >= kChangeSettleTimeMs;
     const bool powerIsStable   = static_cast<uint32_t>(currentTimeMs - g_powerChangedMs) >= kChangeSettleTimeMs;
+
+    if (g_sportRampActive)
+    {
+        // Keep ramping through voltage changes and unsettled mode changes.
+        // A confirmed mode change is independent of voltage settling.
+        if (powerIsStable && (g_powerMode != g_appliedPowerMode))
+        {
+            apply_state(currentTimeMs, voltageMv);
+        }
+        else
+        {
+            service_sport_ramp(currentTimeMs);
+        }
+        return;
+    }
 
     // In Normal mode the RF target follows the filtered battery voltage, but
     // no faster than the battery can realistically require. Mode changes and
@@ -356,14 +419,37 @@ namespace
 {
 static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
 {
+    if (g_rfStartPending && (g_voltageRange != VoltageRange::TooHigh))
+    {
+        // Recheck at RF enable, not against a pre-interlock or previous-session
+        // filter value. Revalidate protection before issuing any nonzero power.
+        g_voltageFilterInitialized = false;
+        voltageMv = pwrmgt_read_voltage_mv();
+        g_voltageRange = initial_voltage_range(voltageMv,
+            (g_latestRawVoltageMv > voltageMv) ? g_latestRawVoltageMv : voltageMv);
+    }
     if (g_voltageRange == VoltageRange::TooHigh)
     {
         rfgen_set(0);
+        g_sportRampActive = false;
+        g_rfStartPending = true;
     }
-    else if (!g_appliedStateValid || (g_appliedVoltageRange == VoltageRange::TooHigh) ||
+    else if (g_rfStartPending || !g_appliedStateValid || (g_appliedVoltageRange == VoltageRange::TooHigh) ||
              (g_powerMode != g_appliedPowerMode))
     {
-        rfgen_set(power_percent(g_powerMode, voltageMv));
+        g_sportRampActive = g_rfStartPending && (g_powerMode == PowerMode::Sport) &&
+                            (voltageMv > kSportRampThresholdMv);
+        g_rfStartPending = false;
+        if (g_sportRampActive)
+        {
+            g_sportRampStartedMs = currentTimeMs;
+            g_sportRampPowerPercent = kSportRampStartPowerPercent;
+            rfgen_set(g_sportRampPowerPercent);
+        }
+        else
+        {
+            rfgen_set(power_percent(g_powerMode, voltageMv));
+        }
         if (g_powerMode == PowerMode::Normal)
         {
             g_lastNormalRfTrackingMs = currentTimeMs;
@@ -374,6 +460,25 @@ static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
     g_appliedVoltageRange = g_voltageRange;
     g_appliedPowerMode    = g_powerMode;
     g_appliedStateValid   = true;
+}
+
+static void service_sport_ramp(uint32_t currentTimeMs)
+{
+    const uint32_t elapsedMs = static_cast<uint32_t>(currentTimeMs - g_sportRampStartedMs);
+    const uint8_t power = (elapsedMs >= kSportRampDurationMs)
+        ? kSportRfPowerPercent
+        : static_cast<uint8_t>(kSportRampStartPowerPercent +
+              (static_cast<uint64_t>(kSportRfPowerPercent - kSportRampStartPowerPercent) * elapsedMs) /
+                  kSportRampDurationMs);
+    if (power != g_sportRampPowerPercent)
+    {
+        rfgen_set(power);
+        g_sportRampPowerPercent = power;
+    }
+    if (elapsedMs >= kSportRampDurationMs)
+    {
+        g_sportRampActive = false;
+    }
 }
 
 static VoltageRange update_voltage_range(VoltageRange currentRange,

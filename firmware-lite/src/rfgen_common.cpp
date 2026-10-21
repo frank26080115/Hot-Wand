@@ -14,9 +14,11 @@
 
 #include <limits.h>
 
-#ifndef RFGEN_UNIT_TEST
+#if !defined(RFGEN_UNIT_TEST) || defined(RFGEN_MACRO_UNIT_TEST)
 #include <Arduino.h>
+#endif
 
+#ifndef RFGEN_UNIT_TEST
 #include "hotwandlite.h"
 #endif
 
@@ -168,6 +170,16 @@ void rfgen_set(uint8_t powerPercent)
     {
         return;
     }
+
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+    // All macro powers share the same continuous carrier table. Preserve the
+    // current ON/OFF phase during a ramp instead of repeatedly postponing OFF.
+    if (g_macroActive && normalizedPowerPercent >= 80u && normalizedPowerPercent < 100u)
+    {
+        g_appliedPowerPercent = normalizedPowerPercent;
+        return;
+    }
+#endif
 
     uint32_t* nextPeriodTable = inactive_period_table();
     uint16_t  nextPeriodCount = 0;
@@ -577,6 +589,11 @@ static void force_output_low()
 #ifdef RFGEN_UNIT_TEST
 void rfgen_test_reset_state(void)
 {
+#if defined(HOTWANDLITE_MCU_ESP32C3) && defined(RFGEN_ESP32C3_MACRO_PULSE_BURSTS)
+    g_macroActive = false;
+    g_macroOn = false;
+    g_macroPhaseStartedUs = 0;
+#endif
     g_pwmPeriodClocks        = kDefaultPeriodClocks;
     g_requestedPowerPercent  = 0;
     g_normalizedPowerPercent = 0;
