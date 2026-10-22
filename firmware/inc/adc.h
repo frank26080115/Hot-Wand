@@ -33,6 +33,9 @@ uint8_t  adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity);
 uint32_t adc_get_completed_round_count(void);
 bool     adc_has_power_loss_shutdown(void);
 bool     adc_has_buck_voltage_spike_shutdown(void);
+/* CT diagnostic only: rearm power-loss protection with RF off and recovered
+ * DC input. Does not clear buck-overvoltage or other RF fault latches. */
+bool     adc_rearm_power_loss_for_test(void);
 
 uint32_t adc_get_rand_seed(void);
 

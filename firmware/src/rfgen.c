@@ -34,6 +34,7 @@ _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ, "RF generator requires a 27.12 MHz e
 
 static volatile bool rfgen_clock_fault_logged;
 static volatile bool rfgen_emergency_stop_latched;
+static volatile bool rfgen_power_loss_stop_latched;
 static volatile bool rfgen_active;
 
 // -----------------------------------------------------------------------------
@@ -43,6 +44,7 @@ static volatile bool rfgen_active;
 static void rfgen_pin_low(void);
 static void rfgen_fault(void);
 static void rfgen_start_impl(bool bypass_tip_detector);
+static void rfgen_latched_stop(void);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -237,10 +239,40 @@ void rfgen_stop(void)
 
 void rfgen_emergency_stop(void)
 {
+    rfgen_emergency_stop_latched = true;
+    rfgen_latched_stop();
+}
+
+void rfgen_power_loss_stop(void)
+{
+    rfgen_power_loss_stop_latched = true;
+    rfgen_latched_stop();
+}
+
+bool rfgen_rearm_power_loss_for_test(void)
+{
+    uint32_t interrupt_state = __get_PRIMASK();
+    bool     rearmed = false;
+
+    __disable_irq();
+    if (rfgen_power_loss_stop_latched && !rfgen_active &&
+        !rfgen_clock_fault_logged && !rfgen_emergency_stop_latched)
+    {
+        rfgen_power_loss_stop_latched = false;
+        rearmed = true;
+    }
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+    return rearmed;
+}
+
+static void rfgen_latched_stop(void)
+{
     /* Disable the timer output before doing the slower GPIO ownership handoff.
      * The latch is checked at both RF-start gates, so an interrupted or later
      * start cannot undo this safety shutdown. */
-    rfgen_emergency_stop_latched = true;
     rfgen_active                 = false;
 
     if (__HAL_RCC_TIM1_IS_CLK_ENABLED())
@@ -259,7 +291,7 @@ void rfgen_emergency_stop(void)
 
 bool rfgen_has_fault(void)
 {
-    return rfgen_clock_fault_logged || rfgen_emergency_stop_latched;
+    return rfgen_clock_fault_logged || rfgen_emergency_stop_latched || rfgen_power_loss_stop_latched;
 }
 
 bool rfgen_has_clock_fault(void)

@@ -21,6 +21,7 @@ void test_bringup_oled_inputs(void);
 void test_bringup_watchdog_simple(void);
 void test_rfgen(void);
 void test_rfgen_burst(void);
+void test_ct_reaction(void);
 void test_watchdog_rf_reset(void);
 void test_nvm_simple(void);
 void test_nvm_full_page(void);

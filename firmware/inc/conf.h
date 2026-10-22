@@ -155,10 +155,10 @@
 
 /* Power-loss protection intentionally compares raw 10-bit DC-input ADC
  * samples. With the fixed 22K/2K2 divider and 3.3 V ADC reference, one count
- * represents about 35.5 mV at DC-IN. These defaults approximate the former
- * 1000 mV fast, 300 mV sustained, and 75 mV segment thresholds. */
+ * represents about 35.5 mV at DC-IN. The sustained and segment defaults
+ * approximate the former 300 mV and 75 mV thresholds, respectively. */
 #ifndef PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS
-#define PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS 28
+#define PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS 85 /* ~3.02 V at DC-IN; 28 counts was ~0.99 V. */
 #endif
 
 #ifndef PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT

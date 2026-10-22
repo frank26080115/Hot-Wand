@@ -521,6 +521,37 @@ bool adc_has_buck_voltage_spike_shutdown(void)
     return adc_buck_voltage_spike_shutdown;
 }
 
+bool adc_rearm_power_loss_for_test(void)
+{
+    uint32_t interrupt_state = __get_PRIMASK();
+    bool     rearmed = false;
+
+    __disable_irq();
+    if (adc_power_loss_shutdown && !adc_buck_voltage_spike_shutdown &&
+        !rfgen_is_active() && (dc_voltage_history_count != 0) &&
+        (raw[DC_SENS_IDX] >= ADC_VOLTAGE_TO_COUNTS(DC_UNDERVOLTAGE_FAULT_MV)))
+    {
+        uint8_t newest_idx = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
+                                                              : (uint8_t)(dc_voltage_history_write_idx - 1);
+        uint16_t sample    = raw[DC_SENS_IDX];
+        uint16_t reference = dc_voltage_history[newest_idx];
+
+        /* Do not rearm into another immediate fast-drop trip. The running
+         * round-robin ADC keeps this history current throughout cooldown. */
+        if (((sample >= reference) || ((reference - sample) < PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS)) &&
+            rfgen_rearm_power_loss_for_test())
+        {
+            adc_power_loss_shutdown = false;
+            rearmed = true;
+        }
+    }
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+    return rearmed;
+}
+
 uint16_t adc_get(uint8_t idx)
 {
     if (idx >= ADC_INPUT_COUNT)
@@ -713,7 +744,7 @@ static void adc_check_fast_power_loss(uint16_t sample)
         (((uint32_t)reference_sample - sample) >= PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS))
     {
         adc_power_loss_shutdown = true;
-        rfgen_emergency_stop();
+        rfgen_power_loss_stop();
     }
 }
 

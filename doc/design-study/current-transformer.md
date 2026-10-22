@@ -119,7 +119,7 @@ The patent’s preferred embodiment uses a directional coupler to measure reflec
 
 > When the current to the load exceeds the desired constant magnitude, the voltage induced across coil 16 causes the regulator 17 to decrease the voltage fed to the collector of the final stage of the power supply, namely the Class C amplifier 12. To achieve this function, the detector, differential amplifier and regulator 17 has an adjustable reference voltage against which the voltage across coil 16 is compared. If the voltage across coil 16 exceeds the reference voltage, the regulator 17 lowers the collector voltage to the Class C amplifier 12, until the two volt ages are equal. Similarly, if the voltage across coil 16 is lower than the reference voltage, the regulator senses the difference and raises the voltage to the Class C amplifier until the voltage across coil 16 equals the reference voltage. If the Class C amplifier is of the vacuum tube type, the regulator 17 controls the plate voltage of that amplifier.
 
-Fun, our modern implementation adjusts the voltage being output by the buck converter. This is saying something similar, except it is only using voltage on the coil as the feedback signal, not the phase. (you can see why me and others have been confused by this current transformer's purpose)
+Fun, our modern implementation adjusts the voltage being output by the buck converter. The patent is saying something similar, except it is only using voltage on the coil as the feedback signal, not the phase. (you can see why me and others have been confused by this current transformer's purpose)
 
 The patent's preferred embodiment turns off the RF for a fixed time duration when the iron tip is too hot (reflected voltage exceeds an adjustable threshold associated with a temperature near the effective Curie point)
 
@@ -153,13 +153,13 @@ phase = atan(Im(Zload) / Re(Zload))
 
 Positive phase means voltage leads current (inductive load); negative phase means current leads voltage (capacitive load).
 
-| Dummy-load configuration | MX-5200 displayed power number | Calculated nominal load at 13.56 MHz | Calculated phase |
-| --- | ---: | ---: | ---: |
-| Inductor bypass jumpers open; inductor in series | 40 | `50 + j12.44 ohms` | +14.0 degrees |
-| Inductor bypass jumpers shorted | 50 | `50 + j0 ohms` | 0.0 degrees |
-| 2,000 pF in parallel with the inductor; bypass open | 56 | `50 - j11.11 ohms` | -12.5 degrees |
-| 500 pF in parallel with the inductor; bypass open | 18 | `50 + j26.46 ohms` | +27.9 degrees |
-| 300 pF in parallel with the inductor; bypass open | 20 | `50 + j18.24 ohms` | +20.0 degrees |
+| Dummy-load configuration                            | MX-5200 displayed power number | Calculated nominal load at 13.56 MHz | Calculated phase |
+| --------------------------------------------------- | -----------------------------: | -----------------------------------: | ---------------: |
+| Inductor bypass jumpers open; inductor in series    | 40                             | `50 + j12.44 ohms`                   | +14.0 degrees    |
+| Inductor bypass jumpers shorted                     | 50                             | `50 + j0 ohms`                       | 0.0 degrees      |
+| 2,000 pF in parallel with the inductor; bypass open | 56                             | `50 - j11.11 ohms`                   | -12.5 degrees    |
+| 500 pF in parallel with the inductor; bypass open   | 18                             | `50 + j26.46 ohms`                   | +27.9 degrees    |
+| 300 pF in parallel with the inductor; bypass open   | 20                             | `50 + j18.24 ohms`                   | +20.0 degrees    |
 
 For comparison, the measured STTC-147 tip impedances in the Iron Tip Model section above represent these phases:
 

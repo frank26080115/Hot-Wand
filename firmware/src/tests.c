@@ -52,6 +52,52 @@
 #define TEST_BATTERY_GUESS_MAXIMUM_MILLIVOLTS 36000
 #define TEST_BATTERY_GUESS_STEP_MILLIVOLTS    250
 
+/* CT diagnostic settings; override these with build definitions.
+ * 1: hold attenuation low as GPIO (no PWM), with no starting-voltage window.
+ * 0: use fixed CCR1 attenuation and the starting-voltage window below.
+ * This option affects only test_ct_reaction(); RF interlocks remain active. */
+#ifndef TEST_CT_UNATTENUATED
+#define TEST_CT_UNATTENUATED 1
+#endif
+#ifndef TEST_CT_BURST_DURATION_US
+#define TEST_CT_BURST_DURATION_US 5000UL
+#endif
+#ifndef TEST_CT_ATTENUATION_CCR
+#define TEST_CT_ATTENUATION_CCR 14U
+#endif
+#ifndef TEST_CT_MINIMUM_MILLIVOLTS
+#define TEST_CT_MINIMUM_MILLIVOLTS 14000U
+#endif
+#ifndef TEST_CT_MAXIMUM_MILLIVOLTS
+#define TEST_CT_MAXIMUM_MILLIVOLTS 16000U
+#endif
+#ifndef TEST_CT_COOLDOWN_MS
+#define TEST_CT_COOLDOWN_MS 5000UL
+#endif
+
+/* TIM16 is private to this diagnostic; do not initialize fan PWM here. With
+ * the 27.12 MHz HSE, dividing by 27 gives approximately one tick per us. */
+#define TEST_CT_TIMER_DIVIDER 27UL
+#define TEST_CT_TIMER_TICKS                                                                                             \
+    (((1ULL * HSE_VALUE * TEST_CT_BURST_DURATION_US) + (TEST_CT_TIMER_DIVIDER * 1000000ULL) - 1) /                         \
+     (TEST_CT_TIMER_DIVIDER * 1000000ULL))
+
+_Static_assert((TEST_CT_BURST_DURATION_US > 0) && (TEST_CT_BURST_DURATION_US <= 65000UL),
+               "CT burst duration must be between 1 and 65000 us");
+_Static_assert((TEST_CT_TIMER_TICKS >= 1) && (TEST_CT_TIMER_TICKS <= 65536UL),
+               "CT burst duration does not fit TIM16");
+_Static_assert((TEST_CT_UNATTENUATED == 0) || (TEST_CT_UNATTENUATED == 1),
+               "TEST_CT_UNATTENUATED must be 0 or 1");
+#if !TEST_CT_UNATTENUATED
+_Static_assert(TEST_CT_ATTENUATION_CCR <= 32U, "CT attenuation CCR must be between 0 and 32");
+_Static_assert((TEST_CT_MINIMUM_MILLIVOLTS > 0) &&
+                   (TEST_CT_MINIMUM_MILLIVOLTS <= TEST_CT_MAXIMUM_MILLIVOLTS) &&
+                   (TEST_CT_MAXIMUM_MILLIVOLTS <= UINT16_MAX),
+               "CT starting voltage range is invalid");
+#endif
+_Static_assert((TEST_CT_COOLDOWN_MS > 0) && (TEST_CT_COOLDOWN_MS < 0x80000000UL),
+               "CT cooldown must be positive and less than half the tick range");
+
 #if (TEST_RFGEN_BYPASS_TIP_DETECTOR != 0) && (TEST_RFGEN_BYPASS_TIP_DETECTOR != 1)
 #error "TEST_RFGEN_BYPASS_TIP_DETECTOR must be 0 or 1"
 #endif
@@ -69,6 +115,23 @@ typedef struct
     uint8_t  duty_percent;
     uint16_t output_millivolts;
 } test_pwrlvl_sweep_row_t;
+
+typedef enum
+{
+    TEST_CT_WAIT = 0,
+    TEST_CT_READY,
+    TEST_CT_RUNNING,
+    TEST_CT_COOLDOWN,
+} test_ct_state_t;
+
+typedef struct
+{
+    uint32_t count;
+    uint16_t start_millivolts;
+    uint16_t end_millivolts;
+    bool     valid;
+    bool     aborted;
+} test_ct_result_t;
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -92,6 +155,9 @@ static void test_fan_pin_init(void);
 #endif
 static void      test_report_tip_state(bool triggered);
 static bool      test_rfgen_try_start(void);
+static bool      test_ct_voltage_allows_start(uint16_t millivolts);
+static void      test_ct_draw_voltage(u8g2_t* graphics, uint8_t baseline, uint16_t millivolts);
+static void      test_ct_render(u8g2_t* graphics, test_ct_state_t state, const test_ct_result_t* result);
 static void      test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* settings);
 static bool      test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right);
 static uintptr_t test_nvm_page_start(void);
@@ -140,6 +206,7 @@ void test_run(void)
     // test_bringup_watchdog_simple();
     // test_rfgen();
     // test_rfgen_burst();
+    // test_ct_reaction();
     // test_watchdog_rf_reset();
     // test_nvm_simple();
     // test_nvm_full_page();
@@ -1044,6 +1111,181 @@ void test_rfgen_burst(void)
     }
 }
 
+void test_ct_reaction(void)
+{
+    test_ct_state_t  state  = TEST_CT_WAIT;
+    test_ct_result_t result = {0};
+    uint32_t        cooldown_started_ms = 0;
+    uint32_t        last_refresh_ms;
+    u8g2_t*         graphics;
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    UART_SetAllowed(false);
+    btn_init();
+    btn_set_short_press_mode(BTN_SHORT_PRESS_ON_PRESS);
+    btn_has_short_press(true);
+    btn_has_long_press(true);
+    tipdetect_init();
+    adc_init();
+#if TEST_CT_UNATTENUATED
+    /* A static low leaves the attenuation diode undriven and gives the pot
+     * and analog CT feedback sole control of the buck. Do not start TIM3. */
+    {
+        GPIO_InitTypeDef gpio_cfg = {0};
+
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+        HAL_GPIO_WritePin(PWR_ATTENU_GPIOx, PWR_ATTENU_PINn, GPIO_PIN_RESET);
+        gpio_cfg.Pin   = PWR_ATTENU_PINn;
+        gpio_cfg.Mode  = GPIO_MODE_OUTPUT_PP;
+        gpio_cfg.Pull  = GPIO_NOPULL;
+        gpio_cfg.Speed = GPIO_SPEED_FREQ_HIGH;
+        HAL_GPIO_Init(PWR_ATTENU_GPIOx, &gpio_cfg);
+    }
+#else
+    pwrlvl_init();
+    TIM3->CCR1 = TEST_CT_ATTENUATION_CCR;
+#endif
+
+    __HAL_RCC_TIM16_CLK_ENABLE();
+    __HAL_RCC_TIM16_FORCE_RESET();
+    __HAL_RCC_TIM16_RELEASE_RESET();
+    __HAL_DBGMCU_UNFREEZE_TIM16();
+    TIM16->CR1  = TIM_CR1_OPM;
+    TIM16->PSC  = TEST_CT_TIMER_DIVIDER - 1;
+    TIM16->ARR  = (uint32_t)TEST_CT_TIMER_TICKS - 1;
+    TIM16->DIER = 0; /* Poll UIF; ADC and tip detection retain their IRQs. */
+    TIM16->EGR  = TIM_EGR_UG;
+    TIM16->SR   = 0;
+
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    last_refresh_ms = systick_get_ms() - TEST_STATUS_INTERVAL_MS;
+
+    for (;;)
+    {
+        bool     pressed;
+        bool     eligible;
+        uint32_t now;
+
+        btn_task();
+        pressed = btn_has_short_press(true);
+        btn_has_long_press(true);
+
+        if (state == TEST_CT_RUNNING)
+        {
+            bool interrupted = !rfgen_is_active() || rfgen_has_fault();
+
+            if (interrupted || ((TIM16->SR & TIM_SR_UIF) != 0))
+            {
+                /* Read the existing filtered round-robin result while RF is
+                 * still on, then stop before doing any bookkeeping or I2C. */
+                result.end_millivolts = adc_to_millivolts(BUCK_SENS_IDX);
+                rfgen_stop();
+                cooldown_started_ms = systick_get_ms();
+                TIM16->CR1 &= ~TIM_CR1_CEN;
+                result.aborted = interrupted || tipdetect_has_triggered() || rfgen_has_fault();
+                result.valid   = true;
+                state          = TEST_CT_COOLDOWN;
+                last_refresh_ms = cooldown_started_ms - TEST_STATUS_INTERVAL_MS;
+            }
+
+            /* Never run the display, fault-reporting task, or HAL_Delay in
+             * the active interval. A press in this state is discarded. */
+            watchdog_feed();
+            continue;
+        }
+
+        tipdetect_task();
+        /* Only the detector can clear a disconnect latch, and only after a
+         * connected input has completed qualification. RF is off here. */
+        tipdetect_reset();
+        now = systick_get_ms();
+        if ((state != TEST_CT_COOLDOWN) || ((uint32_t)(now - cooldown_started_ms) > TEST_CT_COOLDOWN_MS))
+        {
+            /* This diagnostic permits another deliberate run after a power
+             * dip. Only rearm with RF off, recovered DC input, and the full
+             * cooldown complete; retain the previous pair and ABORT marker. */
+            adc_rearm_power_loss_for_test();
+        }
+        eligible = test_ct_voltage_allows_start(adc_to_millivolts(BUCK_SENS_IDX)) &&
+                   rfgen_tip_allows_start() && !rfgen_has_fault();
+
+        if (state == TEST_CT_COOLDOWN)
+        {
+            /* Consume even a press on the transition out of cooldown. Using
+             * > also guarantees five full seconds despite 1 ms tick rounding. */
+            pressed = false;
+            if ((uint32_t)(now - cooldown_started_ms) > TEST_CT_COOLDOWN_MS)
+            {
+                state = eligible ? TEST_CT_READY : TEST_CT_WAIT;
+            }
+        }
+        else
+        {
+            state = eligible ? TEST_CT_READY : TEST_CT_WAIT;
+        }
+
+        if ((state == TEST_CT_READY) && pressed)
+        {
+            uint16_t start_millivolts;
+
+            TIM16->CR1 = TIM_CR1_OPM;
+            TIM16->CNT = 0;
+            TIM16->SR  = 0;
+            /* Snapshot at the start boundary; the voltage window applies only
+             * in attenuated mode. rfgen_start() independently rechecks the tip
+             * and fault interlocks. Never use test_rfgen_try_start(), which
+             * may bypass the tip detector. */
+            start_millivolts = adc_to_millivolts(BUCK_SENS_IDX);
+            if (test_ct_voltage_allows_start(start_millivolts))
+            {
+                rfgen_start();
+                TIM16->CR1 |= TIM_CR1_CEN;
+                if (rfgen_is_active())
+                {
+                    result.start_millivolts = start_millivolts;
+                    ++result.count;
+                    state = TEST_CT_RUNNING;
+                    continue;
+                }
+                TIM16->CR1 &= ~TIM_CR1_CEN;
+            }
+            state = TEST_CT_WAIT;
+        }
+
+        if ((uint32_t)(now - last_refresh_ms) >= TEST_STATUS_INTERVAL_MS)
+        {
+            last_refresh_ms = now;
+            test_ct_render(graphics, state, &result);
+        }
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
 void test_watchdog_rf_reset(void)
 {
 #if TEST_WATCHDOG_ENABLED
@@ -1348,6 +1590,99 @@ static void test_report_tip_state(bool triggered)
     u8g2_ClearBuffer(graphics);
     u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "TIP");
     u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, triggered ? "FAULT" : "OK");
+    OLED_SendBuffer(&oled);
+}
+
+static bool test_ct_voltage_allows_start(uint16_t millivolts)
+{
+#if TEST_CT_UNATTENUATED
+    (void)millivolts;
+    return true;
+#else
+    return (millivolts >= TEST_CT_MINIMUM_MILLIVOLTS) && (millivolts <= TEST_CT_MAXIMUM_MILLIVOLTS);
+#endif
+}
+
+static void test_ct_draw_voltage(u8g2_t* graphics, uint8_t baseline, uint16_t millivolts)
+{
+    char   voltage[10];
+    size_t length;
+
+    millivolts_to_str(millivolts, voltage, 2, &length);
+    voltage[length]     = 'V';
+    voltage[length + 1] = '\0';
+    u8g2_DrawStr(graphics, 1, baseline, voltage);
+}
+
+static void test_ct_render(u8g2_t* graphics, test_ct_state_t state, const test_ct_result_t* result)
+{
+    const char* status = state == TEST_CT_COOLDOWN ? "COOL" : (state == TEST_CT_READY ? "READY" : "WAIT");
+
+    u8g2_ClearBuffer(graphics);
+    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+    u8g2_DrawStr(graphics, 1, 9, "DC IN");
+    test_ct_draw_voltage(graphics, 19, adc_to_millivolts(DC_SENS_IDX));
+    u8g2_DrawStr(graphics, 1, 29, "BUCK");
+    test_ct_draw_voltage(graphics, 39, adc_to_millivolts(BUCK_SENS_IDX));
+    if (tipdetect_has_triggered() || (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_RESET))
+    {
+        u8g2_DrawStr(graphics, 1, 49, "OPEN");
+    }
+    u8g2_DrawHLine(graphics, 0, 63, 32);
+
+    if (result->valid)
+    {
+        char     digits[11];
+        char     first_line[8] = "# ";
+        char*    number        = &digits[10];
+        uint32_t count         = result->count;
+        size_t   length;
+        size_t   first_length;
+        size_t   idx;
+        uint8_t  result_baseline;
+
+        /* Unsigned decimal conversion also handles counts above INT_MAX.
+         * Split after the high digits, keeping the last five on line two. */
+        *number = '\0';
+        do
+        {
+            *--number = (char)('0' + (count % 10));
+            count /= 10;
+        } while (count != 0);
+        length       = (size_t)(&digits[10] - number);
+        first_length = length > 5 ? length - 5 : length;
+        for (idx = 0; idx < first_length; ++idx)
+        {
+            first_line[idx + 2] = number[idx];
+        }
+        first_line[first_length + 2] = '\0';
+
+        /* Leave one blank row after the counter, using it for ABORT when
+         * needed. A wrapped counter shifts the voltage pair down one row.
+         * Seven characters fit within 32 pixels with this font. */
+        result_baseline = length > 5 ? 95 : 87;
+        u8g2_SetFont(graphics, u8g2_font_4x6_tr);
+        u8g2_DrawStr(graphics, 1, 71, first_line);
+        if (length > 5)
+        {
+            u8g2_DrawStr(graphics, 1, 79, number + first_length);
+        }
+        if (result->aborted)
+        {
+            u8g2_DrawStr(graphics, 1, result_baseline - 8, "ABORT");
+        }
+        /* Same larger font as the live voltages: before RF above, after RF
+         * below. Omitting labels leaves room for both values and the status. */
+        u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+        test_ct_draw_voltage(graphics, result_baseline, result->start_millivolts);
+        test_ct_draw_voltage(graphics, result_baseline + 12, result->end_millivolts);
+        u8g2_SetFont(graphics, u8g2_font_4x6_tr);
+        u8g2_DrawStr(graphics, 1, 127, status);
+    }
+    else
+    {
+        u8g2_DrawStr(graphics, 1, 79, status);
+    }
     OLED_SendBuffer(&oled);
 }
 
