@@ -44,7 +44,9 @@ The first 12 cycles represents a ramp so it's considered 80% average power inste
 
 When a blank time starts, the voltages and currents don't just start decaying, noooo, it's not bouncing back and forth at 470 kHz either (if it did, then restarting the amp would be cleaner), it's chaotic. Without a carrier, it doesn't go into the iron tip, but without the MOSFET being on, it doesn't dissipate into ground. No amount of tuning can get this perfect. It does still slowly chill out, so the algorithm is written to enforce a minimum length for any blank periods so that any restart is unlikely to cause some catastrophic spike. The average power calculations are always done with this in consideration.
 
-The major concern is power back-flowing into the USB host. When I added the 470 uF capacitor into the simulation model, this stops being a problem. Napkin math says the capacitor voltage will rise maybe only `0.04V` from the left over energy. It's not THAT much energy in context.
+The next concern is power back-flowing into the USB host. When I added the 470 uF capacitor into the simulation model, this stops being a problem. Napkin math says the capacitor voltage will rise maybe only `0.04V` from the left over energy. It's not THAT much energy in context.
+
+During final testing, I found that using 28V causes current draw greater than 5A and is likely to trip the USB-C brick's current limit. There's no good way around this, so I simply timed when the large draw occurs, and made the firmware ramp up the power slowly over a period of time that's just slightly longer than when the spike would've occurred. This is a dirty hack but seems to work, keeping the current below 5A during initial cold-to-hot heatup , and this only applies to cases when more than 27V of input voltage is detected.
 
 ## Upgrading the MOSFET
 
