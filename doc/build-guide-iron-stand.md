@@ -19,7 +19,7 @@ The pieces are named:
 
 The files are all [here in this directory](../mechanical/stand)
 
-There are two versions: 16mm for handpieces with a 16mm diameter flange (Metcal, Radio Thermal). 18mm for handpieces with a 18mm diameter flange (Thermaltronics). Only one piece, the handle-rest, has this variation.
+There are two versions: 16mm for handpieces with a 16mm diameter flange (Metcal MX-H1-AV, Hakko FX1001, Radio Thermal 3D printed). 18mm for handpieces with a 18mm diameter flange (Thermaltronics SHP, Metcal MX-RM3E). Only one piece, the handle-rest, has this variation.
 
 It can house cylindrical magnets that are 1/2" in diameter and 1/4" thick, magnetized axially. (KJ Magnetics D84, D84AH, D84B-N52, etc)
 

@@ -20,7 +20,8 @@ set "STAND_URL=https://cad.onshape.com/documents/cfeb2fa9b83109508c6ff5e8/w/69b4
 set "MAIN_STEP=%TEMP_DIR%\main.step"
 set "ECONO_STEP=%TEMP_DIR%\econo.step"
 set "LITE_STEP=%TEMP_DIR%\lite.step"
-set "STAND_STEP=%TEMP_DIR%\stand.step"
+set "STAND_16MM_STEP=%TEMP_DIR%\stand-16mm.step"
+set "STAND_18MM_STEP=%TEMP_DIR%\stand-18mm.step"
 
 set "SKIP_DOWNLOAD=0"
 if /I "%~1"=="--skip-download" (
@@ -96,22 +97,31 @@ call :export_body "%LITE_STEP%" "3DP-Box-Bottom" "mechanical\lite\bottom-lid.ste
 if errorlevel 1 goto :failure_popd
 
 rem ---------------------------------------------------------------------------
-rem Stand Part Studio
+rem Stand (16mm) Part Studio
 rem ---------------------------------------------------------------------------
-call :download_if_needed "%STAND_URL%" "%STAND_STEP%"
+call :download_if_needed "%STAND_URL%" "%STAND_16MM_STEP%" "16mm"
 if errorlevel 1 goto :failure_popd
 
-call :export_body "%STAND_STEP%" "Strike-Plate" "mechanical\stand\strike-plate.step"
+call :export_body "%STAND_16MM_STEP%" "Strike-Plate" "mechanical\stand\strike-plate.step"
 if errorlevel 1 goto :failure_popd
 call :extract_largest_face "mechanical\stand\strike-plate.step" "mechanical\stand\strike-plate.dxf"
 if errorlevel 1 goto :failure_popd
-call :export_body "%STAND_STEP%" "Handle-Rest" "mechanical\stand\handle-rest.step"
+call :export_body "%STAND_16MM_STEP%" "Handle-Rest" "mechanical\stand\handle-rest-16mm.step"
 if errorlevel 1 goto :failure_popd
-call :export_body "%STAND_STEP%" "Tip-Shroud" "mechanical\stand\tip-shroud.step"
+call :export_body "%STAND_16MM_STEP%" "Tip-Shroud" "mechanical\stand\tip-shroud.step"
 if errorlevel 1 goto :failure_popd
-call :export_body "%STAND_STEP%" "Foot-Right" "mechanical\stand\foot-right.step"
+call :export_body "%STAND_16MM_STEP%" "Foot-Right" "mechanical\stand\foot-right.step"
 if errorlevel 1 goto :failure_popd
-call :export_body "%STAND_STEP%" "Foot-Left" "mechanical\stand\foot-left.step"
+call :export_body "%STAND_16MM_STEP%" "Foot-Left" "mechanical\stand\foot-left.step"
+if errorlevel 1 goto :failure_popd
+
+rem ---------------------------------------------------------------------------
+rem Stand (18mm) Part Studio
+rem ---------------------------------------------------------------------------
+call :download_if_needed "%STAND_URL%" "%STAND_18MM_STEP%" "18mm"
+if errorlevel 1 goto :failure_popd
+
+call :export_body "%STAND_18MM_STEP%" "Handle-Rest" "mechanical\stand\handle-rest-18mm.step"
 if errorlevel 1 goto :failure_popd
 
 echo.
@@ -127,10 +137,17 @@ exit /b 0
 :download
 echo.
 echo Downloading %~1
+if not "%~3"=="" (
+    echo Configuration: %~3
+    "%PYTHON_EXE%" "%ONSHAPE_EXPORTER%" "%~1" "%~2" --configuration "%~3"
+    exit /b
+)
 "%PYTHON_EXE%" "%ONSHAPE_EXPORTER%" "%~1" "%~2"
 exit /b %errorlevel%
 
 :download_if_needed
+rem Arguments: URL OUTPUT_STEP [CONFIGURATION_NAME]
+rem Each configuration must have its own cached OUTPUT_STEP for --skip-download.
 if "%SKIP_DOWNLOAD%"=="1" (
     if not exist "%~2" (
         echo ERROR: Cannot skip download because "%~2" does not exist.
@@ -140,7 +157,7 @@ if "%SKIP_DOWNLOAD%"=="1" (
     echo Using existing download "%~2"
     exit /b 0
 )
-call :download "%~1" "%~2"
+call :download "%~1" "%~2" "%~3"
 exit /b %errorlevel%
 
 :export_body

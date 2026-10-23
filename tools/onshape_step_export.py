@@ -4,6 +4,7 @@
 The public entry point is :func:`download_onshape_step`, which can be imported
 by other Python code.  When run as a script, pass an Onshape workspace element
 URL and, optionally, an output file or existing output directory.
+Use ``--configuration NAME`` to select an option from a single configuration list.
 """
 
 from __future__ import annotations
@@ -181,6 +182,67 @@ def _find_element(elements: Any, element_id: str) -> dict[str, Any]:
     )
 
 
+def _resolve_configuration(
+    session: requests.Session,
+    api_base: str,
+    document_id: str,
+    workspace_id: str,
+    element_id: str,
+    option_name: str,
+    *,
+    request_timeout: float,
+) -> str:
+    """Resolve a displayed option name using Onshape's configuration APIs."""
+    response = _request(
+        session,
+        "GET",
+        f"{api_base}/elements/d/{document_id}/w/{workspace_id}/e/{element_id}/configuration",
+        request_timeout=request_timeout,
+        headers={"Accept": "application/json;charset=UTF-8"},
+    )
+    configuration = _json_object(response, "reading configuration options")
+    parameters = configuration.get("configurationParameters")
+    if (
+        not isinstance(parameters, list)
+        or len(parameters) != 1
+        or not isinstance(parameters[0], dict)
+        or parameters[0].get("btType") != "BTMConfigurationParameterEnum-105"
+    ):
+        raise OnshapeExportError(
+            "Selecting a configuration by name requires exactly one list input"
+        )
+
+    parameter = parameters[0]
+    options = parameter.get("options", [])
+    matches = [option for option in options if option.get("optionName") == option_name]
+    if len(matches) != 1:
+        available = ", ".join(repr(option.get("optionName")) for option in options)
+        raise OnshapeExportError(
+            f"Configuration option {option_name!r} must match exactly one option. "
+            f"Available options: {available or '(none)'}"
+        )
+
+    # Display names and internal option IDs can differ, even after a rename.
+    response = _request(
+        session,
+        "POST",
+        f"{api_base}/elements/d/{document_id}/e/{element_id}/configurationencodings",
+        request_timeout=request_timeout,
+        headers={"Accept": "application/json;charset=UTF-8"},
+        json={
+            "parameters": [{
+                "parameterId": parameter["parameterId"],
+                "parameterValue": matches[0]["option"],
+            }],
+        },
+    )
+    encoding = _json_object(response, "encoding the selected configuration")
+    encoded_id = encoding.get("encodedId")
+    if not isinstance(encoded_id, str) or not encoded_id:
+        raise OnshapeExportError("Onshape did not return an encoded configuration ID")
+    return encoded_id
+
+
 def _wait_for_translation(
     session: requests.Session,
     api_base: str,
@@ -311,6 +373,7 @@ def download_onshape_step(
     document_url: str,
     save_location: os.PathLike[str] | str | None = None,
     *,
+    configuration: str | None = None,
     access_key: str | None = None,
     secret_key: str | None = None,
     export_timeout: float = DEFAULT_EXPORT_TIMEOUT,
@@ -324,6 +387,10 @@ def download_onshape_step(
     If ``save_location`` is omitted, the element name is used in the current
     directory.  An existing directory receives that generated filename;
     anything else is treated as the exact destination file path.
+
+    ``configuration`` selects an exact displayed option name (e.g. ``18mm``).
+    This requires exactly one list configuration input; more complex sets of
+    inputs are rejected rather than guessing. Omit it to export the default.
 
     Credentials default to ``ONSHAPE_API_ACCESS_KEY`` and
     ``ONSHAPE_API_SECRET_KEY``.  Explicit credentials are supported primarily
@@ -385,20 +452,32 @@ def download_onshape_step(
         default_filename = _safe_step_filename(str(element.get("name") or ""), eid)
         output_path = _resolve_output_path(save_location, default_filename).resolve()
 
+        export_endpoint = "export/step"
+        export_parameters: dict[str, Any] = {
+            "grouping": True,
+            "notifyUser": False,
+            "storeInDocument": False,
+        }
+        if configuration is not None:
+            # The dedicated export/step endpoint has no configuration field.
+            # The general translations endpoint supports configured STEP exports.
+            export_endpoint = "translations"
+            export_parameters["formatName"] = "STEP"
+            export_parameters["configuration"] = _resolve_configuration(
+                api_session, api_base, did, wid, eid, configuration,
+                request_timeout=request_timeout,
+            )
+
         export_response = _request(
             api_session,
             "POST",
-            f"{api_base}/{endpoint_prefix}/d/{did}/w/{wid}/e/{eid}/export/step",
+            f"{api_base}/{endpoint_prefix}/d/{did}/w/{wid}/e/{eid}/{export_endpoint}",
             request_timeout=request_timeout,
             headers={
                 "Accept": "application/json;charset=UTF-8",
                 "Content-Type": "application/json;charset=UTF-8",
             },
-            json={
-                "grouping": True,
-                "notifyUser": False,
-                "storeInDocument": False,
-            },
+            json=export_parameters,
         )
         initial_status = _json_object(export_response, "starting STEP translation")
         final_status = _wait_for_translation(
@@ -431,6 +510,11 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         help="Onshape URL: https://cad.onshape.com/documents/{did}/w/{wid}/e/{eid}",
     )
     parser.add_argument(
+        "--configuration",
+        metavar="NAME",
+        help="exact displayed option name from a single configuration list (e.g. 18mm)",
+    )
+    parser.add_argument(
         "save_location",
         nargs="?",
         help=(
@@ -444,7 +528,9 @@ def _build_argument_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_argument_parser().parse_args(argv)
     try:
-        output_path = download_onshape_step(args.url, args.save_location)
+        output_path = download_onshape_step(
+            args.url, args.save_location, configuration=args.configuration
+        )
     except (OnshapeExportError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
