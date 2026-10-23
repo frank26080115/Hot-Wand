@@ -10,6 +10,7 @@ confirmed to be removed, and it latches the fault until the user resets it.
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "tipdetect.h"
 
 #include "fault.h"
@@ -51,6 +52,14 @@ static volatile bool     tipdetect_triggered = true;
 static volatile uint32_t tipdetect_edge_count;
 static uint32_t          tipdetect_edge_decay_ms;
 
+#if TIP_SWD_TEST_HARNESS
+/* Keep aligned command/status words visible to SWD even in the LTO image. */
+volatile uint32_t tip_swd_test_command __attribute__((used, externally_visible)) = TIP_SWD_NO_COMMAND;
+volatile uint32_t tip_swd_test_state __attribute__((used, externally_visible))   = TIP_SWD_NOT_READY;
+volatile uint32_t tip_swd_test_completed __attribute__((used, externally_visible));
+static bool     tip_swd_virtual_present = true;
+#endif
+
 _Static_assert((HSE_VALUE % 10000) == 0, "HSE frequency must be an exact multiple of 10 kHz");
 _Static_assert((TIPDETECT_TIMER_DIVIDER >= 1) && (TIPDETECT_TIMER_DIVIDER <= TIPDETECT_COUNTS_PER_PERIOD),
                "tip-detect timer prescaler is out of range");
@@ -63,6 +72,9 @@ _Static_assert((TIPDETECT_TIMER_TICKS >= 1) && (TIPDETECT_TIMER_TICKS <= TIPDETE
 
 static void tipdetect_arm_timer(void);
 static void tipdetect_fail_closed(void);
+#if TIP_SWD_TEST_HARNESS
+static void tipdetect_swd_task(void);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -91,13 +103,13 @@ void tipdetect_init(void)
     tipdetect_timer.Init.RepetitionCounter = 0;
     tipdetect_timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
-    if (HAL_TIM_Base_Init(&tipdetect_timer) != HAL_OK)
+    if (fault_test_inject(FT_TIP_BASE) || HAL_TIM_Base_Init(&tipdetect_timer) != HAL_OK)
     {
         tipdetect_fail_closed();
         return;
     }
 
-    if (HAL_TIM_OnePulse_Init(&tipdetect_timer, TIM_OPMODE_SINGLE) != HAL_OK)
+    if (fault_test_inject(FT_TIP_PULSE) || HAL_TIM_OnePulse_Init(&tipdetect_timer, TIM_OPMODE_SINGLE) != HAL_OK)
     {
         tipdetect_fail_closed();
         return;
@@ -115,10 +127,26 @@ void tipdetect_init(void)
     gpio_cfg.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(TIP_DET_GPIOx, &gpio_cfg);
 
+#if TIP_SWD_TEST_HARNESS
+    /* Retain EXTI's interrupt route for software injection, but prevent real
+     * PA5 transitions from perturbing the selected virtual input. Other lines
+     * on the shared button/tip IRQ keep their normal configuration. */
+    CLEAR_BIT(EXTI->RTSR, TIP_DET_PINn);
+    CLEAR_BIT(EXTI->FTSR, TIP_DET_PINn);
+#if HOT_WAND_TEST_HARNESS
+    tip_swd_virtual_present = (fault_test.setup & (1 << 21)) == 0;
+#else
+    tip_swd_virtual_present = true;
+#endif
+    tip_swd_test_command    = TIP_SWD_NO_COMMAND;
+    tip_swd_test_state      = tip_swd_virtual_present ? TIP_SWD_PRESENT : TIP_SWD_ABSENT;
+    tip_swd_test_completed  = 0;
+#endif
+
     __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
     HAL_NVIC_ClearPendingIRQ(TIM14_IRQn);
 
-    tipdetect_tip_present   = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
+    tipdetect_tip_present   = tipdetect_is_present();
     tipdetect_triggered     = !tipdetect_tip_present;
     tipdetect_edge_count    = 0;
     tipdetect_edge_decay_ms = systick_get_ms();
@@ -145,6 +173,17 @@ void tipdetect_task(void)
     interrupt_state = __get_PRIMASK();
     __disable_irq();
 
+#if TIP_SWD_TEST_HARNESS
+    tipdetect_swd_task();
+#if HOT_WAND_TEST_HARNESS
+    if ((fault_test.reserved[0] != 0) && !tipdetect_is_qualifying())
+    {
+        --fault_test.reserved[0];
+        __HAL_GPIO_EXTI_GENERATE_SWIT(TIP_DET_PINn);
+    }
+#endif
+#endif
+
     edge_count = tipdetect_edge_count;
     if ((uint32_t)(now - tipdetect_edge_decay_ms) >= TIPDETECT_EDGE_DECAY_MS)
     {
@@ -166,31 +205,45 @@ void tipdetect_task(void)
     }
 }
 
-void tipdetect_reset(void)
-{
-    uint32_t interrupt_state;
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
 
-    if (!tipdetect_initialized)
+void TIM14_IRQHandler_Impl(void)
+{
+    bool tip_present;
+
+    if (((TIM14->SR & TIM_SR_UIF) == 0) || ((TIM14->DIER & TIM_DIER_UIE) == 0))
     {
         return;
     }
 
-    interrupt_state = __get_PRIMASK();
-    __disable_irq();
+    CLEAR_BIT(TIM14->DIER, TIM_DIER_UIE);
+    CLEAR_BIT(TIM14->CR1, TIM_CR1_CEN);
+    CLEAR_BIT(TIM14->SR, TIM_SR_UIF);
 
-    /* Never clear the latch while the last debounced state or the current
-     * electrical state says that the tip is absent, or while an edge is still
-     * being qualified by TIM14. */
-    if (!tipdetect_is_qualifying() && tipdetect_tip_present &&
-        (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET))
+    /* Discard edges accumulated during the debounce window, then sample. Any
+     * edge racing with or following the sample remains pending and starts
+     * another complete debounce interval when EXTI is unmasked. */
+    __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
+    tip_present           = tipdetect_is_present();
+    tipdetect_tip_present = tip_present;
+
+    if (!tip_present)
     {
-        tipdetect_triggered = false;
+        tipdetect_triggered = true;
+        rfgen_stop();
     }
 
-    if (interrupt_state == 0)
+    SET_BIT(EXTI->IMR, TIP_DET_PINn);
+
+#if TIP_SWD_TEST_HARNESS
+    if (tip_swd_test_state == TIP_SWD_QUALIFYING)
     {
-        __enable_irq();
+        tip_swd_test_state = tip_present ? TIP_SWD_PRESENT : TIP_SWD_ABSENT;
+        ++tip_swd_test_completed;
     }
+#endif
 }
 
 void EXTI4_15_IRQHandler_Impl(void)
@@ -229,57 +282,72 @@ void EXTI4_15_IRQHandler_Impl(void)
     }
 }
 
-void TIM14_IRQHandler_Impl(void)
+void tipdetect_reset(void)
 {
-    bool tip_present;
+    uint32_t interrupt_state;
 
-    if (((TIM14->SR & TIM_SR_UIF) == 0) || ((TIM14->DIER & TIM_DIER_UIE) == 0))
+    if (!tipdetect_initialized)
     {
         return;
     }
 
-    CLEAR_BIT(TIM14->DIER, TIM_DIER_UIE);
-    CLEAR_BIT(TIM14->CR1, TIM_CR1_CEN);
-    CLEAR_BIT(TIM14->SR, TIM_SR_UIF);
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
 
-    /* Discard edges accumulated during the debounce window, then sample. Any
-     * edge racing with or following the sample remains pending and starts
-     * another complete debounce interval when EXTI is unmasked. */
-    __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
-    tip_present           = (HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET);
-    tipdetect_tip_present = tip_present;
-
-    if (!tip_present)
+    /* Never clear the latch while the last debounced state or the current
+     * selected input says that the tip is absent, or while an edge is still
+     * being qualified by TIM14. */
+    if (!tipdetect_is_qualifying() && tipdetect_tip_present && tipdetect_is_present())
     {
-        tipdetect_triggered = true;
-        rfgen_stop();
+        tipdetect_triggered = false;
     }
 
-    SET_BIT(EXTI->IMR, TIP_DET_PINn);
-}
-
-// -----------------------------------------------------------------------------
-// Getters and Setters
-// -----------------------------------------------------------------------------
-
-bool tipdetect_has_triggered(void)
-{
-    return tipdetect_triggered;
-}
-
-bool tipdetect_is_qualifying(void)
-{
-    /*
-     * UIE is set together with CEN when an edge begins qualification. The ISR
-     * clears UIE before sampling, so it also covers the interval where the
-     * update is pending but its handler has not run yet.
-     */
-    return (TIM14->DIER & TIM_DIER_UIE) != 0;
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
 }
 
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
+
+#if TIP_SWD_TEST_HARNESS
+
+static void tipdetect_swd_task(void)
+{
+    uint32_t command;
+
+    /* The caller holds PRIMASK. Do not overwrite an in-flight request or
+     * restart its timer; a stalled qualification remains fail-closed. */
+    if (!tipdetect_initialized || (tip_swd_test_state == TIP_SWD_QUALIFYING) || tipdetect_is_qualifying())
+    {
+        return;
+    }
+    command = tip_swd_test_command;
+    if (command == TIP_SWD_NO_COMMAND)
+    {
+        return;
+    }
+    tip_swd_test_command = TIP_SWD_NO_COMMAND;
+    if (command > TIP_SWD_PRESENT)
+    {
+        return;
+    }
+    if (tip_swd_virtual_present == (command == TIP_SWD_PRESENT))
+    {
+        ++tip_swd_test_completed;
+        return;
+    }
+
+    tip_swd_virtual_present = command == TIP_SWD_PRESENT;
+    tip_swd_test_state      = TIP_SWD_QUALIFYING;
+    /* Exercise the existing shared interrupt, edge counter and one-shot
+     * timer, rather than setting the disconnect latch from the task. */
+    __HAL_GPIO_EXTI_GENERATE_SWIT(TIP_DET_PINn);
+}
+
+#endif
 
 static void tipdetect_arm_timer(void)
 {
@@ -295,11 +363,47 @@ static void tipdetect_arm_timer(void)
     SET_BIT(TIM14->CR1, TIM_CR1_CEN);
 }
 
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+bool tipdetect_is_present(void)
+{
+#if TIP_SWD_TEST_HARNESS
+    return tip_swd_virtual_present;
+#else
+    return HAL_GPIO_ReadPin(TIP_DET_GPIOx, TIP_DET_PINn) == GPIO_PIN_SET;
+#endif
+}
+
+bool tipdetect_is_qualifying(void)
+{
+    /*
+     * UIE is set together with CEN when an edge begins qualification. The ISR
+     * clears UIE before sampling, so it also covers the interval where the
+     * update is pending but its handler has not run yet.
+     */
+    return (TIM14->DIER & TIM_DIER_UIE) != 0;
+}
+
+bool tipdetect_has_triggered(void)
+{
+    return tipdetect_triggered;
+}
+
+// -----------------------------------------------------------------------------
+// Debug / Fault Helpers
+// -----------------------------------------------------------------------------
+
 static void tipdetect_fail_closed(void)
 {
     tipdetect_initialized = false;
     tipdetect_tip_present = false;
     tipdetect_triggered   = true;
+
+#if TIP_SWD_TEST_HARNESS
+    tip_swd_test_state = TIP_SWD_NOT_READY;
+#endif
 
     CLEAR_BIT(EXTI->IMR, TIP_DET_PINn);
     if (__HAL_RCC_TIM14_IS_CLK_ENABLED())

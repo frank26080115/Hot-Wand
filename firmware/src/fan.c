@@ -10,6 +10,7 @@
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "fan.h"
 
 #include "adc.h"
@@ -51,6 +52,14 @@ _Static_assert(FAN_ADAPTIVE_ROUNDED_DUTY(80, 75) == 81, "75 percent adaptive gai
 _Static_assert(FAN_ADAPTIVE_ROUNDED_DUTY(80, 100) == 100, "100 percent adaptive gain changed");
 _Static_assert(FAN_ADAPTIVE_ROUNDED_DUTY(80, 150) > 100, "150 percent adaptive gain must clamp");
 
+#endif
+
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
+#if FAN_PWM_ENABLED
+
 typedef enum
 {
     FAN_CONTROLLER_OFF = 0,
@@ -67,6 +76,13 @@ typedef struct
     bool             ramp_enabled;
 } fan_profile_t;
 
+#endif
+
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
+
+#if FAN_PWM_ENABLED
 /* The array index is the persistent FAN_MODE_* value. For fixed and binary
  * profiles, active_value is duty percent. For adaptive profiles, it is gain
  * percent. A zero activation temperature marks a non-automatic profile. */
@@ -92,10 +108,6 @@ static const fan_profile_t fan_profiles[FAN_MODE_LAST + 1] = {
 _Static_assert((sizeof(fan_profiles) / sizeof(fan_profiles[0])) == (FAN_MODE_LAST + 1),
                "Every fan mode must have a profile");
 #endif
-
-// -----------------------------------------------------------------------------
-// Globals
-// -----------------------------------------------------------------------------
 
 static bool     fan_enabled;
 static bool     fan_output_initialized;
@@ -151,25 +163,6 @@ static void fan_output_set(bool running);
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
-
-uint8_t fan_normalize_mode(uint8_t mode)
-{
-#if FAN_PWM_ENABLED
-    return mode <= FAN_MODE_LAST ? mode : FAN_MODE_AUTO_BINARY_100_COOL;
-#else
-    switch (mode)
-    {
-    case FAN_MODE_OFF:
-    case FAN_MODE_ON_100_RAMPED:
-    case FAN_MODE_AUTO_BINARY_100_COOL:
-    case FAN_MODE_AUTO_BINARY_100_QUIET:
-        return mode;
-
-    default:
-        return FAN_MODE_AUTO_BINARY_100_COOL;
-    }
-#endif
-}
 
 void fan_init(uint8_t mode, bool signal_inverted)
 {
@@ -321,6 +314,10 @@ void ntc_task(void)
 #endif
 }
 
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
+
 void fan_on_wake(void)
 {
 #if FAN_PWM_ENABLED
@@ -333,6 +330,9 @@ void fan_on_wake(void)
 
 void fan_stop(void)
 {
+#if HOT_WAND_TEST_HARNESS
+    fault_test.flags |= 4;
+#endif
     fan_enabled = false;
 
 #if FAN_PWM_ENABLED
@@ -346,6 +346,9 @@ void fan_stop(void)
 
 void fan_resume(void)
 {
+#if HOT_WAND_TEST_HARNESS
+    fault_test.flags &= ~4;
+#endif
     fan_reset_controller(systick_get_ms());
     fan_enabled = true;
 }
@@ -354,169 +357,7 @@ void fan_resume(void)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static uint16_t fan_maximum_temperature_c(void)
-{
-    uint16_t maximum_c = adc_to_celcius(THERM_1_IDX);
-    uint16_t candidate_c;
-
-    candidate_c = adc_to_celcius(THERM_2_IDX);
-    if (candidate_c > maximum_c)
-    {
-        maximum_c = candidate_c;
-    }
-
-    candidate_c = adc_to_celcius(MCU_TEMP_IDX);
-    if (candidate_c > maximum_c)
-    {
-        maximum_c = candidate_c;
-    }
-
-    return maximum_c;
-}
-
-static void fan_reset_controller(uint32_t now)
-{
 #if FAN_PWM_ENABLED
-    fan_automatic_active          = false;
-    fan_zero_reached              = true;
-    fan_startup_boost_active      = false;
-    fan_commanded_duty_percent    = 0;
-    fan_requested_duty_percent    = 0;
-    fan_adaptive_duty_percent     = FAN_MINIMUM_PWM_PERCENT;
-    fan_current_duty_millipercent = 0;
-    fan_last_task_ms              = now;
-    fan_automatic_active_since_ms = now;
-    fan_zero_reached_ms           = now;
-    fan_startup_boost_started_ms  = now;
-    fan_adaptive_updated_ms       = now;
-#else
-    fan_running            = false;
-    fan_last_transition_ms = now;
-#endif
-}
-
-static bool fan_finish_startup_hold(uint32_t now)
-{
-#if FAN_PWM_ENABLED
-    if (!fan_output_initialize())
-    {
-        return false;
-    }
-
-    /* The startup hold replaces, rather than adds to, the first automatic
-     * minimum-off dwell. Later off transitions still use the full dwell. */
-    fan_zero_reached    = true;
-    fan_zero_reached_ms = now - FAN_MINIMUM_OFF_TIME_MS;
-    fan_last_task_ms    = now;
-#else
-    if (!fan_output_initialized)
-    {
-        fan_pin_init();
-    }
-
-    fan_last_transition_ms = now - FAN_MINIMUM_OFF_TIME_MS;
-#endif
-
-    fan_startup_hold_pending = false;
-    return true;
-}
-
-#if FAN_PWM_ENABLED
-static uint8_t fan_automatic_target(const fan_profile_t* profile, uint16_t temperature_c, uint32_t now)
-{
-    uint16_t turn_off_temperature_c = profile->activation_temperature_c - FAN_TEMPERATURE_HYSTERESIS_C;
-    bool     activated_now          = false;
-
-    if (!fan_automatic_active)
-    {
-        bool minimum_off_complete =
-            !fan_zero_reached || ((uint32_t)(now - fan_zero_reached_ms) >= FAN_MINIMUM_OFF_TIME_MS);
-
-        if ((temperature_c >= profile->activation_temperature_c) && minimum_off_complete)
-        {
-            fan_automatic_active          = true;
-            fan_automatic_active_since_ms = now;
-            fan_zero_reached              = false;
-            activated_now                 = true;
-        }
-    }
-    else if ((temperature_c < turn_off_temperature_c) &&
-             ((uint32_t)(now - fan_automatic_active_since_ms) >= FAN_MINIMUM_ON_TIME_MS))
-    {
-        fan_automatic_active = false;
-    }
-
-    if (!fan_automatic_active)
-    {
-        return 0;
-    }
-
-    if (profile->controller == FAN_CONTROLLER_BINARY)
-    {
-        return profile->active_value;
-    }
-
-    if (activated_now || ((uint32_t)(now - fan_adaptive_updated_ms) >= FAN_ADAPTIVE_UPDATE_INTERVAL_MS))
-    {
-        fan_adaptive_duty_percent = fan_adaptive_duty(temperature_c, profile->active_value);
-        fan_adaptive_updated_ms   = now;
-    }
-
-    return fan_adaptive_duty_percent;
-}
-
-static uint8_t fan_adaptive_duty(uint16_t temperature_c, uint8_t gain_percent)
-{
-    uint32_t duty_percent;
-
-    if (temperature_c <= FAN_ADAPTIVE_ON_TEMPERATURE_C)
-    {
-        return FAN_MINIMUM_PWM_PERCENT;
-    }
-
-    duty_percent = FAN_ADAPTIVE_ROUNDED_DUTY((uint32_t)temperature_c, (uint32_t)gain_percent);
-
-    if (duty_percent > FAN_FULL_DUTY_PERCENT)
-    {
-        duty_percent = FAN_FULL_DUTY_PERCENT;
-    }
-
-    return (uint8_t)duty_percent;
-}
-
-static uint8_t fan_apply_startup_policy(const fan_profile_t* profile, uint8_t requested_duty_percent, uint32_t now)
-{
-    if (profile->ramp_enabled)
-    {
-        fan_startup_boost_active = false;
-        return requested_duty_percent;
-    }
-
-    if (requested_duty_percent == 0)
-    {
-        fan_startup_boost_active = false;
-        return 0;
-    }
-
-    /* A boost starts only from a truly stopped fan. Changing an adaptive
-     * target or reversing an unfinished ramp-down does not retrigger it. */
-    if ((fan_requested_duty_percent == 0) && (fan_current_duty_millipercent == 0))
-    {
-        fan_startup_boost_active     = true;
-        fan_startup_boost_started_ms = now;
-    }
-
-    if (fan_startup_boost_active)
-    {
-        if ((uint32_t)(now - fan_startup_boost_started_ms) < FAN_STARTUP_BOOST_TIME_MS)
-        {
-            return FAN_FULL_DUTY_PERCENT;
-        }
-        fan_startup_boost_active = false;
-    }
-
-    return requested_duty_percent;
-}
 
 static void fan_apply_ramp(const fan_profile_t* profile, uint8_t target_duty_percent, uint32_t now)
 {
@@ -569,6 +410,201 @@ static void fan_apply_ramp(const fan_profile_t* profile, uint8_t target_duty_per
     fan_output_set(output_percent);
 }
 
+static uint8_t fan_automatic_target(const fan_profile_t* profile, uint16_t temperature_c, uint32_t now)
+{
+    uint16_t turn_off_temperature_c = profile->activation_temperature_c - FAN_TEMPERATURE_HYSTERESIS_C;
+    bool     activated_now          = false;
+
+    if (!fan_automatic_active)
+    {
+        bool minimum_off_complete =
+            !fan_zero_reached || ((uint32_t)(now - fan_zero_reached_ms) >= FAN_MINIMUM_OFF_TIME_MS);
+
+        if ((temperature_c >= profile->activation_temperature_c) && minimum_off_complete)
+        {
+            fan_automatic_active          = true;
+            fan_automatic_active_since_ms = now;
+            fan_zero_reached              = false;
+            activated_now                 = true;
+        }
+    }
+    else if ((temperature_c < turn_off_temperature_c) &&
+             ((uint32_t)(now - fan_automatic_active_since_ms) >= FAN_MINIMUM_ON_TIME_MS))
+    {
+        fan_automatic_active = false;
+    }
+
+    if (!fan_automatic_active)
+    {
+        return 0;
+    }
+
+    if (profile->controller == FAN_CONTROLLER_BINARY)
+    {
+        return profile->active_value;
+    }
+
+    if (activated_now || ((uint32_t)(now - fan_adaptive_updated_ms) >= FAN_ADAPTIVE_UPDATE_INTERVAL_MS))
+    {
+        fan_adaptive_duty_percent = fan_adaptive_duty(temperature_c, profile->active_value);
+        fan_adaptive_updated_ms   = now;
+    }
+
+    return fan_adaptive_duty_percent;
+}
+
+static uint8_t fan_apply_startup_policy(const fan_profile_t* profile, uint8_t requested_duty_percent, uint32_t now)
+{
+    if (profile->ramp_enabled)
+    {
+        fan_startup_boost_active = false;
+        return requested_duty_percent;
+    }
+
+    if (requested_duty_percent == 0)
+    {
+        fan_startup_boost_active = false;
+        return 0;
+    }
+
+    /* A boost starts only from a truly stopped fan. Changing an adaptive
+     * target or reversing an unfinished ramp-down does not retrigger it. */
+    if ((fan_requested_duty_percent == 0) && (fan_current_duty_millipercent == 0))
+    {
+        fan_startup_boost_active     = true;
+        fan_startup_boost_started_ms = now;
+    }
+
+    if (fan_startup_boost_active)
+    {
+        if ((uint32_t)(now - fan_startup_boost_started_ms) < FAN_STARTUP_BOOST_TIME_MS)
+        {
+            return FAN_FULL_DUTY_PERCENT;
+        }
+        fan_startup_boost_active = false;
+    }
+
+    return requested_duty_percent;
+}
+
+#endif
+
+static bool fan_finish_startup_hold(uint32_t now)
+{
+#if FAN_PWM_ENABLED
+    if (!fan_output_initialize())
+    {
+        return false;
+    }
+
+    /* The startup hold replaces, rather than adds to, the first automatic
+     * minimum-off dwell. Later off transitions still use the full dwell. */
+    fan_zero_reached    = true;
+    fan_zero_reached_ms = now - FAN_MINIMUM_OFF_TIME_MS;
+    fan_last_task_ms    = now;
+#else
+    if (!fan_output_initialized)
+    {
+        fan_pin_init();
+    }
+
+    fan_last_transition_ms = now - FAN_MINIMUM_OFF_TIME_MS;
+#endif
+
+    fan_startup_hold_pending = false;
+    return true;
+}
+
+static void fan_reset_controller(uint32_t now)
+{
+#if FAN_PWM_ENABLED
+    fan_automatic_active          = false;
+    fan_zero_reached              = true;
+    fan_startup_boost_active      = false;
+    fan_commanded_duty_percent    = 0;
+    fan_requested_duty_percent    = 0;
+    fan_adaptive_duty_percent     = FAN_MINIMUM_PWM_PERCENT;
+    fan_current_duty_millipercent = 0;
+    fan_last_task_ms              = now;
+    fan_automatic_active_since_ms = now;
+    fan_zero_reached_ms           = now;
+    fan_startup_boost_started_ms  = now;
+    fan_adaptive_updated_ms       = now;
+#else
+    fan_running            = false;
+    fan_last_transition_ms = now;
+#endif
+}
+
+static uint16_t fan_maximum_temperature_c(void)
+{
+    uint16_t maximum_c = adc_to_celcius(THERM_1_IDX);
+    uint16_t candidate_c;
+
+    candidate_c = adc_to_celcius(THERM_2_IDX);
+    if (candidate_c > maximum_c)
+    {
+        maximum_c = candidate_c;
+    }
+
+    candidate_c = adc_to_celcius(MCU_TEMP_IDX);
+    if (candidate_c > maximum_c)
+    {
+        maximum_c = candidate_c;
+    }
+
+    return maximum_c;
+}
+
+#if FAN_PWM_ENABLED
+
+static bool fan_output_initialize(void)
+{
+    fanpwm_mode_t pwm_mode;
+
+    if (fan_output_initialized)
+    {
+        return true;
+    }
+
+    pwm_mode = fan_signal_inverted ? FANPWM_MODE_EXTERNAL_MOSFET : FANPWM_MODE_DIRECT;
+    if (!fanpwm_init(pwm_mode))
+    {
+        return false;
+    }
+
+    fan_output_initialized     = true;
+    fan_commanded_duty_percent = 0;
+    return true;
+}
+
+static uint8_t fan_adaptive_duty(uint16_t temperature_c, uint8_t gain_percent)
+{
+    uint32_t duty_percent;
+
+    if (temperature_c <= FAN_ADAPTIVE_ON_TEMPERATURE_C)
+    {
+        return FAN_MINIMUM_PWM_PERCENT;
+    }
+
+    duty_percent = FAN_ADAPTIVE_ROUNDED_DUTY((uint32_t)temperature_c, (uint32_t)gain_percent);
+
+    if (duty_percent > FAN_FULL_DUTY_PERCENT)
+    {
+        duty_percent = FAN_FULL_DUTY_PERCENT;
+    }
+
+    return (uint8_t)duty_percent;
+}
+
+#endif
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+#if FAN_PWM_ENABLED
+
 static void fan_output_set(uint8_t duty_percent)
 {
     if (duty_percent > FAN_FULL_DUTY_PERCENT)
@@ -591,26 +627,23 @@ static void fan_output_set(uint8_t duty_percent)
     }
 }
 
-static bool fan_output_initialize(void)
-{
-    fanpwm_mode_t pwm_mode;
-
-    if (fan_output_initialized)
-    {
-        return true;
-    }
-
-    pwm_mode = fan_signal_inverted ? FANPWM_MODE_EXTERNAL_MOSFET : FANPWM_MODE_DIRECT;
-    if (!fanpwm_init(pwm_mode))
-    {
-        return false;
-    }
-
-    fan_output_initialized     = true;
-    fan_commanded_duty_percent = 0;
-    return true;
-}
 #else
+
+static void fan_output_set(bool running)
+{
+    if (running && !fan_output_initialized)
+    {
+        fan_pin_init();
+    }
+
+    if (fan_output_initialized && (running != fan_running))
+    {
+        HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, running ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    }
+
+    fan_running = running;
+}
+
 static void fan_pin_init(void)
 {
     GPIO_InitTypeDef gpio_cfg = {0};
@@ -630,18 +663,23 @@ static void fan_pin_init(void)
     fan_output_initialized = true;
 }
 
-static void fan_output_set(bool running)
-{
-    if (running && !fan_output_initialized)
-    {
-        fan_pin_init();
-    }
-
-    if (fan_output_initialized && (running != fan_running))
-    {
-        HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, running ? GPIO_PIN_SET : GPIO_PIN_RESET);
-    }
-
-    fan_running = running;
-}
 #endif
+
+uint8_t fan_normalize_mode(uint8_t mode)
+{
+#if FAN_PWM_ENABLED
+    return mode <= FAN_MODE_LAST ? mode : FAN_MODE_AUTO_BINARY_100_COOL;
+#else
+    switch (mode)
+    {
+    case FAN_MODE_OFF:
+    case FAN_MODE_ON_100_RAMPED:
+    case FAN_MODE_AUTO_BINARY_100_COOL:
+    case FAN_MODE_AUTO_BINARY_100_QUIET:
+        return mode;
+
+    default:
+        return FAN_MODE_AUTO_BINARY_100_COOL;
+    }
+#endif
+}

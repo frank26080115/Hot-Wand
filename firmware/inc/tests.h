@@ -13,6 +13,7 @@ void test_bringup_pwrlvl_min(void);
 void test_pwrlvl_sweep(void);
 void test_bringup_oled(void);
 #if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+extern volatile uint32_t vision_test_fiducial_enabled;
 void vision_test_fiducial_gate(void);
 void test_bringup_oled_fiducial(void);
 #endif

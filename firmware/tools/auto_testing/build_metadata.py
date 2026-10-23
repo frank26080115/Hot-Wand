@@ -17,6 +17,9 @@ GDB_EXE = TOOLCHAIN_BIN / "arm-none-eabi-gdb.exe"
 OPENOCD_EXE = Path(r"C:\Users\frank\.platformio\packages\tool-openocd\bin\openocd.exe")
 OPENOCD_SCRIPTS = Path(r"C:\Users\frank\.platformio\packages\tool-openocd\openocd\scripts")
 GPHOTO2_EXE = Path(r"C:\msys64\ucrt64\bin\gphoto2.exe")
+# All automated test runners consume the same full-application artifact.
+TEST_ENVIRONMENT = "stm32f042_test"
+TEST_ELF = Path(__file__).resolve().parents[2] / ".pio" / "build" / TEST_ENVIRONMENT / "firmware.elf"
 FLASH_START = 0x08000000
 NVM_START = 0x08007C00
 NVM_END = 0x08008000
@@ -38,10 +41,11 @@ class MenuItem:
 class BuildMetadata:
     """Resolve target addresses and reject an ELF that could erase NVM."""
 
-    def __init__(self, elf: Path):
+    def __init__(self, elf: Path, *, required_symbols=None):
+        self.required_symbols = required_symbols
         self.elf = elf.resolve()
         if not self.elf.is_file():
-            raise RuntimeError(f"Build the stm32f042_setup_swd environment first: {self.elf}")
+            raise RuntimeError(f"Build the requested PlatformIO environment first: {self.elf}")
         self.sha256 = hashlib.sha256(self.elf.read_bytes()).hexdigest()
         self.symbols = self._read_symbols()
         self.load_ranges = self._read_load_ranges()
@@ -76,9 +80,14 @@ class BuildMetadata:
         return ranges
 
     def _validate(self) -> None:
-        for name in ("btn_swd_test_command_ms", "btn_swd_test_state", "btn_swd_test_completed",
-                     "vision_test_fiducial_press", "vision_test_oled_sent_generation",
-                     "vision_test_oled_sent_framebuffer", "setup_menu_items"):
+        required = self.required_symbols
+        if required is None:
+            required = ("btn_swd_test_command_ms", "btn_swd_test_state", "btn_swd_test_completed",
+                        "vision_test_fiducial_press", "vision_test_oled_sent_generation",
+                        "vision_test_oled_sent_framebuffer", "setup_menu_items", "setup_menu_item_count",
+                        "btn_swd_test_boot_hold", "vision_test_fiducial_enabled",
+                        "adc_sim", "adc_sim_decode_table", "tip_swd_test_command", "tip_swd_test_state")
+        for name in required:
             self.address(name)
         if not self.load_ranges or not any(FLASH_START <= start < NVM_START for _, start, _ in self.load_ranges):
             raise RuntimeError("ELF has no application flash load sections")
@@ -92,8 +101,12 @@ class BuildMetadata:
         return self.symbols[name].address
 
 
-def read_menu_items(target, table_address: int, count: int = 11) -> list[MenuItem]:
-    """Read 32-bit pointers and option counts from compiled setup_menu_items."""
+def read_menu_items(target, table_address: int, count: int | None = None) -> list[MenuItem]:
+    """Discover the compiled menu; test builds omit the ordinary splash page."""
+    if count is None:
+        count = target.read_u32(target.symbols["setup_menu_item_count"].address)
+    if not 2 <= count <= 32:
+        raise RuntimeError("Compiled menu item count is invalid")
     table = target.read_memory(table_address, count * 12)
     items = []
     for index in range(count):
@@ -107,7 +120,7 @@ def read_menu_items(target, table_address: int, count: int = 11) -> list[MenuIte
             raise RuntimeError(f"Compiled menu item {index} has inconsistent option count")
         items.append(MenuItem(title, tuple(choices)))
     if [item.title for item in items[-2:]] != ["SAVE\nAND\nEXIT", "EXIT\nNO\nSAVE"]:
-        raise RuntimeError("Compiled menu layout differs from the expected 11-item PWM build")
+        raise RuntimeError("Compiled menu action pages differ from the expected layout")
     return items
 
 

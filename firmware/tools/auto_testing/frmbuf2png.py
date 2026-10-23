@@ -107,7 +107,7 @@ def save_framebuffer_png(
         raise ValueError("Output path must end in .png")
 
     pixels = framebuffer_to_array(framebuffer, upright=upright)
-    image = Image.fromarray(pixels, mode="L")
+    image = Image.fromarray(pixels)
     if scale != 1:
         image = image.resize((image.width * scale, image.height * scale), Image.Resampling.NEAREST)
     path.parent.mkdir(parents=True, exist_ok=True)

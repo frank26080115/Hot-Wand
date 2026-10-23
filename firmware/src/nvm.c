@@ -7,6 +7,7 @@ This code module is responsible for loading and saving persistent user settings
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "nvm.h"
 
 #include "miscutils.h"
@@ -88,36 +89,6 @@ void nvm_init(void)
     nvm_initialized = true;
 }
 
-void nvm_apply_defaults(hotwand_setup_nvm_t* settings)
-{
-    if (settings == NULL)
-    {
-        return;
-    }
-
-    *settings                     = (hotwand_setup_nvm_t){0};
-    settings->startup_power_level = POWER_LEVEL_MAX;
-    settings->fan_mode            = FAN_MODE_AUTO_BINARY_100_COOL;
-    settings->auto_sleep          = AUTO_SLEEP_OFF;
-    settings->auto_dim            = AUTO_DIM_OFF;
-    settings->idle_detect_thresh  = IDLE_DETECT_THRESH_10W;
-    settings->batt_mode           = BATT_MODE_NONE;
-    settings->show_splash         = true;
-    settings->fan_sig_inv         = false;
-    settings->input_v_calib       = INPUT_VOLTAGE_CALIB_NONE;
-}
-
-bool nvm_read(hotwand_setup_nvm_t* settings)
-{
-    if (!nvm_initialized || !nvm_has_saved_settings || (settings == NULL))
-    {
-        return false;
-    }
-
-    *settings = nvm_saved_settings;
-    return true;
-}
-
 bool nvm_save(const hotwand_setup_nvm_t* settings)
 {
     hotwand_setup_nvm_t record;
@@ -136,6 +107,10 @@ bool nvm_save(const hotwand_setup_nvm_t* settings)
         return true;
     }
 
+    if (fault_test_inject(FT_NVM_SAVE))
+    {
+        return false; /* Fail before unlock/erase/program; user NVM is untouched. */
+    }
     if (nvm_erase_required || (nvm_next_slot >= nvm_slot_count()))
     {
         if (!nvm_erase_page())
@@ -165,6 +140,17 @@ bool nvm_save(const hotwand_setup_nvm_t* settings)
     return true;
 }
 
+bool nvm_read(hotwand_setup_nvm_t* settings)
+{
+    if (!nvm_initialized || !nvm_has_saved_settings || (settings == NULL))
+    {
+        return false;
+    }
+
+    *settings = nvm_saved_settings;
+    return true;
+}
+
 bool nvm_factory_reset(void)
 {
     /* Permit factory reset to be used independently of normal startup while
@@ -178,84 +164,136 @@ bool nvm_factory_reset(void)
     return nvm_erase_page();
 }
 
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
-
-static uintptr_t nvm_page_start(void)
+void nvm_apply_defaults(hotwand_setup_nvm_t* settings)
 {
-    return (uintptr_t)&__nvm_page_start__;
-}
-
-static uintptr_t nvm_page_end(void)
-{
-    return (uintptr_t)&__nvm_page_end__;
-}
-
-static uint16_t nvm_slot_count(void)
-{
-    return (uint16_t)(NVM_EXPECTED_PAGE_SIZE / NVM_SLOT_SIZE_BYTES);
-}
-
-static uintptr_t nvm_slot_address(uint16_t slot)
-{
-    return nvm_page_start() + ((uintptr_t)slot * NVM_SLOT_SIZE_BYTES);
-}
-
-static uint16_t nvm_read_halfword(uintptr_t address)
-{
-    return *(const volatile uint16_t*)address;
-}
-
-static void nvm_read_record(uint16_t slot, hotwand_setup_nvm_t* record)
-{
-    const volatile uint8_t* source      = (const volatile uint8_t*)nvm_slot_address(slot);
-    uint8_t*                destination = (uint8_t*)record;
-    uint16_t                index;
-
-    for (index = 0; index < NVM_SLOT_SIZE_BYTES; ++index)
+    if (settings == NULL)
     {
-        destination[index] = source[index];
+        return;
+    }
+
+    *settings                     = (hotwand_setup_nvm_t){0};
+    settings->startup_power_level = POWER_LEVEL_MAX;
+    settings->fan_mode            = FAN_MODE_AUTO_BINARY_100_COOL;
+    settings->auto_sleep          = AUTO_SLEEP_OFF;
+    settings->auto_dim            = AUTO_DIM_OFF;
+    settings->idle_detect_thresh  = IDLE_DETECT_THRESH_10W;
+    settings->batt_mode           = BATT_MODE_NONE;
+    settings->show_splash         = true;
+    settings->fan_sig_inv         = false;
+    settings->input_v_calib       = INPUT_VOLTAGE_CALIB_NONE;
+}
+
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
+
+static void nvm_scan_page(void)
+{
+    hotwand_setup_nvm_t record;
+    uint16_t            slot;
+    bool                found_erased_slot = false;
+
+    nvm_has_saved_settings = false;
+    nvm_erase_required     = false;
+    nvm_next_slot          = nvm_slot_count();
+
+    for (slot = 0; slot < nvm_slot_count(); ++slot)
+    {
+        if (nvm_slot_is_erased(slot))
+        {
+            if (!found_erased_slot)
+            {
+                nvm_next_slot     = slot;
+                found_erased_slot = true;
+            }
+            continue;
+        }
+
+        /* Data after a blank slot indicates an interrupted page erase. */
+        if (found_erased_slot)
+        {
+            nvm_erase_required = true;
+            continue;
+        }
+
+        nvm_read_record(slot, &record);
+        if (nvm_record_is_valid(&record))
+        {
+            nvm_saved_settings     = record;
+            nvm_has_saved_settings = true;
+        }
+    }
+
+    if (!found_erased_slot)
+    {
+        nvm_erase_required = true;
     }
 }
 
-static bool nvm_slot_is_erased(uint16_t slot)
+static bool nvm_program_record(uint16_t slot, const hotwand_setup_nvm_t* record)
 {
-    uintptr_t address = nvm_slot_address(slot);
-    uint16_t  offset;
+    const uint8_t*      bytes   = (const uint8_t*)record;
+    uintptr_t           address = nvm_slot_address(slot);
+    hotwand_setup_nvm_t verify;
+    HAL_StatusTypeDef   status;
+    uint16_t            halfword;
+    uint16_t            offset;
 
-    for (offset = 0; offset < NVM_SLOT_SIZE_BYTES; offset += 2)
+    if ((slot >= nvm_slot_count()) || !nvm_slot_is_erased(slot))
     {
-        if (nvm_read_halfword(address + offset) != NVM_ERASED_HALFWORD)
+        return false;
+    }
+
+    /* Program the magic-containing halfword last. Until that succeeds, a reset
+     * can leave only an invalid, consumed journal slot. */
+    for (offset = 2; offset < NVM_SLOT_SIZE_BYTES; offset += 2)
+    {
+        halfword = (uint16_t)bytes[offset] | ((uint16_t)bytes[offset + 1] << 8);
+        status   = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)(address + offset), halfword);
+        if ((status != HAL_OK) || (nvm_read_halfword(address + offset) != halfword))
         {
             return false;
         }
     }
 
-    return true;
-}
-
-static bool nvm_page_layout_is_valid(void)
-{
-    uintptr_t start = nvm_page_start();
-    uintptr_t end   = nvm_page_end();
-
-    return (end > start) && ((end - start) == NVM_EXPECTED_PAGE_SIZE) && ((start % NVM_EXPECTED_PAGE_SIZE) == 0) &&
-           ((start % 2) == 0) && ((NVM_SLOT_SIZE_BYTES % 2) == 0);
-}
-
-static bool nvm_page_is_erased(void)
-{
-    uintptr_t address;
-
-    for (address = nvm_page_start(); address < nvm_page_end(); address += 2)
+    halfword = (uint16_t)bytes[0] | ((uint16_t)bytes[1] << 8);
+    status   = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)address, halfword);
+    if ((status != HAL_OK) || (nvm_read_halfword(address) != halfword))
     {
-        if (nvm_read_halfword(address) != NVM_ERASED_HALFWORD)
-        {
-            return false;
-        }
+        return false;
     }
 
+    nvm_read_record(slot, &verify);
+    return nvm_record_is_valid(&verify) && nvm_records_are_equal(&verify, record);
+}
+
+static bool nvm_erase_page(void)
+{
+    FLASH_EraseInitTypeDef erase_cfg = {0};
+    HAL_StatusTypeDef      status;
+    uint32_t               page_error = 0;
+
+    if (HAL_FLASH_Unlock() != HAL_OK)
+    {
+        return false;
+    }
+
+    erase_cfg.TypeErase   = FLASH_TYPEERASE_PAGES;
+    erase_cfg.PageAddress = (uint32_t)nvm_page_start();
+    erase_cfg.NbPages     = 1;
+
+    status = HAL_FLASHEx_Erase(&erase_cfg, &page_error);
+    HAL_FLASH_Lock();
+
+    if ((status != HAL_OK) || (page_error != 0xFFFFFFFF) || !nvm_page_is_erased())
+    {
+        nvm_scan_page();
+        return false;
+    }
+
+    nvm_next_slot          = 0;
+    nvm_has_saved_settings = false;
+    nvm_erase_required     = false;
     return true;
 }
 
@@ -358,16 +396,9 @@ static bool nvm_settings_fields_are_valid(const hotwand_setup_nvm_t* settings)
     return true;
 }
 
-static uint16_t nvm_checksum(const hotwand_setup_nvm_t* settings)
-{
-    return fletcher16((const uint8_t*)settings, offsetof(hotwand_setup_nvm_t, checksum));
-}
-
-static bool nvm_record_is_valid(const hotwand_setup_nvm_t* record)
-{
-    return (record->magic == NVM_RECORD_MAGIC) && (record->rsvd_1 == 0) && nvm_settings_fields_are_valid(record) &&
-           (record->checksum == nvm_checksum(record));
-}
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static void nvm_prepare_record(const hotwand_setup_nvm_t* settings, hotwand_setup_nvm_t* record)
 {
@@ -402,112 +433,94 @@ static bool nvm_records_are_equal(const hotwand_setup_nvm_t* left, const hotwand
     return true;
 }
 
-static void nvm_scan_page(void)
+static bool nvm_page_is_erased(void)
 {
-    hotwand_setup_nvm_t record;
-    uint16_t            slot;
-    bool                found_erased_slot = false;
+    uintptr_t address;
 
-    nvm_has_saved_settings = false;
-    nvm_erase_required     = false;
-    nvm_next_slot          = nvm_slot_count();
-
-    for (slot = 0; slot < nvm_slot_count(); ++slot)
+    for (address = nvm_page_start(); address < nvm_page_end(); address += 2)
     {
-        if (nvm_slot_is_erased(slot))
-        {
-            if (!found_erased_slot)
-            {
-                nvm_next_slot     = slot;
-                found_erased_slot = true;
-            }
-            continue;
-        }
-
-        /* Data after a blank slot indicates an interrupted page erase. */
-        if (found_erased_slot)
-        {
-            nvm_erase_required = true;
-            continue;
-        }
-
-        nvm_read_record(slot, &record);
-        if (nvm_record_is_valid(&record))
-        {
-            nvm_saved_settings     = record;
-            nvm_has_saved_settings = true;
-        }
-    }
-
-    if (!found_erased_slot)
-    {
-        nvm_erase_required = true;
-    }
-}
-
-static bool nvm_erase_page(void)
-{
-    FLASH_EraseInitTypeDef erase_cfg = {0};
-    HAL_StatusTypeDef      status;
-    uint32_t               page_error = 0;
-
-    if (HAL_FLASH_Unlock() != HAL_OK)
-    {
-        return false;
-    }
-
-    erase_cfg.TypeErase   = FLASH_TYPEERASE_PAGES;
-    erase_cfg.PageAddress = (uint32_t)nvm_page_start();
-    erase_cfg.NbPages     = 1;
-
-    status = HAL_FLASHEx_Erase(&erase_cfg, &page_error);
-    HAL_FLASH_Lock();
-
-    if ((status != HAL_OK) || (page_error != 0xFFFFFFFF) || !nvm_page_is_erased())
-    {
-        nvm_scan_page();
-        return false;
-    }
-
-    nvm_next_slot          = 0;
-    nvm_has_saved_settings = false;
-    nvm_erase_required     = false;
-    return true;
-}
-
-static bool nvm_program_record(uint16_t slot, const hotwand_setup_nvm_t* record)
-{
-    const uint8_t*      bytes   = (const uint8_t*)record;
-    uintptr_t           address = nvm_slot_address(slot);
-    hotwand_setup_nvm_t verify;
-    HAL_StatusTypeDef   status;
-    uint16_t            halfword;
-    uint16_t            offset;
-
-    if ((slot >= nvm_slot_count()) || !nvm_slot_is_erased(slot))
-    {
-        return false;
-    }
-
-    /* Program the magic-containing halfword last. Until that succeeds, a reset
-     * can leave only an invalid, consumed journal slot. */
-    for (offset = 2; offset < NVM_SLOT_SIZE_BYTES; offset += 2)
-    {
-        halfword = (uint16_t)bytes[offset] | ((uint16_t)bytes[offset + 1] << 8);
-        status   = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)(address + offset), halfword);
-        if ((status != HAL_OK) || (nvm_read_halfword(address + offset) != halfword))
+        if (nvm_read_halfword(address) != NVM_ERASED_HALFWORD)
         {
             return false;
         }
     }
 
-    halfword = (uint16_t)bytes[0] | ((uint16_t)bytes[1] << 8);
-    status   = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, (uint32_t)address, halfword);
-    if ((status != HAL_OK) || (nvm_read_halfword(address) != halfword))
+    return true;
+}
+
+static bool nvm_slot_is_erased(uint16_t slot)
+{
+    uintptr_t address = nvm_slot_address(slot);
+    uint16_t  offset;
+
+    for (offset = 0; offset < NVM_SLOT_SIZE_BYTES; offset += 2)
     {
-        return false;
+        if (nvm_read_halfword(address + offset) != NVM_ERASED_HALFWORD)
+        {
+            return false;
+        }
     }
 
-    nvm_read_record(slot, &verify);
-    return nvm_record_is_valid(&verify) && nvm_records_are_equal(&verify, record);
+    return true;
+}
+
+static void nvm_read_record(uint16_t slot, hotwand_setup_nvm_t* record)
+{
+    const volatile uint8_t* source      = (const volatile uint8_t*)nvm_slot_address(slot);
+    uint8_t*                destination = (uint8_t*)record;
+    uint16_t                index;
+
+    for (index = 0; index < NVM_SLOT_SIZE_BYTES; ++index)
+    {
+        destination[index] = source[index];
+    }
+}
+
+static bool nvm_page_layout_is_valid(void)
+{
+    uintptr_t start = nvm_page_start();
+    uintptr_t end   = nvm_page_end();
+
+    return (end > start) && ((end - start) == NVM_EXPECTED_PAGE_SIZE) && ((start % NVM_EXPECTED_PAGE_SIZE) == 0) &&
+           ((start % 2) == 0) && ((NVM_SLOT_SIZE_BYTES % 2) == 0);
+}
+
+static bool nvm_record_is_valid(const hotwand_setup_nvm_t* record)
+{
+    return (record->magic == NVM_RECORD_MAGIC) && (record->rsvd_1 == 0) && nvm_settings_fields_are_valid(record) &&
+           (record->checksum == nvm_checksum(record));
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+static uint16_t nvm_checksum(const hotwand_setup_nvm_t* settings)
+{
+    return fletcher16((const uint8_t*)settings, offsetof(hotwand_setup_nvm_t, checksum));
+}
+
+static uint16_t nvm_slot_count(void)
+{
+    return (uint16_t)(NVM_EXPECTED_PAGE_SIZE / NVM_SLOT_SIZE_BYTES);
+}
+
+static uintptr_t nvm_slot_address(uint16_t slot)
+{
+    return nvm_page_start() + ((uintptr_t)slot * NVM_SLOT_SIZE_BYTES);
+}
+
+static uint16_t nvm_read_halfword(uintptr_t address)
+{
+    return *(const volatile uint16_t*)address;
+}
+
+static uintptr_t nvm_page_start(void)
+{
+    return (uintptr_t)&__nvm_page_start__;
+}
+
+static uintptr_t nvm_page_end(void)
+{
+    return (uintptr_t)&__nvm_page_end__;
 }

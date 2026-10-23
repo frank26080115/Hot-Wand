@@ -26,10 +26,12 @@ class GdbSession:
     The target's own millisecond timer, rather than host sleep, times presses.
     """
 
-    def __init__(self, elf, symbols, *, port: int = 3333):
+    def __init__(self, elf, symbols, *, port: int = 3333, reset_on_connect: bool = True, log_dir=None):
         self.elf = elf
         self.symbols = symbols
         self.port = port
+        self.reset_on_connect = reset_on_connect
+        self.server_thread = self.gdb_thread = None
         self.server = None
         self.gdb = None
         self.messages = queue.Queue()
@@ -37,6 +39,14 @@ class GdbSession:
         self.stopped = threading.Event()
         self.sequence = 0
         self.running = False
+        self.halt_spans = []
+        self.log_dir = log_dir
+        self.gdb_log = None
+        self.openocd_log = None
+        if log_dir is not None:
+            log_dir.mkdir(parents=True, exist_ok=True)
+            self.gdb_log = (log_dir / "gdb.log").open("w", encoding="utf-8", buffering=1)
+            self.openocd_log = (log_dir / "openocd.log").open("w", encoding="utf-8", buffering=1)
 
     def __enter__(self):
         if not GDB_EXE.is_file() or not OPENOCD_EXE.is_file() or not OPENOCD_SCRIPTS.is_dir():
@@ -44,10 +54,15 @@ class GdbSession:
         command = [str(OPENOCD_EXE), "-s", str(OPENOCD_SCRIPTS),
                    "-f", "interface/stlink.cfg", "-f", "target/stm32f0x.cfg",
                    "-c", "adapter speed 100",
-                   "-c", "reset_config srst_only srst_nogate connect_assert_srst",
-                   "-c", f"gdb_port {self.port}", "-c", "init", "-c", "reset halt"]
+                   # Attaching to a streaming producer must also omit
+                   # connect_assert_srst: it asserts reset during init itself.
+                   "-c", "reset_config srst_only srst_nogate" +
+                   (" connect_assert_srst" if self.reset_on_connect else ""),
+                   "-c", f"gdb_port {self.port}", "-c", "init", "-c",
+                   "reset halt" if self.reset_on_connect else "halt"]
         self.server = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        threading.Thread(target=self._server_reader, daemon=True).start()
+        self.server_thread = threading.Thread(target=self._server_reader, daemon=True)
+        self.server_thread.start()
         deadline = time.monotonic() + 20
         while time.monotonic() < deadline:
             if self.server.poll() is not None:
@@ -65,7 +80,8 @@ class GdbSession:
         self.gdb = subprocess.Popen([str(GDB_EXE), "--nx", "--quiet", "--interpreter=mi2"],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                     stderr=subprocess.STDOUT, text=True, bufsize=1)
-        threading.Thread(target=self._reader, daemon=True).start()
+        self.gdb_thread = threading.Thread(target=self._reader, daemon=True)
+        self.gdb_thread.start()
         try:
             self.command(f'-file-exec-and-symbols "{str(self.elf).replace(chr(92), "/")}"')
             self.command("-gdb-set pagination off")
@@ -85,12 +101,20 @@ class GdbSession:
                 self.gdb.wait(timeout=3)
             except subprocess.TimeoutExpired:
                 self.gdb.kill()
+                self.gdb.wait(timeout=3)
         if self.server is not None:
             self.server.terminate()
             try:
                 self.server.wait(timeout=3)
             except subprocess.TimeoutExpired:
                 self.server.kill()
+                self.server.wait(timeout=3)
+        for thread in (self.gdb_thread, self.server_thread):
+            if thread is not None:
+                thread.join(timeout=3)
+        for handle in (self.gdb_log, self.openocd_log):
+            if handle is not None:
+                handle.close()
 
     def _reader(self):
         for line in self.gdb.stdout:
@@ -98,15 +122,21 @@ class GdbSession:
                 self.stopped.set()
             elif line.startswith("*running"):
                 self.stopped.clear()
+            if self.gdb_log is not None:
+                self.gdb_log.write(line)
             self.messages.put(line.rstrip("\r\n"))
 
     def _server_reader(self):
         for line in self.server.stdout:
             self.server_lines.append(line.rstrip("\r\n"))
+            if self.openocd_log is not None:
+                self.openocd_log.write(line)
 
     def command(self, instruction: str, *, timeout: float = 12) -> str:
         self.sequence += 1
         token = self.sequence
+        if self.gdb_log is not None:
+            self.gdb_log.write(f"> {token}{instruction}\n")
         self.gdb.stdin.write(f"{token}{instruction}\n")
         self.gdb.stdin.flush()
         deadline = time.monotonic() + timeout
@@ -140,12 +170,14 @@ class GdbSession:
 
     def inspect(self, callback):
         was_running = self.running
+        started = time.monotonic()
         self.halt()
         try:
             return callback()
         finally:
             if was_running:
                 self.resume()
+                self.halt_spans.append({"host_start": started, "seconds": time.monotonic() - started})
 
     def read_memory(self, address: int, length: int) -> bytes:
         if self.running:
@@ -159,9 +191,14 @@ class GdbSession:
         return bytes.fromhex(match[1])
 
     def write_u32(self, address: int, value: int):
+        self.write_memory(address, value.to_bytes(4, "little"))
+
+    def write_memory(self, address: int, data: bytes):
+        """Write a block; callers can group multiple blocks with inspect()."""
         if self.running:
-            return self.inspect(lambda: self.write_u32(address, value))
-        self.command(f"-data-write-memory-bytes 0x{address:08x} {value.to_bytes(4, 'little').hex()}")
+            return self.inspect(lambda: self.write_memory(address, data))
+        if data:
+            self.command(f"-data-write-memory-bytes 0x{address:08x} {data.hex()}")
 
     def read_u32(self, address: int) -> int:
         return int.from_bytes(self.read_memory(address, 4), "little")
@@ -232,8 +269,8 @@ class GdbSession:
         raise RuntimeError(f"Button state did not reach {wanted}; last state {state}")
 
     def press(self, duration_ms: int) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
-        if not 1 <= duration_ms <= 5000:
-            raise ValueError("Synthetic press duration must be 1..5000 ms")
+        if not 1 <= duration_ms <= 6000:
+            raise ValueError("Synthetic press duration must be 1..6000 ms")
         before = self.wait_state(1)
         if before[0] != NO_COMMAND:
             raise RuntimeError("Button mailbox has an unconsumed command")

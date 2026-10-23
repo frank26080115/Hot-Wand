@@ -10,13 +10,6 @@
 
 #include <string.h>
 
-#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
-/* SWD reads this snapshot, never u8g2's buffer while a redraw is underway. */
-volatile uint32_t vision_test_oled_sent_generation __attribute__((used, externally_visible));
-volatile uint8_t  vision_test_oled_sent_framebuffer[OLED_VISION_FRAMEBUFFER_BYTES]
-    __attribute__((used, externally_visible));
-#endif
-
 // -----------------------------------------------------------------------------
 // Configuration
 // -----------------------------------------------------------------------------
@@ -63,6 +56,13 @@ _Static_assert(HSE_VALUE == I2C_HSE_CLOCK_HZ, "I2C HSE timing must be recalculat
 // Globals
 // -----------------------------------------------------------------------------
 
+#if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+/* SWD reads this snapshot, never u8g2's buffer while a redraw is underway. */
+volatile uint32_t vision_test_oled_sent_generation __attribute__((used, externally_visible));
+volatile uint8_t  vision_test_oled_sent_framebuffer[OLED_VISION_FRAMEBUFFER_BYTES]
+    __attribute__((used, externally_visible));
+#endif
+
 I2C_HandleTypeDef i2c1;
 OLED_Handle       oled;
 
@@ -81,36 +81,6 @@ static void         OLED_SetTransportError(OLED_Handle* oled, OLED_Error error, 
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
-
-void I2C1_Init(void)
-{
-    uint32_t timing;
-
-    /* HSERDY alone does not prove that the system-clock switch completed. */
-    if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) != RESET) &&
-        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE))
-    {
-        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_SYSCLK);
-        timing = I2C_TIMING_400KHZ_AT_27_12MHZ;
-    }
-    else
-    {
-        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
-        timing = I2C_TIMING_400KHZ_AT_8MHZ;
-    }
-
-    i2c1.Instance = I2C1;
-    HAL_I2C_MspInit(&i2c1);
-
-    CLEAR_BIT(I2C1->CR1, I2C_CR1_PE);
-    I2C1->CR1     = 0;
-    I2C1->CR2     = 0;
-    I2C1->OAR1    = 0;
-    I2C1->OAR2    = 0;
-    I2C1->TIMINGR = timing;
-    OLED_I2CClearErrors();
-    SET_BIT(I2C1->CR1, I2C_CR1_PE);
-}
 
 bool OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c)
 {
@@ -149,17 +119,34 @@ bool OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c)
     return true;
 }
 
-void OLED_ConfigureGraphics(OLED_Handle* oled)
+void I2C1_Init(void)
 {
-    if ((oled == NULL) || (oled->initialized == 0))
+    uint32_t timing;
+
+    /* HSERDY alone does not prove that the system-clock switch completed. */
+    if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) != RESET) &&
+        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE))
     {
-        return;
+        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_SYSCLK);
+        timing = I2C_TIMING_400KHZ_AT_27_12MHZ;
+    }
+    else
+    {
+        __HAL_RCC_I2C1_CONFIG(RCC_I2C1CLKSOURCE_HSI);
+        timing = I2C_TIMING_400KHZ_AT_8MHZ;
     }
 
-    /* These drawing properties persist until explicitly changed. */
-    u8g2_SetDisplayRotation(&oled->graphics, U8G2_R1);
-    u8g2_SetFont(&oled->graphics, u8g2_font_5x7_tr);
-    u8g2_ClearBuffer(&oled->graphics);
+    i2c1.Instance = I2C1;
+    HAL_I2C_MspInit(&i2c1);
+
+    CLEAR_BIT(I2C1->CR1, I2C_CR1_PE);
+    I2C1->CR1     = 0;
+    I2C1->CR2     = 0;
+    I2C1->OAR1    = 0;
+    I2C1->OAR2    = 0;
+    I2C1->TIMINGR = timing;
+    OLED_I2CClearErrors();
+    SET_BIT(I2C1->CR1, I2C_CR1_PE);
 }
 
 bool OLED_SendBuffer(OLED_Handle* oled)
@@ -193,6 +180,26 @@ bool OLED_SendBuffer(OLED_Handle* oled)
     return oled->transport_ok != 0;
 }
 
+void OLED_ConfigureGraphics(OLED_Handle* oled)
+{
+    if ((oled == NULL) || (oled->initialized == 0))
+    {
+        return;
+    }
+
+    /* These drawing properties persist until explicitly changed. */
+    u8g2_SetDisplayRotation(&oled->graphics, U8G2_R1);
+    u8g2_SetFont(&oled->graphics, u8g2_font_5x7_tr);
+    u8g2_ClearBuffer(&oled->graphics);
+}
+
+// -----------------------------------------------------------------------------
+// Feature Logic
+// -----------------------------------------------------------------------------
+
+#if !ADC_SIM_ENABLED
+
+/* Simulation builds omit both this renderer and its bitmap references. */
 void show_splash(void)
 {
     u8g2_t* graphics = OLED_GetGraphics(&oled);
@@ -212,7 +219,10 @@ void show_splash(void)
     OLED_SendBuffer(&oled);
 }
 
+#endif
+
 #if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
+
 void OLED_ShowFiducial(void)
 {
     u8g2_t* graphics = OLED_GetGraphics(&oled);
@@ -230,21 +240,8 @@ void OLED_ShowFiducial(void)
     u8g2_DrawXBMP(graphics, 0, 0, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT, splash_fiducial);
     OLED_SendBuffer(&oled);
 }
+
 #endif
-
-// -----------------------------------------------------------------------------
-// Getters and Setters
-// -----------------------------------------------------------------------------
-
-u8g2_t* OLED_GetGraphics(OLED_Handle* oled)
-{
-    if ((oled == NULL) || (oled->initialized == 0))
-    {
-        return NULL;
-    }
-
-    return &oled->graphics;
-}
 
 bool OLED_SetDimMode(OLED_Handle* oled, bool dimmed)
 {
@@ -271,10 +268,6 @@ bool OLED_SetDimMode(OLED_Handle* oled, bool dimmed)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
-
 void HAL_I2C_MspInit(I2C_HandleTypeDef* handle)
 {
     GPIO_InitTypeDef gpio = {0};
@@ -300,6 +293,10 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* handle)
     gpio.Alternate = GPIO_AF4_I2C1;
     HAL_GPIO_Init(GPIOA, &gpio);
 }
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
 static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argument, void* data)
 {
@@ -371,65 +368,6 @@ static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argum
     }
 }
 
-static uint8_t OLED_GPIOAndDelayCallback(u8x8_t* u8x8, uint8_t message, uint8_t argument, void* data)
-{
-    (void)u8x8;
-    (void)data;
-
-    switch (message)
-    {
-    case U8X8_MSG_GPIO_AND_DELAY_INIT:
-        return 1;
-
-    case U8X8_MSG_DELAY_MILLI:
-        HAL_Delay(argument);
-        return 1;
-
-    /* This four-pin OLED module has no reset connection. U8g2's logical reset
-     * toggles are intentionally ignored; its millisecond delays still provide
-     * the controller's required power-on settling time. */
-    case U8X8_MSG_GPIO_RESET:
-        return 1;
-
-    default:
-        return 0;
-    }
-}
-
-static OLED_Handle* OLED_FromU8x8(u8x8_t* u8x8)
-{
-    if (u8x8 == NULL)
-    {
-        return NULL;
-    }
-
-    return (OLED_Handle*)u8x8_GetUserPtr(u8x8);
-}
-
-static bool OLED_I2CTransmit(OLED_Handle* oled, uint16_t address, const uint8_t* data, uint8_t length)
-{
-    OLED_I2CClearErrors();
-    I2C1->CR2 = (uint32_t)address | ((uint32_t)length << I2C_CR2_NBYTES_Pos) | I2C_CR2_AUTOEND | I2C_CR2_START;
-
-    while (length-- != 0)
-    {
-        if (!OLED_I2CWaitFor(oled, I2C_ISR_TXIS, OLED_ERROR_I2C_TX_TIMEOUT))
-        {
-            OLED_I2CClearErrors();
-            return false;
-        }
-        I2C1->TXDR = *data++;
-    }
-
-    if (!OLED_I2CWaitFor(oled, I2C_ISR_STOPF, OLED_ERROR_I2C_STOP_TIMEOUT))
-    {
-        OLED_I2CClearErrors();
-        return false;
-    }
-    WRITE_REG(I2C1->ICR, I2C_ICR_STOPCF);
-    return true;
-}
-
 static bool OLED_I2CWaitFor(OLED_Handle* oled, uint32_t flag, OLED_Error timeout_error)
 {
     uint32_t start = systick_get_ms();
@@ -475,6 +413,79 @@ static bool OLED_I2CWaitFor(OLED_Handle* oled, uint32_t flag, OLED_Error timeout
     return false;
 }
 
+static uint8_t OLED_GPIOAndDelayCallback(u8x8_t* u8x8, uint8_t message, uint8_t argument, void* data)
+{
+    (void)u8x8;
+    (void)data;
+
+    switch (message)
+    {
+    case U8X8_MSG_GPIO_AND_DELAY_INIT:
+        return 1;
+
+    case U8X8_MSG_DELAY_MILLI:
+        HAL_Delay(argument);
+        return 1;
+
+    /* This four-pin OLED module has no reset connection. U8g2's logical reset
+     * toggles are intentionally ignored; its millisecond delays still provide
+     * the controller's required power-on settling time. */
+    case U8X8_MSG_GPIO_RESET:
+        return 1;
+
+    default:
+        return 0;
+    }
+}
+
+static bool OLED_I2CTransmit(OLED_Handle* oled, uint16_t address, const uint8_t* data, uint8_t length)
+{
+    OLED_I2CClearErrors();
+    I2C1->CR2 = (uint32_t)address | ((uint32_t)length << I2C_CR2_NBYTES_Pos) | I2C_CR2_AUTOEND | I2C_CR2_START;
+
+    while (length-- != 0)
+    {
+        if (!OLED_I2CWaitFor(oled, I2C_ISR_TXIS, OLED_ERROR_I2C_TX_TIMEOUT))
+        {
+            OLED_I2CClearErrors();
+            return false;
+        }
+        I2C1->TXDR = *data++;
+    }
+
+    if (!OLED_I2CWaitFor(oled, I2C_ISR_STOPF, OLED_ERROR_I2C_STOP_TIMEOUT))
+    {
+        OLED_I2CClearErrors();
+        return false;
+    }
+    WRITE_REG(I2C1->ICR, I2C_ICR_STOPCF);
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+static OLED_Handle* OLED_FromU8x8(u8x8_t* u8x8)
+{
+    if (u8x8 == NULL)
+    {
+        return NULL;
+    }
+
+    return (OLED_Handle*)u8x8_GetUserPtr(u8x8);
+}
+
+u8g2_t* OLED_GetGraphics(OLED_Handle* oled)
+{
+    if ((oled == NULL) || (oled->initialized == 0))
+    {
+        return NULL;
+    }
+
+    return &oled->graphics;
+}
+
 static void OLED_I2CClearErrors(void)
 {
     /* STOP is a transfer command, not an error-clear bit. Requesting it while
@@ -483,6 +494,10 @@ static void OLED_I2CClearErrors(void)
               I2C_ICR_ADDRCF | I2C_ICR_NACKCF | I2C_ICR_STOPCF | I2C_ICR_BERRCF | I2C_ICR_ARLOCF | I2C_ICR_OVRCF |
                   I2C_ICR_PECCF | I2C_ICR_TIMOUTCF | I2C_ICR_ALERTCF);
 }
+
+// -----------------------------------------------------------------------------
+// Debug / Logging Helpers
+// -----------------------------------------------------------------------------
 
 static void OLED_SetTransportError(OLED_Handle* oled, OLED_Error error, uint32_t i2c_status)
 {

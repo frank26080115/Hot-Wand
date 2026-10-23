@@ -9,9 +9,11 @@ This file also contains some convenience functions for unit conversions.
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "adc.h"
 
 #include "conf.h"
+#include "adc_sim.h"
 #include "pins.h"
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
@@ -44,6 +46,10 @@ This file also contains some convenience functions for unit conversions.
 #define MCU_TEMP_ADC_FULL_SCALE  4095
 #define MCU_TEMP_SLOPE_TENTHS_MV 43
 #define MCU_TEMP_SCALE           (MCU_TEMP_ADC_FULL_SCALE * MCU_TEMP_SLOPE_TENTHS_MV)
+
+#if ADC_SIM_ENABLED
+_Static_assert(ADC_SIM_CHANNEL_COUNT == ADC_TABLE_ENTRY_COUNT, "simulation must include every ADC channel");
+#endif
 
 // -----------------------------------------------------------------------------
 // Types
@@ -199,6 +205,9 @@ static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
 static uint16_t adc_mcu_to_celcius(uint16_t sample);
 static void     adc_fault(void);
+#if ADC_SIM_ENABLED
+static void adc_reset_sim_signal_state(void);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -259,12 +268,12 @@ void adc_init(void)
     adc_handle.Init.Overrun               = ADC_OVR_DATA_OVERWRITTEN;
     adc_handle.Init.SamplingTimeCommon    = ADC_SAMPLETIME_71CYCLES_5;
 
-    if (HAL_ADC_Init(&adc_handle) != HAL_OK)
+    if (fault_test_inject(FT_ADC_INIT) || HAL_ADC_Init(&adc_handle) != HAL_OK)
     {
         adc_fault();
     }
 
-    if (HAL_ADCEx_Calibration_Start(&adc_handle) != HAL_OK)
+    if (fault_test_inject(FT_ADC_CAL) || HAL_ADCEx_Calibration_Start(&adc_handle) != HAL_OK)
     {
         adc_fault();
     }
@@ -275,13 +284,13 @@ void adc_init(void)
     channel_cfg.Rank         = ADC_RANK_CHANNEL_NUMBER;
     channel_cfg.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
 
-    if (HAL_ADC_ConfigChannel(&adc_handle, &channel_cfg) != HAL_OK)
+    if (fault_test_inject(FT_ADC_CHANNEL) || HAL_ADC_ConfigChannel(&adc_handle, &channel_cfg) != HAL_OK)
     {
         adc_fault();
     }
 
     channel_cfg.Channel = lpf_cfg_table[ADC_VREFINT_IDX].channel;
-    if (HAL_ADC_ConfigChannel(&adc_handle, &channel_cfg) != HAL_OK)
+    if (fault_test_inject(FT_ADC_VREF) || HAL_ADC_ConfigChannel(&adc_handle, &channel_cfg) != HAL_OK)
     {
         adc_fault();
     }
@@ -293,7 +302,15 @@ void adc_init(void)
     HAL_NVIC_SetPriority(ADC1_IRQn, ADC_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(ADC1_IRQn);
 
-    if (HAL_ADC_Start_IT(&adc_handle) != HAL_OK)
+#if ADC_SIM_ENABLED
+    /* A preloaded startup sequence owns even the preliminary MCU/VREFINT
+     * conversions. The first partial round does not consume a repeat. */
+    if (adc_sim_round_boundary(false))
+    {
+        adc_reset_sim_signal_state();
+    }
+#endif
+    if (fault_test_inject(FT_ADC_START) || HAL_ADC_Start_IT(&adc_handle) != HAL_OK)
     {
         adc_fault();
     }
@@ -324,6 +341,12 @@ void ADC1_IRQHandler_Impl(void)
 
     completed_idx      = current_idx;
     sample             = (uint16_t)HAL_ADC_GetValue(&adc_handle);
+#if ADC_SIM_ENABLED
+    if (adc_sim.state == ADC_SIM_ACTIVE)
+    {
+        sample = adc_sim.decoded[completed_idx];
+    }
+#endif
     raw[completed_idx] = sample;
 
     next_idx = (uint8_t)(completed_idx + 1);
@@ -341,10 +364,12 @@ void ADC1_IRQHandler_Impl(void)
     adc_handle.Instance->ISR = ADC_ISR_EOC | ADC_ISR_EOS | ADC_ISR_OVR;
     adc_select_and_start(next_idx);
 
+#if !ADC_SIM_ENABLED
     if (next_idx == 0)
     {
         adc_complete_round();
     }
+#endif
 
     /* Filter while the ADC is already sampling the next channel. */
     adc_filter_sample(completed_idx, sample);
@@ -355,6 +380,24 @@ void ADC1_IRQHandler_Impl(void)
 
     if (next_idx == 0)
     {
+#if ADC_SIM_ENABLED
+        bool completed_round = adc_round_started;
+
+        /* Finish the old frame, including any scheduled VREFINT, before
+         * exposing a new frame or clearing physical acquisition history. */
+        adc_complete_round();
+        if (adc_sim_round_boundary(completed_round))
+        {
+            adc_reset_sim_signal_state();
+        }
+        if (adc_sim.state == ADC_SIM_ACTIVE)
+        {
+            /* Constant sequences need not contain entropy. Publish a seed
+             * only after all six application channels have been simulated. */
+            system_rand_seed = (initialized_channels & 0x3F) == 0x3F ? 1 : 0;
+            return;
+        }
+#endif
         /* Update the random seed with the latest ADC readings. Take advantage of electrical noise. */
         system_rand_seed = (HAL_GetTick() & 0x3) | (((uint32_t)raw[0] & 0x03) << 2) | (((uint32_t)raw[1] & 0x03) << 4) |
                            (((uint32_t)raw[2] & 0x03) << 6) | (((uint32_t)raw[3] & 0x03) << 8) |
@@ -365,248 +408,6 @@ void ADC1_IRQHandler_Impl(void)
 // -----------------------------------------------------------------------------
 // Feature Logic
 // -----------------------------------------------------------------------------
-
-uint16_t adc_to_millivolts(uint8_t idx)
-{
-    uint32_t millivolts;
-    uint16_t reference_mv;
-
-    if ((idx != DC_SENS_IDX) && (idx != BUCK_SENS_IDX))
-    {
-        return 0;
-    }
-
-    if (idx == DC_SENS_IDX)
-    {
-        return adc_input_sample_to_millivolts(adc_get(idx));
-    }
-
-    reference_mv = adc_reference_mv;
-    millivolts   = (uint32_t)adc_get(idx) * reference_mv * VOLTAGE_DIVIDER_SCALE;
-    millivolts += ADC_FULL_SCALE / 2;
-
-    millivolts /= ADC_FULL_SCALE;
-
-    return (uint16_t)millivolts;
-}
-
-uint16_t adc_to_milliamps(uint8_t idx)
-{
-    uint32_t full_scale_ma;
-    uint32_t milliamps;
-    uint16_t reference_mv;
-
-    if (idx != CURR_SENS_IDX)
-    {
-        return 0;
-    }
-
-    reference_mv  = adc_reference_mv;
-    full_scale_ma = ((uint32_t)CURRENT_FULL_SCALE_MA * reference_mv + (ADC_REFERENCE_MV / 2)) / ADC_REFERENCE_MV;
-
-    milliamps = (uint32_t)adc_get(idx) * full_scale_ma;
-    milliamps += ADC_FULL_SCALE / 2;
-
-    return (uint16_t)(milliamps / ADC_FULL_SCALE);
-}
-
-uint16_t adc_to_celcius(uint8_t idx)
-{
-    uint8_t initialized_mask;
-
-    switch (idx)
-    {
-    case THERM_1_IDX:
-    case THERM_2_IDX:
-    case MCU_TEMP_IDX:
-        break;
-
-    default:
-        return 0;
-    }
-
-    initialized_mask = (uint8_t)(1 << idx);
-    if ((initialized_channels & initialized_mask) == 0)
-    {
-        return 0;
-    }
-
-    if (idx == MCU_TEMP_IDX)
-    {
-        return adc_mcu_to_celcius(adc_get(idx));
-    }
-
-    return adc_ntc_to_celcius(adc_get(idx));
-}
-
-uint32_t adc_get_milliwatts(void)
-{
-    uint32_t millivolts = adc_to_millivolts(BUCK_SENS_IDX);
-    uint32_t milliamps  = adc_to_milliamps(CURR_SENS_IDX);
-
-    return ((millivolts * milliamps) + 500) / 1000;
-}
-
-// -----------------------------------------------------------------------------
-// Getters and Setters
-// -----------------------------------------------------------------------------
-
-uint8_t adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity)
-{
-    uint32_t generation_before;
-    uint32_t generation_after;
-    uint8_t  available;
-    uint8_t  copy_count;
-    uint8_t  write_idx;
-    uint8_t  age;
-    uint8_t  idx;
-
-    if ((history == NULL) || (capacity == 0))
-    {
-        return 0;
-    }
-
-    /* The ISR publishes a generation only after its record and ring metadata
-     * are complete. Retry if publication overlaps this lock-free copy, keeping
-     * the priority-0 tip detector unblocked. */
-    do
-    {
-        generation_before = dc_voltage_history_generation;
-        available         = dc_voltage_history_count;
-        write_idx         = dc_voltage_history_write_idx;
-        copy_count        = available < capacity ? available : capacity;
-
-        for (age = 0; age < copy_count; ++age)
-        {
-            if (write_idx > age)
-            {
-                idx = (uint8_t)(write_idx - age - 1);
-            }
-            else
-            {
-                idx = (uint8_t)(ADC_DC_VOLTAGE_HISTORY_COUNT + write_idx - age - 1);
-            }
-            history[age] = dc_voltage_history[idx];
-        }
-
-        generation_after = dc_voltage_history_generation;
-    } while (generation_before != generation_after);
-
-    return copy_count;
-}
-
-uint32_t adc_get_completed_round_count(void)
-{
-    return completed_round_count;
-}
-
-bool adc_get_reference_millivolts(uint16_t* millivolts)
-{
-    if ((millivolts == NULL) || !adc_reference_result_valid)
-    {
-        return false;
-    }
-
-    *millivolts = adc_reference_result_mv;
-    return true;
-}
-
-bool adc_has_power_loss_shutdown(void)
-{
-    return adc_power_loss_shutdown;
-}
-
-bool adc_has_buck_voltage_spike_shutdown(void)
-{
-    return adc_buck_voltage_spike_shutdown;
-}
-
-bool adc_rearm_power_loss_for_test(void)
-{
-    uint32_t interrupt_state = __get_PRIMASK();
-    bool     rearmed = false;
-
-    __disable_irq();
-    if (adc_power_loss_shutdown && !adc_buck_voltage_spike_shutdown &&
-        !rfgen_is_active() && (dc_voltage_history_count != 0) &&
-        (raw[DC_SENS_IDX] >= ADC_VOLTAGE_TO_COUNTS(DC_UNDERVOLTAGE_FAULT_MV)))
-    {
-        uint8_t newest_idx = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
-                                                              : (uint8_t)(dc_voltage_history_write_idx - 1);
-        uint16_t sample    = raw[DC_SENS_IDX];
-        uint16_t reference = dc_voltage_history[newest_idx];
-
-        /* Do not rearm into another immediate fast-drop trip. The running
-         * round-robin ADC keeps this history current throughout cooldown. */
-        if (((sample >= reference) || ((reference - sample) < PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS)) &&
-            rfgen_rearm_power_loss_for_test())
-        {
-            adc_power_loss_shutdown = false;
-            rearmed = true;
-        }
-    }
-    if (interrupt_state == 0)
-    {
-        __enable_irq();
-    }
-    return rearmed;
-}
-
-uint16_t adc_get(uint8_t idx)
-{
-    if (idx >= ADC_INPUT_COUNT)
-    {
-        return 0;
-    }
-
-    return result[idx];
-}
-
-void adc_set_input_voltage_calibration(uint8_t calibration)
-{
-    if (calibration > INPUT_VOLTAGE_CALIB_N5)
-    {
-        calibration = INPUT_VOLTAGE_CALIB_NONE;
-    }
-
-    input_voltage_calibration = calibration;
-}
-
-uint32_t adc_get_rand_seed(void)
-{
-    return (int32_t)system_rand_seed;
-}
-
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
-
-static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
-{
-    const input_voltage_calib_t* calibration;
-    int32_t                      calibrated_mv;
-    uint32_t                     scaled_mv;
-
-    if (input_voltage_calibration == INPUT_VOLTAGE_CALIB_NONE)
-    {
-        return millivolts;
-    }
-
-    calibration   = &input_voltage_calib_table[input_voltage_calibration];
-    scaled_mv     = (uint32_t)calibration->slope_q10 * millivolts;
-    calibrated_mv = (int32_t)((scaled_mv + INPUT_V_CALIB_ROUNDING) >> 10) + calibration->offset_mv;
-
-    if (calibrated_mv <= 0)
-    {
-        return 0;
-    }
-    if (calibrated_mv > (int32_t)UINT16_MAX)
-    {
-        return UINT16_MAX;
-    }
-
-    return (uint16_t)calibrated_mv;
-}
 
 static void adc_filter_sample(uint8_t idx, uint16_t sample)
 {
@@ -638,6 +439,7 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
         /* Use the raw sample so the normal low-pass filter cannot delay this
          * terminal protection. The foreground power-management task owns the
          * fault display, while the interrupt immediately latches RF off. */
+        fault_test_raw(sample, 1);
         adc_buck_voltage_spike_shutdown = true;
         rfgen_emergency_stop();
     }
@@ -713,19 +515,6 @@ static void adc_publish_dc_voltage_average(void)
     ++dc_voltage_history_generation;
 }
 
-static uint16_t adc_input_sample_to_millivolts(uint16_t sample)
-{
-    uint32_t millivolts;
-    uint16_t reference_mv;
-
-    reference_mv = adc_reference_mv;
-    millivolts   = (uint32_t)sample * reference_mv * VOLTAGE_DIVIDER_SCALE;
-    millivolts += ADC_FULL_SCALE / 2;
-    millivolts /= ADC_FULL_SCALE;
-
-    return adc_calibrate_input_voltage((uint16_t)millivolts);
-}
-
 static void adc_check_fast_power_loss(uint16_t sample)
 {
     uint16_t reference_sample;
@@ -743,6 +532,7 @@ static void adc_check_fast_power_loss(uint16_t sample)
     if ((reference_sample > sample) &&
         (((uint32_t)reference_sample - sample) >= PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS))
     {
+        fault_test_raw(sample, 2);
         adc_power_loss_shutdown = true;
         rfgen_power_loss_stop();
     }
@@ -772,40 +562,164 @@ static void adc_update_reference_voltage(uint16_t sample)
     adc_reference_mv           = (uint16_t)reference_mv;
 }
 
-static void adc_select_and_start(uint8_t idx)
-{
-    /*
-     * HAL_ADC_ConfigChannel() ORs into CHSELR on STM32F0. Assigning the
-     * register keeps exactly one channel selected for this conversion.
-     */
-    adc_handle.Instance->CHSELR = 1 << lpf_cfg_table[idx].channel;
-    adc_handle.Instance->CR |= ADC_CR_ADSTART;
-}
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
 
-static uint16_t adc_ntc_to_celcius(uint16_t sample)
+uint8_t adc_copy_dc_voltage_history(uint16_t* history, uint8_t capacity)
 {
-    uint8_t table_idx;
+    uint32_t generation_before;
+    uint32_t generation_after;
+    uint8_t  available;
+    uint8_t  copy_count;
+    uint8_t  write_idx;
+    uint8_t  age;
+    uint8_t  idx;
 
-    // this will catch a disconnected/missing NTC thermistor, which will read as a very high ADC value
-    if (sample >= ntc_adc_by_10c[0])
+    if ((history == NULL) || (capacity == 0))
     {
         return 0;
     }
 
-    for (table_idx = 1; table_idx < (uint8_t)(sizeof(ntc_adc_by_10c) / sizeof(ntc_adc_by_10c[0])); ++table_idx)
+    /* The ISR publishes a generation only after its record and ring metadata
+     * are complete. Retry if publication overlaps this lock-free copy, keeping
+     * the priority-0 tip detector unblocked. */
+    do
     {
-        if (sample >= ntc_adc_by_10c[table_idx])
-        {
-            uint16_t span     = ntc_adc_by_10c[table_idx - 1] - ntc_adc_by_10c[table_idx];
-            uint16_t offset   = ntc_adc_by_10c[table_idx - 1] - sample;
-            uint16_t fraction = (uint16_t)(((uint32_t)offset * NTC_TABLE_STEP_C + (span / 2)) / span);
+        generation_before = dc_voltage_history_generation;
+        available         = dc_voltage_history_count;
+        write_idx         = dc_voltage_history_write_idx;
+        copy_count        = available < capacity ? available : capacity;
 
-            return (uint16_t)(((uint16_t)table_idx - 1) * NTC_TABLE_STEP_C + fraction);
+        for (age = 0; age < copy_count; ++age)
+        {
+            if (write_idx > age)
+            {
+                idx = (uint8_t)(write_idx - age - 1);
+            }
+            else
+            {
+                idx = (uint8_t)(ADC_DC_VOLTAGE_HISTORY_COUNT + write_idx - age - 1);
+            }
+            history[age] = dc_voltage_history[idx];
         }
+
+        generation_after = dc_voltage_history_generation;
+    } while (generation_before != generation_after);
+
+    return copy_count;
+}
+
+uint16_t adc_to_celcius(uint8_t idx)
+{
+    uint8_t initialized_mask;
+
+    switch (idx)
+    {
+    case THERM_1_IDX:
+    case THERM_2_IDX:
+    case MCU_TEMP_IDX:
+        break;
+
+    default:
+        return 0;
     }
 
-    return (uint16_t)((sizeof(ntc_adc_by_10c) / sizeof(ntc_adc_by_10c[0]) - 1) * NTC_TABLE_STEP_C);
+    initialized_mask = (uint8_t)(1 << idx);
+    if ((initialized_channels & initialized_mask) == 0)
+    {
+        return 0;
+    }
+
+    if (idx == MCU_TEMP_IDX)
+    {
+        return adc_mcu_to_celcius(adc_get(idx));
+    }
+
+    return adc_ntc_to_celcius(adc_get(idx));
 }
+
+uint16_t adc_to_millivolts(uint8_t idx)
+{
+    uint32_t millivolts;
+    uint16_t reference_mv;
+
+    if ((idx != DC_SENS_IDX) && (idx != BUCK_SENS_IDX))
+    {
+        return 0;
+    }
+
+    if (idx == DC_SENS_IDX)
+    {
+        return adc_input_sample_to_millivolts(adc_get(idx));
+    }
+
+    reference_mv = adc_reference_mv;
+    millivolts   = (uint32_t)adc_get(idx) * reference_mv * VOLTAGE_DIVIDER_SCALE;
+    millivolts += ADC_FULL_SCALE / 2;
+
+    millivolts /= ADC_FULL_SCALE;
+
+    return (uint16_t)millivolts;
+}
+
+uint16_t adc_to_milliamps(uint8_t idx)
+{
+    uint32_t full_scale_ma;
+    uint32_t milliamps;
+    uint16_t reference_mv;
+
+    if (idx != CURR_SENS_IDX)
+    {
+        return 0;
+    }
+
+    reference_mv  = adc_reference_mv;
+    full_scale_ma = ((uint32_t)CURRENT_FULL_SCALE_MA * reference_mv + (ADC_REFERENCE_MV / 2)) / ADC_REFERENCE_MV;
+
+    milliamps = (uint32_t)adc_get(idx) * full_scale_ma;
+    milliamps += ADC_FULL_SCALE / 2;
+
+    return (uint16_t)(milliamps / ADC_FULL_SCALE);
+}
+
+uint32_t adc_get_milliwatts(void)
+{
+    uint32_t millivolts = adc_to_millivolts(BUCK_SENS_IDX);
+    uint32_t milliamps  = adc_to_milliamps(CURR_SENS_IDX);
+
+    return ((millivolts * milliamps) + 500) / 1000;
+}
+
+#if ADC_SIM_ENABLED
+
+static void adc_reset_sim_signal_state(void)
+{
+    uint8_t idx;
+
+    /* Reset signal processing only. Existing ADC/RF shutdown latches,
+     * calibration, and the power manager's
+     * thermal model remain untouched. */
+    for (idx = 0; idx < ADC_TABLE_ENTRY_COUNT; ++idx)
+    {
+        lpf_state[idx] = 0;
+        result[idx]    = 0;
+        raw[idx]       = 0;
+    }
+    initialized_channels         = 0;
+    dc_voltage_history_write_idx = 0;
+    dc_voltage_history_count     = 0;
+    ++dc_voltage_history_generation;
+    completed_round_count        = 0;
+    dc_voltage_accumulator       = 0;
+    dc_voltage_accumulator_count = 0;
+    adc_reference_mv             = ADC_REFERENCE_MV;
+    adc_reference_result_mv      = 0;
+    adc_reference_result_valid   = false;
+    system_rand_seed             = 0;
+}
+
+#endif
 
 static uint16_t adc_mcu_to_celcius(uint16_t sample)
 {
@@ -848,9 +762,170 @@ static uint16_t adc_mcu_to_celcius(uint16_t sample)
     return (uint16_t)temperature;
 }
 
+static uint16_t adc_ntc_to_celcius(uint16_t sample)
+{
+    uint8_t table_idx;
+
+    // this will catch a disconnected/missing NTC thermistor, which will read as a very high ADC value
+    if (sample >= ntc_adc_by_10c[0])
+    {
+        return 0;
+    }
+
+    for (table_idx = 1; table_idx < (uint8_t)(sizeof(ntc_adc_by_10c) / sizeof(ntc_adc_by_10c[0])); ++table_idx)
+    {
+        if (sample >= ntc_adc_by_10c[table_idx])
+        {
+            uint16_t span     = ntc_adc_by_10c[table_idx - 1] - ntc_adc_by_10c[table_idx];
+            uint16_t offset   = ntc_adc_by_10c[table_idx - 1] - sample;
+            uint16_t fraction = (uint16_t)(((uint32_t)offset * NTC_TABLE_STEP_C + (span / 2)) / span);
+
+            return (uint16_t)(((uint16_t)table_idx - 1) * NTC_TABLE_STEP_C + fraction);
+        }
+    }
+
+    return (uint16_t)((sizeof(ntc_adc_by_10c) / sizeof(ntc_adc_by_10c[0]) - 1) * NTC_TABLE_STEP_C);
+}
+
+static uint16_t adc_calibrate_input_voltage(uint16_t millivolts)
+{
+    const input_voltage_calib_t* calibration;
+    int32_t                      calibrated_mv;
+    uint32_t                     scaled_mv;
+
+    if (input_voltage_calibration == INPUT_VOLTAGE_CALIB_NONE)
+    {
+        return millivolts;
+    }
+
+    calibration   = &input_voltage_calib_table[input_voltage_calibration];
+    scaled_mv     = (uint32_t)calibration->slope_q10 * millivolts;
+    calibrated_mv = (int32_t)((scaled_mv + INPUT_V_CALIB_ROUNDING) >> 10) + calibration->offset_mv;
+
+    if (calibrated_mv <= 0)
+    {
+        return 0;
+    }
+    if (calibrated_mv > (int32_t)UINT16_MAX)
+    {
+        return UINT16_MAX;
+    }
+
+    return (uint16_t)calibrated_mv;
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+static uint16_t adc_input_sample_to_millivolts(uint16_t sample)
+{
+    uint32_t millivolts;
+    uint16_t reference_mv;
+
+    reference_mv = adc_reference_mv;
+    millivolts   = (uint32_t)sample * reference_mv * VOLTAGE_DIVIDER_SCALE;
+    millivolts += ADC_FULL_SCALE / 2;
+    millivolts /= ADC_FULL_SCALE;
+
+    return adc_calibrate_input_voltage((uint16_t)millivolts);
+}
+
+bool adc_get_reference_millivolts(uint16_t* millivolts)
+{
+    if ((millivolts == NULL) || !adc_reference_result_valid)
+    {
+        return false;
+    }
+
+    *millivolts = adc_reference_result_mv;
+    return true;
+}
+
+uint16_t adc_get(uint8_t idx)
+{
+    if (idx >= ADC_INPUT_COUNT)
+    {
+        return 0;
+    }
+
+    return result[idx];
+}
+
+void adc_set_input_voltage_calibration(uint8_t calibration)
+{
+    if (calibration > INPUT_VOLTAGE_CALIB_N5)
+    {
+        calibration = INPUT_VOLTAGE_CALIB_NONE;
+    }
+
+    input_voltage_calibration = calibration;
+}
+
+uint32_t adc_get_rand_seed(void)
+{
+    return (int32_t)system_rand_seed;
+}
+
+uint32_t adc_get_completed_round_count(void)
+{
+    return completed_round_count;
+}
+
+bool adc_has_power_loss_shutdown(void)
+{
+    return adc_power_loss_shutdown;
+}
+
+bool adc_has_buck_voltage_spike_shutdown(void)
+{
+    return adc_buck_voltage_spike_shutdown;
+}
+
+static void adc_select_and_start(uint8_t idx)
+{
+    /*
+     * HAL_ADC_ConfigChannel() ORs into CHSELR on STM32F0. Assigning the
+     * register keeps exactly one channel selected for this conversion.
+     */
+    adc_handle.Instance->CHSELR = 1 << lpf_cfg_table[idx].channel;
+    adc_handle.Instance->CR |= ADC_CR_ADSTART;
+}
+
 // -----------------------------------------------------------------------------
 // Debug / Fault Helpers
 // -----------------------------------------------------------------------------
+
+bool adc_rearm_power_loss_for_test(void)
+{
+    uint32_t interrupt_state = __get_PRIMASK();
+    bool     rearmed = false;
+
+    __disable_irq();
+    if (adc_power_loss_shutdown && !adc_buck_voltage_spike_shutdown &&
+        !rfgen_is_active() && (dc_voltage_history_count != 0) &&
+        (raw[DC_SENS_IDX] >= ADC_VOLTAGE_TO_COUNTS(DC_UNDERVOLTAGE_FAULT_MV)))
+    {
+        uint8_t newest_idx = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
+                                                              : (uint8_t)(dc_voltage_history_write_idx - 1);
+        uint16_t sample    = raw[DC_SENS_IDX];
+        uint16_t reference = dc_voltage_history[newest_idx];
+
+        /* Do not rearm into another immediate fast-drop trip. The running
+         * round-robin ADC keeps this history current throughout cooldown. */
+        if (((sample >= reference) || ((reference - sample) < PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS)) &&
+            rfgen_rearm_power_loss_for_test())
+        {
+            adc_power_loss_shutdown = false;
+            rearmed = true;
+        }
+    }
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+    return rearmed;
+}
 
 static void adc_fault(void)
 {

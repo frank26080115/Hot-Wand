@@ -63,32 +63,6 @@ static bool UART_TX_Init(void);
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void UART_Write(const char* text)
-{
-    size_t length;
-
-    if (!uart_allowed || (text == NULL))
-    {
-        return;
-    }
-
-    length = strlen(text);
-    if ((length == 0) || (length > UINT16_MAX))
-    {
-        return;
-    }
-
-    if (!uart_initialized && !UART_TX_Init())
-    {
-        return;
-    }
-
-    if (HAL_UART_Transmit(&uart_tx, (const uint8_t*)text, (uint16_t)length, HAL_MAX_DELAY) != HAL_OK)
-    {
-        return;
-    }
-}
-
 void UART_debug_task(void)
 {
     char     timestamp[12];
@@ -168,8 +142,34 @@ void UART_debug_task(void)
     UART_Write("\r\n");
 }
 
+void UART_Write(const char* text)
+{
+    size_t length;
+
+    if (!uart_allowed || (text == NULL))
+    {
+        return;
+    }
+
+    length = strlen(text);
+    if ((length == 0) || (length > UINT16_MAX))
+    {
+        return;
+    }
+
+    if (!uart_initialized && !UART_TX_Init())
+    {
+        return;
+    }
+
+    if (HAL_UART_Transmit(&uart_tx, (const uint8_t*)text, (uint16_t)length, HAL_MAX_DELAY) != HAL_OK)
+    {
+        return;
+    }
+}
+
 // -----------------------------------------------------------------------------
-// Getters and Setters
+// Feature Logic
 // -----------------------------------------------------------------------------
 
 void UART_SetAllowed(bool allowed)
@@ -187,6 +187,28 @@ void UART_SetAllowed(bool allowed)
 // -----------------------------------------------------------------------------
 // Supporting Functions
 // -----------------------------------------------------------------------------
+
+static bool UART_TX_Init(void)
+{
+    uart_tx.Instance                    = UART_TX_INSTANCE;
+    uart_tx.Init.BaudRate               = 115200;
+    uart_tx.Init.WordLength             = UART_WORDLENGTH_8B;
+    uart_tx.Init.StopBits               = UART_STOPBITS_1;
+    uart_tx.Init.Parity                 = UART_PARITY_NONE;
+    uart_tx.Init.Mode                   = UART_MODE_TX;
+    uart_tx.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
+    uart_tx.Init.OverSampling           = UART_OVERSAMPLING_16;
+    uart_tx.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
+    uart_tx.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+
+    if (HAL_UART_Init(&uart_tx) != HAL_OK)
+    {
+        return false;
+    }
+
+    uart_initialized = true;
+    return true;
+}
 
 void HAL_UART_MspInit(UART_HandleTypeDef* handle)
 {
@@ -211,29 +233,3 @@ void HAL_UART_MspInit(UART_HandleTypeDef* handle)
     gpio.Alternate = UART_TX_GPIO_AF;
     HAL_GPIO_Init(UART_TX_GPIOx, &gpio);
 }
-
-static bool UART_TX_Init(void)
-{
-    uart_tx.Instance                    = UART_TX_INSTANCE;
-    uart_tx.Init.BaudRate               = 115200;
-    uart_tx.Init.WordLength             = UART_WORDLENGTH_8B;
-    uart_tx.Init.StopBits               = UART_STOPBITS_1;
-    uart_tx.Init.Parity                 = UART_PARITY_NONE;
-    uart_tx.Init.Mode                   = UART_MODE_TX;
-    uart_tx.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
-    uart_tx.Init.OverSampling           = UART_OVERSAMPLING_16;
-    uart_tx.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
-    uart_tx.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-
-    if (HAL_UART_Init(&uart_tx) != HAL_OK)
-    {
-        return false;
-    }
-
-    uart_initialized = true;
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-// Debug / Fault Helpers
-// -----------------------------------------------------------------------------

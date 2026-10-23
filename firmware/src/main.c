@@ -2,8 +2,10 @@
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "hotwand.h"
 #include "adc.h"
+#include "adc_sim.h"
 #include "battery.h"
 #include "button.h"
 #include "conf.h"
@@ -59,13 +61,13 @@ uint8_t pixshift_y = 0;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-void enter_sleep_mode(void);
-
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
 static void boot_wait_for_power_stable(void);
 static void main_render_display(void);
 static void Error_Handler(void);
+
+void enter_sleep_mode(void);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -73,9 +75,7 @@ static void Error_Handler(void);
 
 int main(void)
 {
-#if defined(HOT_WAND_FIDUCIAL_ONLY) && HOT_WAND_FIDUCIAL_ONLY
-    test_bringup_oled_fiducial(); // camera focus/exposure image; never returns
-#elif !defined(BTN_SWD_TEST_HARNESS) || !BTN_SWD_TEST_HARNESS
+#if !BTN_SWD_TEST_HARNESS
     test_run(); // if a test is enabled, it does its own initialization and never returns
 #endif
 
@@ -86,33 +86,61 @@ int main(void)
     uint16_t            input_millivolts;
     bool                boot_button_down;
 
-    // HAL provides the temporary reset-clock tick needed by the RCC startup timeout. Application initialization begins
-    // with HSE immediately afterward.
+    // HAL provides the reset-clock tick for the RCC timeout and optional test boot gate.
+    // After test arming, select HSE before starting ordinary acquisition.
     HAL_Init();
 
     /* Establish the fail-low RF state before starting the watchdog. */
     rfgen_stop();
+#if HOT_WAND_TEST_HARNESS
+    /* Establish minimum buck output even if watchdog startup fails. */
+    pwrlvl_force_minimum();
+#endif
     if (!watchdog_init())
     {
         Error_Handler();
     }
 
+#if ADC_SIM_ENABLED
+    fault_test_init();
+    /* Wait before any ADC or output activity. The host enqueues complete
+     * frames, then commits start_request = 1 through SWD. No target calls or
+     * long debugger halt are needed; IWDG stays serviced during the wait. */
+    pwrlvl_force_minimum();
+    adc_sim_init();
+    while (adc_sim.state == ADC_SIM_WAITING)
+    {
+        if (adc_sim.start_request != 0)
+        {
+            adc_sim_start();
+            adc_sim.start_request = 0;
+        }
+        watchdog_feed();
+        HAL_Delay(1);
+    }
+#endif
     rfgen_clock_init();
     systick_init();
+    FT_SET(stage, FT_ADC);
     adc_init();
     btn_init();
 
+    FT_SET(stage, FT_OLED);
     I2C1_Init();
-    if (!OLED_Init(&oled, &i2c1))
+    if (fault_test_inject(FT_OLED_INIT) || !OLED_Init(&oled, &i2c1))
     {
         Error_Handler();
     }
     OLED_ConfigureGraphics(&oled);
 
 #if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
-    /* Put the calibration target on the OLED before any normal boot graphics.
-     * SWD dismissal preserves the harness's synthetic boot hold for Setup Menu. */
-    vision_test_fiducial_gate();
+    /* Framebuffer capture is always available in the test image. The host
+     * requests this optional camera target at the ADC boot gate; fault tests
+     * use the reset default (zero) and proceed without a camera or dismissal. */
+    if (vision_test_fiducial_enabled != 0)
+    {
+        vision_test_fiducial_gate();
+    }
 #endif
 
     nvm_init();
@@ -120,6 +148,16 @@ int main(void)
     {
         nvm_apply_defaults(&settings);
     }
+#if HOT_WAND_TEST_HARNESS
+    if ((fault_test.setup & 0x80000000) != 0)
+    {
+        settings.batt_mode = (fault_test.setup >> 8) & 7;
+        settings.startup_power_level = (fault_test.setup >> 11) & 3;
+        settings.input_v_calib = (fault_test.setup >> 13) & 15;
+        settings.auto_sleep = (fault_test.setup >> 17) & 3;
+        settings.auto_dim = (fault_test.setup >> 19) & 3;
+    }
+#endif
     adc_set_input_voltage_calibration(settings.input_v_calib);
 
     // when all ADC channels have been read once
@@ -171,6 +209,12 @@ int main(void)
         battery_set_params(0, BATT_MODE_NONE);
     }
 
+#if HOT_WAND_TEST_HARNESS
+    if (((fault_test.setup & 0x80000000) != 0) && ((fault_test.setup & 255) != 0))
+    {
+        battery_set_params(fault_test.setup & 255, settings.batt_mode);
+    }
+#endif
     /* perform all other initialization here */
     tipdetect_init();
     pwrlvl_init();
@@ -178,6 +222,11 @@ int main(void)
     pwrmgt_set_idle_power_threshold(settings.idle_detect_thresh);
     settings.fan_mode = fan_normalize_mode(settings.fan_mode);
     fan_init(settings.fan_mode, settings.fan_sig_inv != 0);
+#if ADC_SIM_ENABLED
+    /* Resume near-full attenuation, then let the normal supervisor regulate
+     * and decide whether RF may start. This does not bypass any interlock. */
+    pwrlvl_release_minimum();
+#endif
     display_last_frame_ms = systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
 
     for (;;)
@@ -186,6 +235,7 @@ int main(void)
         uint32_t now;
         bool     short_msg_active;
 
+        fault_test_task();
         btn_task();
         tipdetect_task();
 
@@ -269,12 +319,16 @@ int main(void)
         }
 
         /* Feed only after the complete supervised foreground pass succeeds. */
+#if HOT_WAND_TEST_HARNESS
+        fault_test_snapshot();
+        fault_test.stage = FT_RUNTIME;
+#endif
         watchdog_feed();
     }
 }
 
 // -----------------------------------------------------------------------------
-// Supporting Functions
+// Feature Logic
 // -----------------------------------------------------------------------------
 
 static void boot_check_for_setup(void)
@@ -285,6 +339,10 @@ static void boot_check_for_setup(void)
     uint8_t  drawn_width      = 0;
     bool     release_pending  = false;
 
+    if (fault_test_inject(FT_GRAPHICS))
+    {
+        graphics = NULL;
+    }
     if (graphics == NULL)
     {
         Error_Handler();
@@ -353,17 +411,6 @@ static void boot_check_for_setup(void)
         HAL_Delay(1);
         watchdog_feed();
     }
-}
-
-static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width)
-{
-    u8g2_ClearBuffer(graphics);
-    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "HOLD");
-    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, "TO");
-    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), "ENTER");
-    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), "SETUP");
-    u8g2_DrawBox(graphics, 0, SETUP_HOLD_BAR_Y, bar_width, SETUP_HOLD_BAR_HEIGHT);
-    OLED_SendBuffer(&oled);
 }
 
 static void boot_wait_for_power_stable(void)
@@ -470,7 +517,15 @@ static void main_render_display(void)
 
     u8g2_ClearBuffer(graphics);
     u8g2_SetFont(graphics, u8g2_font_6x10_tr);
-    u8g2_DrawStr(graphics, (u8g2_uint_t)pixshift_x, (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y), voltage);
+    /* Alternate voltage and !HOT! in one-second phases while thermal
+     * derating is active, including its hysteresis recovery interval. */
+    u8g2_DrawStr(graphics,
+                 (u8g2_uint_t)pixshift_x,
+                 (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y),
+                 ((pwrmgt_get_attenuation_reasons() & PWRMGT_ATTENUATION_TEMPERATURE) != 0 &&
+                  ((systick_get_ms() / 1000) & 1) != 0)
+                     ? "!HOT!"
+                     : voltage);
     pwrmgt_render_graph(graphics);
     pwrmgt_render_high_voltage_warning(graphics, input_millivolts);
     OLED_SendBuffer(&oled);
@@ -479,6 +534,21 @@ static void main_render_display(void)
 void enter_sleep_mode(void)
 {
     show_fault("ZZZZZ", true);
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width)
+{
+    u8g2_ClearBuffer(graphics);
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "HOLD");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, "TO");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), "ENTER");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (3 * OLED_TEXT_LINE_HEIGHT), "SETUP");
+    u8g2_DrawBox(graphics, 0, SETUP_HOLD_BAR_Y, bar_width, SETUP_HOLD_BAR_HEIGHT);
+    OLED_SendBuffer(&oled);
 }
 
 // -----------------------------------------------------------------------------

@@ -53,6 +53,7 @@ static volatile bool                   btn_release_pending;
 static volatile bool                   btn_short_press;
 static volatile bool                   btn_long_press;
 static volatile bool                   btn_long_press_emitted;
+static volatile bool                   btn_events_suppressed;
 static volatile uint32_t               btn_down_since_ms;
 static volatile uint32_t               btn_release_since_ms;
 static volatile uint32_t               btn_last_short_press_ms;
@@ -61,7 +62,9 @@ static volatile btn_short_press_mode_t btn_short_press_mode = BTN_SHORT_PRESS_ON
 
 #if BTN_SWD_TEST_HARNESS
 /* Externally visible, volatile words remain addressable through the ELF's
- * symbols even with LTO. The harness build enters setup with a held button. */
+ * symbols even with LTO. The host chooses the boot hold at the ADC boot gate;
+ * the default released button lets fault tests enter normal supervision. */
+volatile uint32_t btn_swd_test_boot_hold __attribute__((used, externally_visible));
 volatile uint32_t btn_swd_test_command_ms __attribute__((used, externally_visible)) = BTN_SWD_NO_COMMAND;
 volatile uint32_t btn_swd_test_state __attribute__((used, externally_visible))      = BTN_SWD_BOOT_HELD;
 volatile uint32_t btn_swd_test_completed __attribute__((used, externally_visible));
@@ -115,13 +118,14 @@ void btn_init(void)
 
     now                     = systick_get_ms();
 #if BTN_SWD_TEST_HARNESS
-    /* Every reset begins with a synthetic held button. A zero command from
-     * SWD releases it after the setup screen has appeared. */
+    /* The menu runner requests a held boot button before starting the ADC
+     * sequence. All other tests boot with a released button. A zero command
+     * releases a requested boot hold after the setup screen has appeared. */
     btn_swd_test_command_ms = BTN_SWD_NO_COMMAND;
-    btn_swd_test_state      = BTN_SWD_BOOT_HELD;
     btn_swd_test_completed  = 0;
-    btn_swd_virtual_down    = true;
-    btn_down                = true;
+    btn_swd_virtual_down    = (btn_swd_test_boot_hold != 0);
+    btn_swd_test_state      = btn_swd_virtual_down ? BTN_SWD_BOOT_HELD : BTN_SWD_IDLE;
+    btn_down               = btn_swd_virtual_down;
 #else
     btn_down                = (HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET);
 #endif
@@ -129,6 +133,7 @@ void btn_init(void)
     btn_short_press         = false;
     btn_long_press          = false;
     btn_long_press_emitted  = false;
+    btn_events_suppressed   = false;
     btn_down_since_ms       = now;
     btn_release_since_ms    = now;
     btn_last_short_press_ms = now;
@@ -192,7 +197,7 @@ void btn_task(void)
         }
     }
 
-    if (btn_down && !btn_release_pending && pin_is_down && !btn_long_press_emitted &&
+    if (btn_down && !btn_release_pending && pin_is_down && !btn_events_suppressed && !btn_long_press_emitted &&
         ((uint32_t)(now - btn_down_since_ms) >= BTN_LONG_PRESS_MS))
     {
         btn_long_press          = true;
@@ -257,94 +262,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 }
 
 // -----------------------------------------------------------------------------
-// Getters and Setters
-// -----------------------------------------------------------------------------
-
-void btn_set_short_press_mode(btn_short_press_mode_t mode)
-{
-    uint32_t interrupt_state;
-
-    if (mode != BTN_SHORT_PRESS_ON_RELEASE)
-    {
-        mode = BTN_SHORT_PRESS_ON_PRESS;
-    }
-
-    interrupt_state = __get_PRIMASK();
-    __disable_irq();
-    btn_short_press_mode = mode;
-    if (interrupt_state == 0)
-    {
-        __enable_irq();
-    }
-}
-
-bool btn_is_down(void)
-{
-    if (!btn_initialized)
-    {
-        return false;
-    }
-
-#if BTN_SWD_TEST_HARNESS
-    return btn_swd_virtual_down;
-#else
-    return HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET;
-#endif
-}
-
-bool btn_has_short_press(bool clear_flag)
-{
-    return btn_get_event(&btn_short_press, clear_flag);
-}
-
-bool btn_has_long_press(bool clear_flag)
-{
-    return btn_get_event(&btn_long_press, clear_flag);
-}
-
-uint32_t btn_get_consecutive_presses(void)
-{
-    uint32_t count;
-    uint32_t interrupt_state;
-    uint32_t now;
-
-    interrupt_state = __get_PRIMASK();
-    __disable_irq();
-
-    now = systick_get_ms();
-    if ((btn_consecutive_presses != 0) &&
-        ((uint32_t)(now - btn_last_short_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS))
-    {
-        btn_consecutive_presses = 0;
-    }
-    count = btn_consecutive_presses;
-
-    if (interrupt_state == 0)
-    {
-        __enable_irq();
-    }
-
-    return count;
-}
-
-void btn_reset_consecutive_presses(void)
-{
-    uint32_t interrupt_state;
-
-    interrupt_state = __get_PRIMASK();
-    __disable_irq();
-    btn_consecutive_presses = 0;
-    if (interrupt_state == 0)
-    {
-        __enable_irq();
-    }
-}
-
-// -----------------------------------------------------------------------------
-// Supporting Functions
+// Feature Logic
 // -----------------------------------------------------------------------------
 
 #if BTN_SWD_TEST_HARNESS
+
 static void btn_swd_task(uint32_t now)
 {
     uint32_t command_ms;
@@ -410,19 +332,108 @@ static void btn_swd_task(uint32_t now)
     btn_accept_down(now);
     btn_swd_test_state = BTN_SWD_DOWN;
 }
+
 #endif
 
-static void btn_accept_down(uint32_t now)
+void btn_discard_until_release(void)
 {
-    btn_down               = true;
-    btn_release_pending    = false;
-    btn_down_since_ms      = now;
-    btn_long_press_emitted = false;
+    uint32_t interrupt_state;
 
-    if (btn_short_press_mode == BTN_SHORT_PRESS_ON_PRESS)
+    /* EXTI can publish a short press while foreground code consumes a modal
+     * hold. Clear and arm suppression atomically so neither event can leak. */
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+    btn_short_press         = false;
+    btn_long_press          = false;
+    btn_consecutive_presses = 0;
+    /* btn_down includes a release still undergoing debounce. Waiting for that
+     * qualified release prevents contact bounce from becoming a new gesture. */
+    btn_events_suppressed = btn_down;
+    if (interrupt_state == 0)
     {
-        btn_record_short_press(now);
+        __enable_irq();
     }
+}
+
+uint32_t btn_get_consecutive_presses(void)
+{
+    uint32_t count;
+    uint32_t interrupt_state;
+    uint32_t now;
+
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+
+    now = systick_get_ms();
+    if ((btn_consecutive_presses != 0) &&
+        ((uint32_t)(now - btn_last_short_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS))
+    {
+        btn_consecutive_presses = 0;
+    }
+    count = btn_consecutive_presses;
+
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+
+    return count;
+}
+
+void btn_reset_consecutive_presses(void)
+{
+    uint32_t interrupt_state;
+
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+    btn_consecutive_presses = 0;
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+}
+
+void btn_set_short_press_mode(btn_short_press_mode_t mode)
+{
+    uint32_t interrupt_state;
+
+    if (mode != BTN_SHORT_PRESS_ON_RELEASE)
+    {
+        mode = BTN_SHORT_PRESS_ON_PRESS;
+    }
+
+    interrupt_state = __get_PRIMASK();
+    __disable_irq();
+    btn_short_press_mode = mode;
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
+static void btn_record_short_press(uint32_t now)
+{
+    if (btn_events_suppressed)
+    {
+        return;
+    }
+
+    if ((btn_consecutive_presses == 0) ||
+        ((uint32_t)(now - btn_last_short_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS))
+    {
+        btn_consecutive_presses = 1;
+    }
+    else if (btn_consecutive_presses < UINT32_MAX)
+    {
+        btn_consecutive_presses++;
+    }
+
+    btn_last_short_press_ms = now;
+    btn_short_press         = true;
 }
 
 static void btn_accept_release(void)
@@ -436,22 +447,22 @@ static void btn_accept_release(void)
     btn_down               = false;
     btn_release_pending    = false;
     btn_long_press_emitted = false;
+    /* Clear only after the release-mode event decision above. A consumed
+     * gesture's release must not escape into the next application's controls. */
+    btn_events_suppressed = false;
 }
 
-static void btn_record_short_press(uint32_t now)
+static void btn_accept_down(uint32_t now)
 {
-    if ((btn_consecutive_presses == 0) ||
-        ((uint32_t)(now - btn_last_short_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS))
-    {
-        btn_consecutive_presses = 1;
-    }
-    else if (btn_consecutive_presses < UINT32_MAX)
-    {
-        btn_consecutive_presses++;
-    }
+    btn_down               = true;
+    btn_release_pending    = false;
+    btn_down_since_ms      = now;
+    btn_long_press_emitted = false;
 
-    btn_last_short_press_ms = now;
-    btn_short_press         = true;
+    if (btn_short_press_mode == BTN_SHORT_PRESS_ON_PRESS)
+    {
+        btn_record_short_press(now);
+    }
 }
 
 static bool btn_get_event(volatile bool* event, bool clear_flag)
@@ -479,4 +490,32 @@ static bool btn_get_event(volatile bool* event, bool clear_flag)
     }
 
     return occurred;
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+bool btn_is_down(void)
+{
+    if (!btn_initialized)
+    {
+        return false;
+    }
+
+#if BTN_SWD_TEST_HARNESS
+    return btn_swd_virtual_down;
+#else
+    return HAL_GPIO_ReadPin(BTN_GPIOx, BTN_PINn) == GPIO_PIN_RESET;
+#endif
+}
+
+bool btn_has_short_press(bool clear_flag)
+{
+    return btn_get_event(&btn_short_press, clear_flag);
+}
+
+bool btn_has_long_press(bool clear_flag)
+{
+    return btn_get_event(&btn_long_press, clear_flag);
 }

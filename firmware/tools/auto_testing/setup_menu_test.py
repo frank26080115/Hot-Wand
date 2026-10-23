@@ -1,7 +1,8 @@
 """Run the STM32F042 Setup Menu SWD and RX0 II hardware test.
 
-Build ``stm32f042_setup_swd`` in PlatformIO first. The powered board, ST-Link
-V3MINIE, and RX0 II in PC Remote still-photo mode must already be connected.
+Build ``stm32f042_test`` in PlatformIO first. The powered board and ST-Link
+must be connected. Camera capture is optional (--no-camera); a synthetic PNG
+from the sent framebuffer is always saved for every observation.
 This script flashes the existing ELF, preserves the NVM page during flashing,
 drives synthetic presses, and saves a report and every observation image.
 """
@@ -17,23 +18,24 @@ import time
 import traceback
 
 try:
-    from .build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START,
+    from .build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START, TEST_ELF, TEST_ENVIRONMENT,
                                  latest_nvm_record, read_menu_items, settings_indices)
+    from .harness import start_test_boot
     from .eyes_rx0 import Rx0Camera
     from .frmbuf2png import save_framebuffer_png
     from .image_processing import compare_framebuffer_to_capture, stable_frame_signature
     from .target_gdb import GdbSession
 except ImportError:  # Direct execution from this directory.
-    from build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START,
+    from build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START, TEST_ELF, TEST_ENVIRONMENT,
                                 latest_nvm_record, read_menu_items, settings_indices)
+    from harness import start_test_boot
     from eyes_rx0 import Rx0Camera
     from frmbuf2png import save_framebuffer_png
     from image_processing import compare_framebuffer_to_capture, stable_frame_signature
     from target_gdb import GdbSession
 
 
-FIRMWARE = Path(__file__).resolve().parents[2]
-ELF = FIRMWARE / ".pio" / "build" / "stm32f042_setup_swd" / "firmware.elf"
+ELF = TEST_ELF
 SHORT_MS = 200
 LONG_MS = 1250
 VISION_MISMATCH_LIMIT = 0.05
@@ -48,7 +50,7 @@ class TestRunner:
         self.report_file = (self.output / "report.txt").open("w", encoding="utf-8", buffering=1)
         self.events = []
         self.errors = 0
-        self.camera_ok = True
+        self.camera_ok = not args.no_camera
         self.target = None
         self.camera = None
         self.items = []
@@ -143,18 +145,24 @@ class TestRunner:
             self.long(f"{label}_cycle_{step + 1}", observe=False)
         self.capture(label)
 
-    def dismiss_and_enter(self, label: str, *, reset: bool = True):
+    def dismiss_and_enter(self, label: str, *, reset: bool = True, prepared: bool = False):
         if reset:
             self.target.reset()
-            self.log(f"{label}: GDB reset; fiducial gate should be visible")
+            self.log(f"{label}: GDB reset; preparing shared test image")
+        if not prepared:
+            self.start_menu_boot()
         self.target.wait_state(0, timeout=12)
         self.target.dismiss_fiducial()
         # Boot setup hold is 3000 target milliseconds after the gate exits.
         time.sleep(3.5)
         self.target.release_boot_hold()
         self.page = 0
-        self.values = settings_indices(latest_nvm_record(self.target.read_memory(NVM_START, 1024)))
+        self.values = self.read_saved_values()
         self.capture(label)
+
+    def start_menu_boot(self):
+        report = start_test_boot(self.target, self.target.symbols, setup=True, fiducial=True)
+        self.log("Shared test boot: " + json.dumps(report))
 
     def exit_menu(self, save: bool, label: str):
         self.go_to(len(self.items) - (2 if save else 1), label)
@@ -164,7 +172,9 @@ class TestRunner:
 
     def read_saved_values(self) -> list[int]:
         page = self.target.read_memory(NVM_START, 1024)
-        return settings_indices(latest_nvm_record(page))
+        # SHOW_SPLASH is absent in the shared test image. The saved field remains
+        # in the journal; project only the compiled editable pages for this run.
+        return settings_indices(latest_nvm_record(page))[:len(self.items) - 2]
 
     def save_nvm_at_stop(self):
         """Capture NVM while GDB is still connected, even after a test error."""
@@ -178,6 +188,7 @@ class TestRunner:
     def phase_a(self):
         self.log("A: entry and button classification")
         self.target.reset()
+        self.start_menu_boot()
         self.target.dismiss_fiducial()
         time.sleep(1.5)
         self.target.release_boot_hold()
@@ -331,7 +342,7 @@ class TestRunner:
         try:
             self.log(f"Output directory: {self.output}")
             metadata = BuildMetadata(ELF)
-            self.log(f"Build environment: stm32f042_setup_swd; ELF: {ELF}")
+            self.log(f"Build environment: {TEST_ENVIRONMENT}; ELF: {ELF}")
             self.log(f"ELF SHA-256: {metadata.sha256}; load ranges: {metadata.load_ranges}")
             self.log("Key ELF symbols: " + json.dumps({name: f"0x{metadata.address(name):08x}"
                                                    for name in ("setup_menu_items", "vision_test_oled_sent_generation",
@@ -351,23 +362,20 @@ class TestRunner:
                 self.items = target.inspect(lambda: read_menu_items(target, metadata.address("setup_menu_items")))
                 self.log("Compiled menu: " + json.dumps([{"title": x.title, "options": x.options} for x in self.items]))
 
+                self.baseline = self.baseline[:len(self.items) - 2]
+                self.start_menu_boot()
+
                 try:
-                    self.camera = Rx0Camera(camera_index=self.args.camera_index, gphoto2=self.args.gphoto2)
-                    self.log(f"Camera: {self.camera.model}")
-                    if self.args.calibration:
-                        self.camera.use_calibration(self.args.calibration)
-                        self.log(f"Reusing calibration: {self.args.calibration}")
+                    if self.args.no_camera:
+                        self.log("Camera disabled; saving synthetic framebuffer images only")
                     else:
-                        image = self.camera.calibrate(self.output / "fiducial_calibration.png",
-                                                      crop_to=self.args.crop_to,
-                                                      show_progress=self.args.show_progress)
-                        self.log(f"Camera calibration: {image.with_suffix('.json')}")
+                        self.setup_camera()
                 except Exception as exc:
                     self.camera_ok = False
                     self.log(f"Camera setup failed: {exc}; proceeding with framebuffer evidence", status="FAIL")
                 try:
                     self.capture("fiducial_gate")
-                    self.dismiss_and_enter("initial_menu", reset=False)
+                    self.dismiss_and_enter("initial_menu", reset=False, prepared=True)
                     self.phase_a()
                     self.phase_b()
                     self.phase_c()
@@ -384,10 +392,23 @@ class TestRunner:
             self.report_file.close()
         return 1 if self.errors else 0
 
+    def setup_camera(self):
+        self.camera = Rx0Camera(camera_index=self.args.camera_index, gphoto2=self.args.gphoto2)
+        self.log(f"Camera: {self.camera.model}")
+        if self.args.calibration:
+            self.camera.use_calibration(self.args.calibration)
+            self.log(f"Reusing calibration: {self.args.calibration}")
+        else:
+            image = self.camera.calibrate(self.output / "fiducial_calibration.png",
+                                          crop_to=self.args.crop_to,
+                                          show_progress=self.args.show_progress)
+            self.log(f"Camera calibration: {image.with_suffix('.json')}")
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, help="New artifact directory; default is timestamped under cwd")
+    parser.add_argument("--no-camera", action="store_true", help="Save synthetic framebuffer PNGs without camera access")
     parser.add_argument("--calibration", type=Path, help="Reuse a prior fiducial JSON instead of searching focus/EV")
     parser.add_argument("--crop-to", type=int, default=800, help="Central fiducial search square (default 800)")
     parser.add_argument("--camera-index", type=int, help="RX0 camera index; default first available")

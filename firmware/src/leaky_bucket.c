@@ -2,6 +2,7 @@
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "leaky_bucket.h"
 
 #include "adc.h"
@@ -105,6 +106,7 @@ void leaky_bucket_task(void)
         }
     }
 
+    FT_SET(energy_uj, leaky_bucket_energy_uj > UINT32_MAX ? UINT32_MAX : (uint32_t)leaky_bucket_energy_uj);
     /* The normal temperature hysteresis in pwrmgt_task() controls release.
      * The configured maximum affects only the reported temperature. */
     {

@@ -8,6 +8,7 @@ The warning will pause the operation of the soldering iron, and the user can ove
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "battery.h"
 #include "pins.h"
 #include "adc.h"
@@ -83,12 +84,146 @@ const battery_cell_voltage_range_t battery_cell_voltage_ranges[BATT_MODE_LIFE_SA
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
+static bool battery_override_eligible(uint16_t battery_millivolts);
 static void battery_show_fault_fatal(void);
 static void battery_render_fault(u8g2_t* graphics, uint8_t progress);
 
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
+
+void battery_show_fault(bool allow_override)
+{
+    u8g2_t*  graphics;
+    uint32_t last_refresh_ms;
+    uint32_t last_step_ms;
+    uint8_t  progress       = 0;
+    bool     override_ready = false;
+
+    rfgen_stop();
+    pwrlvl_force_minimum();
+    fan_stop();
+
+    if (!allow_override || !battery_can_override())
+    {
+        battery_show_fault_fatal();
+        return;
+    }
+
+    FT_SET(stage, FT_BATTERY);
+    btn_init();
+
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics != NULL)
+    {
+        battery_render_fault(graphics, progress);
+    }
+
+    last_step_ms    = systick_get_ms();
+    last_refresh_ms = last_step_ms;
+
+    for (;;)
+    {
+        uint32_t elapsed;
+        uint32_t now;
+        uint32_t steps;
+
+        btn_task();
+        now = systick_get_ms();
+
+        /* Once completed, keep the full bar latched until its next frame. */
+        if (!override_ready)
+        {
+            if (!btn_is_down())
+            {
+                if (progress != 0)
+                {
+                    progress = 0;
+                }
+                last_step_ms = now;
+            }
+            else
+            {
+                elapsed = (uint32_t)(now - last_step_ms);
+                steps   = elapsed / BATTERY_FAULT_STEP_MS;
+
+                if (steps > 0)
+                {
+                    last_step_ms += steps * BATTERY_FAULT_STEP_MS;
+                    if (steps >= (uint32_t)(BATTERY_FAULT_BAR_WIDTH - progress))
+                    {
+                        progress = BATTERY_FAULT_BAR_WIDTH;
+                    }
+                    else
+                    {
+                        progress = (uint8_t)(progress + steps);
+                    }
+                    override_ready = progress >= BATTERY_FAULT_BAR_WIDTH;
+                }
+            }
+        }
+
+        /* 67 ms is the nearest whole-millisecond period that does not exceed
+         * 15 frames per second. */
+        if ((uint32_t)(now - last_refresh_ms) >= BATTERY_FAULT_REFRESH_MS)
+        {
+            uint16_t battery_millivolts;
+
+            if (graphics != NULL)
+            {
+                battery_render_fault(graphics, progress);
+            }
+            last_refresh_ms = now;
+
+            /* Revoke override ability if the voltage has continued to drop.
+             * Read after the display transfer, which can take time, and check
+             * this same snapshot before any completion state or output changes. */
+            battery_millivolts = adc_to_millivolts(DC_SENS_IDX);
+            if (!battery_override_eligible(battery_millivolts))
+            {
+                battery_show_fault_fatal();
+                return;
+            }
+
+            if (override_ready)
+            {
+                uint16_t next_cell_count = (uint16_t)(battery_cell_count - 1);
+                uint32_t minimum_battery_millivolts =
+                    (uint32_t)next_cell_count * battery_cell_voltage_ranges[battery_mode].minimum_millivolts_per_cell;
+
+                /* A lower inferred cell count must actually pass the normal
+                 * battery cutoff. Reject before committing it so RF cannot
+                 * briefly resume with a still-invalid battery configuration. */
+                if ((uint32_t)battery_millivolts < minimum_battery_millivolts)
+                {
+                    battery_show_fault_fatal();
+                    return;
+                }
+
+                if (!battery_set_params(next_cell_count, battery_mode))
+                {
+                    // revoke permission, but this should never happen
+                    battery_show_fault_fatal();
+                    return;
+                }
+
+                battery_override_used = true;
+                /* The override hold belongs entirely to this dialog. Consume
+                 * its pending short/long events and ignore the rest of the
+                 * hold through release, so main cannot change mode or sleep.
+                 * Return promptly so normal power supervision can resume. */
+                btn_discard_until_release();
+                fan_resume();
+                rfgen_start();
+                pwrlvl_release_minimum();
+                return;
+            }
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
 
 /*
 Guess the number of cells according to total voltage and user selected battery chemistry
@@ -160,136 +295,8 @@ bool battery_guess(uint16_t battery_millivolts, uint8_t selected_battery_mode, b
     return true;
 }
 
-bool battery_check(void)
-{
-    uint32_t minimum_battery_millivolts;
-
-    /* Power management is the single owner of this periodic check and of
-     * presenting battery_show_fault() when it fails.  Do not duplicate the
-     * check in main or another task. */
-
-    if (battery_cell_count == 0)
-    {
-        return true;
-    }
-
-    minimum_battery_millivolts =
-        (uint32_t)battery_cell_count * battery_cell_voltage_ranges[battery_mode].minimum_millivolts_per_cell;
-
-    return (uint32_t)adc_to_millivolts(DC_SENS_IDX) >= minimum_battery_millivolts;
-}
-
-void battery_show_fault(bool allow_override)
-{
-    u8g2_t*  graphics;
-    uint32_t last_refresh_ms;
-    uint32_t last_step_ms;
-    uint8_t  progress       = 0;
-    bool     override_ready = false;
-
-    rfgen_stop();
-    pwrlvl_force_minimum();
-    fan_stop();
-
-    if (!allow_override || !battery_can_override())
-    {
-        battery_show_fault_fatal();
-        return;
-    }
-
-    btn_init();
-
-    graphics = OLED_GetGraphics(&oled);
-    if (graphics != NULL)
-    {
-        battery_render_fault(graphics, progress);
-    }
-
-    last_step_ms    = systick_get_ms();
-    last_refresh_ms = last_step_ms;
-
-    for (;;)
-    {
-        uint32_t elapsed;
-        uint32_t now;
-        uint32_t steps;
-
-        btn_task();
-        now = systick_get_ms();
-
-        /* Once completed, keep the full bar latched until its next frame. */
-        if (!override_ready)
-        {
-            if (!btn_is_down())
-            {
-                if (progress != 0)
-                {
-                    progress = 0;
-                }
-                last_step_ms = now;
-            }
-            else
-            {
-                elapsed = (uint32_t)(now - last_step_ms);
-                steps   = elapsed / BATTERY_FAULT_STEP_MS;
-
-                if (steps > 0)
-                {
-                    last_step_ms += steps * BATTERY_FAULT_STEP_MS;
-                    if (steps >= (uint32_t)(BATTERY_FAULT_BAR_WIDTH - progress))
-                    {
-                        progress = BATTERY_FAULT_BAR_WIDTH;
-                    }
-                    else
-                    {
-                        progress = (uint8_t)(progress + steps);
-                    }
-                    override_ready = progress >= BATTERY_FAULT_BAR_WIDTH;
-                }
-            }
-        }
-
-        /* 67 ms is the nearest whole-millisecond period that does not exceed
-         * 15 frames per second. */
-        if ((uint32_t)(now - last_refresh_ms) >= BATTERY_FAULT_REFRESH_MS)
-        {
-            if (graphics != NULL)
-            {
-                battery_render_fault(graphics, progress);
-            }
-            last_refresh_ms = now;
-
-            if (override_ready)
-            {
-                if (!battery_set_params((uint16_t)(battery_cell_count - 1), battery_mode))
-                {
-                    // revoke permission, but this should never happen
-                    battery_show_fault_fatal();
-                    return;
-                }
-
-                battery_override_used = true;
-                fan_resume();
-                rfgen_start();
-                pwrlvl_release_minimum();
-                return;
-            }
-
-            // revoke override ability if the voltage has continued to drop
-            if (!battery_can_override())
-            {
-                battery_show_fault_fatal();
-                return;
-            }
-        }
-
-        HAL_Delay(1);
-        watchdog_feed();
-    }
-}
-
 // -----------------------------------------------------------------------------
-// Getters and Setters
+// Feature Logic
 // -----------------------------------------------------------------------------
 
 bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
@@ -310,11 +317,41 @@ bool battery_set_params(uint16_t cell_count, uint8_t selected_battery_mode)
 
     battery_cell_count = cell_count;
     battery_mode       = selected_battery_mode;
+    FT_SET(cells, cell_count);
+    FT_SET(mode, selected_battery_mode);
 
     return true;
 }
 
+bool battery_check(void)
+{
+    uint32_t minimum_battery_millivolts;
+
+    /* Power management is the single owner of this periodic check and of
+     * presenting battery_show_fault() when it fails.  Do not duplicate the
+     * check in main or another task. */
+
+    if (battery_cell_count == 0)
+    {
+        return true;
+    }
+
+    minimum_battery_millivolts =
+        (uint32_t)battery_cell_count * battery_cell_voltage_ranges[battery_mode].minimum_millivolts_per_cell;
+
+    return (uint32_t)adc_to_millivolts(DC_SENS_IDX) >= minimum_battery_millivolts;
+}
+
 bool battery_can_override(void)
+{
+    return battery_override_eligible(adc_to_millivolts(DC_SENS_IDX));
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
+static bool battery_override_eligible(uint16_t battery_millivolts)
 {
     // the override capability is mostly to overcome a bad guess of cell count
     // when used, it sets the cell count to one less than the guessed count
@@ -326,21 +363,26 @@ bool battery_can_override(void)
     }
 
     // must also respect a minimum absolute voltage
-    return adc_to_millivolts(DC_SENS_IDX) >= BATTERY_OVERRIDE_MINIMUM_MV;
+    /* The override must also respect the supervisor's absolute hardware lockout
+     * if its configurable threshold differs from the override minimum. */
+    return (battery_millivolts >= BATTERY_OVERRIDE_MINIMUM_MV) &&
+           (battery_millivolts >= DC_UNDERVOLTAGE_FAULT_MV);
 }
 
 // -----------------------------------------------------------------------------
-// Supporting Functions
+// Debug / Fault Helpers
 // -----------------------------------------------------------------------------
+
+static void battery_render_fault(u8g2_t* graphics, uint8_t progress)
+{
+    fault_test_snapshot();
+    FT_SET(message, (uint32_t)battery_override_message);
+    fault_render(graphics, battery_override_message, 1, 1);
+    u8g2_DrawBox(graphics, 0, BATTERY_FAULT_BAR_Y, progress, BATTERY_FAULT_BAR_HEIGHT);
+    OLED_SendBuffer(&oled);
+}
 
 static void battery_show_fault_fatal(void)
 {
     show_fault("LOW\nBATT\n!!!!!", false);
-}
-
-static void battery_render_fault(u8g2_t* graphics, uint8_t progress)
-{
-    fault_render(graphics, battery_override_message, 1, 1);
-    u8g2_DrawBox(graphics, 0, BATTERY_FAULT_BAR_Y, progress, BATTERY_FAULT_BAR_HEIGHT);
-    OLED_SendBuffer(&oled);
 }

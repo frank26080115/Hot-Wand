@@ -143,34 +143,6 @@ void fanpwm_set(uint8_t duty_percent)
 // Supporting Functions
 // -----------------------------------------------------------------------------
 
-static void fanpwm_configure_gpio_alternate(void)
-{
-    GPIO_InitTypeDef gpio_cfg = {0};
-
-    gpio_cfg.Pin       = FAN_PINn;
-    gpio_cfg.Mode      = GPIO_MODE_AF_PP;
-    gpio_cfg.Pull      = GPIO_NOPULL;
-    gpio_cfg.Speed     = GPIO_SPEED_FREQ_LOW;
-    gpio_cfg.Alternate = GPIO_AF1_IR;
-    HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
-}
-
-static void fanpwm_configure_gpio_output(bool output_high)
-{
-    GPIO_InitTypeDef gpio_cfg = {0};
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    /* Preload the output latch before changing PA13 away from IR_OUT. */
-    HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, output_high ? GPIO_PIN_SET : GPIO_PIN_RESET);
-
-    gpio_cfg.Pin   = FAN_PINn;
-    gpio_cfg.Mode  = GPIO_MODE_OUTPUT_PP;
-    gpio_cfg.Pull  = GPIO_NOPULL;
-    gpio_cfg.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
-}
-
 static void fanpwm_configure_timers(fanpwm_mode_t mode)
 {
     uint16_t zero_compare = fanpwm_duty_to_compare(mode, 0);
@@ -214,6 +186,38 @@ static void fanpwm_configure_timers(fanpwm_mode_t mode)
     TIM17->SR    = 0;
     TIM17->CR1   = TIM_CR1_CEN;
 }
+
+static void fanpwm_configure_gpio_output(bool output_high)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    /* Preload the output latch before changing PA13 away from IR_OUT. */
+    HAL_GPIO_WritePin(FAN_GPIOx, FAN_PINn, output_high ? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+    gpio_cfg.Pin   = FAN_PINn;
+    gpio_cfg.Mode  = GPIO_MODE_OUTPUT_PP;
+    gpio_cfg.Pull  = GPIO_NOPULL;
+    gpio_cfg.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
+}
+
+static void fanpwm_configure_gpio_alternate(void)
+{
+    GPIO_InitTypeDef gpio_cfg = {0};
+
+    gpio_cfg.Pin       = FAN_PINn;
+    gpio_cfg.Mode      = GPIO_MODE_AF_PP;
+    gpio_cfg.Pull      = GPIO_NOPULL;
+    gpio_cfg.Speed     = GPIO_SPEED_FREQ_LOW;
+    gpio_cfg.Alternate = GPIO_AF1_IR;
+    HAL_GPIO_Init(FAN_GPIOx, &gpio_cfg);
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
 
 static uint16_t fanpwm_duty_to_compare(fanpwm_mode_t mode, uint8_t duty_percent)
 {

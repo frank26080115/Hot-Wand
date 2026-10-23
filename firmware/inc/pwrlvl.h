@@ -70,7 +70,9 @@ void pwrlvl_task(void);
 void pwrlvl_set_mode(pwrlvl_mode_t mode);
 bool pwrlvl_is_current_limiting(void);
 void pwrlvl_force_minimum(void);
-/* Releases a forced minimum and resumes regulation in the selected mode. */
+/* Releases a forced minimum and resumes regulation in the selected mode.
+ * The shared automated-test build releases only the logical override; its
+ * physical attenuation output remains GPIO-high / minimum buck voltage. */
 void pwrlvl_release_minimum(void);
 
 #ifdef __cplusplus

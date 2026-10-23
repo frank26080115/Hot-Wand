@@ -12,6 +12,7 @@ bool rfgen_clock_init(void);
 bool rfgen_has_fault(void);
 bool rfgen_has_clock_fault(void);
 bool rfgen_is_active(void);
+/* Shared automated-test firmware inhibits physical starts through both APIs. */
 void rfgen_start(void);
 /* Bring-up-only entry point: retains clock and emergency-stop checks, but
  * deliberately ignores the external tip-presence interlock. */

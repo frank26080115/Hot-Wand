@@ -17,20 +17,8 @@ static uint32_t hotwand_rand_state = 1;
 static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places, size_t* length);
 
 // -----------------------------------------------------------------------------
-// Utility Functions
+// Main Flow
 // -----------------------------------------------------------------------------
-
-void hotwand_srand(uint32_t seed)
-{
-    hotwand_rand_state = seed;
-}
-
-uint16_t hotwand_rand(void)
-{
-    hotwand_rand_state = (hotwand_rand_state * 1103515245) + 12345;
-
-    return (uint16_t)((hotwand_rand_state >> 16) & HOTWAND_RAND_MAX);
-}
 
 char* int_to_str(int value, char* str, int base, size_t* length)
 {
@@ -99,60 +87,6 @@ char* int_to_str(int value, char* str, int base, size_t* length)
 
     return str;
 }
-
-char* millivolts_to_str(uint32_t millivolts, char* str, uint8_t decimal_places, size_t* length)
-{
-    return milliunits_to_str(millivolts, str, decimal_places, length);
-}
-
-char* milliamps_to_str(uint32_t milliamps, char* str, uint8_t decimal_places, size_t* length)
-{
-    return milliunits_to_str(milliamps, str, decimal_places, length);
-}
-
-char* milliwatts_to_str(uint32_t milliwatts, char* str, uint8_t decimal_places, size_t* length)
-{
-    return milliunits_to_str(milliwatts, str, decimal_places, length);
-}
-
-char* celcius_to_str(int celcius, char* str, size_t* length)
-{
-    return int_to_str(celcius, str, 10, length);
-}
-
-uint16_t fletcher16(const uint8_t* data, size_t length)
-{
-    uint16_t sum1 = 0;
-    uint16_t sum2 = 0;
-
-    if ((data == NULL) && (length != 0))
-    {
-        return 0;
-    }
-
-    while (length != 0)
-    {
-        sum1 = (uint16_t)(sum1 + *data++);
-        if (sum1 >= 255)
-        {
-            sum1 = (uint16_t)(sum1 - 255);
-        }
-
-        sum2 = (uint16_t)(sum2 + sum1);
-        if (sum2 >= 255)
-        {
-            sum2 = (uint16_t)(sum2 - 255);
-        }
-
-        --length;
-    }
-
-    return (uint16_t)((sum2 << 8) | sum1);
-}
-
-// -----------------------------------------------------------------------------
-// Supporting Functions
-// -----------------------------------------------------------------------------
 
 static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places, size_t* length)
 {
@@ -236,4 +170,70 @@ static char* milliunits_to_str(uint32_t value, char* str, uint8_t decimal_places
         *length = (size_t)(write - str);
     }
     return str;
+}
+
+uint16_t fletcher16(const uint8_t* data, size_t length)
+{
+    uint16_t sum1 = 0;
+    uint16_t sum2 = 0;
+
+    if ((data == NULL) && (length != 0))
+    {
+        return 0;
+    }
+
+    while (length != 0)
+    {
+        sum1 = (uint16_t)(sum1 + *data++);
+        if (sum1 >= 255)
+        {
+            sum1 = (uint16_t)(sum1 - 255);
+        }
+
+        sum2 = (uint16_t)(sum2 + sum1);
+        if (sum2 >= 255)
+        {
+            sum2 = (uint16_t)(sum2 - 255);
+        }
+
+        --length;
+    }
+
+    return (uint16_t)((sum2 << 8) | sum1);
+}
+
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+char* millivolts_to_str(uint32_t millivolts, char* str, uint8_t decimal_places, size_t* length)
+{
+    return milliunits_to_str(millivolts, str, decimal_places, length);
+}
+
+char* milliamps_to_str(uint32_t milliamps, char* str, uint8_t decimal_places, size_t* length)
+{
+    return milliunits_to_str(milliamps, str, decimal_places, length);
+}
+
+char* milliwatts_to_str(uint32_t milliwatts, char* str, uint8_t decimal_places, size_t* length)
+{
+    return milliunits_to_str(milliwatts, str, decimal_places, length);
+}
+
+char* celcius_to_str(int celcius, char* str, size_t* length)
+{
+    return int_to_str(celcius, str, 10, length);
+}
+
+uint16_t hotwand_rand(void)
+{
+    hotwand_rand_state = (hotwand_rand_state * 1103515245) + 12345;
+
+    return (uint16_t)((hotwand_rand_state >> 16) & HOTWAND_RAND_MAX);
+}
+
+void hotwand_srand(uint32_t seed)
+{
+    hotwand_rand_state = seed;
 }

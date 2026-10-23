@@ -7,7 +7,44 @@
 // User Interaction and Setup
 // -----------------------------------------------------------------------------
 
+/* The single automated-test environment enables all injection/capture hooks.
+ * It also unconditionally inhibits physical RF and holds buck attenuation
+ * GPIO-high. Limiter calculations remain observable without driving the plant.
+ * Individual defaults still permit native module tests without target hardware.
+ * Normal application builds leave every hook disabled and allocate no FIFO. */
+#ifndef HOT_WAND_TEST_HARNESS
+#define HOT_WAND_TEST_HARNESS 0
+#endif
+
+#if (HOT_WAND_TEST_HARNESS != 0) && (HOT_WAND_TEST_HARNESS != 1)
+#error "HOT_WAND_TEST_HARNESS must be 0 or 1"
+#endif
+
+#ifndef ADC_SIM_ENABLED
+#define ADC_SIM_ENABLED HOT_WAND_TEST_HARNESS
+#endif
+#ifndef BTN_SWD_TEST_HARNESS
+#define BTN_SWD_TEST_HARNESS HOT_WAND_TEST_HARNESS
+#endif
+#ifndef TIP_SWD_TEST_HARNESS
+#define TIP_SWD_TEST_HARNESS HOT_WAND_TEST_HARNESS
+#endif
+#ifndef HOT_WAND_VISION_TEST
+#define HOT_WAND_VISION_TEST HOT_WAND_TEST_HARNESS
+#endif
+
+#if HOT_WAND_TEST_HARNESS &&                                                                                          \
+    (!ADC_SIM_ENABLED || !BTN_SWD_TEST_HARNESS || !TIP_SWD_TEST_HARNESS || !HOT_WAND_VISION_TEST)
+#error "The automated-test build requires every harness"
+#endif
+
+#if (ADC_SIM_ENABLED != 0) && (ADC_SIM_ENABLED != 1)
+#error "ADC_SIM_ENABLED must be 0 or 1"
+#endif
+
+#if !ADC_SIM_ENABLED
 #define SHOW_SPLASH    // the 5 splash screens use about 3 kb of memory
+#endif
 #define SHOW_SPLASH_MS 2000
 
 #if defined(SHOW_SPLASH) && (SHOW_SPLASH_MS == 0)
@@ -226,6 +263,22 @@
 
 #if PWRLVL_SHORT_CIRCUIT_TIME_MS == 0
 #error "PWRLVL_SHORT_CIRCUIT_TIME_MS must be nonzero"
+#endif
+
+/* Current limiting and short-circuit protection must be enabled together
+ * in final firmware. Both default to enabled and share the current-limit
+ * compile guard in pwrlvl.c. Disabling both requires explicitly setting both
+ * options to zero; mismatched settings are rejected below. */
+#ifndef PWRLVL_SHORT_CIRCUIT_ENABLED
+#define PWRLVL_SHORT_CIRCUIT_ENABLED 1
+#endif
+
+#if (PWRLVL_SHORT_CIRCUIT_ENABLED != 0) && (PWRLVL_SHORT_CIRCUIT_ENABLED != 1)
+#error "PWRLVL_SHORT_CIRCUIT_ENABLED must be 0 or 1"
+#endif
+
+#if PWRLVL_CURRENT_LIMIT_ENABLED != PWRLVL_SHORT_CIRCUIT_ENABLED
+#error "Current limiting and short-circuit protection must both be enabled or both be disabled"
 #endif
 
 // -----------------------------------------------------------------------------

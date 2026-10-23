@@ -1,5 +1,6 @@
 #pragma once
 
+#include "conf.h"
 #include <stdint.h>
 
 #define SPLASH_SCREEN_WIDTH  32

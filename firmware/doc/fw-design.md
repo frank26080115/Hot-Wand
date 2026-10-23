@@ -2,11 +2,11 @@
 
  * long button press forces iron to sleep, short press cycles through power modes
  * GUI is updated at 15 FPS
- * UART debug messages are sent at 2 Hz
+ * UART debug messages are sent at 5 Hz
 
 # Important Policies
 
- * Faults are never automatically recovered, always have the user press a button
+ * Faults are never automatically recovered (always require user action)
  * The screen is only 32 pixels wide, supporting 5 characters, choose short words
  * Only use capital letters on the GUI as the pixel font may be hard to read
  * Action for button short press must be performed immediately on the first edge to appear responsive
@@ -21,9 +21,13 @@ If a temperature limit is reached, the first line will also blink "!HOT!" every 
 
 Below that is the power graph. It plots the power vs time with solid shaded plot.
 
+A dotted line shows the effective power limit in every mode.
+
+Always leave at least one full black pixel row between the bottom of the voltage text and the limit line, including at the lowest burn-in text shift. The 100 W line stays at the top of the graph, below this reserved text gap.
+
 # Power Levels
 
-The assumption is that this is an electrically 100W-ish system because the buck converter is theoretically tuned for 20V and is capable of 5A. Actual heat power is unknown. Total input power will also be slightly higher due to inefficienceis and  miscellaneous power usage elsewhere.
+The assumption is that this is an electrically 100W-ish system because the buck converter is theoretically tuned for 20V and is capable of 5A. Actual heat power is unknown. Total input power will also be slightly higher due to inefficiencies and  miscellaneous power usage elsewhere.
 
 The user can choose between power level modes. Available levels are:
 
@@ -57,7 +61,7 @@ The firmware allows the user to pick between 16 different fan control modes, in 
 
 # Boot Mode
 
-When the microcontroller boots, it will wait 300 milliseconds for power to stabilize, and then sample the input DC power.
+When the microcontroller boots, it will wait up to 300 milliseconds for power to stabilize, and then sample the input DC power.
 
 If during boot, the user button is held down, then UART message debugging will become enabled. While the buttons is held, the screen shows "HOLD TO ENTER SETUP" with a progress bar. The progress bar will grow for 3 seconds and then enter the setup menu if the user continues to hold the button.
 

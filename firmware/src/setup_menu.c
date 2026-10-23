@@ -9,6 +9,7 @@
 // Includes
 // -----------------------------------------------------------------------------
 
+#include "fault_test.h"
 #include "setup_menu.h"
 
 #include "adc.h"
@@ -89,6 +90,12 @@ typedef struct
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
+
+#if HOT_WAND_TEST_HARNESS
+/* The shared image omits the splash option but preserves its NVM field. Let
+ * SWD clients discover the compiled table length instead of assuming 11 pages. */
+const uint32_t setup_menu_item_count __attribute__((used, externally_visible)) = SETUP_MENU_ITEM_COUNT;
+#endif
 
 static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
     [SETUP_ITEM_STARTUP_POWER_LEVEL] =
@@ -197,6 +204,7 @@ static uint8_t setup_menu_get_fan_option(uint8_t mode);
 
 void setup_menu(void)
 {
+    FT_SET(stage, FT_SETUP);
     hotwand_setup_nvm_t settings;
     u8g2_t*             graphics;
     uint32_t            last_activity_ms;
@@ -285,53 +293,8 @@ void setup_menu(void)
 }
 
 // -----------------------------------------------------------------------------
-// Supporting Functions
+// Feature Logic
 // -----------------------------------------------------------------------------
-
-static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t item)
-{
-    switch (item)
-    {
-    case SETUP_ITEM_STARTUP_POWER_LEVEL:
-        return settings->startup_power_level;
-    case SETUP_ITEM_FAN_MODE:
-#if FAN_PWM_ENABLED
-        return settings->fan_mode;
-#else
-        return setup_menu_get_fan_option(settings->fan_mode);
-#endif
-#if FAN_PWM_ENABLED
-    case SETUP_ITEM_FAN_SIGNAL_POLARITY:
-        return settings->fan_sig_inv;
-#endif
-    case SETUP_ITEM_AUTO_SLEEP:
-        return settings->auto_sleep;
-    case SETUP_ITEM_AUTO_DIM:
-        return settings->auto_dim;
-    case SETUP_ITEM_IDLE_DETECT_THRESH:
-        return settings->idle_detect_thresh;
-    case SETUP_ITEM_BATTERY_MODE:
-        return settings->batt_mode;
-    case SETUP_ITEM_INPUT_V_CALIB:
-        return settings->input_v_calib;
-#ifdef SHOW_SPLASH
-    case SETUP_ITEM_SHOW_SPLASH:
-        return settings->show_splash;
-#endif
-    default:
-        return 0;
-    }
-}
-
-static uint8_t setup_menu_get_option_count(uint8_t item)
-{
-    if (item >= SETUP_MENU_ITEM_COUNT)
-    {
-        return 0;
-    }
-
-    return setup_menu_items[item].items_cnt;
-}
 
 static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
 {
@@ -387,22 +350,115 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
     }
 }
 
-static const char* setup_menu_find_option(const char* items, uint8_t option)
+static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
 {
-    if (items == NULL)
+    if (save && !nvm_save(settings))
     {
-        return "";
+        /* A failed write must not look like a successful save after reboot. */
+        show_fault("SAVE\nFAULT", true);
     }
 
-    while ((option > 0) && (*items != '\0'))
+    NVIC_SystemReset();
+
+    /* NVIC_SystemReset() does not return, but keep control contained if a
+     * debugger suppresses the reset request.
+     */
+    for (;;)
     {
-        if (*items++ == '|')
-        {
-            --option;
-        }
+        /* Deliberately expire IWDG if the requested reset is suppressed. */
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Supporting Functions
+// -----------------------------------------------------------------------------
+
+static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item)
+{
+    const setup_menu_item_t* menu_item;
+    const char*              option;
+    uint8_t                  baseline;
+
+    if ((graphics == NULL) || (settings == NULL) || (item >= SETUP_MENU_ITEM_COUNT))
+    {
+        return;
     }
 
-    return items;
+    menu_item = &setup_menu_items[item];
+
+    u8g2_ClearBuffer(graphics);
+
+    setup_menu_draw_line(graphics, "SETUP", SETUP_MENU_FIVE_CHAR_COUNT, OLED_FIRST_TEXT_BASELINE);
+
+    /* Advance two rows: row two is deliberately blank. */
+    baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
+    baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
+
+    if (item <= SETUP_MENU_LAST_VALUE_ITEM)
+    {
+        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, baseline);
+        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
+        option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
+        setup_menu_draw_text(graphics, option, '|', baseline);
+    }
+
+    if (item == SETUP_ITEM_INPUT_V_CALIB)
+    {
+        setup_menu_draw_calibrated_voltage(graphics, settings->input_v_calib);
+    }
+
+    OLED_SendBuffer(&oled);
+}
+
+static void setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration)
+{
+    char   voltage[SETUP_MENU_VOLTAGE_BUFFER_SIZE];
+    size_t voltage_length;
+
+    /* Apply the unsaved menu value before reading. This deliberately uses the
+     * same ADC calibration path as normal operation rather than duplicating
+     * its slope and offset calculations in the UI. */
+    adc_set_input_voltage_calibration(calibration);
+    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
+    voltage[voltage_length++] = 'V';
+    voltage[voltage_length]   = '\0';
+
+    setup_menu_draw_line(graphics, voltage, voltage_length, SETUP_MENU_BOTTOM_TEXT_BASELINE);
+}
+
+static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t item)
+{
+    switch (item)
+    {
+    case SETUP_ITEM_STARTUP_POWER_LEVEL:
+        return settings->startup_power_level;
+    case SETUP_ITEM_FAN_MODE:
+#if FAN_PWM_ENABLED
+        return settings->fan_mode;
+#else
+        return setup_menu_get_fan_option(settings->fan_mode);
+#endif
+#if FAN_PWM_ENABLED
+    case SETUP_ITEM_FAN_SIGNAL_POLARITY:
+        return settings->fan_sig_inv;
+#endif
+    case SETUP_ITEM_AUTO_SLEEP:
+        return settings->auto_sleep;
+    case SETUP_ITEM_AUTO_DIM:
+        return settings->auto_dim;
+    case SETUP_ITEM_IDLE_DETECT_THRESH:
+        return settings->idle_detect_thresh;
+    case SETUP_ITEM_BATTERY_MODE:
+        return settings->batt_mode;
+    case SETUP_ITEM_INPUT_V_CALIB:
+        return settings->input_v_calib;
+#ifdef SHOW_SPLASH
+    case SETUP_ITEM_SHOW_SPLASH:
+        return settings->show_splash;
+#endif
+    default:
+        return 0;
+    }
 }
 
 static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline)
@@ -458,79 +514,30 @@ static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t leng
     u8g2_DrawStr(graphics, SETUP_MENU_CENTERED_MARGIN, baseline, line);
 }
 
-static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item)
+// -----------------------------------------------------------------------------
+// Small Helpers
+// -----------------------------------------------------------------------------
+
+static const char* setup_menu_find_option(const char* items, uint8_t option)
 {
-    const setup_menu_item_t* menu_item;
-    const char*              option;
-    uint8_t                  baseline;
-
-    if ((graphics == NULL) || (settings == NULL) || (item >= SETUP_MENU_ITEM_COUNT))
+    if (items == NULL)
     {
-        return;
+        return "";
     }
 
-    menu_item = &setup_menu_items[item];
-
-    u8g2_ClearBuffer(graphics);
-
-    setup_menu_draw_line(graphics, "SETUP", SETUP_MENU_FIVE_CHAR_COUNT, OLED_FIRST_TEXT_BASELINE);
-
-    /* Advance two rows: row two is deliberately blank. */
-    baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
-    baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
-
-    if (item <= SETUP_MENU_LAST_VALUE_ITEM)
+    while ((option > 0) && (*items != '\0'))
     {
-        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, baseline);
-        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
-        option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
-        setup_menu_draw_text(graphics, option, '|', baseline);
+        if (*items++ == '|')
+        {
+            --option;
+        }
     }
 
-    if (item == SETUP_ITEM_INPUT_V_CALIB)
-    {
-        setup_menu_draw_calibrated_voltage(graphics, settings->input_v_calib);
-    }
-
-    OLED_SendBuffer(&oled);
-}
-
-static void setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration)
-{
-    char   voltage[SETUP_MENU_VOLTAGE_BUFFER_SIZE];
-    size_t voltage_length;
-
-    /* Apply the unsaved menu value before reading. This deliberately uses the
-     * same ADC calibration path as normal operation rather than duplicating
-     * its slope and offset calculations in the UI. */
-    adc_set_input_voltage_calibration(calibration);
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
-    voltage[voltage_length++] = 'V';
-    voltage[voltage_length]   = '\0';
-
-    setup_menu_draw_line(graphics, voltage, voltage_length, SETUP_MENU_BOTTOM_TEXT_BASELINE);
-}
-
-static void setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save)
-{
-    if (save && !nvm_save(settings))
-    {
-        /* A failed write must not look like a successful save after reboot. */
-        show_fault("SAVE\nFAULT", true);
-    }
-
-    NVIC_SystemReset();
-
-    /* NVIC_SystemReset() does not return, but keep control contained if a
-     * debugger suppresses the reset request.
-     */
-    for (;;)
-    {
-        /* Deliberately expire IWDG if the requested reset is suppressed. */
-    }
+    return items;
 }
 
 #if !FAN_PWM_ENABLED
+
 static uint8_t setup_menu_get_fan_option(uint8_t mode)
 {
     uint8_t option;
@@ -547,4 +554,15 @@ static uint8_t setup_menu_get_fan_option(uint8_t mode)
      * its AUTO COOL entry if a corrupt value reaches this helper. */
     return 2;
 }
+
 #endif
+
+static uint8_t setup_menu_get_option_count(uint8_t item)
+{
+    if (item >= SETUP_MENU_ITEM_COUNT)
+    {
+        return 0;
+    }
+
+    return setup_menu_items[item].items_cnt;
+}
