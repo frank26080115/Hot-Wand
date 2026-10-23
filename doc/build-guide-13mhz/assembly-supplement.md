@@ -26,7 +26,7 @@ If Q5 appears shorted in an unpowered resistance check, first disconnect every p
 
 Using 0.5mm thick copper sheets, cut strips that are about 5mm tall, and then cut them into small fins. Solder these fins to the top side of the PCB where the copper is exposed, near where buck converter is under, which is also near where one of the standoff screws is supposed to go. Arrange them such that the fins are perpendicular to the edge of the board as we want the air to flow outwards towards vents that are on the side of the box.
 
-<!-- TODO: Add a photo of the PCB cooling fins. -->
+[<img src="../bld-photos/buck-converter-copper-heat-fins-1.jpg" alt="Buck converter copper heat fins 1" width="200">](../bld-photos/buck-converter-copper-heat-fins-1.jpg) [<img src="../bld-photos/buck-converter-copper-heat-fins-2.jpg" alt="Buck converter copper heat fins 2" width="200">](../bld-photos/buck-converter-copper-heat-fins-2.jpg) [<img src="../bld-photos/buck-converter-copper-heat-fins-3.jpg" alt="Buck converter copper heat fins 3" width="200">](../bld-photos/buck-converter-copper-heat-fins-3.jpg)
 
 ## Fan Solder Jumper Selection
 

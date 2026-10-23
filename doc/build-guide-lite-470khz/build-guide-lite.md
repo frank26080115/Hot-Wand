@@ -58,6 +58,8 @@ It is recommended to solder female headers onto the Hot-Wand-Lite PCB where the 
 
 There are 4 custom inductors in this design, each wound on one Kool Mu core. [Follow the winding instructions](custom-inductors.md), and then solder them to their respective locations (L2 through L5).
 
+[<img src="../bld-photos/custom-inductors-x4.jpg" alt="Custom inductors x4" width="500">](../bld-photos/custom-inductors-x4.jpg)
+
 ![](./imgs/soldering_3.jpg)
 
 Use an LCR meter with at least a 100 kHz test mode to measure each inductor before soldering it in. Record the turn count and measured inductance; see the [measurement instructions](custom-inductors.md#measuring-the-inductors).
@@ -73,6 +75,10 @@ Assemble the MOSFET together with the heatsinks according to the diagrams:
 The bottom 3 fins of the heatsink needs to be bent to avoid the 12V buck converter, use a gentle curved bend to avoid snapping the aluminum. There's 1 bottom fin that needs to be snapped off so it doesn't hit the SMD inductor. You must do this before soldering.
 
 ![](imgs/heatsink_inner_3fins_bent.png)
+
+[<img src="../bld-photos/lite-heatsink-bent.jpg" alt="Lite heatsink bent" width="400">](../bld-photos/lite-heatsink-bent.jpg)
+
+[<img src="../bld-photos/lite-heatsink-bent-x3.jpg" alt="Lite heatsink bent x3" width="400">](../bld-photos/lite-heatsink-bent-x3.jpg)
 
 Then solder the MOSFET to the circuit board.
 
@@ -135,9 +141,14 @@ If you cut off the original connector and strip the wires, the red wire is the p
  * red is soldered to the center pin
  * black, green, and shield, are all soldered to the SMA connector's ground
 
-![](../bld-photos/shp-wires-stripped.jpg)
+[<img src="../bld-photos/shp-wires-stripped.jpg" alt="Shp wires stripped" width="400">](../bld-photos/shp-wires-stripped.jpg)
+[<img src="../bld-photos/shp-wires-soldered.jpg" alt="Shp wires soldered" width="400">](../bld-photos/shp-wires-soldered.jpg)
 
-![](../bld-photos/shp-wires-soldered.jpg)
+Solder first, then fill the void with hot glue to prevent short circuits from happening in the future.
+
+[<img src="../bld-photos/shp-wires-soldered-2.jpg" alt="Shp wires soldered 2" width="400">](../bld-photos/shp-wires-soldered-2.jpg)
+
+Finally, heatshrink it all to protect it.
 
 ## Tip Temperature Check
 

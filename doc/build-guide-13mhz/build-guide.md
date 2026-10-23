@@ -58,7 +58,7 @@ Populate the L9 inductor. This is the filter inductor for the tip detector. It s
 
 Add the custom cut copper fins to the buck converter heat dissipation area.  [Click here to see detailed procedures](assembly-supplement.md#pcb-cooling-fins-near-buck-converter)
 
-<!-- TODO: Add a photo of the PCB cooling fins. -->
+[<img src="../bld-photos/buck-converter-copper-heat-fins-2.jpg" alt="Buck converter copper heat fins 2" width="200">](../bld-photos/buck-converter-copper-heat-fins-2.jpg) [<img src="../bld-photos/buck-converter-copper-heat-fins-3.jpg" alt="Buck converter copper heat fins 3" width="200">](../bld-photos/buck-converter-copper-heat-fins-3.jpg)
 
 Do not make the fins block the area where the brass standoff and screw is supposed to go! We are soldering on the fins first before the standoffs are attached because it is easier to solder this way, without the huge thermal mass of the standoff.
 
@@ -138,6 +138,8 @@ The internal air blocker may need some additional tweaking with a knife and file
 
 3D print all drilling and cutting templates. These are to be printed using PLA.
 
+[<img src="../bld-photos/drill-cut-template-3.jpg" alt="Drill cut template 1" width="250">](../bld-photos/drill-cut-template-3.jpg) [<img src="../bld-photos/drill-cut-template-2.jpg" alt="Drill cut template 2" width="250">](../bld-photos/drill-cut-template-2.jpg)
+
 ![](./imgs/drill_cut_templates_cad.png)
 
 ![](./imgs/heatsink_drill_template.png)
@@ -154,6 +156,8 @@ Drill and cut enclosure box and lid. Use the cutting and drilling templates to h
 
 (note: the template is designed to be used with a drill press, the surface angles of the template are made so that holes being drilled are perpendicular to the box's tapered walls)
 
+[<img src="../bld-photos/drilling-template-on-drill-press.jpg" alt="Drilling template on drill press" width="100">](../bld-photos/drilling-template-on-drill-press.jpg) [<img src="../bld-photos/drill-cut-template-3.jpg" alt="Drill cut template 3" width="100">](../bld-photos/drill-cut-template-3.jpg) [<img src="../bld-photos/drill-cut-template-1.jpg" alt="Drill cut template 1" width="100">](../bld-photos/drill-cut-template-1.jpg) [<img src="../bld-photos/drill-cut-template-2.jpg" alt="Drill cut template 2" width="100">](../bld-photos/drill-cut-template-2.jpg)
+
 ![](./imgs/enclosure_drills_1.png)
 
 ![](./imgs/enclosure_drills_2.png)
@@ -168,7 +172,11 @@ Clean all metal shavings, debur all drilled and cut edges, dull all sharp edges.
 
 Drill and thread tap the heatsink. A 3D printed drilling template is provided. The thread tap is for a #4-40 thread. Remember to place the template correctly such that the final result would be optimized for upward airflow.
 
+[<img src="../bld-photos/heatsink-template.jpg" alt="Heatsink template" width="400">](../bld-photos/heatsink-template.jpg)
+
 Cut some of the fins off the heatsink where screws will sit over.
+
+[<img src="../bld-photos/heatsink-fin-cut.jpg" alt="Heatsink fin cut" width="400">](../bld-photos/heatsink-fin-cut.jpg)
 
 Debur the cuts and clean any metal shavings from heatsink.
 
@@ -188,6 +196,8 @@ Before tightening completely, make sure the MOSFET legs are aligned with their p
 
 Cut off the excess silicone thermal pad with an Xacto knife.
 
+[<img src="../bld-photos/mosfets-on-heatsink.jpg" alt="Mosfets on heatsink" width="400">](../bld-photos/mosfets-on-heatsink.jpg)
+
 ![](./imgs/cut_thermal_pad.png)
 
 Check to make sure heatsink is not causing continuity problems. The drain tab of each MOSFET must not be conductive with the heatsink, nor with each other.
@@ -200,7 +210,9 @@ Bend the MOSFET legs, refer to the diagram. The goal is so that the heatsink can
 
 Solder MOSFETs to PCB, continue to adjust the angle of the MOSFET's legs as needed.
 
-Wire up the NTC thermistors and attach them to the MOSFET's plastic face. First, use high temperature RTV silicone to adhere the wires of the NTC thermistors a part of the PCB near the MOSFET. Then, use high temperature epoxy to adhere the bead of the NTC thermistor to the surface of the MOSFET. Note: this step takes many hours for the silicone and epoxy to cure, be patient. Please refer to photograph.
+Wire up the NTC thermistors and attach them to the MOSFET's plastic face. My own procedure is to heatshrink the thermistor leads to the source pin of the MOSFET first, and then use high temperature epoxy to adhere the bead of the NTC thermistor to the surface of the MOSFET. Note: this step takes many hours for the epoxy to cure, be patient. Please refer to photograph.
+
+[<img src="../bld-photos/mosfets-with-thermistors-before-epoxy.jpg" alt="Mosfets with thermistors before epoxy" width="100">](../bld-photos/mosfets-with-thermistors-before-epoxy.jpg) [<img src="../bld-photos/mosfets-with-thermistors-after-epoxy.jpg" alt="Mosfets with thermistors after epoxy" width="100">](../bld-photos/mosfets-with-thermistors-after-epoxy.jpg) [<img src="../bld-photos/mosfets-with-thermistors-after-epoxy-2.jpg" alt="Mosfets with thermistors after epoxy 2" width="100">](../bld-photos/mosfets-with-thermistors-after-epoxy-2.jpg)
 
 Perform mandatory safety related firmware tests (tip detection, NTC thermistors, warning near 8S input voltages). These tests are to be done under unlimited current input power (the glass fuse is the protection now), but the buck converter should be set to a low setting.
 

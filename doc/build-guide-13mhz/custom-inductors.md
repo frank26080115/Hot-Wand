@@ -2,6 +2,8 @@
 
 Make sure you are familiar with how to use enamel coated magnet wire correctly, how to prepare the ends of the wires for soldering, etc.
 
+[<img src="../bld-photos/custom-inductor-enamel-strip-1.jpg" alt="Custom inductor enamel strip 1" width="300">](../bld-photos/custom-inductor-enamel-strip-1.jpg) [<img src="../bld-photos/custom-inductor-enamel-strip-2.jpg" alt="Custom inductor enamel strip 2" width="300">](../bld-photos/custom-inductor-enamel-strip-2.jpg)
+
 Remember that, one "turn" is defined as passing through the center of the toroid once. It doesn't have to be a complete loop.
 
 ## 9 uH choke
@@ -26,7 +28,11 @@ The primary (the 1 in 1:14:14) is just a single wire crossing the inside of the 
 
 I recommend cutting off about 3 feet of 22 AWG enamel coated wire, and then folding all of it exactly in half as if it was a pair of wires, then twisting the pair together, evenly.
 
+[<img src="../bld-photos/bifilar-twist-start.jpg" alt="Bifilar twist start" width="500">](../bld-photos/bifilar-twist-start.jpg)
+
 Then wrap the twisted-pair around the toroid 14 times. Do not cause these wires to cross while wrapping around the toroid.
+
+[<img src="../bld-photos/bifilar-wound-toroid-process.jpg" alt="Bifilar wound toroid process" width="500">](../bld-photos/bifilar-wound-toroid-process.jpg)
 
 Reference the following 3D model:
 
@@ -35,6 +41,17 @@ Reference the following 3D model:
 ![](../imgs/current_transformer_winding_3d_2.png)
 
 You need to use a multimeter to confirm which wire is which before soldering the wire ends into the PCB.
+
+[<img src="../bld-photos/current-transformers-group-shot.jpg" alt="Current transformers group shot" width="500">](../bld-photos/current-transformers-group-shot.jpg)
+[<img src="../bld-photos/current-transformer-done.jpg" alt="Current transformer done" width="500">](../bld-photos/current-transformer-done.jpg)
+
+### Copper Tube
+
+For the wire that crosses through the current transformer, I used a 4mm diameter copper tube. I soldered a 22 AWG wire through the tube first, then applied heatshrink.
+
+[<img src="../bld-photos/current-transformer-copper-tube-assembly.jpg" alt="Current transformer copper tube assembly" width="500">](../bld-photos/current-transformer-copper-tube-assembly.jpg)
+
+I don't have evidence that this works better, but the theory is that, as AC likes to travel on the surface of a conductor, this brings the magnetic field closer to the windings.
 
 ## Large inductors
 
@@ -53,6 +70,8 @@ Equation for wire length: `(2 * 10) + T * (2 * ((33 - 19.8) / 2 + 11.1) + pi * 1
 Use 10 turns of 22 AWG wire, wound around a 5 mm dowel or similar mandrel. Make the coil approximately 10 mm wide, then squeeze or stretch it during tuning.
 
 ![](./imgs/coreless_inductor_3d.png)
+
+[<img src="../bld-photos/coreless-inductor-post.jpg" alt="Coreless inductor post" width="200">](../bld-photos/coreless-inductor-post.jpg) [<img src="../bld-photos/coreless-inductor-wound.jpg" alt="Coreless inductor wound" width="200">](../bld-photos/coreless-inductor-wound.jpg) [<img src="../bld-photos/coreless-inductor-x4.jpg" alt="Coreless inductor x4" width="200">](../bld-photos/coreless-inductor-x4.jpg)
 
 Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm leads, and 5% extra wire for winding tolerance, the approximate cut length in millimeters is:
 
