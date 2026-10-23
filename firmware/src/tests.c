@@ -219,6 +219,7 @@ void test_run(void)
     // test_bringup_oled_inputs();
     // test_bringup_watchdog_simple();
     // test_rfgen();
+    test_rfgen_no_power();
     // test_rfgen_burst();
     // test_ct_reaction();
     // test_watchdog_rf_reset();
@@ -1386,6 +1387,46 @@ void test_rfgen(void)
 
     HAL_Init();
     rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+#if !TEST_RFGEN_BYPASS_TIP_DETECTOR
+    tipdetect_init();
+#endif
+
+    for (;;)
+    {
+        bool button_down = btn_is_down();
+
+        if (button_down && !enabled)
+        {
+            enabled = test_rfgen_try_start();
+        }
+        else if (!button_down && enabled)
+        {
+            rfgen_stop();
+            enabled = false;
+        }
+
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_rfgen_no_power(void)
+{
+    bool enabled = false;
+
+    HAL_Init();
+    rfgen_stop();
+    /* Initialize PWM at full attenuation and hold minimum buck voltage. */
+    pwrlvl_force_minimum();
+    pwrlvl_init();
     if (!watchdog_init() || !rfgen_clock_init())
     {
         for (;;)
