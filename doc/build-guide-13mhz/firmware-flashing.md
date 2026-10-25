@@ -8,25 +8,21 @@ The assembly specifies that a 6 pin female header is installed to the bottom of 
 
 The firmware file is available as a `*.hex` file to download and flash directly.
 
-The easiest tool to use for firmware flashing is a ST-Link V2 (or V3). This tool is most easily used with ST's own[STM32CubeProgrammer software (click here for ST's page to download)](https://www.st.com/en/development-tools/stm32cubeprog.html).
+The easiest tool to use for firmware flashing is a ST-Link V2 (or V3). This tool is most easily used with ST's own [STM32CubeProgrammer software (click here for ST's page to download)](https://www.st.com/en/development-tools/stm32cubeprog.html).
 
-You can purchase a cheap ST-Link V2 from online retailers very easily. If you own a STM32 development board, you can also use the on-board ST-Link that is built into those development boards.
+The programmer I used is the [STLINK-V3MINIE](https://www.st.com/en/development-tools/stlink-v3minie.html), for about $25 (plus taxes and shipping). You may need to get an adapter like [this](https://www.amazon.com/dp/B09DKDG7XN) to make it easier to connect.
+
+You can purchase a cheap ST-Link V2 from online retailers very easily, however, they are a bit problematic. They do work but can be frustrating to use.
+
+If you own a STM32 development board, you can also use the on-board ST-Link that is built into those development boards.
 
 You might own a dedicated JTAG/SWD debugger device, such as a Segger J-Link, Keil ULINK, or [Black Magic Debug](https://black-magic.org/), in which case, I will leave it up to you on how to perform the flashing.
 
-## Instructions for STM32CubeProgrammer
-
-Wire up the debugger, make the connections
-
-1. GND / ground
-2. Vtgt or 3.3V
-3. SWDIO
-4. SWCLK
-5. NRST or RST
-
-The other remaining 6th signal is not connected.
+Wire up the debugger according to the pin labels on the PCB. The other remaining 6th signal "NC/SWO" is not connected. Do not connect the 3.3V signal if you are using the cheap clone ST-Link V2.
 
 Connect the debugger to your computer using a USB cable.
+
+## Instructions for STM32CubeProgrammer
 
 Run `STM32CubeProgrammer`.
 
@@ -51,6 +47,18 @@ Click `Start Programming` or `Download`, depending on the version of the softwar
 Click `Disconnect`, close STM32CubeProgrammer, and then remove power from the Hot-Wand. Disconnect the USB cable and jumper wires after the target is no longer powered.
 
 Power the Hot-Wand normally. The device should start using the newly programmed firmware.
+
+## Instructions for Visual Studio Code
+
+Install the PlatformIO extension for VS Code first.
+
+Open the "firmware" directory of Hot-Wand using VS Code.
+
+Click on the PlatformIO icon on the sidebar (or otherwise, activate PlatformIO).
+
+You will see a list of build targets. Click on "stm32f042" for a normal build, click the "Build" button, wait until the build completes, the click on the "Flash" button.
+
+(if you are using a cheap clone ST-Link V2, use "stm32f042_stlink_v2_clone" instead)
 
 ## Firmware Updating
 

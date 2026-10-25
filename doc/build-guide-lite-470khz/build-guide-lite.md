@@ -1,5 +1,9 @@
 # Hot-Wand Lite 470 kHz Build Guide
 
+WARNING: I do not actually recommend anybody build this. The 470 kHz family of parts is dwindling, parts are out of stock, shipping times are long. And my personal opinion is that... it is a bit more annoying to build because of the tuning.
+
+WARNING: High RF voltages are involved, do NOT touch the circuit board while it is powered on. It hurts as a burning sensation.
+
 ## 0. Circuit Board Reception
 
 Get the circuit board from JLCPCB with mostly bottom components already populated. [See this guide on ordering from JLCPCB](jlcpcb-ordering.md)
@@ -149,6 +153,8 @@ Solder first, then fill the void with hot glue to prevent short circuits from ha
 [<img src="../bld-photos/shp-wires-soldered-2.jpg" alt="Shp wires soldered 2" width="400">](../bld-photos/shp-wires-soldered-2.jpg)
 
 Finally, heatshrink it all to protect it. I believe I used 3/8" heatshrink tubing for this.
+
+[<img src="../bld-photos/shp-wires-heatshrunk-connected.jpg" width="400">](../bld-photos/shp-wires-heatshrunk-connected.jpg)
 
 ## Tip Temperature Check
 

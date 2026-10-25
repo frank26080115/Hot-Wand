@@ -73,17 +73,21 @@ Equation for wire length: `(2 * 10) + T * (2 * ((33 - 19.8) / 2 + 11.1) + pi * 1
 
 ## Coreless inductor L8
 
+![](./imgs/coreless_inductor_3d.png)
+
+#### Original Instructions from Sergey Max
+
 Use 10 turns of 22 AWG wire, wound around a 5 mm dowel or similar mandrel. Make the coil approximately 10 mm wide, then squeeze or stretch it during tuning.
 
-![](./imgs/coreless_inductor_3d.png)
+#### My Method
+
+I 3D printed a plastic mandrel with spiral groves, which gives a fixed diameter and pitch. This cannot be adjusted. But, tuning is done by re-printing and re-winding the inductor with varying number of turns or varying the pitch.
 
 [<img src="../bld-photos/coreless-inductor-post.jpg" alt="Coreless inductor post" width="200">](../bld-photos/coreless-inductor-post.jpg) [<img src="../bld-photos/coreless-inductor-wound.jpg" alt="Coreless inductor wound" width="200">](../bld-photos/coreless-inductor-wound.jpg) [<img src="../bld-photos/coreless-inductor-x4.jpg" alt="Coreless inductor x4" width="200">](../bld-photos/coreless-inductor-x4.jpg)
 
-Using a 5 mm inside diameter, a 0.644 mm wire diameter, a 1 mm pitch, two 10 mm leads, and 5% extra wire for winding tolerance, the approximate cut length in millimeters is:
+The default dimensions (10 turns with 1mm pitch) worked for 3 out of 5 units. 1 unit needed 11 turns and 1 unit needed 12 turns.
 
-`(2 * 10) + 10 * sqrt((pi * (5 + 0.644))^2 + (10 / 10)^2) * 1.05`
-
-This gives approximately 207 mm, so cut about 210 mm of wire before winding.
+The 3D printed model is generated via OpenSCAD, file is at `mechanical\utilities\coreless_inductor_post.scad`
 
 ## Securing the Inductors
 
