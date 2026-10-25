@@ -9566,18 +9566,6 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <text x="-2" y="-2" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
 <text x="-2" y="-3" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
 </package>
-<package name="IND-KOOLMU">
-<pad name="1" x="8" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2" x="-8" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<wire x1="-7" y1="3" x2="-7" y2="16" width="0.127" layer="21"/>
-<wire x1="-7" y1="16" x2="7" y2="16" width="0.127" layer="21"/>
-<wire x1="7" y1="16" x2="7" y2="3" width="0.127" layer="21"/>
-<wire x1="7" y1="-3" x2="7" y2="-16" width="0.127" layer="21"/>
-<wire x1="7" y1="-16" x2="-7" y2="-16" width="0.127" layer="21"/>
-<wire x1="-7" y1="-16" x2="-7" y2="-3" width="0.127" layer="21"/>
-<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
-<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
-</package>
 <package name="IND_PA4343.103NLT">
 <wire x1="-7" y1="-6.4" x2="-7" y2="6.4" width="0.127" layer="51"/>
 <wire x1="-7" y1="6.4" x2="7" y2="6.4" width="0.127" layer="51"/>
@@ -9635,24 +9623,6 @@ Max Component Height - 25.57mm</description>
 <wire x1="2.34" y1="7.96" x2="2.74" y2="7.96" width="0.2" layer="21"/>
 <wire x1="2.34" y1="-7.96" x2="2.34" y2="7.96" width="0.2" layer="21"/>
 <wire x1="2.333" y1="-7.957" x2="2.333" y2="7.957" width="0.1" layer="51"/>
-</package>
-<package name="IND-KOOLMU-2W">
-<pad name="2B" x="8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="2A" x="13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1B" x="-8.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<pad name="1A" x="-13.5" y="0" drill="0.8" diameter="2" shape="octagon"/>
-<wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
-<wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
-<wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>
-<wire x1="12.5" y1="-3" x2="12.5" y2="-16" width="0.127" layer="21"/>
-<wire x1="12.5" y1="-16" x2="-12.5" y2="-16" width="0.127" layer="21"/>
-<wire x1="-12.5" y1="-16" x2="-12.5" y2="-3" width="0.127" layer="21"/>
-<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
-<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
-<smd name="1C" x="-11" y="0" dx="5" dy="2" layer="1" cream="no"/>
-<smd name="1D" x="-11" y="0" dx="5" dy="2" layer="16" cream="no"/>
-<smd name="2C" x="11" y="0" dx="5" dy="2" layer="1" cream="no"/>
-<smd name="2D" x="11" y="0" dx="5" dy="2" layer="16" cream="no"/>
 </package>
 <package name="TO247-COMBO">
 <description>&lt;b&gt;Original name INF-PG-TO247-3&lt;/b&gt;&lt;p&gt;
@@ -10109,6 +10079,53 @@ Max Component Height - 25.57mm</description>
 <smd name="2" x="1" y="0" dx="1" dy="1.2" layer="1"/>
 <text x="-0.762" y="0.8255" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-1.016" y="-1.397" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
+<package name="IND-KOOLMU">
+<pad name="1" x="8" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2" x="-8" y="0" drill="1" diameter="2" shape="octagon"/>
+<wire x1="-7" y1="3" x2="-7" y2="16" width="0.127" layer="21"/>
+<wire x1="-7" y1="16" x2="7" y2="16" width="0.127" layer="21"/>
+<wire x1="7" y1="16" x2="7" y2="3" width="0.127" layer="21"/>
+<wire x1="7" y1="-3" x2="7" y2="-16" width="0.127" layer="21"/>
+<wire x1="7" y1="-16" x2="-7" y2="-16" width="0.127" layer="21"/>
+<wire x1="-7" y1="-16" x2="-7" y2="-3" width="0.127" layer="21"/>
+<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
+<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
+</package>
+<package name="IND-KOOLMU-2W">
+<pad name="2B" x="8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="2A" x="13.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1B" x="-8.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<pad name="1A" x="-13.5" y="0" drill="1" diameter="2" shape="octagon"/>
+<wire x1="-12.5" y1="3" x2="-12.5" y2="16" width="0.127" layer="21"/>
+<wire x1="-12.5" y1="16" x2="12.5" y2="16" width="0.127" layer="21"/>
+<wire x1="12.5" y1="16" x2="12.5" y2="3" width="0.127" layer="21"/>
+<wire x1="12.5" y1="-3" x2="12.5" y2="-16" width="0.127" layer="21"/>
+<wire x1="12.5" y1="-16" x2="-12.5" y2="-16" width="0.127" layer="21"/>
+<wire x1="-12.5" y1="-16" x2="-12.5" y2="-3" width="0.127" layer="21"/>
+<text x="-6" y="1" size="0.8128" layer="25" font="fixed">&gt;NAME</text>
+<text x="-6" y="-1" size="0.8128" layer="27" font="fixed">&gt;VALUE</text>
+<smd name="1C" x="-11" y="0" dx="5" dy="2" layer="1" cream="no"/>
+<smd name="1D" x="-11" y="0" dx="5" dy="2" layer="16" cream="no"/>
+<smd name="2C" x="11" y="0" dx="5" dy="2" layer="1" cream="no"/>
+<smd name="2D" x="11" y="0" dx="5" dy="2" layer="16" cream="no"/>
+</package>
+<package name="SJ_2S-WS">
+<description>Small solder jumper with no paste layer so it will open after reflow.</description>
+<wire x1="1" y1="-1" x2="-1" y2="-1" width="0.2032" layer="21"/>
+<wire x1="1" y1="1" x2="1.2" y2="0.7" width="0.2032" layer="21" curve="-90"/>
+<wire x1="-1.2" y1="0.7" x2="-1" y2="1" width="0.2032" layer="21" curve="-90"/>
+<wire x1="-1.2" y1="-0.7" x2="-1" y2="-1" width="0.2032" layer="21" curve="90"/>
+<wire x1="1" y1="-1" x2="1.2" y2="-0.7" width="0.2032" layer="21" curve="90"/>
+<wire x1="-1" y1="1" x2="1" y2="1" width="0.2032" layer="21"/>
+<smd name="1" x="-0.65" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0.65" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.2" y1="-0.8" x2="1.2" y2="0.9" layer="31"/>
+<wire x1="-0.5" y1="0" x2="0.5" y2="0" width="0.16" layer="1"/>
+<wire x1="-0.2" y1="0.6" x2="0.2" y2="0.6" width="0" layer="41"/>
+<wire x1="-0.2" y1="-0.6" x2="0.2" y2="-0.6" width="0" layer="41"/>
 </package>
 </packages>
 <symbols>
@@ -20285,6 +20302,15 @@ Standard SMD solder jumper. Used to automate production. Two varients : Normally
 <technology name=""/>
 </technologies>
 </device>
+<device name="WS" package="SJ_2S-WS">
+<connects>
+<connect gate="1" pin="1" pad="1"/>
+<connect gate="1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 </devices>
 </deviceset>
 <deviceset name="LED" prefix="LED" uservalue="yes">
@@ -22047,6 +22073,15 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <technology name=""/>
 </technologies>
 </device>
+<device name="-2S-WS" package="SJ_2S-WS">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="-2S-NO-NS" package="SJ_2S-NO-NS">
 <connects>
 <connect gate="A" pin="1" pad="1"/>
@@ -22804,7 +22839,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="R42" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="22K">
 <attribute name="JLCPARTNUM" value="C31850"/>
 </part>
-<part name="SJ1" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
+<part name="SJ1" library="hot-wand" deviceset="SOLDERJUMPER" device="WS" value="SOLDERJUMPERWS">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="VR4" library="hot-wand" deviceset="POT" device="-35WR1KLFTR_V2" value="5K">
@@ -22857,7 +22892,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C23179"/>
 </part>
 <part name="GND59" library="hot-wand" deviceset="GND" device=""/>
-<part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="NO" value="">
+<part name="SJ3" library="hot-wand" deviceset="SOLDERJUMPER" device="WS" value="SHORTED">
 <attribute name="JLC-DNP" value="1"/>
 </part>
 <part name="R46" library="hot-wand" deviceset="RESISTOR" device="0603-RES" value="DNP">

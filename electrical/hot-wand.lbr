@@ -1431,6 +1431,23 @@ chip</description>
 <text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
+<package name="SJ_2S-WS">
+<description>Small solder jumper with no paste layer so it will open after reflow.</description>
+<wire x1="1" y1="-1" x2="-1" y2="-1" width="0.2032" layer="21"/>
+<wire x1="1" y1="1" x2="1.2" y2="0.7" width="0.2032" layer="21" curve="-90"/>
+<wire x1="-1.2" y1="0.7" x2="-1" y2="1" width="0.2032" layer="21" curve="-90"/>
+<wire x1="-1.2" y1="-0.7" x2="-1" y2="-1" width="0.2032" layer="21" curve="90"/>
+<wire x1="1" y1="-1" x2="1.2" y2="-0.7" width="0.2032" layer="21" curve="90"/>
+<wire x1="-1" y1="1" x2="1" y2="1" width="0.2032" layer="21"/>
+<smd name="1" x="-0.65" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<smd name="2" x="0.65" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
+<text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
+<text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.2" y1="-0.8" x2="1.2" y2="0.9" layer="31"/>
+<wire x1="-0.5" y1="0" x2="0.5" y2="0" width="0.16" layer="1"/>
+<wire x1="-0.2" y1="0.6" x2="0.2" y2="0.6" width="0" layer="41"/>
+<wire x1="-0.2" y1="-0.6" x2="0.2" y2="-0.6" width="0" layer="41"/>
+</package>
 <package name="SJ_2S-NO-NS">
 <smd name="1" x="-0.45" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
 <smd name="2" x="0.45" y="0" dx="0.635" dy="1.27" layer="1" cream="no"/>
@@ -25102,6 +25119,15 @@ Basic 0.1" spaced jumper. Use with breakaway headers.</description>
 <technology name=""/>
 </technologies>
 </device>
+<device name="SMD-WS" package="SJ_2S-WS">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
 <device name="SMD-NO-NS" package="SJ_2S-NO-NS">
 <connects>
 <connect gate="A" pin="1" pad="1"/>
@@ -27969,6 +27995,15 @@ Standard SMD solder jumper. Used to automate production. Two varients : Normally
 </technologies>
 </device>
 <device name="NO" package="SJ_2S-NO">
+<connects>
+<connect gate="1" pin="1" pad="1"/>
+<connect gate="1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="WS" package="SJ_2S-WS">
 <connects>
 <connect gate="1" pin="1" pad="1"/>
 <connect gate="1" pin="2" pad="2"/>
@@ -32355,6 +32390,15 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 </technologies>
 </device>
 <device name="-2S-NO" package="SJ_2S-NO">
+<connects>
+<connect gate="A" pin="1" pad="1"/>
+<connect gate="A" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="-2S-WS" package="SJ_2S-WS">
 <connects>
 <connect gate="A" pin="1" pad="1"/>
 <connect gate="A" pin="2" pad="2"/>
