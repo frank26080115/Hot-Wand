@@ -66,7 +66,7 @@ class AdcSimulationTests(unittest.TestCase):
         import os
         dll = build / f"bridge-{os.getpid()}.dll"
         subprocess.run([clang, "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-ffunction-sections",
-                        "-fdata-sections", "-DADC_SIM_ENABLED=1", "-Itest/adc_sim/support", "-Iinc",
+                        "-fdata-sections", "-DADC_SIM_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1", "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=85", "-Itest/adc_sim/support", "-Iinc",
                         "-Ilib/u8g2/csrc", "test/adc_sim/bridge.c", "-o", str(dll),
                         "-Wl,/noentry", "-Wl,/opt:ref", "-Wl,/export:adc_sim",
                         "-Wl,/export:adc_sim_decode_table"], cwd=ROOT, check=True)
@@ -368,6 +368,68 @@ class AdcSimulationTests(unittest.TestCase):
         self.lib.bridge_conversion(1023)  # Physical rising/high input is discarded.
         self.assertEqual(self.value(4), 1)
         self.assertEqual(self.value(5), 1)
+
+    def test_production_rearm_only_clears_loss_and_preserves_acquisition(self):
+        self.begin([self.frame(dc=700, repeats=256)])
+        for _ in range(128):
+            self.round()
+        history = self.lib.bridge_history(0)
+        self.lib.bridge_set_latches()  # Also sets voltage calibration, which rearming must preserve.
+        for active, allowed, spike in ((1, 1, 0), (0, 0, 0), (0, 1, 1)):
+            self.lib.bridge_rearm_conditions(active, allowed, spike)
+            self.assertEqual(self.lib.bridge_rearm(0), 0)
+            self.assertEqual(self.lib.bridge_latches() & 1, 1)
+            self.assertEqual(self.lib.bridge_history(0), history)
+        self.lib.bridge_rearm_conditions(0, 1, 0)
+        self.assertEqual(self.lib.bridge_rearm(0), 1)
+        self.assertEqual(self.lib.bridge_latches() & 4, 4)
+        self.assertEqual(self.lib.bridge_latches() & 1, 0)
+        self.assertEqual(self.lib.bridge_history(0), history)
+        self.round()  # Pipeline was not reset or suspended by rearming.
+
+    def test_diagnostic_rearm_keeps_its_history_and_voltage_guards(self):
+        self.lib.bridge_rearm_conditions(0, 1, 0)
+        self.assertEqual(self.lib.bridge_rearm(1), 0)  # No voltage history.
+        self.begin([self.frame(dc=700, repeats=256)])
+        for _ in range(128):
+            self.round()
+        self.lib.bridge_rearm_conditions(0, 1, 0)
+        self.assertEqual(self.lib.bridge_rearm(1), 1)
+
+    def test_zero_fast_drop_removes_detector_but_keeps_trend_and_buck_spike(self):
+        import os
+        build = ROOT / ".cache/adc_sim_test"
+        dll = build / f"no-fast-drop-{os.getpid()}.dll"
+        flags = ["-DADC_SIM_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1",
+                 "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=0",
+                 "-Itest/adc_sim/support", "-Iinc", "-Ilib/u8g2/csrc"]
+        subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
+                        "-ffunction-sections", "-fdata-sections", *flags,
+                        "test/adc_sim/bridge.c", "-o", str(dll), "-Wl,/noentry", "-Wl,/opt:ref"],
+                       cwd=ROOT, check=True)
+        preprocessed = subprocess.check_output(["clang", "-E", *flags, "test/adc_sim/bridge.c"],
+                                               cwd=ROOT, text=True)
+        self.assertNotIn("adc_check_fast_power_loss(", preprocessed)
+        self.assertNotIn("adc_power_loss_shutdown", preprocessed)
+        lib = ctypes.CDLL(str(dll))
+        lib.bridge_conversion.argtypes = [ctypes.c_uint16]
+        lib.bridge_reset()
+        lib.bridge_init_adc()
+        while lib.bridge_value(11, 0) != 0:
+            lib.bridge_conversion(600)
+        history = (ctypes.c_uint16 * 1)(700)
+        lib.bridge_exact_history(history, 1)
+        lib.bridge_conversion(0)  # Largest possible downward step: no fast latch/stop.
+        self.assertEqual(lib.bridge_value(4, 0), 0)
+        self.assertEqual(lib.bridge_latches() & 1, 0)
+        self.assertEqual(lib.bridge_history(0), 700)
+        self.assertEqual(lib.bridge_rearm(1), 0)  # No fast latch exists to rearm.
+        lib.bridge_conversion(710)  # Buck raw-spike protection still acts immediately.
+        self.assertEqual(lib.bridge_value(3, 0), 1)
+        self.assertEqual(lib.bridge_latches() & 2, 2)
+        values = (ctypes.c_uint16 * 7)(670, 675, 680, 685, 690, 695, 700)
+        lib.bridge_exact_history(values, 7)
+        self.assertEqual(lib.bridge_value(5, 0), 1)  # Sustained-decline predicate is retained.
 
     def test_sustained_trend_uses_real_adc_history_pipeline(self):
         reports = self.begin([self.frame(dc=x, repeats=128) for x in (700, 695, 690, 685, 680, 675, 670)])

@@ -1,5 +1,6 @@
 /* Actual main.c helpers and application loop with mocked time/OLED/inputs.
- * A native non-local return ends loop observations at the watchdog boundary. */
+ * A native non-local return ends loop
+ * observations at the watchdog boundary. */
 #include <stdint.h>
 void HAL_Delay(uint32_t ms);
 int  HAL_Init(void);
@@ -20,11 +21,20 @@ static uint32_t            stop_at, quantum, dim_commands, mode_changes, runtime
 static uint32_t            event_at, second_event_at, last_activity, transient_until;
 static hotwand_setup_nvm_t boot_settings;
 const uint8_t              u8g2_font_6x10_tr[1] = {0};
+const uint8_t              u8g2_font_5x7_tr[1]  = {0};
+static uint32_t            draw_count, font_width, warning_calls, warning_mv, supervisor_calls;
+static char                frame_text[16][32];
+static uint32_t            frame_x[16], frame_y[16], frame_width[16];
+static uint32_t            buck_mv, current_ma, power_mw, therm1, therm2;
+static uint32_t            repeated_presses, repeated_interval, long_at;
+static uint32_t            requested_presses, requested_interval, requested_long;
+static uint32_t            input_mv, applied_mode, button_mode, sample_calls;
 
 __declspec(dllexport) void main_reset(uint32_t now);
 
 /* Execute the unchanged infinite main loop. A native non-local return at
- * watchdog_feed terminates the fixture after the requested observation time;
+ * watchdog_feed terminates the fixture after
+ * the requested observation time;
  * no loop condition, timer, or production branch is rewritten. */
 __declspec(dllexport) uint32_t main_run(uint32_t duration,
                                         uint32_t dim,
@@ -35,8 +45,12 @@ __declspec(dllexport) uint32_t main_run(uint32_t duration,
                                         uint32_t message_until)
 {
     main_reset(0);
-    release_at  = 0;
-    sleep_text  = 0;
+    repeated_presses  = requested_presses;
+    repeated_interval = requested_interval;
+    long_at           = requested_long ? requested_long : UINT32_MAX;
+    requested_presses = requested_interval = requested_long = 0;
+    release_at                                              = 0;
+    sleep_text                                              = 0;
     short_event = long_event = false;
     dim_commands = mode_changes = runtime_mark = 0;
     boot_settings                              = (hotwand_setup_nvm_t){0};
@@ -62,10 +76,96 @@ __declspec(dllexport) void main_reset(uint32_t now)
     reasons = sends = graph_calls = feeds = setup_calls = scenario = 0;
     release_at                                                     = UINT32_MAX;
     drawn_text[0]                                                  = 0;
+    debug_view_enabled                                             = false;
+    debug_entry_release_pending                                    = false;
+    main_reset_debug_peaks();
+    for (uint32_t i = 0; i < 5; ++i)
+    {
+        debug_readings[i] = 0;
+    }
+    input_mv     = 24000;
+    applied_mode = button_mode = sample_calls = 0;
+    sleep_text                                = 0;
+    debug_press_count = debug_last_press_ms = 0;
+    draw_count = warning_calls = supervisor_calls = 0;
+    buck_mv                                       = 20000;
+    current_ma                                    = 3200;
+    power_mw                                      = 64000;
+    therm1                                        = 42;
+    therm2                                        = 38;
+    repeated_presses                              = 0;
+    long_at                                       = UINT32_MAX;
+    oled.graphics.width                           = 32;
     pixshift_x = pixshift_y = 0;
 #ifdef SHOW_SPLASH
     splash_visible = false;
 #endif
+}
+
+__declspec(dllexport) void main_debug_press(uint32_t now)
+{
+    now_ms = now;
+    main_handle_short_press(now);
+}
+__declspec(dllexport) void main_debug_inputs(uint32_t mv, uint32_t ma, uint32_t mw, uint32_t t1, uint32_t t2)
+{
+    buck_mv    = mv;
+    current_ma = ma;
+    power_mw   = mw;
+    therm1     = t1;
+    therm2     = t2;
+}
+__declspec(dllexport) void main_debug_sample(void)
+{
+    if (debug_view_enabled)
+    {
+        main_update_debug_readings();
+    }
+}
+__declspec(dllexport) uint32_t main_debug_peak(uint32_t index)
+{
+    return debug_peaks[index];
+}
+__declspec(dllexport) void main_debug_header(uint32_t mv, uint32_t mode)
+{
+    input_mv     = mv;
+    applied_mode = mode;
+}
+__declspec(dllexport) void main_debug_button(uint32_t now, uint32_t down, uint32_t short_press, uint32_t long_press)
+{
+    now_ms      = now;
+    release_at  = down ? UINT32_MAX : 0;
+    short_event = short_press;
+    long_event  = long_press;
+    main_handle_runtime_button(now);
+}
+__declspec(dllexport) void main_shift(uint32_t x, uint32_t y)
+{
+    pixshift_x = x;
+    pixshift_y = y;
+}
+__declspec(dllexport) const char* main_row(uint32_t row)
+{
+    return row < draw_count ? frame_text[row] : "";
+}
+__declspec(dllexport) uint32_t main_row_value(uint32_t row, uint32_t selector)
+{
+    return selector == 0 ? frame_x[row] : selector == 1 ? frame_y[row] : frame_width[row];
+}
+__declspec(dllexport) uint32_t
+main_repeat_run(uint32_t duration, uint32_t count, uint32_t interval, uint32_t long_press, uint32_t message_until)
+{
+    requested_presses  = count;
+    requested_interval = interval;
+    requested_long     = long_press;
+    return main_run(duration, 0, 0, 0, UINT32_MAX, UINT32_MAX, message_until);
+}
+
+__declspec(dllexport) uint32_t main_debug_idle_run(uint32_t duration, uint32_t sleep, uint32_t dim)
+{
+    requested_presses  = 10;
+    requested_interval = 1000;
+    return main_run(duration, dim, sleep, 0, UINT32_MAX, UINT32_MAX, 0);
 }
 
 __declspec(dllexport) void main_render(uint32_t now, uint32_t attenuation)
@@ -120,6 +220,22 @@ __declspec(dllexport) uint32_t main_value(uint32_t selector)
         return text_x;
     case 6:
         return text_y;
+    case 7:
+        return debug_view_enabled;
+    case 8:
+        return debug_press_count;
+    case 9:
+        return draw_count;
+    case 10:
+        return warning_calls;
+    case 11:
+        return warning_mv;
+    case 12:
+        return supervisor_calls;
+    case 13:
+        return button_mode;
+    case 14:
+        return sample_calls;
     }
     return 0;
 }
@@ -146,6 +262,10 @@ void watchdog_feed(void)
 }
 uint16_t adc_to_millivolts(uint8_t index)
 {
+    if (index == BUCK_SENS_IDX)
+    {
+        return buck_mv;
+    }
     if (scenario == 1)
     {
         return 24000 + now_ms;
@@ -154,7 +274,24 @@ uint16_t adc_to_millivolts(uint8_t index)
     {
         return 24000 - now_ms;
     }
-    return 24000;
+    return input_mv;
+}
+uint16_t adc_to_milliamps(uint8_t index)
+{
+    return index == CURR_SENS_IDX ? current_ma : 0;
+}
+uint32_t adc_get_milliwatts(void)
+{
+    ++sample_calls;
+    return power_mw;
+}
+uint16_t adc_to_celcius(uint8_t index)
+{
+    return index == THERM_1_IDX ? therm1 : index == THERM_2_IDX ? therm2 : 0;
+}
+pwrlvl_mode_t pwrmgt_get_applied_power_level(void)
+{
+    return applied_mode;
 }
 uint8_t pwrmgt_get_attenuation_reasons(void)
 {
@@ -164,7 +301,11 @@ void pwrmgt_render_graph(u8g2_t* g)
 {
     ++graph_calls;
 }
-void    pwrmgt_render_high_voltage_warning(u8g2_t* g, uint16_t mv) {}
+void pwrmgt_render_high_voltage_warning(u8g2_t* g, uint16_t mv)
+{
+    ++warning_calls;
+    warning_mv = mv;
+}
 u8g2_t* OLED_GetGraphics(OLED_Handle* handle)
 {
     return &handle->graphics;
@@ -174,8 +315,23 @@ bool OLED_SendBuffer(OLED_Handle* handle)
     ++sends;
     return true;
 }
-void        u8g2_ClearBuffer(u8g2_t* g) {}
-void        u8g2_SetFont(u8g2_t* g, const uint8_t* font) {}
+void u8g2_ClearBuffer(u8g2_t* g)
+{
+    draw_count = 0;
+}
+void u8g2_SetFont(u8g2_t* g, const uint8_t* font)
+{
+    font_width = font == u8g2_font_5x7_tr ? 5 : 6;
+}
+u8g2_uint_t u8g2_GetStrWidth(u8g2_t* g, const char* text)
+{
+    uint32_t length = 0;
+    while (text[length])
+    {
+        ++length;
+    }
+    return length * font_width;
+}
 void        u8g2_SetDrawColor(u8g2_t* g, uint8_t color) {}
 void        u8g2_DrawBox(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h) {}
 u8g2_uint_t u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* text)
@@ -189,7 +345,22 @@ u8g2_uint_t u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* te
     drawn_text[i] = 0;
     text_x        = x;
     text_y        = y;
+    if (draw_count < 16)
+    {
+        for (uint32_t j = 0; j <= i; ++j)
+        {
+            frame_text[draw_count][j] = drawn_text[j];
+        }
+        frame_x[draw_count]     = x;
+        frame_y[draw_count]     = y;
+        frame_width[draw_count] = font_width;
+        ++draw_count;
+    }
     return i * 6;
+}
+void btn_set_short_press_mode(btn_short_press_mode_t mode)
+{
+    button_mode = mode;
 }
 void btn_task(void)
 {
@@ -199,6 +370,15 @@ void btn_task(void)
         if (elapsed == event_at || elapsed == second_event_at)
         {
             short_event = true;
+        }
+        if (repeated_presses && elapsed && elapsed % repeated_interval == 0 &&
+            elapsed / repeated_interval <= repeated_presses)
+        {
+            short_event = true;
+        }
+        if (elapsed == long_at)
+        {
+            long_event = true;
         }
     }
 }
@@ -217,7 +397,12 @@ bool btn_has_short_press(bool clear)
 }
 bool btn_has_long_press(bool clear)
 {
-    return false;
+    bool event = long_event;
+    if (clear)
+    {
+        long_event = false;
+    }
+    return event;
 }
 void setup_menu(void)
 {
@@ -225,7 +410,8 @@ void setup_menu(void)
 }
 
 /* Configuration and terminal delegation are tested without entering the
- * production infinite supervisor loop. Target cases cover that integration. */
+ * production infinite supervisor loop. Target
+ * cases cover that integration. */
 void show_fault(const char* text, bool allow_reset)
 {
     sleep_text = text;
@@ -348,7 +534,10 @@ void fan_init(uint8_t mode, bool inverted)
     runtime_start = now_ms;
     last_activity = now_ms;
 }
-void pwrmgt_task(void) {}
+void pwrmgt_task(void)
+{
+    ++supervisor_calls;
+}
 bool rfgen_is_active(void)
 {
     return false;

@@ -17,7 +17,7 @@ class OutputInhibitTests(unittest.TestCase):
         for name in ("power_bridge", "rf_inhibit_bridge"):
             dll = build / f"inhibited-{name}-{os.getpid()}.dll"
             subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
-                            "-ffunction-sections", "-fdata-sections", "-DHOT_WAND_TEST_HARNESS=1",
+                            "-ffunction-sections", "-fdata-sections", "-DPWRLVL_PWM_JUMP_LEVEL=16", "-DHOT_WAND_TEST_HARNESS=1",
                             "-DNATIVE_OUTPUT_MODEL=1", "-DHSE_VALUE=27120000",
                             "-Itest/faults/support", "-Iinc", "-Ilib/u8g2/csrc",
                             f"test/faults/{name}.c", "-o", str(dll), "-Wl,/noentry", "-Wl,/opt:ref"],

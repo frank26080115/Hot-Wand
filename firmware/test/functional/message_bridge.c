@@ -93,3 +93,22 @@ u8g2_uint_t u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* te
 {
     return 0;
 }
+
+void rfgen_power_loss_stop(void) {}
+void btn_discard_until_release(void) {}
+bool tipdetect_has_triggered(void)
+{
+    return false;
+}
+bool rfgen_has_clock_fault(void)
+{
+    return false;
+}
+bool adc_has_buck_voltage_spike_shutdown(void)
+{
+    return false;
+}
+bool adc_rearm_power_loss(void)
+{
+    return true;
+}

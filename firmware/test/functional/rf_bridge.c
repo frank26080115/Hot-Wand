@@ -43,3 +43,17 @@ bool tipdetect_has_triggered(void)
 {
     return triggered;
 }
+
+__declspec(dllexport) uint32_t rf_rearm_case(uint32_t flags)
+{
+    rfgen_active                  = flags & 1;
+    rfgen_clock_fault_logged      = flags & 2;
+    rfgen_emergency_stop_latched  = flags & 4;
+    rfgen_power_loss_stop_latched = flags & 8;
+    return rfgen_rearm_power_loss();
+}
+__declspec(dllexport) uint32_t rf_latches(void)
+{
+    return rfgen_active | (rfgen_clock_fault_logged << 1) | (rfgen_emergency_stop_latched << 2) |
+           (rfgen_power_loss_stop_latched << 3);
+}

@@ -18,7 +18,8 @@ class SupervisionTests(unittest.TestCase):
         build.mkdir(parents=True, exist_ok=True)
         dll = build / f"power-{os.getpid()}.dll"
         subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
-                        "-ffunction-sections", "-fdata-sections", "-Itest/faults/support",
+                        "-ffunction-sections", "-fdata-sections", "-DPWRLVL_PWM_JUMP_LEVEL=16", "-DPWRLVL_RAMP_UP_STEP=1", "-Itest/faults/support",
+                        "-DLEAKY_BUCKET_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1",
                         "-Iinc", "-Ilib/u8g2/csrc", "test/faults/power_bridge.c",
                         "-o", str(dll), "-Wl,/noentry", "-Wl,/opt:ref"], cwd=ROOT, check=True)
         cls.lib = ctypes.CDLL(str(dll))
@@ -116,6 +117,70 @@ class SupervisionTests(unittest.TestCase):
             self.setUp()
             self.input(3, voltage)
             self.assertEqual(self.step(100), expected)
+
+    def test_power_loss_returns_through_supervision_and_gradual_release(self):
+        self.input(7, 1)
+        self.assertEqual(self.step(100), b"POWER\nLOSS\nFAULT")
+        self.assertEqual(self.lib.bridge_value(9), 0)
+        self.assertEqual(self.lib.bridge_value(0), 31)
+        self.assertEqual(self.lib.bridge_value(10), 1)
+        self.assertEqual(self.lib.bridge_value(11), 1)
+        self.input(7, 1)
+        self.step(1200)
+        self.assertEqual(self.lib.bridge_value(10), 2)
+        self.assertEqual(self.lib.bridge_value(0), 31)
+
+    def test_still_qualified_trend_repeats_hold_before_any_output_release(self):
+        self.input(11, 3)
+        self.assertEqual(self.step(100), b"POWER\nLOSS\nFAULT")
+        self.assertEqual(self.lib.bridge_value(10), 3)
+        self.assertEqual(self.lib.bridge_value(11), 1)
+        self.assertEqual(self.lib.bridge_value(0), 31)
+        self.assertEqual(self.lib.bridge_value(9), 0)
+
+    def test_recovered_loss_cannot_bypass_battery_or_reference_faults(self):
+        for selector, value, expected in ((8, 0, b"BATTERY"), (3, 2000, b"VOLT\nREF\nFAULT")):
+            self.setUp()
+            self.input(selector, value)
+            if selector == 1:
+                self.step(100)  # Start the existing thermal qualification.
+            self.lib.bridge_abort_terminal()
+            self.input(7, 1)
+            self.assertEqual(self.step(1100), expected)
+            self.assertEqual(self.lib.bridge_value(9), 1)
+            self.assertEqual(self.lib.bridge_value(11), 0)
+
+    def test_recovered_loss_cannot_release_outputs_before_qualified_thermal_shutdown(self):
+        self.input(1, 111)
+        self.step(100)
+        self.input(7, 1)
+        self.lib.bridge_guarded_step(1100)
+        self.assertEqual(self.lib.bridge_fault(), b"CIRKT\nTOO\nHOT\nFAULT")
+        self.assertEqual(self.lib.bridge_value(9), 1)
+        self.assertEqual(self.lib.bridge_value(11), 0)
+
+    def test_undervoltage_recovery_is_supervised_gradual_and_repeatable(self):
+        self.input(2, 13999)
+        self.input(12, 14001)  # Above restart threshold, still below high-power threshold.
+        self.assertEqual(self.step(100), b"LOW\nVOLT\nFAULT")
+        self.assertEqual(self.lib.bridge_value(0), 31)
+        self.assertEqual(self.lib.bridge_value(3), 2)  # Recovered operation uses the normal 50 W Eco cap.
+        self.assertEqual(self.lib.bridge_value(9), 0)
+        self.assertEqual(self.lib.bridge_value(11), 1)
+        self.input(2, 13999)  # Another USB-source dropout.
+        self.step(2200)
+        self.assertEqual(self.lib.bridge_value(12), 2)
+        self.assertEqual(self.lib.bridge_value(0), 31)
+        self.assertEqual(self.lib.bridge_value(11), 2)
+
+    def test_loss_recovery_rechecks_undervoltage_before_releasing_outputs(self):
+        self.input(7, 1)
+        self.input(2, 10000)
+        self.assertEqual(self.step(100), b"POWER\nLOSS\nFAULT")
+        self.assertEqual(self.lib.bridge_value(10), 2)  # Power-loss hold, then undervoltage hold.
+        self.assertEqual(self.lib.bridge_value(12), 1)
+        self.assertEqual(self.lib.bridge_value(11), 1)  # Single release after both checks pass.
+        self.assertEqual(self.lib.bridge_value(0), 31)
 
     def test_absolute_input_boundary(self):
         self.input(2, 14000)

@@ -16,6 +16,7 @@
 ADC_TypeDef     mock_adc;
 static uint32_t emergency_stops;
 static uint32_t power_loss_stops;
+static bool     mock_rf_active, mock_rf_rearm_allowed;
 
 const uint8_t u8g2_font_6x10_tr[1] = {0};
 
@@ -32,9 +33,13 @@ __declspec(dllexport) void bridge_reset(void)
     {
         bytes[idx] = 0;
     }
+    mock_rf_active        = false;
+    mock_rf_rearm_allowed = true;
     adc_sim_init();
     adc_reset_sim_signal_state();
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     adc_power_loss_shutdown         = false;
+#endif
     adc_buck_voltage_spike_shutdown = false;
     adc_round_started               = false;
     input_voltage_calibration       = INPUT_VOLTAGE_CALIB_NONE;
@@ -87,7 +92,9 @@ __declspec(dllexport) void bridge_init_adc(void)
 
 __declspec(dllexport) void bridge_set_latches(void)
 {
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     adc_power_loss_shutdown         = true;
+#endif
     adc_buck_voltage_spike_shutdown = true;
     adc_set_input_voltage_calibration(INPUT_VOLTAGE_CALIB_P5);
 }
@@ -108,12 +115,17 @@ void rfgen_power_loss_stop(void)
 
 bool rfgen_is_active(void)
 {
-    return false;
+    return mock_rf_active;
+}
+
+bool rfgen_rearm_power_loss(void)
+{
+    return mock_rf_rearm_allowed;
 }
 
 bool rfgen_rearm_power_loss_for_test(void)
 {
-    return true;
+    return mock_rf_rearm_allowed;
 }
 
 /* Unused power-manager UI/plant dependencies. The tests call its real power-loss predicate
@@ -133,7 +145,7 @@ bool btn_is_down(void)
     return false;
 }
 
-void     btn_reset_consecutive_presses(void) {}
+void btn_reset_consecutive_presses(void) {}
 
 uint32_t btn_get_consecutive_presses(void)
 {
@@ -154,9 +166,9 @@ bool battery_can_override(void)
     return false;
 }
 
-void     battery_show_fault(bool override) {}
+void battery_show_fault(bool override) {}
 
-void     leaky_bucket_task(void) {}
+void leaky_bucket_task(void) {}
 
 uint16_t leaky_bucket_get_temperature_c(void)
 {
@@ -177,17 +189,17 @@ uint16_t hotwand_rand(void)
     return 0;
 }
 
-void          u8g2_SetDrawColor(u8g2_t* g, uint8_t color) {}
+void u8g2_SetDrawColor(u8g2_t* g, uint8_t color) {}
 
-void          u8g2_SetFont(u8g2_t* g, const uint8_t* font) {}
+void u8g2_SetFont(u8g2_t* g, const uint8_t* font) {}
 
-void          u8g2_DrawBox(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h) {}
+void u8g2_DrawBox(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h) {}
 
-void          u8g2_DrawPixel(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y) {}
+void u8g2_DrawPixel(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y) {}
 
-void          u8g2_DrawVLine(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t h) {}
+void u8g2_DrawVLine(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t h) {}
 
-u8g2_uint_t   u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* text)
+u8g2_uint_t u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* text)
 {
     return 0;
 }
@@ -247,7 +259,7 @@ __declspec(dllexport) uint32_t bridge_history(uint32_t age)
  * production ISR or foreground predicate. No target-side hook is added. */
 __declspec(dllexport) void bridge_exact_history(const uint16_t* values, uint32_t count)
 {
-    dc_voltage_history_count = count;
+    dc_voltage_history_count     = count;
     dc_voltage_history_write_idx = count;
     for (uint32_t index = 0; index < count; ++index)
     {
@@ -261,3 +273,28 @@ __declspec(dllexport) uint32_t bridge_reference(uint32_t sample)
     adc_update_reference_voltage(sample);
     return adc_reference_mv;
 }
+
+void show_power_loss_fault(void)
+{
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
+    adc_power_loss_shutdown = false;
+#endif
+}
+void pwrlvl_release_minimum(void) {}
+void fan_resume(void) {}
+
+__declspec(dllexport) uint32_t bridge_rearm(uint32_t diagnostic)
+{
+    return diagnostic ? adc_rearm_power_loss_for_test() : adc_rearm_power_loss();
+}
+__declspec(dllexport) void bridge_rearm_conditions(uint32_t active, uint32_t allowed, uint32_t spike)
+{
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
+    adc_power_loss_shutdown         = true;
+#endif
+    mock_rf_active                  = active;
+    mock_rf_rearm_allowed           = allowed;
+    adc_buck_voltage_spike_shutdown = spike;
+}
+
+void show_undervoltage_fault(void) {}

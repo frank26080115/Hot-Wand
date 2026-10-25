@@ -22,6 +22,12 @@ def covers(*families):
 
 
 def library(name, *, support="faults", flags=(), memory=True):
+    if name == "power" and not any("PWRLVL_PWM_JUMP_LEVEL=" in flag for flag in flags):
+        flags = ("-DPWRLVL_PWM_JUMP_LEVEL=16", *flags)  # Fixed fixture tuning; preserve bench experiments.
+    if name in ("power", "adc"):
+        for feature in ("LEAKY_BUCKET_ENABLED", "PWRMGT_POWER_LOSS_SUSTAINED_ENABLED"):
+            if not any(feature + "=" in flag for flag in flags):
+                flags = (f"-D{feature}=1", *flags)
     BUILD.mkdir(parents=True, exist_ok=True)
     destination = BUILD / f"{name}-{'-'.join(flags).replace('=', '')}-{os.getpid()}.dll"
     command = ["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-fno-builtin",
@@ -55,7 +61,7 @@ class MainTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.lib = library("main")
-        for name in ("main_text", "main_sleep", "format_voltage", "format_integer"):
+        for name in ("main_text", "main_sleep", "main_row", "format_voltage", "format_integer"):
             getattr(cls.lib, name).restype = ctypes.c_char_p
 
     def setUp(self):
@@ -161,6 +167,375 @@ class MainTests(unittest.TestCase):
         self.lib.main_run(1000, 0, 0, 0, never, never, 500)
         self.assertEqual(self.lib.main_value(0), 8)
 
+    def press_debug(self, start=100, count=10, interval=100):
+        for i in range(count):
+            self.lib.main_debug_press((start + i * interval) & 0xFFFFFFFF)
+
+    @covers("button.repeat", "display.debug")
+    def test_debug_entry_latches_until_reboot(self):
+        self.press_debug(count=9)
+        self.assertEqual(self.lib.main_value(7), 0)
+        self.lib.main_debug_press(1000)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual(self.lib.main_value(8), 0)
+        self.lib.main_debug_sample()
+        self.lib.main_render(1000, 0)
+        self.assertEqual(self.lib.main_value(1), 0)
+        self.press_debug(start=1100, count=30)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual(self.lib.main_value(8), 0)
+        self.lib.main_render(4100, 0)
+        self.assertEqual(self.lib.main_value(1), 0)
+        self.lib.main_reset(0)
+        self.lib.main_render(0, 0)
+        self.assertEqual(self.lib.main_value(7), 0)
+        self.assertEqual(self.lib.main_value(1), 1)
+
+    @covers("button.repeat", "time.wrap", "display.debug")
+    def test_debug_timeout_boundary_and_tick_wrap(self):
+        for start in (100, 0xFFFFF000):
+            for gap, enabled, count in ((5000, 1, 0), (5001, 0, 1)):
+                with self.subTest(start=start, gap=gap):
+                    self.lib.main_reset(start)
+                    self.press_debug(start=start, count=9)
+                    self.lib.main_debug_press((start + 800 + gap) & 0xFFFFFFFF)
+                    self.assertEqual(self.lib.main_value(7), enabled)
+                    self.assertEqual(self.lib.main_value(8), count)
+
+    @covers("boot.splash", "boot.hold", "sleep.display", "display.debug")
+    def test_splash_setup_and_long_press_do_not_complete_debug_gesture(self):
+        self.lib.main_splash(0, 1)
+        self.press_debug(count=10)
+        self.assertEqual(self.lib.main_value(7), 0)
+        self.assertEqual(self.lib.main_value(8), 9)
+        self.lib.main_sleep()
+        self.assertEqual(self.lib.main_value(8), 0)
+        self.press_debug(start=1100, count=9)
+        self.assertEqual(self.lib.main_value(7), 0)
+        self.lib.main_reset(0)
+        self.lib.main_hold(4000)
+        self.assertEqual(self.lib.main_value(8), 0)
+        self.assertEqual(self.lib.main_repeat_run(2000, 9, 100, 1000, 0), 1)
+        self.assertEqual(self.lib.main_value(8), 0)
+        self.assertEqual(self.lib.main_value(7), 0)
+
+    @covers("display.debug")
+    def test_debug_values_units_precision_and_thermistor_order(self):
+        for values, expected in (
+            ((20000, 3200, 64000, 42, 38), (b"20.0V", b"3.2A", b"64.0W", b"42C", b"38C")),
+            ((0, 0, 0, 0, 0), (b"0.0V", b"0.0A", b"0.0W", b"0C", b"0C")),
+            ((9999, 9950, 99950, 38, 42), (b"10.0V", b"10.0A", b"100.0W", b"38C", b"42C")),
+            ((36300, 6037, 219143, 65535, 100), (b"36.3V", b"6.0A", b"219.1W", b"65535C", b"100C")),
+        ):
+            with self.subTest(values=values):
+                self.lib.main_reset(0)
+                self.press_debug()
+                self.lib.main_debug_inputs(*values)
+                self.lib.main_debug_sample()
+                self.lib.main_render(1000, 0)
+                self.assertEqual(self.lib.main_value(9), 14)
+                self.assertEqual(tuple(self.lib.main_row(i) for i in range(3, 8)), expected)
+                self.assertEqual(tuple(self.lib.main_row(i) for i in range(9, 14)), expected)
+                self.assertEqual(self.lib.main_row(2), b"NOW")
+                self.assertEqual(self.lib.main_row(8), b"MAX")
+
+    @covers("display.debug", "display.voltage")
+    def test_debug_input_voltage_is_prefixed_and_rounded_to_whole_volts(self):
+        self.press_debug()
+        for mv, expected in ((0, b">0V"), (19999, b">20V"), (20499, b">20V"),
+                             (20500, b">21V"), (27999, b">28V"), (28499, b">28V"),
+                             (28500, b">29V"), (65535, b">66V")):
+            self.lib.main_debug_header(mv, 0)
+            self.lib.main_render(1000, 0)
+            self.assertEqual(self.lib.main_row(0), expected)
+            self.assertEqual(self.lib.main_value(11), mv)
+
+    @covers("display.debug", "power.preference")
+    def test_debug_mode_header_uses_applied_power_level(self):
+        self.press_debug()
+        for mode, expected in ((0, b"M:100"), (1, b"M:75"), (2, b"M:50")):
+            self.lib.main_debug_header(20000, mode)
+            self.lib.main_render(1000, 0)
+            self.assertEqual(self.lib.main_row(1), expected)
+
+    @covers("display.debug")
+    def test_debug_baselines_font_and_pixel_shift_bounds(self):
+        self.press_debug()
+        self.lib.main_debug_inputs(36300, 6037, 100000, 65535, 38)
+        self.lib.main_debug_sample()
+        for x in range(8):
+            for y in range(4):
+                self.lib.main_shift(x, y)
+                self.lib.main_render(1000, 0)
+                for row in range(14):
+                    width = len(self.lib.main_row(row)) * 5
+                    self.assertEqual(self.lib.main_row_value(row, 0), min(x, 32 - width))
+                    self.assertEqual(self.lib.main_row_value(row, 1), 9 + 8 * row + y)
+                    self.assertEqual(self.lib.main_row_value(row, 2), 5)
+                    self.assertLess(self.lib.main_row_value(row, 1) + 1, 128)
+
+    @covers("display.debug", "display.hot", "display.service")
+    def test_debug_preserves_readings_during_thermal_warning_and_delegates_voltage_overlay(self):
+        self.press_debug()
+        self.lib.main_debug_sample()
+        for now, reason, hot in ((999, 1, False), (1000, 1, True), (1999, 1, True),
+                                  (2000, 1, False), (3000, 2, False), (3000, 3, True)):
+            self.lib.main_shift(7, 3)
+            self.lib.main_render(now, reason)
+            self.assertEqual(self.lib.main_row(0), b">24V")
+            self.assertEqual(self.lib.main_row(7), b"38C")
+            self.assertEqual(self.lib.main_row(13), b"38C")
+            self.assertEqual(self.lib.main_value(9), 15 if hot else 14)
+            if hot:
+                self.assertEqual(self.lib.main_row(14), b"!HOT!")
+                self.assertEqual(self.lib.main_row_value(14, 0), 7)
+                self.assertEqual(self.lib.main_row_value(14, 1), 124)
+                self.assertEqual(self.lib.main_row_value(14, 2), 5)
+        self.assertEqual(self.lib.main_value(10), 6)
+        self.assertEqual(self.lib.main_value(11), 24000)
+
+    @covers("display.debug")
+    def test_independent_peaks_use_calculated_sample_power_not_peak_voltage_times_peak_current(self):
+        self.press_debug()
+        # Peak voltage and peak current occur at different times. Their product
+        # would invent 150 W; the largest actual sample here is only 50 W.
+        for values in ((30000, 1000, 30000, 42, 38), (10000, 5000, 50000, 45, 37),
+                       (20000, 2000, 40000, 43, 40)):
+            self.lib.main_debug_inputs(*values)
+            self.lib.main_debug_button(1000, 0, 0, 0)
+        self.assertEqual([self.lib.main_debug_peak(i) for i in range(5)], [30000, 5000, 50000, 45, 40])
+        self.lib.main_render(1000, 0)
+        self.assertEqual([self.lib.main_row(i) for i in range(3, 8)],
+                         [b"20.0V", b"2.0A", b"40.0W", b"43C", b"40C"])
+        self.assertEqual([self.lib.main_row(i) for i in range(9, 14)],
+                         [b"30.0V", b"5.0A", b"50.0W", b"45C", b"40C"])
+
+    @covers("display.debug", "sleep.display")
+    def test_long_press_zeros_peaks_keeps_now_and_resumes_accumulation(self):
+        self.press_debug()
+        self.lib.main_debug_inputs(20000, 3200, 64000, 42, 38)
+        self.lib.main_debug_button(1100, 1, 0, 1)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual([self.lib.main_debug_peak(i) for i in range(5)], [0] * 5)
+        self.lib.main_render(1100, 0)
+        self.assertEqual([self.lib.main_row(i) for i in range(9, 14)],
+                         [b"0.0V", b"0.0A", b"0.0W", b"0C", b"0C"])
+        self.assertEqual(self.lib.main_row(5), b"64.0W")
+        self.lib.main_debug_button(1101, 1, 0, 0)
+        self.assertEqual(self.lib.main_debug_peak(2), 64000)
+        self.assertEqual(self.lib.main_repeat_run(1000, 10, 10, 200, 0), 0)
+        self.assertEqual(self.lib.main_value(7), 1)
+
+    @covers("display.debug", "sleep.auto", "dim.delay")
+    def test_debug_disables_auto_sleep_but_keeps_dimming(self):
+        for sleep in (1, 2, 3):
+            self.assertEqual(self.lib.main_debug_idle_run(1900000, sleep, 1), 0)
+            self.assertEqual(self.lib.main_value(7), 1)
+            self.assertEqual(self.lib.main_loop_value(0), 1)
+
+    @covers("display.debug", "display.service", "display.graph", "button.mode")
+    def test_debug_main_loop_keeps_cadence_sampling_supervision_and_message_priority(self):
+        self.lib.main_repeat_run(1000, 10, 10, 0, 0)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual(self.lib.main_loop_value(2), 10)
+        self.assertEqual(self.lib.main_value(0), 6)  # Two graph frames, then four debug frames.
+        self.assertEqual(self.lib.main_value(12), 1000)
+        self.assertEqual(self.lib.main_value(14), 900)
+        self.assertEqual(self.lib.main_value(13), 1)
+        self.assertEqual(self.lib.main_value(9), 14)
+        self.lib.main_repeat_run(1000, 10, 10, 0, 500)
+        self.assertEqual(self.lib.main_value(0), 3)  # Debug frames at 500, 700, and 900 ms.
+        self.assertEqual(self.lib.main_value(9), 14)
+        self.lib.main_repeat_run(1000, 10, 10, 0, 1000)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual(self.lib.main_value(0), 0)
+        self.assertEqual(self.lib.main_value(14), 900)
+        self.assertEqual(self.lib.main_debug_peak(2), 64000)
+        self.lib.main_repeat_run(1000, 20, 10, 0, 0)
+        self.assertEqual(self.lib.main_value(7), 1)
+        self.assertEqual(self.lib.main_loop_value(2), 20)
+        self.assertEqual(self.lib.main_value(9), 14)
+
+        self.lib.main_repeat_run(2000, 10, 10, 0, 0)
+        self.assertEqual(self.lib.main_value(0), 11)  # Five additional debug frames in the second second.
+        self.assertEqual(self.lib.main_value(14), 1900)  # Sampling still runs every foreground pass.
+
+
+class PowerLossRecoveryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.lib = library("recovery")
+
+    def run_screen(self, voltage=24000, rise=0, dip=0xFFFFFFFF, length=0,
+                   limit=3000, start=0, failure=0xFFFFFFFF, kind=0, options=0):
+        return self.lib.recovery_run(start, voltage, rise, dip, length, limit, failure, kind, options)
+
+    def test_exact_continuous_voltage_and_time_boundaries(self):
+        self.assertEqual(self.run_screen(limit=999), 0)
+        self.assertEqual(self.lib.recovery_value(7), 0)
+        self.assertEqual(self.run_screen(limit=1001), 1)
+        self.assertEqual(self.lib.recovery_value(0), 1000)
+        self.assertEqual(self.run_screen(voltage=14000, limit=3000), 0)
+        self.assertEqual(self.run_screen(voltage=13999, limit=3000), 0)
+        self.assertEqual(self.run_screen(voltage=14001, limit=1001), 1)
+        self.assertEqual(self.run_screen(rise=2000, limit=3001), 1)
+        self.assertEqual(self.lib.recovery_value(0), 3000)
+
+    def test_dip_resets_qualification_and_wrap_is_safe(self):
+        self.assertEqual(self.run_screen(dip=999, length=1), 1)
+        self.assertEqual(self.lib.recovery_value(0), 2000)
+        self.assertEqual(self.run_screen(start=0xFFFFFE00), 1)
+        self.assertEqual(self.lib.recovery_value(0), 1000)
+        for _ in range(3):
+            self.assertEqual(self.run_screen(), 1)
+            self.assertEqual(self.lib.recovery_value(0), 1000)
+
+    def test_outputs_stay_off_screen_feeds_watchdog_and_button_mode_is_preserved(self):
+        self.assertEqual(self.run_screen(), 1)
+        self.assertEqual(self.lib.recovery_value(1), 1)
+        self.assertGreaterEqual(self.lib.recovery_value(2), 1000)
+        self.assertGreaterEqual(self.lib.recovery_value(3), 5)
+        self.assertEqual(self.lib.recovery_value(4), 0)
+        self.assertEqual(self.lib.recovery_value(5), 1)
+        self.assertEqual(self.lib.recovery_value(6), 0)
+        self.assertEqual(self.lib.recovery_value(8), 1)
+        self.assertEqual(self.lib.recovery_value(9), 0)
+        self.assertEqual(self.run_screen(options=1), 1)  # Recover even without graphics.
+        self.assertEqual(self.run_screen(options=2, limit=16000), 0)
+        self.assertEqual(self.lib.recovery_value(11), 1)  # Saved dim policy still runs.
+        self.assertEqual(self.run_screen(options=4 | 1), 1)  # Held entry gesture doesn't reset.
+
+    def test_undervoltage_screen_uses_the_same_continuous_recovery_and_restart_gate(self):
+        self.assertEqual(self.run_screen(voltage=14000, options=8), 0)
+        self.assertEqual(self.lib.recovery_value(7), 0)
+        self.assertEqual(self.run_screen(voltage=14001, limit=999, options=8), 0)
+        self.assertEqual(self.run_screen(voltage=14001, limit=1001, options=8), 1)
+        self.assertEqual(self.lib.recovery_value(0), 1000)
+        self.assertEqual(self.lib.recovery_value(1), 1)
+        self.assertEqual(self.lib.recovery_value(8), 1)
+        self.assertEqual(self.run_screen(rise=2000, limit=3001, options=8), 1)
+        self.assertEqual(self.lib.recovery_value(0), 3000)
+        self.assertEqual(self.run_screen(dip=999, length=1, options=8), 1)
+        self.assertEqual(self.lib.recovery_value(0), 2000)
+        self.assertEqual(self.run_screen(start=0xFFFFFE00, options=8), 1)
+        self.assertEqual(self.lib.recovery_value(0), 1000)
+        self.assertEqual(self.run_screen(options=9), 1)  # No OLED graphics.
+
+    def test_existing_manual_button_reset_remains_available(self):
+        self.assertEqual(self.run_screen(options=16), 0)
+        self.assertEqual(self.lib.recovery_value(4), 1)
+        self.assertEqual(self.lib.recovery_value(7), 0)
+
+    def test_independent_faults_preempt_and_cannot_rearm(self):
+        for options in (0, 8):
+            for kind in (1, 2, 3):
+                self.assertEqual(self.run_screen(failure=100, kind=kind, limit=2000, options=options), 0)
+                self.assertEqual(self.lib.recovery_value(7), 0)
+                self.assertEqual(self.lib.recovery_value(1), 1)
+                self.assertEqual(self.lib.recovery_value(6), 1)  # Entered terminal fault path.
+
+
+class DebugButtonTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.lib = library("debug_button", support="tipdetect_swd",
+                          flags=("-DBTN_SWD_TEST_HARNESS=0", "-DGPIO_PULLUP=1", "-DGPIO_PIN_RESET=0"))
+
+    def setUp(self):
+        self.lib.debug_button_reset()
+
+    def tick(self, elapsed):
+        self.lib.bridge_tick(elapsed)
+        self.lib.debug_button_poll()
+
+    def edge(self, down):
+        self.lib.bridge_edge(down)
+        self.lib.debug_button_poll()
+
+    @covers("display.debug", "button.edges", "button.repeat")
+    def test_actual_entry_release_is_not_counted_twice_and_debug_shorts_are_on_release(self):
+        for press in range(10):
+            self.edge(1)
+            self.tick(100)
+            self.assertEqual(self.lib.debug_button_value(1), press + 1)
+            self.edge(0)
+            self.tick(50)
+            self.assertEqual(self.lib.debug_button_value(1), press + 1)
+        self.assertEqual(self.lib.debug_button_value(0), 1)
+        self.assertEqual(self.lib.debug_button_value(3), 1)
+        self.assertEqual(self.lib.debug_button_value(5), 10)
+        for press in range(10):
+            self.edge(1)
+            self.tick(100)
+            self.assertEqual(self.lib.debug_button_value(1), 10 + press)
+            self.edge(0)
+            self.tick(50)
+            self.assertEqual(self.lib.debug_button_value(1), 11 + press)
+        self.assertEqual(self.lib.debug_button_value(0), 1)
+
+    @covers("display.debug", "button.edges", "sleep.display")
+    def test_actual_long_hold_clears_without_power_selection_sleep_or_release_event(self):
+        for _ in range(10):
+            self.edge(1)
+            self.tick(100)
+            self.edge(0)
+            self.tick(50)
+        self.assertEqual(self.lib.debug_button_value(2), 20000)
+        self.edge(1)
+        self.tick(1000)
+        self.assertEqual(self.lib.debug_button_value(2), 0)
+        self.assertEqual(self.lib.debug_button_value(1), 10)
+        self.assertEqual(self.lib.bridge_read(6), 0)  # No sleep/fault delegation.
+        self.tick(1)
+        self.assertEqual(self.lib.debug_button_value(2), 20000)
+        self.edge(0)
+        self.tick(50)
+        self.assertEqual(self.lib.debug_button_value(1), 10)
+        self.assertEqual(self.lib.debug_button_value(0), 1)
+
+    @covers("display.debug", "button.edges")
+    def test_holding_the_tenth_press_defers_mode_change_until_release(self):
+        for _ in range(9):
+            self.edge(1)
+            self.tick(100)
+            self.edge(0)
+            self.tick(50)
+        self.edge(1)
+        self.tick(1000)
+        self.assertEqual(self.lib.debug_button_value(0), 1)
+        self.assertEqual(self.lib.debug_button_value(2), 0)
+        self.assertEqual(self.lib.debug_button_value(3), 0)
+        self.assertEqual(self.lib.debug_button_value(4), 1)
+        self.edge(0)
+        self.tick(50)
+        self.assertEqual(self.lib.debug_button_value(1), 10)
+        self.assertEqual(self.lib.debug_button_value(3), 1)
+
+
+    @covers("display.debug", "button.edges", "time.wrap")
+    def test_entry_waits_for_stable_release_through_bounce_and_tick_wrap(self):
+        for wrap in (False, True):
+            self.lib.debug_button_reset()
+            if wrap:
+                self.tick(0xFFFFFFFF - 1480)
+            for _ in range(9):
+                self.edge(1)
+                self.tick(100)
+                self.edge(0)
+                self.tick(50)
+            self.edge(1)
+            self.tick(100)
+            self.edge(0)
+            self.tick(25)
+            self.assertEqual(self.lib.debug_button_value(3), 0)
+            self.edge(1)  # Release bounce belongs to the same entry press.
+            self.tick(20)
+            self.edge(0)
+            self.tick(50)
+            self.assertEqual(self.lib.debug_button_value(1), 10)
+            self.assertEqual(self.lib.debug_button_value(3), 1)
+            self.assertEqual(self.lib.debug_button_value(5), 10)
+
 
 class FanTests(unittest.TestCase):
     @classmethod
@@ -265,6 +640,7 @@ class PowerTests(unittest.TestCase):
         cls.lib = library("power")
         cls.lib.normal_graph.restype = ctypes.POINTER(ctypes.c_uint8)
         cls.lib.normal_message.restype = ctypes.c_char_p
+        cls.lib.normal_warning_text.restype = ctypes.c_char_p
 
     def setUp(self):
         self.lib.normal_reset(100)
@@ -318,6 +694,78 @@ class PowerTests(unittest.TestCase):
         self.assertEqual(self.lib.bridge_value(0), 31)
         self.step(250, 0)
         self.assertEqual(self.lib.bridge_value(0), 30)
+
+    @covers("power.request", "outputs.production")
+    def test_configured_attenuation_steps_keep_jump_timing_saturation_and_slow_release(self):
+        for step in (2, 31):
+            lib = library("power", flags=(f"-DPWRLVL_RAMP_UP_STEP={step}",))
+            for use_current in (False, True):
+                with self.subTest(step=step, current_limit=use_current):
+                    lib.normal_reset(100)
+                    lib.bridge_input(4, 0 if use_current else 100001)
+                    lib.bridge_input(0, 5200 if use_current else 0)
+                    lib.bridge_step(102, 1)
+                    self.assertEqual(lib.bridge_value(0), 16)  # Initial jump is unchanged.
+                    lib.bridge_step(103, 1)
+                    self.assertEqual(lib.bridge_value(0), 16)  # No step before 2 ms.
+                    for i in range(1, 17):
+                        lib.bridge_step(102 + 2 * i, 1)
+                        self.assertEqual(lib.bridge_value(0), min(31, 16 + step * i))
+                    lib.bridge_input(4, 0)
+                    lib.bridge_input(0, 0)
+                    lib.bridge_step(200, 1)  # Previous over-limit sample still requests attenuation.
+                    lib.bridge_step(249, 1)
+                    self.assertEqual(lib.bridge_value(0), 31)
+                    lib.bridge_step(250, 1)
+                    self.assertEqual(lib.bridge_value(0), 30)  # Release is still one count per 50 ms.
+
+    @covers("power.request", "outputs.production")
+    def test_limiter_tuning_controls_can_be_overridden_together(self):
+        lib = library("power", flags=("-DPWRLVL_PWM_JUMP_LEVEL=8", "-DPWRLVL_RAMP_UP_STEP=3",
+                                      "-DPWRLVL_RAMP_UP_PERIOD_MS=4", "-DPWRLVL_UPDATE_PERIOD_MS=60"))
+        lib.normal_reset(100)
+        lib.bridge_input(4, 100001)
+        for now, expected in ((102, 0), (104, 8), (107, 8), (108, 11)):
+            lib.bridge_step(now, 1)
+            self.assertEqual(lib.bridge_value(0), expected)
+        lib.bridge_input(4, 0)
+        lib.bridge_step(112, 1)  # Previous sample still requests attenuation.
+        self.assertEqual(lib.bridge_value(0), 14)
+        lib.bridge_step(171, 1)
+        self.assertEqual(lib.bridge_value(0), 14)
+        lib.bridge_step(172, 1)
+        self.assertEqual(lib.bridge_value(0), 13)
+
+    @covers("power.preference", "outputs.production")
+    def test_optional_bucket_and_sustained_loss_switches_are_independent(self):
+        for bucket in (0, 1):
+            for sustained in (0, 1):
+                with self.subTest(bucket=bucket, sustained=sustained):
+                    flags = (f"-DLEAKY_BUCKET_ENABLED={bucket}",
+                             f"-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED={sustained}")
+                    lib = library("power", flags=flags)
+                    lib.bridge_fault.restype = ctypes.c_char_p
+                    lib.normal_reset(100)
+                    lib.bridge_input(10, 111)  # Virtual temperature only.
+                    lib.bridge_step(100, 1)
+                    lib.bridge_step(1100, 1)
+                    self.assertEqual(lib.bridge_fault(), b"CIRKT\nTOO\nHOT\nFAULT" if bucket else None)
+                    lib.normal_reset(100)
+                    lib.bridge_input(11, 3)  # Three qualifying sustained-history windows.
+                    lib.bridge_step(100, 1)
+                    self.assertEqual(lib.bridge_value(10), 3 if sustained else 0)
+                    lib.normal_reset(100)
+                    lib.bridge_input(7, 1)  # Independent fast-ISR latch still trips.
+                    lib.bridge_step(100, 1)
+                    self.assertEqual(lib.bridge_value(10), 1)
+                    lib.normal_reset(100)
+                    lib.bridge_input(1, 81)  # Physical temperature still derates.
+                    lib.bridge_step(100, 1)
+                    self.assertEqual(lib.bridge_value(3), 2)
+                    lib.bridge_input(1, 111)
+                    lib.bridge_step(200, 1)
+                    lib.bridge_step(1200, 1)
+                    self.assertEqual(lib.bridge_fault(), b"CIRKT\nTOO\nHOT\nFAULT")
 
     @covers("display.graph", "display.ceiling")
     def test_real_graph_center_scaling_mirroring_and_xor_ceiling(self):
@@ -385,6 +833,46 @@ class PowerTests(unittest.TestCase):
         self.assertEqual(self.lib.normal_value(0), 1)
         self.assertEqual(self.lib.normal_message(), b"SKILL\nISSUE\n  ?  ")
         self.assertEqual(self.lib.normal_duration(), 1000)
+
+    @covers("button.repeat", "button.mode", "display.debug", "display.graph")
+    def test_actual_debug_and_six_press_counters_are_independent_with_unchanged_power_cycle(self):
+        for press in range(1, 21):
+            now = 100 + press * 250
+            self.assertEqual(self.lib.normal_debug_press(now), int(press >= 10))
+            self.assertEqual(self.lib.normal_value(0), (1, 2, 1, 0)[(press - 1) % 4])
+            self.assertEqual(self.lib.normal_value(4), press % 6)
+            if press < 6:
+                self.assertIsNone(self.lib.normal_message())
+            else:
+                self.assertEqual(self.lib.normal_message(), b"SKILL\nISSUE\n  ?  ")
+            self.step(now, 25000)
+        # Normal supervision continues updating real graph history while debug is latched.
+        self.assertEqual(self.lib.normal_peak(1), 25000)
+        self.assertTrue(any(self.lib.normal_graph()[:4096]))
+
+    @covers("button.repeat", "power.preference", "display.debug")
+    def test_actual_derating_counter_resets_do_not_block_debug_entry(self):
+        for temperature, dc in ((85, 24000), (25, 18000)):
+            self.lib.normal_reset(100)
+            self.lib.bridge_input(1, temperature)
+            self.lib.bridge_input(2, dc)
+            self.step(200)
+            for press in range(1, 11):
+                self.assertEqual(self.lib.normal_debug_press(200 + press * 100), int(press == 10))
+                self.assertEqual(self.lib.normal_value(0), 0)
+
+    @covers("display.debug", "display.service")
+    def test_real_high_voltage_overlay_owns_only_the_existing_bottom_region(self):
+        self.assertEqual(self.lib.normal_warning(0, 31999), 0)
+        for now, rows in ((100, 3), (599, 3), (600, 0), (1100, 3)):
+            self.assertEqual(self.lib.normal_warning(now, 32000), rows)
+            if rows:
+                self.assertEqual([self.lib.normal_warning_text(i) for i in range(3)],
+                                 [b"WARN", b"HIGH", b"VOLT"])
+                self.assertEqual([self.lib.normal_warning_value(i) for i in range(3)], [107, 117, 127])
+                self.assertTrue(all(self.lib.normal_warning_pixel(y) for y in range(98)))
+                self.assertFalse(any(self.lib.normal_warning_pixel(y) for y in range(98, 128)))
+        self.assertEqual(self.lib.normal_warning(1200, 31999), 0)
 
 
 class ButtonBatteryTests(unittest.TestCase):
@@ -524,6 +1012,14 @@ class PeripheralTests(unittest.TestCase):
         cls.swd = library("uart", support="functional", flags=("-DHOT_WAND_SWD_DEBUG=1",))
         cls.rf = library("rf", support="functional", flags=("-DNATIVE_OUTPUT_MODEL=1",))
         cls.uart.uart_text.restype = cls.swd.uart_text.restype = ctypes.c_char_p
+
+    @covers("outputs.production")
+    def test_rearming_power_loss_does_not_clear_other_rf_latches_or_start_outputs(self):
+        self.assertEqual(self.rf.rf_rearm_case(8), 1)
+        self.assertEqual(self.rf.rf_latches(), 0)
+        for flags in (0, 9, 10, 12, 14):
+            self.assertEqual(self.rf.rf_rearm_case(flags), 0)
+            self.assertEqual(self.rf.rf_latches(), flags)
 
     @covers("fan.hardware")
     def test_actual_pwm_period_topology_and_clamping(self):

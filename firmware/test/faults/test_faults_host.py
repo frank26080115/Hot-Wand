@@ -10,7 +10,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/auto_testing"))
@@ -286,6 +286,48 @@ assert main(['--list', '--camera', 'off']) == 0
 """
         result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_power_loss_host_recovery_waits_for_runtime_without_button_reset(self):
+        first = {"rf_at_fault": 5, "reset_flags": 77}
+        held = {"stage": 6, "message": "POWER\nLOSS\nFAULT", "rf_attempts": 5}
+        resumed = {"stage": 5, "flags": 64, "rf_attempts": 6, "reset_flags": 77}
+        runner = object.__new__(FaultRunner)
+        runner.args = SimpleNamespace(latch_hold=1.2)
+        runner.current = Case("F05.fast", "fast_loss")
+        runner.results = {"F05.fast": {}}
+        runner.model = SimpleNamespace(base=(676,), frame=lambda **values: values)
+        runner.queue = Mock()
+        runner.log = Mock()
+        runner.capture = Mock(side_effect=({"state": held}, {"state": resumed}))
+        runner.session = Mock()
+        runner.target = SimpleNamespace(status=Mock(return_value={"stage": 6}),
+                                        wait=Mock(return_value=resumed))
+        with patch("faults_test.time.sleep"):
+            runner.input_fault_recovery(first)
+        self.assertTrue(runner.results["F05.fast"]["automatic_recovery"])
+        runner.queue.assert_called_once_with([{"dc": 676}])
+        runner.session.expect_reset.assert_not_called()
+        self.assertTrue(runner.target.wait.call_args.args[0](resumed))
+
+    def test_undervoltage_host_case_uses_automatic_recovery_without_reset(self):
+        first = {"rf_at_fault": 5, "reset_flags": 77}
+        held = {"stage": 6, "message": "LOW\nVOLT\nFAULT", "rf_attempts": 5}
+        resumed = {"stage": 5, "flags": 64, "rf_attempts": 6, "reset_flags": 77}
+        runner = object.__new__(FaultRunner)
+        runner.args = SimpleNamespace(latch_hold=1.2)
+        runner.current = Case("F07.undervoltage", "undervoltage")
+        runner.results = {runner.current.id: {}}
+        runner.model = SimpleNamespace(base=(676,), frame=lambda **values: values)
+        runner.queue = Mock()
+        runner.log = Mock()
+        runner.capture = Mock(side_effect=({"state": held}, {"state": resumed}))
+        runner.session = Mock()
+        runner.target = SimpleNamespace(status=Mock(return_value={"stage": 6}),
+                                        wait=Mock(return_value=resumed))
+        with patch("faults_test.time.sleep"):
+            runner.input_fault_recovery(first, expected="LOW\nVOLT\nFAULT")
+        self.assertTrue(runner.results[runner.current.id]["automatic_recovery"])
+        runner.session.expect_reset.assert_not_called()
 
     def test_waveform_counters_and_publication_share_one_halt(self):
         with tempfile.TemporaryDirectory() as folder:

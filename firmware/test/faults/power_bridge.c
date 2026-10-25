@@ -16,7 +16,11 @@ static uint32_t    mock_now, mock_power;
 static uint16_t    mock_dc, mock_current, mock_temperature, mock_bucket, mock_reference;
 static bool        mock_spike, mock_loss, mock_battery_ok, mock_allowed;
 static const char* mock_fault;
-const uint8_t      u8g2_font_6x10_tr[1] = {0};
+static uint32_t mock_recovery_count, mock_fan_resumes, mock_trend_remaining, mock_undervoltage_count, mock_recovered_mv;
+static bool     mock_abort_terminal;
+static bool     mock_guard_active;
+static void*    mock_terminal_context[5];
+const uint8_t   u8g2_font_6x10_tr[1] = {0};
 
 __declspec(dllexport) void bridge_reset(uint32_t now)
 {
@@ -31,6 +35,10 @@ __declspec(dllexport) void bridge_reset(uint32_t now)
     mock_spike = mock_loss = mock_allowed = false;
     mock_battery_ok                       = true;
     mock_fault                            = 0;
+    mock_recovery_count = mock_fan_resumes = mock_trend_remaining = 0;
+    mock_abort_terminal                                           = false;
+    mock_undervoltage_count                                       = 0;
+    mock_recovered_mv                                             = 24000;
     pwrlvl_initialized = pwrlvl_forced_minimum = false;
     pwrlvl_mode                                = PWRLVL_MODE_100_PERCENT;
     pwrmgt_desired_power_level                 = PWRLVL_MODE_100_PERCENT;
@@ -99,6 +107,12 @@ __declspec(dllexport) void bridge_input(uint32_t selector, uint32_t value)
     case 10:
         mock_bucket = value;
         break;
+    case 11:
+        mock_trend_remaining = value;
+        break;
+    case 12:
+        mock_recovered_mv = value;
+        break;
     }
 }
 
@@ -116,6 +130,14 @@ __declspec(dllexport) uint32_t bridge_value(uint32_t selector)
         return pwrmgt_applied_power_level;
     case 4:
         return mock_allowed;
+    case 9:
+        return pwrlvl_forced_minimum;
+    case 10:
+        return mock_recovery_count;
+    case 11:
+        return mock_fan_resumes;
+    case 12:
+        return mock_undervoltage_count;
 #if HOT_WAND_TEST_HARNESS
     case 5:
         return mock_pa6_mode;
@@ -174,6 +196,15 @@ bool adc_has_buck_voltage_spike_shutdown(void)
 }
 uint8_t adc_copy_dc_voltage_history(uint16_t* data, uint8_t capacity)
 {
+    if (mock_trend_remaining != 0 && capacity >= 7)
+    {
+        --mock_trend_remaining;
+        for (uint8_t i = 0; i < 7; ++i)
+        {
+            data[i] = 670 + 5 * i;
+        }
+        return 7;
+    }
     return 0;
 }
 #ifndef NATIVE_FUNCTIONAL_BUTTON
@@ -196,8 +227,47 @@ uint32_t btn_get_consecutive_presses(void)
 
 #endif /* NATIVE_FUNCTIONAL_BUTTON */
 
+void fan_resume(void)
+{
+    ++mock_fan_resumes;
+}
+void show_power_loss_fault(void)
+{
+    pwrlvl_force_minimum();
+    if (mock_fault == NULL)
+    {
+        mock_fault = "POWER\nLOSS\nFAULT";
+    }
+    mock_allowed = true;
+    ++mock_recovery_count;
+    mock_loss = false;
+    mock_now += PWRMGT_POWER_LOSS_RECOVERY_MS;
+}
+void show_undervoltage_fault(void)
+{
+    pwrlvl_force_minimum();
+    if (mock_fault == NULL)
+    {
+        mock_fault = "LOW\nVOLT\nFAULT";
+    }
+    mock_allowed = true;
+    ++mock_recovery_count;
+    ++mock_undervoltage_count;
+    mock_now += PWRMGT_POWER_LOSS_RECOVERY_MS;
+    mock_dc = mock_recovered_mv;
+}
 void show_fault(const char* text, bool reset)
 {
+    if (mock_abort_terminal)
+    {
+        mock_fault   = text;
+        mock_allowed = reset;
+        if (mock_guard_active)
+        {
+            __builtin_longjmp(mock_terminal_context, 1);
+        }
+        return;
+    }
     if (!mock_fault)
     {
         mock_fault   = text;
@@ -253,3 +323,21 @@ u8g2_uint_t u8g2_DrawStr(u8g2_t* g, u8g2_uint_t x, u8g2_uint_t y, const char* te
 }
 
 #endif /* NATIVE_FUNCTIONAL_GRAPH */
+
+__declspec(dllexport) void bridge_abort_terminal(void)
+{
+    mock_abort_terminal = true;
+}
+
+/* Capture the non-returning thermal fault without letting its UI mock return
+ * into supervisor code that is unreachable in production. */
+__declspec(dllexport) void bridge_guarded_step(uint32_t now)
+{
+    mock_now            = now;
+    mock_abort_terminal = mock_guard_active = true;
+    if (__builtin_setjmp(mock_terminal_context) == 0)
+    {
+        pwrmgt_task();
+    }
+    mock_guard_active = false;
+}
