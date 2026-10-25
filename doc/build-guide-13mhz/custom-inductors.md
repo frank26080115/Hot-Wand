@@ -2,7 +2,13 @@
 
 Make sure you are familiar with how to use enamel coated magnet wire correctly, how to prepare the ends of the wires for soldering, etc.
 
-[<img src="../bld-photos/custom-inductor-enamel-strip-1.jpg" alt="Custom inductor enamel strip 1" width="300">](../bld-photos/custom-inductor-enamel-strip-1.jpg) [<img src="../bld-photos/custom-inductor-enamel-strip-2.jpg" alt="Custom inductor enamel strip 2" width="300">](../bld-photos/custom-inductor-enamel-strip-2.jpg)
+For the 22 AWG wire, I used a soldering iron and a lot of flux to simply "burn" and scrape off the enamel.
+
+[<img src="../bld-photos/custom-inductor-enamel-strip-1.jpg" alt="Custom inductor enamel strip 1" width="300">](../bld-photos/custom-inductor-enamel-strip-1.jpg)
+
+For the larger 16 AWG wire, it's easier to simply scrape off the enamel with a knife.
+
+[<img src="../bld-photos/custom-inductor-enamel-strip-2.jpg" alt="Custom inductor enamel strip 2" width="300">](../bld-photos/custom-inductor-enamel-strip-2.jpg)
 
 Remember that, one "turn" is defined as passing through the center of the toroid once. It doesn't have to be a complete loop.
 
