@@ -54,8 +54,8 @@ class RFDutyTests(unittest.TestCase):
             for now in (0xFFFFFF00, 0xFFFFFFFE, 0xFFFFFFFF, 0, 1, 499, 500):
                 self.assertEqual(self.rf.rf_step(ctypes.c_uint32(now), mode), int(now % 1000 < on_ms))
 
-    def test_each_interlock_blocks_start_and_stops_running_rf(self):
-        for flag in (1, 2, 4, 8, 16, 32):
+    def test_latched_faults_block_start_and_stop_running_rf(self):
+        for flag in (4, 8, 16, 32):
             for running in (False, True):
                 self.rf.rf_reset(1, 0)
                 if running:
@@ -63,6 +63,43 @@ class RFDutyTests(unittest.TestCase):
                 self.rf.rf_interlocks(flag)
                 self.assertEqual(self.rf.rf_step(200, 0), 0)
                 self.assertEqual(self.rf.rf_enabled(), 0)
+
+    @covers("outputs.production")
+    def test_unconfirmed_tip_edges_do_not_stop_or_restart_running_rf(self):
+        # Raw input and qualification inhibit a START, not RF already running.
+        # The timer ISR decides whether a transition is a confirmed removal.
+        for lib in (self.rf, self.legacy):
+            for mode in range(3):
+                for flag in (1, 2, 3):  # Raw low, qualifying, or both.
+                    lib.rf_reset(1, 0)
+                    self.assertEqual(lib.rf_step(100, mode), 1)
+                    handoffs = lib.rf_handoffs()
+                    lib.rf_interlocks(flag)
+                    self.assertEqual(lib.rf_step(150, mode), 1)
+                    lib.rf_interlocks(0)
+                    self.assertEqual(lib.rf_step(200, mode), 1)
+                    self.assertEqual(lib.rf_handoffs(), handoffs)
+
+    def test_every_start_inhibit_still_blocks_inactive_rf(self):
+        for lib in (self.rf, self.legacy):
+            for flag in (1, 2, 3, 4, 8, 16, 32):
+                lib.rf_reset(1, 0)
+                lib.rf_interlocks(flag)
+                self.assertEqual(lib.rf_step(100, 0), 0)
+                self.assertEqual(lib.rf_enabled(), 0)
+
+    @covers("outputs.production")
+    def test_cycle_off_stops_during_qualification_and_restart_waits(self):
+        for mode, off_start in ((1, 750), (2, 500)):
+            self.rf.rf_reset(1, 0)
+            self.assertEqual(self.rf.rf_step(100, mode), 1)
+            self.rf.rf_interlocks(3)
+            self.assertEqual(self.rf.rf_step(off_start, mode), 0)
+            self.assertEqual(self.rf.rf_enabled(), 0)
+            self.rf.rf_interlocks(2)  # Raw input recovered; debounce still pending.
+            self.assertEqual(self.rf.rf_step(1000, mode), 0)
+            self.rf.rf_interlocks(0)
+            self.assertEqual(self.rf.rf_step(1001, mode), 1)
 
     def test_rearm_never_starts_and_next_task_respects_phase(self):
         self.rf.rf_interlocks(32)

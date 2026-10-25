@@ -29,6 +29,7 @@ class TipDetectorTests(unittest.TestCase):
             dll = build / f"tip-{harness}-{os.getpid()}.dll"
             command = [clang, "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-Wno-unknown-attributes",
                        f"-DTIP_SWD_TEST_HARNESS={harness}", "-DHSE_VALUE=27120000",
+                       "-DTIPDETECT_EDGE_FAULT_COUNT=10",  # Positive cases are independent of bench tuning.
                        "-Itest/tipdetect_swd/support", "-Iinc", "-Ilib/u8g2/csrc",
                        "test/tipdetect_swd/bridge.c", "-o", str(dll), "-Wl,/noentry"]
             if harness:

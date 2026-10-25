@@ -78,7 +78,7 @@
  * One count decays every 100 ms. Zero compiles out only this storm detector;
  * physical tip-removal debounce, RF inhibition, and the disconnect latch remain. */
 #ifndef TIPDETECT_EDGE_FAULT_COUNT
-#define TIPDETECT_EDGE_FAULT_COUNT 0
+#define TIPDETECT_EDGE_FAULT_COUNT 10
 #endif
 
 #if TIPDETECT_EDGE_FAULT_COUNT < 0

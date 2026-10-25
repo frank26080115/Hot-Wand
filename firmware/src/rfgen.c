@@ -288,10 +288,12 @@ void rfgen_task(pwrlvl_mode_t mode)
     (void)mode;
 #endif
 
-    // Check the interlocks even during an ON phase with RF already running.
-    // rfgen_start() checks again at the final timer-enable boundary to close
-    // the race with an interrupt that latches a fault during configuration.
-    if (!allow_rf || rfgen_has_fault() || !rfgen_tip_allows_start())
+    // An OFF phase or a confirmed fault stops RF already running. A raw tip
+    // edge or pending debounce only inhibits STARTING: the tip timer ISR must
+    // finish qualification before deciding whether running RF must stop.
+    // Stopping on every unconfirmed edge creates stop/restart transients that
+    // can retrigger the detector and defeat its existing 300 us debounce.
+    if (!allow_rf || rfgen_has_fault() || tipdetect_has_triggered())
     {
         if (rfgen_is_active())
         {
@@ -299,7 +301,10 @@ void rfgen_task(pwrlvl_mode_t mode)
         }
         return;
     }
-    if (!rfgen_is_active())
+    // Keep the full raw-input/qualification gate for every new start.
+    // rfgen_start() checks again at the final timer-enable boundary to close
+    // the race with an interrupt that latches a fault during configuration.
+    if (!rfgen_is_active() && rfgen_tip_allows_start())
     {
         rfgen_start();
     }
