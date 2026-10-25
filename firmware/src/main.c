@@ -40,6 +40,7 @@
 #define SETUP_HOLD_BAR_HEIGHT            3
 #define SETUP_HOLD_BAR_Y                 45
 #define MAIN_DISPLAY_FRAME_INTERVAL_MS   67
+#define DEBUG_DISPLAY_FRAME_INTERVAL_MS  200
 #define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8
 
 // -----------------------------------------------------------------------------
@@ -48,6 +49,15 @@
 
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
 static const uint32_t auto_dim_delay_ms[]   = {0, 15 * 1000, 30 * 1000, 60 * 1000};
+
+static uint32_t debug_readings[5];
+static uint32_t debug_peaks[5];
+static bool     debug_entry_release_pending;
+static bool     debug_entry_release_timing;
+static uint32_t debug_entry_release_started_ms;
+static bool     debug_view_enabled;
+static uint8_t  debug_press_count;
+static uint32_t debug_last_press_ms;
 
 #ifdef SHOW_SPLASH
 static uint32_t splash_started_ms;
@@ -64,7 +74,12 @@ uint8_t pixshift_y = 0;
 static void boot_check_for_setup(void);
 static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
 static void boot_wait_for_power_stable(void);
-static void main_render_display(void);
+static void __attribute__((noinline)) main_render_display(void);
+static void main_handle_short_press(uint32_t now);
+static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts);
+static void main_update_debug_readings(void);
+static void main_reset_debug_peaks(void);
+static void main_handle_runtime_button(uint32_t now);
 static void Error_Handler(void);
 
 void enter_sleep_mode(void);
@@ -104,7 +119,8 @@ int main(void)
 #if ADC_SIM_ENABLED
     fault_test_init();
     /* Wait before any ADC or output activity. The host enqueues complete
-     * frames, then commits start_request = 1 through SWD. No target calls or
+     * frames, then commits start_request = 1
+     * through SWD. No target calls or
      * long debugger halt are needed; IWDG stays serviced during the wait. */
     pwrlvl_force_minimum();
     adc_sim_init();
@@ -135,8 +151,10 @@ int main(void)
 
 #if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
     /* Framebuffer capture is always available in the test image. The host
-     * requests this optional camera target at the ADC boot gate; fault tests
-     * use the reset default (zero) and proceed without a camera or dismissal. */
+     * requests this optional camera target
+     * at the ADC boot gate; fault tests
+     * use the reset default (zero) and proceed without a camera or dismissal.
+     */
     if (vision_test_fiducial_enabled != 0)
     {
         vision_test_fiducial_gate();
@@ -164,7 +182,8 @@ int main(void)
     // we use the LSB of the data to use as a RNG seed
     // taking advantage of noise
     /* Deliberately do not feed here: a DMA/ADC path that never produces a
-     * usable seed is a startup fault and should be recovered by IWDG. */
+     * usable seed is a startup fault and
+     * should be recovered by IWDG. */
     do
     {
         random_seed = adc_get_rand_seed();
@@ -224,7 +243,8 @@ int main(void)
     fan_init(settings.fan_mode, settings.fan_sig_inv != 0);
 #if ADC_SIM_ENABLED
     /* Resume near-full attenuation, then let the normal supervisor regulate
-     * and decide whether RF may start. This does not bypass any interlock. */
+     * and decide whether RF may start.
+     * This does not bypass any interlock. */
     pwrlvl_release_minimum();
 #endif
     display_last_frame_ms = systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
@@ -251,7 +271,7 @@ int main(void)
         }
 
         // Central runtime output supervisor:
-        // - Checks the configured battery cutoff, input-power loss, buck-output overvoltage, terminal input
+        // - Checks the configured battery cutoff, input-power loss, buck-output overvoltage, recoverable input
         //   undervoltage, and sustained overtemperature shutdown.
         // - Applies temperature and input-voltage derating with hysteresis.
         // - Selects the effective power level and advances PWM attenuation.
@@ -273,27 +293,12 @@ int main(void)
 
         now = systick_get_ms();
 
-        if (btn_has_short_press(true))
-        {
-#ifdef SHOW_SPLASH
-            if (splash_visible)
-            {
-                splash_visible = false;
-            }
-            else
-#endif
-            {
-                pwrmgt_change_pwr_lvl();
-            }
-        }
-        if (btn_has_long_press(true))
-        {
-            enter_sleep_mode();
-        }
+        main_handle_runtime_button(now);
 
         inactive_ms = pwrmgt_get_time_since_last_activity_ms();
 
-        if ((settings.auto_sleep != AUTO_SLEEP_OFF) && (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep]))
+        if (!debug_view_enabled && (settings.auto_sleep != AUTO_SLEEP_OFF) &&
+            (inactive_ms >= auto_sleep_delay_ms[settings.auto_sleep]))
         {
             enter_sleep_mode();
         }
@@ -301,8 +306,8 @@ int main(void)
         OLED_SetDimMode(&oled,
                         (settings.auto_dim != AUTO_DIM_OFF) && (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
 
-        // Transient messages own the display while active. Otherwise draw the live voltage and graph at no more than 15
-        // frames per second.
+        // Transient messages own the display while active. Refresh the graph at up to
+        // 15 FPS and debug numbers at 5 FPS; peak sampling remains independent.
         short_msg_active = short_msg_task();
 
 #ifdef SHOW_SPLASH
@@ -312,7 +317,9 @@ int main(void)
         }
 #endif
 
-        if (!short_msg_active && ((uint32_t)(now - display_last_frame_ms) >= MAIN_DISPLAY_FRAME_INTERVAL_MS))
+        if (!short_msg_active &&
+            ((uint32_t)(now - display_last_frame_ms) >=
+             (debug_view_enabled ? DEBUG_DISPLAY_FRAME_INTERVAL_MS : MAIN_DISPLAY_FRAME_INTERVAL_MS)))
         {
             display_last_frame_ms = now;
             main_render_display();
@@ -486,7 +493,177 @@ static void boot_wait_for_power_stable(void)
     }
 }
 
-static void main_render_display(void)
+static void main_handle_short_press(uint32_t now)
+{
+#ifdef SHOW_SPLASH
+    if (splash_visible)
+    {
+        splash_visible = false;
+        return;
+    }
+#endif
+
+    pwrmgt_change_pwr_lvl();
+
+    if (debug_view_enabled)
+    {
+        return;
+    }
+
+    // Independent of the six-press Easter egg, including when derating blocks a power change.
+    if ((uint32_t)(now - debug_last_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS)
+    {
+        debug_press_count = 0;
+    }
+    debug_last_press_ms = now;
+    if (++debug_press_count == 10)
+    {
+        debug_view_enabled          = true;
+        debug_press_count           = 0;
+        debug_entry_release_pending = true;
+        debug_entry_release_timing  = false;
+        main_reset_debug_peaks();
+    }
+}
+
+static void main_reset_debug_peaks(void)
+{
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        debug_peaks[i] = 0;
+    }
+}
+
+static void main_update_debug_readings(void)
+{
+    debug_readings[0] = adc_to_millivolts(BUCK_SENS_IDX);
+    debug_readings[1] = adc_to_milliamps(CURR_SENS_IDX);
+    // Track the calculated power of this sample, independently of voltage/current peaks.
+    debug_readings[2] = adc_get_milliwatts();
+    debug_readings[3] = adc_to_celcius(THERM_1_IDX);
+    debug_readings[4] = adc_to_celcius(THERM_2_IDX);
+    for (uint8_t i = 0; i < 5; ++i)
+    {
+        if (debug_readings[i] > debug_peaks[i])
+        {
+            debug_peaks[i] = debug_readings[i];
+        }
+    }
+}
+
+static void main_handle_runtime_button(uint32_t now)
+{
+    if (btn_has_short_press(true))
+    {
+        main_handle_short_press(now);
+    }
+    if (debug_view_enabled)
+    {
+        // Wait for the entry press to finish before changing event classification.
+        // Its release must not become an extra short press or reset the Easter-egg counter.
+        if (debug_entry_release_pending)
+        {
+            if (btn_is_down())
+            {
+                debug_entry_release_timing = false;
+            }
+            else if (!debug_entry_release_timing)
+            {
+                debug_entry_release_started_ms = now;
+                debug_entry_release_timing     = true;
+            }
+            else if ((uint32_t)(now - debug_entry_release_started_ms) >= BTN_DEBOUNCE_MS)
+            {
+                btn_set_short_press_mode(BTN_SHORT_PRESS_ON_RELEASE);
+                debug_entry_release_pending = false;
+            }
+        }
+        // Keep sampling even when transient messages own the display. A long hold
+        // clears peaks after this sample; the next pass starts accumulating again.
+        main_update_debug_readings();
+    }
+    if (btn_has_long_press(true))
+    {
+        if (debug_view_enabled)
+        {
+            main_reset_debug_peaks();
+        }
+        else
+        {
+            enter_sleep_mode();
+        }
+    }
+}
+
+static void main_draw_debug_text(u8g2_t* graphics, uint8_t baseline, const char* text)
+{
+    u8g2_uint_t width     = u8g2_GetStrWidth(graphics, text);
+    u8g2_uint_t available = u8g2_GetDisplayWidth(graphics);
+    u8g2_uint_t shift     = width < available ? available - width : 0;
+    if (shift > pixshift_x)
+    {
+        shift = pixshift_x;
+    }
+    u8g2_DrawStr(graphics, shift, baseline + pixshift_y, text);
+}
+
+static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts)
+{
+    char   text[16];
+    size_t length;
+
+    u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+    text[0] = '>';
+    millivolts_to_str(input_millivolts, text + 1, 0, &length);
+    length += 1;
+    text[length++] = 'V';
+    text[length]   = '\0';
+    main_draw_debug_text(graphics, 9, text);
+
+    text[0] = 'M';
+    text[1] = ':';
+    int_to_str(100 - 25 * pwrmgt_get_applied_power_level(), text + 2, 10, NULL);
+    main_draw_debug_text(graphics, 17, text);
+
+    for (uint8_t group = 0; group < 2; ++group)
+    {
+        main_draw_debug_text(graphics, 25 + 48 * group, group == 0 ? "NOW" : "MAX");
+        for (uint8_t row = 0; row < 5; ++row)
+        {
+            uint32_t value = group == 0 ? debug_readings[row] : debug_peaks[row];
+            char     unit;
+            switch (row)
+            {
+            case 0:
+                millivolts_to_str(value, text, 1, &length);
+                unit = 'V';
+                break;
+            case 1:
+                milliamps_to_str(value, text, 1, &length);
+                unit = 'A';
+                break;
+            case 2:
+                milliwatts_to_str(value, text, 1, &length);
+                unit = 'W';
+                break;
+            default:
+                celcius_to_str(value, text, &length);
+                unit = 'C';
+                break;
+            }
+            text[length++] = unit;
+            text[length]   = '\0';
+            main_draw_debug_text(graphics, 33 + 48 * group + 8 * row, text);
+        }
+    }
+    if ((pwrmgt_get_attenuation_reasons() & PWRMGT_ATTENUATION_TEMPERATURE) != 0 &&
+        ((systick_get_ms() / 1000) & 1) != 0)
+    {
+        main_draw_debug_text(graphics, 121, "!HOT!");
+    }
+}
+
+static void __attribute__((noinline)) main_render_display(void)
 {
     char     voltage[MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE];
     size_t   voltage_length;
@@ -511,28 +688,37 @@ static void main_render_display(void)
     }
 
     input_millivolts = adc_to_millivolts(DC_SENS_IDX);
-    millivolts_to_str(input_millivolts, voltage, 1, &voltage_length);
-    voltage[voltage_length++] = 'V';
-    voltage[voltage_length]   = '\0';
-
     u8g2_ClearBuffer(graphics);
-    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
-    /* Alternate voltage and !HOT! in one-second phases while thermal
-     * derating is active, including its hysteresis recovery interval. */
-    u8g2_DrawStr(graphics,
-                 (u8g2_uint_t)pixshift_x,
-                 (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y),
-                 ((pwrmgt_get_attenuation_reasons() & PWRMGT_ATTENUATION_TEMPERATURE) != 0 &&
-                  ((systick_get_ms() / 1000) & 1) != 0)
-                     ? "!HOT!"
-                     : voltage);
-    pwrmgt_render_graph(graphics);
+    if (debug_view_enabled)
+    {
+        main_render_debug_view(graphics, input_millivolts);
+    }
+    else
+    {
+        millivolts_to_str(input_millivolts, voltage, 1, &voltage_length);
+        voltage[voltage_length++] = 'V';
+        voltage[voltage_length]   = '\0';
+
+        u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+        /* Alternate voltage and !HOT! in one-second phases while thermal
+         * derating is active, including its
+         * hysteresis recovery interval. */
+        u8g2_DrawStr(graphics,
+                     (u8g2_uint_t)pixshift_x,
+                     (u8g2_uint_t)(OLED_FIRST_TEXT_BASELINE + pixshift_y),
+                     ((pwrmgt_get_attenuation_reasons() & PWRMGT_ATTENUATION_TEMPERATURE) != 0 &&
+                      ((systick_get_ms() / 1000) & 1) != 0)
+                         ? "!HOT!"
+                         : voltage);
+        pwrmgt_render_graph(graphics);
+    }
     pwrmgt_render_high_voltage_warning(graphics, input_millivolts);
     OLED_SendBuffer(&oled);
 }
 
 void enter_sleep_mode(void)
 {
+    debug_press_count = 0;
     show_fault("ZZZZZ", true);
 }
 

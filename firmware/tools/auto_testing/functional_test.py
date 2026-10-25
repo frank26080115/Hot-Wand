@@ -6,7 +6,8 @@ Run: py tools/auto_testing/functional_test.py --native --camera off
 Extended real-time sleep/endurance: add --long
 Offline only: py tools/auto_testing/functional_test.py --native-only
 
-No test enables RF, releases the physical buck clamp, or writes settings.
+No test enables RF or releases the physical buck clamp. Exit cleanup erases
+saved settings so the next normal boot uses factory defaults.
 """
 from __future__ import annotations
 

@@ -187,6 +187,7 @@ static void      test_uart_write_number(uint32_t value);
 static void      test_uart_write_address(uintptr_t address);
 static void      test_nvm_report_settings(const hotwand_setup_nvm_t* settings);
 static bool      test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number);
+static void      test_nvm_restore_defaults(void);
 static void      test_battery_guess_write_row(uint8_t                battery_mode,
                                               uint16_t               battery_millivolts,
                                               bool                   valid,
@@ -219,7 +220,7 @@ void test_run(void)
     // test_bringup_oled_inputs();
     // test_bringup_watchdog_simple();
     // test_rfgen();
-    test_rfgen_no_power();
+    // test_rfgen_no_power();
     // test_rfgen_burst();
     // test_ct_reaction();
     // test_watchdog_rf_reset();
@@ -691,6 +692,7 @@ void test_nvm_full_page(void)
     if ((test_nvm_slot_count() < 2) || !nvm_factory_reset())
     {
         UART_Write("FACTORY ERASE FAILED\r\n");
+        test_nvm_restore_defaults();
         for (;;)
         {
             HAL_Delay(1);
@@ -712,6 +714,7 @@ void test_nvm_full_page(void)
             UART_Write("SILENT FILL FAILED AT SLOT ");
             test_uart_write_number(sequence);
             UART_Write("\r\n");
+            test_nvm_restore_defaults();
             for (;;)
             {
                 HAL_Delay(1);
@@ -731,6 +734,7 @@ void test_nvm_full_page(void)
         if (!test_nvm_verbose_save((uint16_t)(fill_count + trace), (uint16_t)(trace + 1)))
         {
             UART_Write("VERBOSE SAVE FAILED\r\n");
+            test_nvm_restore_defaults();
             for (;;)
             {
                 HAL_Delay(1);
@@ -744,6 +748,7 @@ void test_nvm_full_page(void)
     UART_Write("FINAL USED SLOTS ");
     test_uart_write_number(test_nvm_used_slot_count());
     UART_Write(test_nvm_used_slot_count() == 2 ? " (PASS)\r\n" : " (FAIL, EXPECTED 2)\r\n");
+    test_nvm_restore_defaults();
     UART_Write("NVM FULL PAGE TEST COMPLETE\r\n");
 
     for (;;)
@@ -1256,6 +1261,7 @@ void test_nvm_simple(void)
             }
 
             test_nvm_verbose_save(sequence, sequence + 1);
+            test_nvm_restore_defaults();
             ++sequence;
         }
 
@@ -1621,6 +1627,28 @@ void vision_test_fiducial_gate(void)
 }
 
 #endif
+
+/* Restore a verified default record before a standalone test waits again.
+ * Appending avoids erasing a page after every simple-test button press. */
+static void test_nvm_restore_defaults(void)
+{
+    hotwand_setup_nvm_t defaults;
+    hotwand_setup_nvm_t actual;
+
+    nvm_apply_defaults(&defaults);
+    if (!nvm_save(&defaults) || !nvm_read(&actual) || !test_nvm_settings_equal(&defaults, &actual))
+    {
+        UART_Write("FACTORY DEFAULT RESTORE FAILED; RETRYING\r\n");
+        // Do not report completion or silently park with synthetic test settings.
+        // Keep retrying while servicing IWDG, allowing transient errors to clear.
+        do
+        {
+            watchdog_feed();
+            HAL_Delay(10);
+        } while (!nvm_save(&defaults) || !nvm_read(&actual) || !test_nvm_settings_equal(&defaults, &actual));
+    }
+    UART_Write("FACTORY DEFAULTS RESTORED AND VERIFIED\r\n");
+}
 
 static bool test_nvm_verbose_save(uint16_t sequence, uint16_t trace_number)
 {

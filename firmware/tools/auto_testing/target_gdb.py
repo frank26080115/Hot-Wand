@@ -30,6 +30,8 @@ class GdbSession:
         self.elf = elf
         self.symbols = symbols
         self.port = port
+        # Hardware test runners opt in; ordinary inspection sessions preserve settings.
+        self.factory_defaults_on_exit = False
         self.reset_on_connect = reset_on_connect
         self.server_thread = self.gdb_thread = None
         self.server = None
@@ -95,6 +97,12 @@ class GdbSession:
         return self
 
     def __exit__(self, *_):
+        cleanup_error = None
+        if self.factory_defaults_on_exit:
+            try:
+                self.restore_factory_defaults()
+            except Exception as exc:
+                cleanup_error = exc
         if self.gdb is not None:
             self.gdb.terminate()
             try:
@@ -115,6 +123,22 @@ class GdbSession:
         for handle in (self.gdb_log, self.openocd_log):
             if handle is not None:
                 handle.close()
+
+        if cleanup_error is not None:
+            raise RuntimeError(f"Factory-default NVM cleanup failed: {cleanup_error}") from cleanup_error
+
+    def restore_factory_defaults(self):
+        """Erase only the settings page, verify it, and reload defaults at reset.
+
+        Reset before halting so no RF output is frozen active during flash erase.
+        This deliberately discards test settings and the pre-test configuration.
+        """
+        self.command('-interpreter-exec console "monitor reset halt"', timeout=20)
+        self.running = False
+        self.command('-interpreter-exec console "monitor flash erase_address 0x08007c00 0x400"', timeout=30)
+        if self.read_memory(0x08007C00, 1024) != b"\xff" * 1024:
+            raise RuntimeError("Settings page was not completely erased")
+        self.reset()
 
     def _reader(self):
         for line in self.gdb.stdout:

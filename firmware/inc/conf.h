@@ -97,6 +97,16 @@
 #define TEMPERATURE_SHUTDOWN_TIME_MS     1000
 #define TEMPERATURE_HYSTERYSIS_C         5
 
+/* Optional virtual energy/temperature estimate. Physical thermistors and MCU
+ * temperature protection remain active when this model is disabled. */
+#ifndef LEAKY_BUCKET_ENABLED
+#define LEAKY_BUCKET_ENABLED 0
+#endif
+
+#if (LEAKY_BUCKET_ENABLED != 0) && (LEAKY_BUCKET_ENABLED != 1)
+#error "LEAKY_BUCKET_ENABLED must be 0 or 1"
+#endif
+
 /* Model parameters, not measured thermal properties: drain 60 W plus stored
  * energy / 20 s. From empty, 80 W reaches warning in about 20.4 s and 100 W
  * in about 7.7 s; 60 W runs indefinitely. At sustained 100 W, energy tends
@@ -186,6 +196,16 @@
 #error "DC_UNDERVOLTAGE_FAULT_MV must fit in millivolts"
 #endif
 
+/* Optional foreground detector for several declining input-voltage averages.
+ * Independent of the fast ISR detector controlled by FAST_DROP_ADC_COUNTS. */
+#ifndef PWRMGT_POWER_LOSS_SUSTAINED_ENABLED
+#define PWRMGT_POWER_LOSS_SUSTAINED_ENABLED 0
+#endif
+
+#if (PWRMGT_POWER_LOSS_SUSTAINED_ENABLED != 0) && (PWRMGT_POWER_LOSS_SUSTAINED_ENABLED != 1)
+#error "PWRMGT_POWER_LOSS_SUSTAINED_ENABLED must be 0 or 1"
+#endif
+
 #ifndef PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS
 #define PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS 20
 #endif
@@ -194,6 +214,8 @@
  * samples. With the fixed 22K/2K2 divider and 3.3 V ADC reference, one count
  * represents about 35.5 mV at DC-IN. The sustained and segment defaults
  * approximate the former 300 mV and 75 mV thresholds, respectively. */
+/* Set to 0 to compile out the fast ISR detector and its latch. The averaged
+ * voltage history is retained; the sustained detector has its own switch. */
 #ifndef PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS
 #define PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS 85 /* ~3.02 V at DC-IN; 28 counts was ~0.99 V. */
 #endif
@@ -214,14 +236,24 @@
 #error "PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS must be between 1 and 1000 milliseconds"
 #endif
 
-#if (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 1023) ||                \
+#if (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS < 0) || (PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 1023) ||                \
     (PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_SUSTAINED_DROP_ADC_COUNTS > 1023) ||      \
     (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS == 0) || (PWRMGT_POWER_LOSS_MIN_SEGMENT_DROP_ADC_COUNTS > 1023)
-#error "Power-loss voltage drops must fit in nonzero 10-bit ADC counts"
+#error "Fast drop must be 0..1023; sustained/segment drops must be 1..1023 ADC counts"
 #endif
 
 #if (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT < 2) || (PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT > 10)
 #error "PWRMGT_POWER_LOSS_SUSTAINED_INTERVAL_COUNT must be between 2 and 10"
+#endif
+
+/* Shared power-loss/undervoltage recovery: filtered input must remain strictly
+ * above the absolute undervoltage threshold for this continuous interval. */
+#ifndef PWRMGT_POWER_LOSS_RECOVERY_MS
+#define PWRMGT_POWER_LOSS_RECOVERY_MS 1000
+#endif
+
+#if (PWRMGT_POWER_LOSS_RECOVERY_MS < 1000) || (PWRMGT_POWER_LOSS_RECOVERY_MS > 60000)
+#error "PWRMGT_POWER_LOSS_RECOVERY_MS must be between 1000 and 60000 milliseconds"
 #endif
 
 /* Buck overvoltage protection compares the unfiltered 10-bit ADC sample.
@@ -246,8 +278,55 @@
 #error "Invalid high-power DC threshold or hysteresis"
 #endif
 
+// -----------------------------------------------------------------------------
+// Buck Power Limiting and Protection
+// -----------------------------------------------------------------------------
+
+/* Increasing attenuation PWM lowers buck output voltage and power. These
+ * controls govern the fast response to excess power or current. */
+#ifndef PWRLVL_PWM_JUMP_LEVEL
+#define PWRLVL_PWM_JUMP_LEVEL 24
+#endif
+
+#if (PWRLVL_PWM_JUMP_LEVEL < 0) || (PWRLVL_PWM_JUMP_LEVEL > 31)
+#error "PWRLVL_PWM_JUMP_LEVEL must be between 0 and 31 PWM counts"
+#endif
+
+/* Attenuation increase after the initial jump. The PWM setter clamps the
+ * result at 31 counts; larger steps reduce buck power more aggressively. */
+#ifndef PWRLVL_RAMP_UP_STEP
+#define PWRLVL_RAMP_UP_STEP 4
+#endif
+
+#if (PWRLVL_RAMP_UP_STEP < 1) || (PWRLVL_RAMP_UP_STEP > 31)
+#error "PWRLVL_RAMP_UP_STEP must be between 1 and 31 PWM counts"
+#endif
+
+/* Minimum time between fast attenuation updates while over a limit. */
+#ifndef PWRLVL_RAMP_UP_PERIOD_MS
+#define PWRLVL_RAMP_UP_PERIOD_MS 2
+#endif
+
+#if (PWRLVL_RAMP_UP_PERIOD_MS < 1) || (PWRLVL_RAMP_UP_PERIOD_MS > 1000)
+#error "PWRLVL_RAMP_UP_PERIOD_MS must be between 1 and 1000 milliseconds"
+#endif
+
+/* Slow release: remove one attenuation count per update when below limits,
+ * allowing buck voltage and available power to rise again. */
+#ifndef PWRLVL_UPDATE_PERIOD_MS
+#define PWRLVL_UPDATE_PERIOD_MS 50
+#endif
+
+#if (PWRLVL_UPDATE_PERIOD_MS < 5) || (PWRLVL_UPDATE_PERIOD_MS > 100)
+#error "PWRLVL_UPDATE_PERIOD_MS must be between 5 and 100 milliseconds"
+#endif
+
 #ifndef PWRLVL_CURRENT_LIMIT_ENABLED
 #define PWRLVL_CURRENT_LIMIT_ENABLED 1
+#endif
+
+#if (PWRLVL_CURRENT_LIMIT_ENABLED != 0) && (PWRLVL_CURRENT_LIMIT_ENABLED != 1)
+#error "PWRLVL_CURRENT_LIMIT_ENABLED must be 0 or 1"
 #endif
 
 #if PWRLVL_CURRENT_LIMIT_ENABLED

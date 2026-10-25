@@ -20,8 +20,12 @@ void rfgen_start_with_tip_bypass_for_test(void);
 void rfgen_stop(void);
 /* Immediately disables TIM1 and latches RF restart inhibition until reset. */
 void rfgen_emergency_stop(void);
-/* Same immediate shutdown, with a separate power-loss restart latch. */
+/* Same immediate shutdown, with a selective input-fault restart latch shared
+ * by power-loss and undervoltage recovery. */
 void rfgen_power_loss_stop(void);
+/* Clears only the power-loss latch while RF is off and no emergency/clock
+ * fault is latched. Does not start RF. */
+bool rfgen_rearm_power_loss(void);
 /* CT diagnostic only: clears just the power-loss latch while RF is off.
  * Clock faults and other emergency stops still require a reset. */
 bool rfgen_rearm_power_loss_for_test(void);

@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#if LEAKY_BUCKET_ENABLED
+
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
@@ -29,10 +31,10 @@ _Static_assert(LEAKY_BUCKET_COOLING_TIME_MS > PWRLVL_UPDATE_PERIOD_MS,
 
 /* exp(x) >= 1 + x + x^2/2 gives a conservative lower bound on accumulated
  * energy by time t. The discrete update accumulates slightly faster. */
-#define LEAKY_BUCKET_MIN_ACCUMULATED_UJ(power_mw, time_ms)                                                       \
-    (((uint64_t)((power_mw) - LEAKY_BUCKET_LEAK_MW) * LEAKY_BUCKET_COOLING_TIME_MS * (time_ms) *                 \
-      (2ULL * LEAKY_BUCKET_COOLING_TIME_MS + (time_ms))) /                                                        \
-     (2ULL * LEAKY_BUCKET_COOLING_TIME_MS * LEAKY_BUCKET_COOLING_TIME_MS +                                        \
+#define LEAKY_BUCKET_MIN_ACCUMULATED_UJ(power_mw, time_ms)                                                             \
+    (((uint64_t)((power_mw) - LEAKY_BUCKET_LEAK_MW) * LEAKY_BUCKET_COOLING_TIME_MS * (time_ms) *                       \
+      (2ULL * LEAKY_BUCKET_COOLING_TIME_MS + (time_ms))) /                                                             \
+     (2ULL * LEAKY_BUCKET_COOLING_TIME_MS * LEAKY_BUCKET_COOLING_TIME_MS +                                             \
       2ULL * LEAKY_BUCKET_COOLING_TIME_MS * (time_ms) + (uint64_t)(time_ms) * (time_ms)))
 _Static_assert(LEAKY_BUCKET_WARNING_ENERGY_UJ <= LEAKY_BUCKET_MIN_ACCUMULATED_UJ(80000UL, 30000UL),
                "80 W must reach warning within 30 s");
@@ -58,7 +60,7 @@ void leaky_bucket_task(void)
 
     if (!leaky_bucket_time_initialized)
     {
-        leaky_bucket_last_update_ms = now;
+        leaky_bucket_last_update_ms   = now;
         leaky_bucket_time_initialized = true;
         return;
     }
@@ -81,9 +83,8 @@ void leaky_bucket_task(void)
         /* E / cooling_time is a power in mW. Split the product so even a
          * representationally full uint64_t bucket cannot overflow here. */
         passive_loss_uj = (leaky_bucket_energy_uj / LEAKY_BUCKET_COOLING_TIME_MS) * PWRLVL_UPDATE_PERIOD_MS;
-        passive_loss_uj +=
-            ((leaky_bucket_energy_uj % LEAKY_BUCKET_COOLING_TIME_MS) * PWRLVL_UPDATE_PERIOD_MS) /
-            LEAKY_BUCKET_COOLING_TIME_MS;
+        passive_loss_uj += ((leaky_bucket_energy_uj % LEAKY_BUCKET_COOLING_TIME_MS) * PWRLVL_UPDATE_PERIOD_MS) /
+                           LEAKY_BUCKET_COOLING_TIME_MS;
         loss_uj  = (LEAKY_BUCKET_LEAK_MW * PWRLVL_UPDATE_PERIOD_MS) + passive_loss_uj;
         input_uj = power_mw * PWRLVL_UPDATE_PERIOD_MS;
 
@@ -101,7 +102,7 @@ void leaky_bucket_task(void)
         }
         else
         {
-            uint64_t drain_uj = loss_uj - input_uj;
+            uint64_t drain_uj      = loss_uj - input_uj;
             leaky_bucket_energy_uj = drain_uj >= leaky_bucket_energy_uj ? 0 : leaky_bucket_energy_uj - drain_uj;
         }
     }
@@ -110,8 +111,7 @@ void leaky_bucket_task(void)
     /* The normal temperature hysteresis in pwrmgt_task() controls release.
      * The configured maximum affects only the reported temperature. */
     {
-        const uint32_t temperature_span_c =
-            TEMPERATURE_HOT_WARNING_THRESH_C + 1U - LEAKY_BUCKET_EMPTY_TEMPERATURE_C;
+        const uint32_t temperature_span_c = TEMPERATURE_HOT_WARNING_THRESH_C + 1U - LEAKY_BUCKET_EMPTY_TEMPERATURE_C;
         const uint64_t max_temperature_energy_uj =
             ((uint64_t)(LEAKY_BUCKET_MAX_TEMPERATURE_C - LEAKY_BUCKET_EMPTY_TEMPERATURE_C) *
                  LEAKY_BUCKET_WARNING_ENERGY_UJ +
@@ -136,3 +136,14 @@ uint16_t leaky_bucket_get_temperature_c(void)
 {
     return leaky_bucket_temperature_c;
 }
+
+#else
+
+/* Preserve the API without retaining model state or 64-bit energy arithmetic. */
+void     leaky_bucket_task(void) {}
+uint16_t leaky_bucket_get_temperature_c(void)
+{
+    return 0;
+}
+
+#endif

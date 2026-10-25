@@ -19,6 +19,7 @@
 #include "button.h"
 #include "conf.h"
 #include "fault.h"
+#include "fan.h"
 #include "leaky_bucket.h"
 #include "miscutils.h"
 #include "pins.h"
@@ -67,6 +68,7 @@ _Static_assert(PWRMGT_GRAPH_TEXT_HEIGHT_PX >=
 #define PWRMGT_VREFINT_MIN_MV            ((ADC_REFERENCE_MV * (100UL - PWRMGT_VREFINT_TOLERANCE_PERCENT)) / 100UL)
 #define PWRMGT_VREFINT_MAX_MV            ((ADC_REFERENCE_MV * (100UL + PWRMGT_VREFINT_TOLERANCE_PERCENT)) / 100UL)
 
+#if PWRMGT_POWER_LOSS_SUSTAINED_ENABLED
 #define PWRMGT_POWER_LOSS_HISTORY_STRIDE                                                                               \
     ((PWRMGT_POWER_LOSS_SAMPLE_INTERVAL_MS + ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS - 1) /                                 \
      ADC_DC_VOLTAGE_HISTORY_INTERVAL_MS)
@@ -75,6 +77,8 @@ _Static_assert(PWRMGT_GRAPH_TEXT_HEIGHT_PX >=
 _Static_assert(PWRMGT_POWER_LOSS_HISTORY_STRIDE >= 1, "power-loss sample interval is too short");
 _Static_assert(PWRMGT_POWER_LOSS_HISTORY_SPAN < ADC_DC_VOLTAGE_HISTORY_COUNT,
                "power-loss window does not fit in the ADC DC-voltage history");
+
+#endif
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -85,14 +89,14 @@ static const char pwrmgt_too_hot_message[]          = "CAN'T\nTOO\nHOT";
 static const char pwrmgt_repeated_attempt_message[] = "NOT\nNOW\nDUMB-\nASS";
 
 static const char* const pwrmgt_high_voltage_warning_messages[][PWRMGT_HIGH_VOLTAGE_LINE_COUNT] = {
-    {"WARN", "HIGH", "VOLT"},
-    {"WARN", "HIGH", "INPUT"},
-    {"WARN", "VOLT", "HURTS"},
+    {"WARN",  "HIGH",  "VOLT" },
+    {"WARN",  "HIGH",  "INPUT"},
+    {"WARN",  "VOLT",  "HURTS"},
     {" WHY ", "DEREK", " WHY?"},
-    {"WARN", "V TOO", "HIGH"},
-    {"WARN", "V TOO", "MUCH"},
-    {"WARN", "INPUT", "HIGH"},
-    {"WARN", "BATT", "2 BIG"},
+    {"WARN",  "V TOO", "HIGH" },
+    {"WARN",  "V TOO", "MUCH" },
+    {"WARN",  "INPUT", "HIGH" },
+    {"WARN",  "BATT",  "2 BIG"},
 };
 
 static pwrlvl_mode_t pwrmgt_desired_power_level = PWRLVL_MODE_100_PERCENT;
@@ -132,13 +136,16 @@ static void     pwrmgt_temperature_shutdown_task(uint16_t highest_temperature, u
 static void     pwrmgt_blocked_change_task(void);
 static void     pwrmgt_clear_blocked_change(void);
 static bool     pwrmgt_power_loss_detected(void);
+#if PWRMGT_POWER_LOSS_SUSTAINED_ENABLED
 static bool pwrmgt_drop_meets_threshold(uint16_t older_millivolts, uint16_t newer_millivolts, uint16_t minimum_drop_mv);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void pwrmgt_task(void)
+/* Keep the supervisor out of the foreground/UI function to bound code size. */
+__attribute__((noinline)) void pwrmgt_task(void)
 {
     pwrlvl_mode_t next_power_level;
     uint16_t      dc_input_millivolts;
@@ -151,49 +158,48 @@ void pwrmgt_task(void)
     uint8_t       reasons = PWRMGT_ATTENUATION_NONE;
     uint32_t      now;
     uint32_t      power_milliwatts;
+    bool          recovered_input_fault = false;
 
     pwrmgt_blocked_change_task();
 
-    now                 = systick_get_ms();
-    dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
-
-    /* The ADC interrupt has already latched RF off for this absolute raw
-     * buck-voltage fault. Give its specific diagnosis precedence over a
-     * secondary input-voltage response to the same electrical event. */
-    if (adc_has_buck_voltage_spike_shutdown())
+    // Re-enter full supply supervision after every returning fault screen.
+    // This also handles a USB source that drops out again during recovery.
+    for (;;)
     {
-        show_fault("VOLT\nSPIKE\nFAULT", true);
-        return;
-    }
+        if (adc_has_buck_voltage_spike_shutdown())
+        {
+            show_fault("VOLT\nSPIKE\nFAULT", true);
+            return;
+        }
+        if (pwrmgt_power_loss_detected())
+        {
+            show_power_loss_fault();
+            recovered_input_fault = true;
+            continue;
+        }
 
-    /* Detect the input discharge signature before the remaining absolute
-     * voltage checks. If an existing battery or undervoltage threshold becomes
-     * valid first, its established safety fault still takes precedence. */
-    if (pwrmgt_power_loss_detected())
-    {
-        show_fault("POWER\nLOSS\nFAULT", true);
-        return;
+        dc_input_millivolts = adc_to_millivolts(DC_SENS_IDX);
+        // Battery-specific cutoffs retain precedence over absolute undervoltage.
+        if (!battery_check())
+        {
+            battery_show_fault(battery_can_override());
+            return;
+        }
+        if (dc_input_millivolts < DC_UNDERVOLTAGE_FAULT_MV)
+        {
+            show_undervoltage_fault();
+            recovered_input_fault = true;
+            continue;
+        }
+        break;
     }
+    now = systick_get_ms();
 
-    /* This task is the sole owner of periodic battery supervision. Keep the
-     * battery_check()/battery_show_fault() pair here rather than adding a
-     * second check to main or another task. */
-    if (!battery_check())
-    {
-        battery_show_fault(battery_can_override());
-        return;
-    }
-
-    /* This terminal hardware lockout is distinct from the recoverable
-     * high-power derating below DC_HIGH_POWER_MINIMUM_MV. */
-    if (dc_input_millivolts < DC_UNDERVOLTAGE_FAULT_MV)
-    {
-        show_fault("LOW\nVOLT\nFAULT", true);
-        return;
-    }
-
+    highest_temperature = 0;
+#if LEAKY_BUCKET_ENABLED
     leaky_bucket_task();
     highest_temperature = leaky_bucket_get_temperature_c();
+#endif
     for (adc_idx = THERM_1_IDX; adc_idx <= MCU_TEMP_IDX; ++adc_idx)
     {
         temperature = adc_to_celcius(adc_idx);
@@ -261,6 +267,14 @@ void pwrmgt_task(void)
     FT_SET(reasons, reasons);
     FT_SET(power, next_power_level);
     pwrmgt_attenuation_reasons = reasons;
+
+    if (recovered_input_fault)
+    {
+        // All normal checks above have passed. Resume near full attenuation;
+        // main's normal RF start gate still enforces tip/clock/emergency latches.
+        pwrlvl_release_minimum();
+        fan_resume();
+    }
 
     power_milliwatts = adc_get_milliwatts();
     if (power_milliwatts < pwrmgt_idle_power_threshold_mw)
@@ -350,20 +364,21 @@ void pwrmgt_change_pwr_lvl(void)
     // clang-format on
 }
 
-static bool pwrmgt_power_loss_detected(void)
+static bool __attribute__((noinline)) pwrmgt_power_loss_detected(void)
 {
+    /* The ADC interrupt has already stopped RF for a fast collapse. The
+     * foreground owns the recoverable fault screen and restart qualification. */
+    if (adc_has_power_loss_shutdown())
+    {
+        return true;
+    }
+
+#if PWRMGT_POWER_LOSS_SUSTAINED_ENABLED
     uint16_t voltage_history[PWRMGT_POWER_LOSS_HISTORY_SPAN + 1];
     uint8_t  copied_count;
     uint8_t  interval;
     uint8_t  newer_age;
     uint8_t  older_age;
-
-    /* The ADC interrupt has already stopped RF for a fast collapse. The
-     * foreground owns terminal fault presentation and reset handling. */
-    if (adc_has_power_loss_shutdown())
-    {
-        return true;
-    }
 
     copied_count = adc_copy_dc_voltage_history(voltage_history, PWRMGT_POWER_LOSS_HISTORY_SPAN + 1);
     if (copied_count <= PWRMGT_POWER_LOSS_HISTORY_SPAN)
@@ -401,11 +416,14 @@ static bool pwrmgt_power_loss_detected(void)
     {
         fault_test.history[interval] = voltage_history[interval];
     }
-    fault_test.event_ms = systick_get_ms();
+    fault_test.event_ms    = systick_get_ms();
     fault_test.event_round = adc_get_completed_round_count();
-    fault_test.event_raw = 3 << 16;
+    fault_test.event_raw   = 3 << 16;
 #endif
     return true;
+#else
+    return false;
+#endif
 }
 
 static void pwrmgt_blocked_change_task(void)
@@ -504,7 +522,7 @@ void pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivo
             pwrmgt_high_voltage_phase_started_ms = now;
             pwrmgt_high_voltage_message_index =
                 (uint8_t)(hotwand_rand() % (sizeof(pwrmgt_high_voltage_warning_messages) /
-                                             sizeof(pwrmgt_high_voltage_warning_messages[0])));
+                                            sizeof(pwrmgt_high_voltage_warning_messages[0])));
         }
         else
         {
@@ -524,7 +542,7 @@ void pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivo
                 {
                     pwrmgt_high_voltage_message_index =
                         (uint8_t)(hotwand_rand() % (sizeof(pwrmgt_high_voltage_warning_messages) /
-                                                   sizeof(pwrmgt_high_voltage_warning_messages[0])));
+                                                    sizeof(pwrmgt_high_voltage_warning_messages[0])));
                 }
             }
         }
@@ -535,11 +553,7 @@ void pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivo
             uint8_t     line;
 
             u8g2_SetDrawColor(graphics, U8G2_DRAW_CLEAR);
-            u8g2_DrawBox(graphics,
-                         0,
-                         overlay_y,
-                         u8g2_GetDisplayWidth(graphics),
-                         PWRMGT_HIGH_VOLTAGE_OVERLAY_HEIGHT);
+            u8g2_DrawBox(graphics, 0, overlay_y, u8g2_GetDisplayWidth(graphics), PWRMGT_HIGH_VOLTAGE_OVERLAY_HEIGHT);
             u8g2_SetDrawColor(graphics, U8G2_DRAW_SET);
             u8g2_SetFont(graphics, u8g2_font_6x10_tr);
 
@@ -557,9 +571,7 @@ void pwrmgt_render_high_voltage_warning(u8g2_t* graphics, uint16_t input_millivo
         pwrmgt_high_voltage_warning_active  = false;
         pwrmgt_high_voltage_warning_visible = false;
     }
-    FT_SET(reserved[1], (pwrmgt_high_voltage_warning_active ? 2 : 0) |
-                                (pwrmgt_high_voltage_warning_visible ? 1 : 0));
-
+    FT_SET(reserved[1], (pwrmgt_high_voltage_warning_active ? 2 : 0) | (pwrmgt_high_voltage_warning_visible ? 1 : 0));
 }
 
 void pwrmgt_render_graph(u8g2_t* graphics)
@@ -694,6 +706,7 @@ uint32_t pwrmgt_get_time_since_last_activity_ms(void)
     return (uint32_t)(systick_get_ms() - pwrmgt_last_active_ms);
 }
 
+#if PWRMGT_POWER_LOSS_SUSTAINED_ENABLED
 static bool pwrmgt_drop_meets_threshold(uint16_t older_millivolts, uint16_t newer_millivolts, uint16_t minimum_drop_mv)
 {
     if (older_millivolts <= newer_millivolts)
@@ -703,6 +716,8 @@ static bool pwrmgt_drop_meets_threshold(uint16_t older_millivolts, uint16_t newe
 
     return ((uint32_t)older_millivolts - newer_millivolts) >= minimum_drop_mv;
 }
+
+#endif
 
 static uint8_t pwrmgt_power_to_pixels(uint32_t power_milliwatts)
 {

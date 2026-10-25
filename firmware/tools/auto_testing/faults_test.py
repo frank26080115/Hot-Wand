@@ -89,6 +89,8 @@ class FaultRunner:
                 metadata.address("fault_test")
                 self.manifest.update(elf=str(metadata.elf), elf_sha256=metadata.sha256, load_ranges=metadata.load_ranges)
                 with GdbSession(metadata.elf, metadata.symbols, port=self.args.gdb_port, log_dir=self.output) as session:
+                    session.factory_defaults_on_exit = True
+                    self.manifest["nvm_exit_policy"] = "Factory defaults; cleanup failure fails the run"
                     self.session = session
                     self.original_nvm = session.read_memory(NVM_START, 1024)
                     (self.output / "nvm_before.bin").write_bytes(self.original_nvm)
@@ -352,13 +354,19 @@ class FaultRunner:
         return self.target.wait(lambda s: s["stage"] != RUNTIME or abs(s["filtered"][0] - raw) <= 2,
                                 timeout=self.current.timeout, description="filtered DC plateau")
 
-    def terminal(self, *, expected=None, button_reset=None):
+    def terminal(self, *, expected=None, button_reset=None, recoverable=False):
         case = self.current
         expected = case.expected if expected is None else expected
         button_reset = case.button_reset if button_reset is None else button_reset
         state = self.target.wait(lambda s: s["stage"] == FAULT, timeout=case.timeout, description=expected)
         self.require(state["message"] == expected, f"First diagnosis is {expected.replace(chr(10), '/')}")
         self.require(bool(state["flags"] & 1) == button_reset, "Reset permission matches the case contract")
+        trigger_frames = self.case_frames
+        if recoverable:
+            # Hold below recovery voltage before camera/frame capture can take
+            # longer than the automatic qualification interval. First-diagnosis
+            # ABI evidence stays frozen throughout this screen.
+            self.queue([self.model.frame(dc=self.model.voltage_count(14000, side="below"))])
         first = self.capture("first_fault")["state"]
         regs = first["registers"]
         self.require(first["flags"] & 2 == 0 and regs["gpiob_mode"] >> 2 & 3 == 1 and regs["gpiob_odr"] & 2 == 0,
@@ -379,8 +387,11 @@ class FaultRunner:
             self.require(trend_matches(first["history"]), "Actual evaluated window satisfies every decline segment")
             possible = []
             for delta in (-1, 0, 1):
-                possible += modeled_history(self.case_frames, first["qualify_ms"] + delta, 698)
+                possible += modeled_history(trigger_frames, first["qualify_ms"] + delta, 698)
             self.require(tuple(first["history"]) in possible, "Trigger window matches round-count averaging model")
+        if recoverable:
+            self.input_fault_recovery(first, expected=expected)
+            return first
         last = self.target.producer.status()["decoded"][0]
         self.queue(self.model.ramp(last, self.model.base[0]))
         time.sleep(self.args.latch_hold)
@@ -401,6 +412,26 @@ class FaultRunner:
                              "Forbidden button reset ignored")
             self.capture("button_reset_forbidden")
         return first
+
+    def input_fault_recovery(self, first, *, expected="POWER\nLOSS\nFAULT"):
+        """F05/F07 return automatically; no button/reset is sent here."""
+        time.sleep(max(1.2, self.args.latch_hold))
+        held = self.capture("held_below_recovery", camera=False)["state"]
+        self.require(held["stage"] == FAULT and held["message"] == expected,
+                     "Input-fault screen stays stopped while voltage is below recovery threshold")
+        self.require(held["rf_attempts"] == first["rf_at_fault"], "No RF retry during input-fault hold")
+        self.queue([self.model.frame(dc=self.model.base[0])])
+        time.sleep(0.4)
+        qualifying = self.target.status()
+        self.require(qualifying["stage"] == FAULT, "Input recovery does not immediately release outputs")
+        resumed = self.target.wait(lambda state: state["stage"] == RUNTIME,
+                                   timeout=self.current.timeout, description="automatic input-fault recovery")
+        self.require(resumed["reset_flags"] == first["reset_flags"], "Recovery preserves this boot's reset flags")
+        self.require(resumed["flags"] & 24 == 0, "Only the recovered raw power-loss latch is cleared")
+        self.require(resumed["flags"] & 4 == 0, "Normal supervisor resumed the fan controller")
+        self.require(resumed["rf_attempts"] > first["rf_at_fault"], "Normal RF start path is retried after qualification")
+        self.capture("auto_recovered", camera=False)
+        self.results[self.current.id]["automatic_recovery"] = True
 
     # Scenario implementations are below the high-level reporting/control flow.
     def exercise(self, case):
@@ -459,12 +490,12 @@ class FaultRunner:
             self.terminal() if kind == "spike" else self.quiet()
         elif kind in ("fast_loss", "fast_control"):
             self.queue([m.frame(dc=591 if kind == "fast_loss" else 581)])
-            self.terminal() if kind == "fast_loss" else self.quiet()
+            self.terminal(recoverable=True) if kind == "fast_loss" else self.quiet()
         elif kind == "trend":
             frames = [m.frame(dc=698, repeats=256)] + [
                 m.frame(dc=value, repeats=128) for value in (698, 693, 687, 682, 676, 670, 665)]
             self.queue(frames, mark=True)
-            self.terminal()
+            self.terminal(recoverable=True)
         elif kind == "step_control":
             self.queue([m.frame(dc=650, repeats=1280), m.frame(dc=650)])
             self.quiet()
@@ -473,7 +504,7 @@ class FaultRunner:
         elif kind in ("undervoltage", "undervoltage_control"):
             raw = m.voltage_count(14000, side="below" if kind == "undervoltage" else "above")
             self.ramp_dc(raw)
-            self.terminal() if kind == "undervoltage" else self.quiet()
+            self.terminal(recoverable=True) if kind == "undervoltage" else self.quiet()
         elif kind in ("sensor", "sensor_control"):
             self.queue([m.frame(channel=p["channel"], temperature=130 if kind == "sensor" else 109)])
             if kind == "sensor":

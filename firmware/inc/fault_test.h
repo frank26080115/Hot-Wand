@@ -39,7 +39,8 @@ enum
     FT_SETUP   = 4,
     FT_RUNTIME = 5,
     FT_FAULT   = 6,
-    FT_BATTERY = 7
+    FT_BATTERY = 7,
+    FT_RESUMING = 8 /* Outputs remain stopped until normal supervision passes. */
 };
 
 #if HOT_WAND_TEST_HARNESS

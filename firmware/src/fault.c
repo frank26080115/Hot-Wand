@@ -1,6 +1,7 @@
 /*
-The fault display is a terminal screen that shows a message and prevents any further operation until the user resets the
-device It is animated in a way that prevents OLED burn-in, and it can be dimmed after a period of inactivity
+Ordinary fault displays are terminal until reset. Power-loss and undervoltage
+displays can return after qualified input recovery. Both stop outputs, animate to avoid OLED
+burn-in, and follow the saved dimming policy.
 */
 
 // -----------------------------------------------------------------------------
@@ -22,6 +23,7 @@ device It is animated in a way that prevents OLED burn-in, and it can be dimmed 
 #include "rfgen.h"
 #include "stm32f0xx_hal.h"
 #include "systick.h"
+#include "tipdetect.h"
 #include "watchdog.h"
 
 #include <stddef.h>
@@ -51,11 +53,16 @@ static uint32_t short_msg_last_frame_ms;
 static uint32_t fault_button_release_started_ms;
 static bool     fault_button_reset_armed;
 static bool     fault_button_release_pending;
+static bool     input_recovery_pending;
+static uint32_t input_recovered_since_ms;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
+static void     fault_show_recoverable_input(const char* text);
+static bool     fault_input_recovered(uint32_t now);
+static void     fault_show(const char* text, bool allow_button_reset, bool recover_input);
 static uint8_t  fault_count_message_lines(const char* text);
 static size_t   fault_get_max_line_length(const char* text);
 static bool     fault_uses_big_font(const char* text);
@@ -69,29 +76,59 @@ static uint32_t fault_get_auto_dim_delay_ms(void);
 // Main Flow
 // -----------------------------------------------------------------------------
 
-void show_fault(const char* text, bool allow_button_reset)
+__attribute__((noreturn)) void show_fault(const char* text, bool allow_button_reset)
 {
-    u8g2_t*  graphics;
-    uint32_t auto_dim_delay_ms;
-    uint32_t last_activity_ms;
-    uint32_t last_refresh_ms;
-    uint32_t last_shift_ms;
-    int16_t  text_height;
-    int16_t  display_height;
-    int16_t  lower_offset;
-    int16_t  upper_offset;
-    int16_t  y_offset = 0;
-    int8_t   direction;
-    uint8_t  x_offset = 0;
+    fault_show(text, allow_button_reset, false);
+    __builtin_unreachable(); // Only dedicated input-supply fault entry points can return.
+}
 
-    /* A fault screen is terminal until reset.  Put every power-producing or
-     * moving output into its safe state before attempting any UI work. */
+void show_power_loss_fault(void)
+{
+    fault_show_recoverable_input("POWER\nLOSS\nFAULT");
+}
+
+void show_undervoltage_fault(void)
+{
+    fault_show_recoverable_input("LOW\nVOLT\nFAULT");
+}
+
+static void fault_show_recoverable_input(const char* text)
+{
+    // Both input-fault causes share this selective RF restart gate.
+    rfgen_power_loss_stop();
+    input_recovery_pending = false;
+    fault_show(text, true, true);
+}
+
+static void fault_show(const char* text, bool allow_button_reset, bool recover_input)
+{
+    // One fault screen owns this state; terminal preemption never returns.
+    static u8g2_t*  graphics;
+    static uint32_t auto_dim_delay_ms;
+    static uint32_t last_activity_ms;
+    static uint32_t last_refresh_ms;
+    static uint32_t last_shift_ms;
+    static int16_t  text_height;
+    static int16_t  display_height;
+    static int16_t  lower_offset;
+    static int16_t  upper_offset;
+    static int16_t  y_offset;
+    static int8_t   direction;
+    static uint8_t  x_offset;
+
+    x_offset = y_offset = 0;
+
+    /* Stop every output before UI work. Recovery returns with these outputs
+     * still stopped; the supervisor owns their subsequent release. */
     rfgen_stop();
     pwrlvl_force_minimum();
     fan_stop();
 
     fault_test_fault(text, allow_button_reset);
-    btn_init();
+    if (!recover_input)
+    {
+        btn_init();
+    }
     btn_has_short_press(true);
     btn_has_long_press(true);
 
@@ -105,38 +142,28 @@ void show_fault(const char* text, bool allow_button_reset)
     OLED_SetDimMode(&oled, false);
 
     graphics = OLED_GetGraphics(&oled);
-    if (graphics == NULL)
-    {
-        for (;;)
-        {
-            if (allow_button_reset)
-            {
-                fault_reset_if_button_pressed();
-            }
-            HAL_Delay(1);
-			watchdog_feed();
-        }
-    }
-
     /* Graphics coordinates follow the configured OLED rotation. Use its
      * logical height (128 in portrait mode), not the controller's native 32. */
-    display_height = (int16_t)u8g2_GetDisplayHeight(graphics);
-    text_height    = (int16_t)((fault_count_message_lines(text) + 1) * OLED_TEXT_LINE_HEIGHT);
-    if (text_height <= display_height)
+    if (graphics != NULL)
     {
-        lower_offset = 0;
-        upper_offset = (int16_t)(display_height - text_height);
-        direction    = 1;
-    }
-    else
-    {
-        lower_offset = (int16_t)(display_height - text_height);
-        upper_offset = 0;
-        direction    = -1;
-    }
+        display_height = (int16_t)u8g2_GetDisplayHeight(graphics);
+        text_height    = (int16_t)((fault_count_message_lines(text) + 1) * OLED_TEXT_LINE_HEIGHT);
+        if (text_height <= display_height)
+        {
+            lower_offset = 0;
+            upper_offset = (int16_t)(display_height - text_height);
+            direction    = 1;
+        }
+        else
+        {
+            lower_offset = (int16_t)(display_height - text_height);
+            upper_offset = 0;
+            direction    = -1;
+        }
 
-    fault_render(graphics, text, x_offset, y_offset);
-    OLED_SendBuffer(&oled);
+        fault_render(graphics, text, x_offset, y_offset);
+        OLED_SendBuffer(&oled);
+    }
     last_shift_ms    = systick_get_ms();
     last_refresh_ms  = last_shift_ms;
     last_activity_ms = last_shift_ms;
@@ -159,9 +186,28 @@ void show_fault(const char* text, bool allow_button_reset)
         }
         now = systick_get_ms();
 
+        if (recover_input && fault_input_recovered(now))
+        {
+            // Preserve debug button classification and consume the current gesture.
+            btn_discard_until_release();
+            show_short_msg(NULL, 0);
+#if HOT_WAND_TEST_HARNESS
+            fault_test.message  = 0;
+            fault_test.event_ms = fault_test.event_round = fault_test.event_raw = 0;
+            for (uint8_t i = 0; i < 7; ++i)
+            {
+                fault_test.raw[i] = 0;
+            }
+            fault_test.flags &= ~(1 | 16 | 32);
+            // Runtime is published only by main after supervision/output release.
+            fault_test.stage = FT_RESUMING;
+#endif
+            return;
+        }
+
         OLED_SetDimMode(&oled, (auto_dim_delay_ms != 0) && ((uint32_t)(now - last_activity_ms) >= auto_dim_delay_ms));
 
-        if ((uint32_t)(now - last_shift_ms) >= FAULT_SHIFT_INTERVAL_MS)
+        if (graphics != NULL && (uint32_t)(now - last_shift_ms) >= FAULT_SHIFT_INTERVAL_MS)
         {
             last_shift_ms = now;
             y_offset      = (int16_t)(y_offset + direction);
@@ -180,7 +226,7 @@ void show_fault(const char* text, bool allow_button_reset)
             }
         }
 
-        if ((uint32_t)(now - last_refresh_ms) >= FAULT_REFRESH_INTERVAL_MS)
+        if (graphics != NULL && (uint32_t)(now - last_refresh_ms) >= FAULT_REFRESH_INTERVAL_MS)
         {
             last_refresh_ms = now;
             fault_render(graphics, text, x_offset, y_offset);
@@ -264,6 +310,36 @@ void show_short_msg(const char* text, uint32_t duration_ms)
 // -----------------------------------------------------------------------------
 // Feature Logic
 // -----------------------------------------------------------------------------
+
+/* Keep recovery qualification out of the animation loop to avoid carrying
+ * its state through graphics/I2C calls on the small Cortex-M0 register set. */
+static bool fault_input_recovered(uint32_t now)
+{
+    const char* terminal_fault = tipdetect_has_triggered()               ? "TIP\nFAULT"
+                                 : rfgen_has_clock_fault()               ? "CLOCK\nFAULT"
+                                 : adc_has_buck_voltage_spike_shutdown() ? "VOLT\nSPIKE\nFAULT"
+                                                                         : NULL;
+    if (terminal_fault != NULL)
+    {
+        FT_SET(stage, FT_RESUMING); // Permit a new, higher-priority diagnosis.
+        show_fault(terminal_fault, true);
+    }
+
+    if (adc_to_millivolts(DC_SENS_IDX) <= DC_UNDERVOLTAGE_FAULT_MV)
+    {
+        input_recovery_pending = false;
+    }
+    else if (!input_recovery_pending)
+    {
+        input_recovered_since_ms = now;
+        input_recovery_pending   = true;
+    }
+    else if ((uint32_t)(now - input_recovered_since_ms) >= PWRMGT_POWER_LOSS_RECOVERY_MS)
+    {
+        return adc_rearm_power_loss();
+    }
+    return false;
+}
 
 static void fault_reset_if_button_pressed(void)
 {
@@ -411,19 +487,9 @@ static uint8_t fault_count_message_lines(const char* text)
 
 static bool fault_uses_big_font(const char* text)
 {
-    char   voltage[FAULT_VOLTAGE_BUFFER_SIZE];
-    size_t maximum_length = fault_get_max_line_length(text);
-    size_t voltage_length;
-
-    millivolts_to_str(adc_to_millivolts(DC_SENS_IDX), voltage, 1, &voltage_length);
-    ++voltage_length; /* The rendered line also includes the trailing 'V'. */
-
-    if (voltage_length > maximum_length)
-    {
-        maximum_length = voltage_length;
-    }
-
-    return maximum_length <= FAULT_BIG_FONT_MAX_CHARS;
+    // The uint16_t millivolt conversion cannot reach 100 V, so the voltage
+    // line including its one decimal and V always fits five characters.
+    return fault_get_max_line_length(text) <= FAULT_BIG_FONT_MAX_CHARS;
 }
 
 static void fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline)

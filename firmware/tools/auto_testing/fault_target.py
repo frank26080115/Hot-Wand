@@ -17,7 +17,7 @@ except ImportError:
     from harness import MCU_CALIBRATION, VREF_CALIBRATION
 
 FAULT_ABI_VERSION = 2  # Requires the shared build with physical RF/buck inhibition.
-BOOT, ADC, OLED, SETUP, RUNTIME, FAULT, BATTERY = range(1, 8)
+BOOT, ADC, OLED, SETUP, RUNTIME, FAULT, BATTERY, RESUMING = range(1, 9)
 COMMANDS = {"hang": 1, "hardfault": 2, "clock": 3, "tip_storm": 4, "mark": 5,
             "oscillator": 10, "clock_switch": 11, "clock_ready": 12,
             "adc_init": 20, "adc_calibration": 21, "adc_channel": 22, "adc_vref": 23, "adc_start": 24,

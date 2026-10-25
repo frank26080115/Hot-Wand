@@ -35,12 +35,6 @@ output voltage if the current draw exceeds a certain threshold
 
 #define PWRLVL_PWM_MAX           31
 #define PWRLVL_PWM_FULL_DUTY     (PWRLVL_PWM_MAX + 1)
-#define PWRLVL_PWM_JUMP_LEVEL    16
-#define PWRLVL_RAMP_UP_PERIOD_MS 2
-
-#if (PWRLVL_CURRENT_LIMIT_ENABLED != 0) && (PWRLVL_CURRENT_LIMIT_ENABLED != 1)
-#error "PWRLVL_CURRENT_LIMIT_ENABLED must be 0 or 1"
-#endif
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -161,7 +155,9 @@ void pwrlvl_task(void)
         }
         else if (next_pwm < PWRLVL_PWM_MAX)
         {
-            ++next_pwm;
+            /* The configured step fits in uint8_t; pwrlvl_set_pwm clamps
+             * a final step that would exceed the maximum PWM count. */
+            next_pwm += PWRLVL_RAMP_UP_STEP;
         }
     }
     else if (next_pwm > 0)

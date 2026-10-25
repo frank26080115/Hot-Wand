@@ -1,16 +1,19 @@
 /*
  * Coreless inductor L8 winding post
  *
- * Units are millimetres. This is a disposable winding mandrel: wind ten
- * turns of 22 AWG magnet wire in the spiral groove, then cut or snap the
- * 2 mm neck to remove the square footing.
+ * Units are millimetres. This is a disposable winding mandrel for up to
+ * twelve turns of 22 AWG magnet wire in the spiral groove. Wind the chosen
+ * turn count, then cut or snap the 2 mm neck to remove the square footing.
  */
 
 // ---------- Winding adjustment ----------
 
 // IMPORTANT: Change this value to tune the winding spacing (for example,
 // 1.05 or 1.1). This is the vertical rise of one complete spiral turn.
-winding_pitch = 1.0;
+winding_pitch = 1.00;
+
+// Maximum full turns supported on the straight post, with end clearance.
+winding_turn_capacity = 12;
 
 // ---------- Physical dimensions ----------
 
@@ -19,7 +22,6 @@ footing_thickness = 0.8;
 
 neck_diameter = 2.0;
 post_diameter = 5.4;
-post_height = 12;
 cone_side_angle = 45;
 
 // The groove is cut by a complete 0.8 mm-diameter circular tube following
@@ -37,8 +39,12 @@ post_facets = 96;
 wire_radius = wire_diameter / 2;
 spiral_path_radius = spiral_path_diameter / 2;
 
+// Reserve the full helical rise of all turns plus one cutter diameter at
+// each end, so twelve turns fit without using the tapered cone or top edge.
+post_height = winding_turn_capacity * winding_pitch + 2 * wire_diameter;
+
 // OpenSCAD trigonometric functions use degrees. At 45 degrees, the cone
-// height is the same as the change in radius: (5.8 - 2.0) / 2 = 1.9 mm.
+// height is the same as the change in radius: (5.4 - 2.0) / 2 = 1.7 mm.
 cone_height =
     (post_diameter - neck_diameter) / 2 / tan(cone_side_angle);
 cone_bottom_z = footing_thickness;

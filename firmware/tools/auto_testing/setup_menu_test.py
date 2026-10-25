@@ -351,6 +351,8 @@ class TestRunner:
                                                                 "btn_swd_test_completed", "vision_test_fiducial_press")}))
             self.log("C4 uses GDB reset and does not claim removal of board power")
             with GdbSession(metadata.elf, metadata.symbols, port=self.args.gdb_port) as target:
+                target.factory_defaults_on_exit = True
+                self.log("Exit cleanup erases saved test settings and restores factory defaults")
                 self.target = target
                 original_page = target.read_memory(NVM_START, 1024)
                 (self.output / "nvm_before.bin").write_bytes(original_page)

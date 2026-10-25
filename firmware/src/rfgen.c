@@ -224,27 +224,17 @@ bool rfgen_clock_init(void)
 
 void rfgen_stop(void)
 {
-    rfgen_active = false;
-
-    /*
-     * Preload the GPIO latch low, then take ownership away from TIM1.  This
-     * avoids the high-impedance stopped state produced by HAL_TIMEx_PWMN_Stop.
-     */
-    rfgen_pin_low();
-
-    if (__HAL_RCC_TIM1_IS_CLK_ENABLED())
-    {
-        CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
-        CLEAR_BIT(TIM1->CCER, TIM_CCER_CC3E | TIM_CCER_CC3NE);
-        CLEAR_BIT(TIM1->CR1, TIM_CR1_CEN);
-    }
+    /* Share the timer-first stop core without creating a restart latch.
+     * Its GPIO handoff preloads low before ownership leaves TIM1, avoiding
+     * the high-impedance stopped state from HAL_TIMEx_PWMN_Stop. */
+    rfgen_latched_stop();
 }
 
 static void rfgen_latched_stop(void)
 {
     /* Disable the timer output before doing the slower GPIO ownership handoff.
-     * The latch is checked at both RF-start gates, so an interrupted or later
-     * start cannot undo this safety shutdown. */
+     * Latched callers are checked at both RF-start gates, so an interrupted
+     * or later start cannot undo their safety shutdown. */
     rfgen_active = false;
 
     if (__HAL_RCC_TIM1_IS_CLK_ENABLED())
@@ -385,7 +375,7 @@ void HardFault_Handler_Impl(void)
     }
 }
 
-bool rfgen_rearm_power_loss_for_test(void)
+bool rfgen_rearm_power_loss(void)
 {
     uint32_t interrupt_state = __get_PRIMASK();
     bool     rearmed         = false;
@@ -401,6 +391,11 @@ bool rfgen_rearm_power_loss_for_test(void)
         __enable_irq();
     }
     return rearmed;
+}
+
+bool rfgen_rearm_power_loss_for_test(void)
+{
+    return rfgen_rearm_power_loss();
 }
 
 static void rfgen_fault(void)

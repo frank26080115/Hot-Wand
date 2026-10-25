@@ -182,7 +182,9 @@ static volatile uint8_t  dc_voltage_history_write_idx;
 static volatile uint8_t  dc_voltage_history_count;
 static volatile uint32_t dc_voltage_history_generation;
 static volatile uint32_t completed_round_count;
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
 static volatile bool     adc_power_loss_shutdown;
+#endif
 static volatile bool     adc_buck_voltage_spike_shutdown;
 static uint32_t          dc_voltage_accumulator;
 static uint16_t          dc_voltage_accumulator_count;
@@ -199,7 +201,9 @@ static void     adc_select_and_start(uint8_t idx);
 static void     adc_complete_round(void);
 static void     adc_publish_dc_voltage_average(void);
 static uint16_t adc_input_sample_to_millivolts(uint16_t sample);
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
 static void     adc_check_fast_power_loss(uint16_t sample);
+#endif
 static void     adc_update_reference_voltage(uint16_t sample);
 static uint16_t adc_calibrate_input_voltage(uint16_t millivolts);
 static uint16_t adc_ntc_to_celcius(uint16_t sample);
@@ -243,7 +247,9 @@ void adc_init(void)
     adc_reference_mv                = ADC_REFERENCE_MV;
     adc_reference_result_mv         = 0;
     adc_reference_result_valid      = false;
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     adc_power_loss_shutdown         = false;
+#endif
     adc_buck_voltage_spike_shutdown = false;
     dc_voltage_accumulator          = 0;
     dc_voltage_accumulator_count    = 0;
@@ -339,8 +345,8 @@ void ADC1_IRQHandler_Impl(void)
         return;
     }
 
-    completed_idx      = current_idx;
-    sample             = (uint16_t)HAL_ADC_GetValue(&adc_handle);
+    completed_idx = current_idx;
+    sample        = (uint16_t)HAL_ADC_GetValue(&adc_handle);
 #if ADC_SIM_ENABLED
     if (adc_sim.state == ADC_SIM_ACTIVE)
     {
@@ -428,10 +434,12 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
         dc_voltage_accumulator += sample;
         ++dc_voltage_accumulator_count;
 
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
         /* This runs in ADC interrupt context after the next conversion has
          * already started. A sharp collapse therefore disables RF without
          * waiting for the foreground power-management task. */
         adc_check_fast_power_loss(sample);
+#endif
     }
     else if ((idx == BUCK_SENS_IDX) && !adc_buck_voltage_spike_shutdown &&
              (sample >= PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS))
@@ -515,6 +523,7 @@ static void adc_publish_dc_voltage_average(void)
     ++dc_voltage_history_generation;
 }
 
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
 static void adc_check_fast_power_loss(uint16_t sample)
 {
     uint16_t reference_sample;
@@ -537,6 +546,8 @@ static void adc_check_fast_power_loss(uint16_t sample)
         rfgen_power_loss_stop();
     }
 }
+
+#endif
 
 static void adc_update_reference_voltage(uint16_t sample)
 {
@@ -874,7 +885,11 @@ uint32_t adc_get_completed_round_count(void)
 
 bool adc_has_power_loss_shutdown(void)
 {
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     return adc_power_loss_shutdown;
+#else
+    return false;
+#endif
 }
 
 bool adc_has_buck_voltage_spike_shutdown(void)
@@ -896,20 +911,41 @@ static void adc_select_and_start(uint8_t idx)
 // Debug / Fault Helpers
 // -----------------------------------------------------------------------------
 
-bool adc_rearm_power_loss_for_test(void)
+bool adc_rearm_power_loss(void)
 {
     uint32_t interrupt_state = __get_PRIMASK();
-    bool     rearmed = false;
+    bool     rearmed         = false;
+
+    // Clear both restart gates atomically. Trend-only faults have no ADC latch.
+    __disable_irq();
+    if (!adc_buck_voltage_spike_shutdown && !rfgen_is_active() && rfgen_rearm_power_loss())
+    {
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
+        adc_power_loss_shutdown = false;
+#endif
+        rearmed                 = true;
+    }
+    if (interrupt_state == 0)
+    {
+        __enable_irq();
+    }
+    return rearmed;
+}
+
+bool adc_rearm_power_loss_for_test(void)
+{
+#if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
+    uint32_t interrupt_state = __get_PRIMASK();
+    bool     rearmed         = false;
 
     __disable_irq();
-    if (adc_power_loss_shutdown && !adc_buck_voltage_spike_shutdown &&
-        !rfgen_is_active() && (dc_voltage_history_count != 0) &&
-        (raw[DC_SENS_IDX] >= ADC_VOLTAGE_TO_COUNTS(DC_UNDERVOLTAGE_FAULT_MV)))
+    if (adc_power_loss_shutdown && !adc_buck_voltage_spike_shutdown && !rfgen_is_active() &&
+        (dc_voltage_history_count != 0) && (raw[DC_SENS_IDX] >= ADC_VOLTAGE_TO_COUNTS(DC_UNDERVOLTAGE_FAULT_MV)))
     {
-        uint8_t newest_idx = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
-                                                              : (uint8_t)(dc_voltage_history_write_idx - 1);
-        uint16_t sample    = raw[DC_SENS_IDX];
-        uint16_t reference = dc_voltage_history[newest_idx];
+        uint8_t  newest_idx = dc_voltage_history_write_idx == 0 ? (ADC_DC_VOLTAGE_HISTORY_COUNT - 1)
+                                                                : (uint8_t)(dc_voltage_history_write_idx - 1);
+        uint16_t sample     = raw[DC_SENS_IDX];
+        uint16_t reference  = dc_voltage_history[newest_idx];
 
         /* Do not rearm into another immediate fast-drop trip. The running
          * round-robin ADC keeps this history current throughout cooldown. */
@@ -917,7 +953,7 @@ bool adc_rearm_power_loss_for_test(void)
             rfgen_rearm_power_loss_for_test())
         {
             adc_power_loss_shutdown = false;
-            rearmed = true;
+            rearmed                 = true;
         }
     }
     if (interrupt_state == 0)
@@ -925,6 +961,10 @@ bool adc_rearm_power_loss_for_test(void)
         __enable_irq();
     }
     return rearmed;
+#else
+    // This diagnostic API rearms only a fast-detector latch, absent in this build.
+    return false;
+#endif
 }
 
 static void adc_fault(void)
