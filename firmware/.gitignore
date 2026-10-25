@@ -81,3 +81,9 @@ compile_commands.json
 # Dated automated functional reports and framebuffer captures
 /functional-*/
 /tools/auto_testing/functional-*/
+
+# Local SWD readback diagnostics
+/tools/swd-readback-results/
+
+# Local analysis plots and simulation output
+/outputs/
