@@ -5,6 +5,16 @@ volatile fault_test_state_t fault_test;
 RF_TIM_TypeDef              mock_tim1;
 uint32_t                    mock_pa6_mode, mock_pa6_level, mock_pb1_mode, mock_pb1_level, mock_af_calls;
 
+static uint32_t mock_rf_now;
+uint32_t        systick_get_ms(void)
+{
+    return mock_rf_now;
+}
+__declspec(dllexport) void rf_task_check(uint32_t now, uint32_t mode)
+{
+    mock_rf_now = now;
+    rfgen_task((pwrlvl_mode_t)mode);
+}
 __declspec(dllexport) void rf_check(uint32_t bypass)
 {
     /* A hostile previous timer state must be stopped, including by the

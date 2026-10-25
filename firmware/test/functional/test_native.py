@@ -24,6 +24,8 @@ def covers(*families):
 def library(name, *, support="faults", flags=(), memory=True):
     if name == "power" and not any("PWRLVL_PWM_JUMP_LEVEL=" in flag for flag in flags):
         flags = ("-DPWRLVL_PWM_JUMP_LEVEL=16", *flags)  # Fixed fixture tuning; preserve bench experiments.
+    if name == "power" and not any("PWRLVL_POWER_LIMIT_ENABLED=" in flag for flag in flags):
+        flags = ("-DPWRLVL_POWER_LIMIT_ENABLED=1", *flags)  # Legacy wattage regression fixture.
     if name in ("power", "adc"):
         for feature in ("LEAKY_BUCKET_ENABLED", "PWRMGT_POWER_LOSS_SUSTAINED_ENABLED"):
             if not any(feature + "=" in flag for flag in flags):

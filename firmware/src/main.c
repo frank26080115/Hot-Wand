@@ -280,12 +280,10 @@ int main(void)
         // A terminal fault blocks here until the user resets the controller.
         pwrmgt_task();
 
-        // Retry after supervision has ruled out terminal power faults. The RF driver performs its own clock-fault and
-        // tip-debounce checks too.
-        if (!rfgen_is_active() && rfgen_tip_allows_start())
-        {
-            rfgen_start();
-        }
+        // Apply the supervised mode to RF duty cycling (or continuous RF in
+        // legacy wattage-regulation builds). The driver retains its own final
+        // clock, tip-debounce, and latched-stop checks at every restart.
+        rfgen_task(pwrmgt_get_applied_power_level());
 
         ntc_task();        // reports missing external temperature sensors once after startup
         fan_task();        // spins the fan as appropriate

@@ -39,7 +39,6 @@ confirmed to be removed, and it latches the fault until the user resets it.
 #define TIPDETECT_EXTI_IRQ_PRIORITY  0
 #define TIPDETECT_EXTI4_15_MASK      0xFFF0
 #define TIPDETECT_EDGE_DECAY_MS      100
-#define TIPDETECT_EDGE_FAULT_COUNT   10
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -49,15 +48,17 @@ static TIM_HandleTypeDef tipdetect_timer;
 static volatile bool     tipdetect_initialized;
 static volatile bool     tipdetect_tip_present;
 static volatile bool     tipdetect_triggered = true;
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
 static volatile uint32_t tipdetect_edge_count;
 static uint32_t          tipdetect_edge_decay_ms;
+#endif
 
 #if TIP_SWD_TEST_HARNESS
 /* Keep aligned command/status words visible to SWD even in the LTO image. */
 volatile uint32_t tip_swd_test_command __attribute__((used, externally_visible)) = TIP_SWD_NO_COMMAND;
 volatile uint32_t tip_swd_test_state __attribute__((used, externally_visible))   = TIP_SWD_NOT_READY;
 volatile uint32_t tip_swd_test_completed __attribute__((used, externally_visible));
-static bool     tip_swd_virtual_present = true;
+static bool       tip_swd_virtual_present = true;
 #endif
 
 _Static_assert((HSE_VALUE % 10000) == 0, "HSE frequency must be an exact multiple of 10 kHz");
@@ -138,19 +139,21 @@ void tipdetect_init(void)
 #else
     tip_swd_virtual_present = true;
 #endif
-    tip_swd_test_command    = TIP_SWD_NO_COMMAND;
-    tip_swd_test_state      = tip_swd_virtual_present ? TIP_SWD_PRESENT : TIP_SWD_ABSENT;
-    tip_swd_test_completed  = 0;
+    tip_swd_test_command   = TIP_SWD_NO_COMMAND;
+    tip_swd_test_state     = tip_swd_virtual_present ? TIP_SWD_PRESENT : TIP_SWD_ABSENT;
+    tip_swd_test_completed = 0;
 #endif
 
     __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
     HAL_NVIC_ClearPendingIRQ(TIM14_IRQn);
 
-    tipdetect_tip_present   = tipdetect_is_present();
-    tipdetect_triggered     = !tipdetect_tip_present;
+    tipdetect_tip_present = tipdetect_is_present();
+    tipdetect_triggered   = !tipdetect_tip_present;
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
     tipdetect_edge_count    = 0;
     tipdetect_edge_decay_ms = systick_get_ms();
-    tipdetect_initialized   = true;
+#endif
+    tipdetect_initialized = true;
 
     HAL_NVIC_SetPriority(TIM14_IRQn, TIPDETECT_TIMER_IRQ_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(TIM14_IRQn);
@@ -165,12 +168,12 @@ void tipdetect_init(void)
 
 void tipdetect_task(void)
 {
+#if (TIPDETECT_EDGE_FAULT_COUNT > 0) || TIP_SWD_TEST_HARNESS
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
     uint32_t edge_count;
-    uint32_t interrupt_state;
-    uint32_t now;
-
-    now             = systick_get_ms();
-    interrupt_state = __get_PRIMASK();
+    uint32_t now = systick_get_ms();
+#endif
+    uint32_t interrupt_state = __get_PRIMASK();
     __disable_irq();
 
 #if TIP_SWD_TEST_HARNESS
@@ -184,6 +187,7 @@ void tipdetect_task(void)
 #endif
 #endif
 
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
     edge_count = tipdetect_edge_count;
     if ((uint32_t)(now - tipdetect_edge_decay_ms) >= TIPDETECT_EDGE_DECAY_MS)
     {
@@ -194,15 +198,19 @@ void tipdetect_task(void)
         }
     }
 
+#endif
     if (interrupt_state == 0)
     {
         __enable_irq();
     }
 
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
     if (edge_count > TIPDETECT_EDGE_FAULT_COUNT)
     {
         show_fault("TIP\nDETEC\nMALFU", true);
     }
+#endif
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -255,7 +263,9 @@ void EXTI4_15_IRQHandler_Impl(void)
 
     if ((pending & TIP_DET_PINn) != 0)
     {
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
         tipdetect_edge_count++;
+#endif
         CLEAR_BIT(EXTI->IMR, TIP_DET_PINn);
         __HAL_GPIO_EXTI_CLEAR_IT(TIP_DET_PINn);
         pending &= ~TIP_DET_PINn;

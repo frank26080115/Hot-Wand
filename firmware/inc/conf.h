@@ -73,6 +73,18 @@
 #error "SETUP_HOLD_DURATION_MS must be nonzero"
 #endif
 
+/* Excessive tip-detector edges trigger a malfunction fault when the leaky
+ * counter exceeds this threshold: 10 faults on the 11th accumulated edge.
+ * One count decays every 100 ms. Zero compiles out only this storm detector;
+ * physical tip-removal debounce, RF inhibition, and the disconnect latch remain. */
+#ifndef TIPDETECT_EDGE_FAULT_COUNT
+#define TIPDETECT_EDGE_FAULT_COUNT 0
+#endif
+
+#if TIPDETECT_EDGE_FAULT_COUNT < 0
+#error "TIPDETECT_EDGE_FAULT_COUNT must be nonnegative"
+#endif
+
 // -----------------------------------------------------------------------------
 // Power and Thermal Limits
 // -----------------------------------------------------------------------------
@@ -281,6 +293,17 @@
 // -----------------------------------------------------------------------------
 // Buck Power Limiting and Protection
 // -----------------------------------------------------------------------------
+
+/* Default control: RF duty cycling selects the power mode; buck PWM still
+ * enforces the independent current limit. Enable this option to restore the
+ * legacy measured-wattage ceilings and continuous RF in all three modes. */
+#ifndef PWRLVL_POWER_LIMIT_ENABLED
+#define PWRLVL_POWER_LIMIT_ENABLED 0
+#endif
+
+#if (PWRLVL_POWER_LIMIT_ENABLED != 0) && (PWRLVL_POWER_LIMIT_ENABLED != 1)
+#error "PWRLVL_POWER_LIMIT_ENABLED must be 0 or 1"
+#endif
 
 /* Increasing attenuation PWM lowers buck output voltage and power. These
  * controls govern the fast response to excess power or current. */

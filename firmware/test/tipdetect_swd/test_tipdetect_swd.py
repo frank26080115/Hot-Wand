@@ -199,5 +199,84 @@ class TipDetectorTests(unittest.TestCase):
         self.assertEqual(self.real.bridge_read(3), 1)
 
 
+class TipStormConfigurationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        build = ROOT / ".cache/tipdetect_swd"
+        build.mkdir(parents=True, exist_ok=True)
+        cls.variants = {}
+        for threshold, harness in ((0, 0), (2, 0), (0, 1)):
+            dll = build / f"tip-threshold-{threshold}-{harness}-{os.getpid()}.dll"
+            command = ["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-Wno-unknown-attributes",
+                       f"-DTIPDETECT_EDGE_FAULT_COUNT={threshold}", f"-DTIP_SWD_TEST_HARNESS={harness}",
+                       "-DHSE_VALUE=27120000", "-Itest/tipdetect_swd/support", "-Iinc", "-Ilib/u8g2/csrc",
+                       "test/tipdetect_swd/bridge.c", "-o", str(dll), "-Wl,/noentry"]
+            if harness:
+                command += [f"-Wl,/export:{name}" for name in
+                            ("tip_swd_test_command", "tip_swd_test_state", "tip_swd_test_completed")]
+            subprocess.run(command, cwd=ROOT, check=True)
+            cls.variants[threshold, harness] = ctypes.CDLL(str(dll))
+
+    def glitch(self, lib):
+        lib.bridge_physical(0)
+        lib.bridge_irq()
+        lib.bridge_physical(1)
+        lib.bridge_expire()
+        lib.bridge_task()
+
+    def test_custom_threshold_is_strictly_greater(self):
+        lib = self.variants[2, 0]
+        lib.bridge_reset()
+        lib.bridge_init()
+        for count in range(1, 4):
+            self.glitch(lib)
+            self.assertEqual(lib.bridge_read(4), count)
+            self.assertEqual(lib.bridge_read(11), int(count == 3))
+
+    def test_zero_disables_storm_tracking_but_still_latches_removal(self):
+        lib = self.variants[0, 0]
+        lib.bridge_reset()
+        lib.bridge_init()
+        for count in range(100):
+            self.glitch(lib)
+            lib.bridge_time(count * 100)
+        self.assertEqual(lib.bridge_read(4), 0)
+        self.assertEqual(lib.bridge_read(11), 0)
+        self.assertEqual(lib.bridge_read(1), 0)
+        lib.bridge_physical(0)
+        lib.bridge_irq()
+        self.assertEqual(lib.bridge_read(2), 1)
+        lib.bridge_expire()
+        self.assertEqual(lib.bridge_read(1), 1)
+        self.assertEqual(lib.bridge_read(3), 1)
+
+    def test_zero_still_detects_absent_tip_at_boot_and_timer_failure(self):
+        lib = self.variants[0, 0]
+        lib.bridge_reset()
+        lib.bridge_physical(0)
+        lib.bridge_init()
+        self.assertEqual(lib.bridge_read(1), 1)
+        self.assertEqual(lib.bridge_read(3), 1)
+        lib.bridge_reset()
+        lib.bridge_timer_failure(1)
+        lib.bridge_init()
+        self.assertEqual(lib.bridge_read(1), 1)
+        self.assertEqual(lib.bridge_read(3), 1)
+
+    def test_zero_retains_virtual_tip_commands(self):
+        lib = self.variants[0, 1]
+        lib.bridge_reset()
+        lib.bridge_init()
+        command = ctypes.c_uint32.in_dll(lib, "tip_swd_test_command")
+        command.value = 0
+        lib.bridge_task()
+        self.assertEqual(command.value, NO_COMMAND)
+        lib.bridge_irq()
+        lib.bridge_expire()
+        self.assertEqual(lib.bridge_read(1), 1)
+        self.assertEqual(lib.bridge_read(3), 1)
+        self.assertEqual(lib.bridge_read(11), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

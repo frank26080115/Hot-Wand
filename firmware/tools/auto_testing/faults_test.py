@@ -429,9 +429,41 @@ class FaultRunner:
         self.require(resumed["reset_flags"] == first["reset_flags"], "Recovery preserves this boot's reset flags")
         self.require(resumed["flags"] & 24 == 0, "Only the recovered raw power-loss latch is cleared")
         self.require(resumed["flags"] & 4 == 0, "Normal supervisor resumed the fan controller")
-        self.require(resumed["rf_attempts"] > first["rf_at_fault"], "Normal RF start path is retried after qualification")
+        # Qualification can end during an RF OFF phase. Wait for the next
+        # permitted phase rather than demanding a restart in the first snapshot.
+        resumed = self.target.wait(lambda state: state["stage"] == RUNTIME and
+                                   state["rf_attempts"] > first["rf_at_fault"],
+                                   timeout=self.current.timeout, description="eligible RF phase after recovery")
+        self.require(resumed["rf_attempts"] > first["rf_at_fault"], "Normal RF start path is retried in an eligible phase")
         self.capture("auto_recovered", camera=False)
         self.results[self.current.id]["automatic_recovery"] = True
+
+    def check_rf_cycle(self, mode):
+        """Observe logical start requests inside phase windows, away from edges.
+
+        The shared image always keeps physical RF off, so eligible foreground
+        passes increment rf_attempts. OFF phases must leave that counter still.
+        Samples spanning a phase edge are retried, not treated as failures.
+        """
+        on_ms = (1000, 750, 500)[mode]
+        for enabled in ((True,) if mode == 0 else (True, False)):
+            lower, upper = (100, on_ms - 100) if enabled else (on_ms + 100, 900)
+            for _ in range(4):
+                first = self.target.wait(lambda s: s["stage"] == RUNTIME and s["power"] == mode and
+                                         lower <= s["tick"] % 1000 <= upper,
+                                         description="interior RF phase")
+                second = self.target.wait(lambda s: s["stage"] == RUNTIME and
+                                          ((s["tick"] - first["tick"]) & 0xFFFFFFFF) >= 40,
+                                          description="RF phase observation interval")
+                if (second["power"] != mode or second["tick"] // 1000 != first["tick"] // 1000 or
+                        not lower <= second["tick"] % 1000 <= upper):
+                    continue
+                attempts = second["rf_attempts"] - first["rf_attempts"]
+                self.require(attempts > 0 if enabled else attempts == 0,
+                             "RF requests follow the applied mode's ON/OFF phase")
+                break
+            else:
+                raise AssertionError("Could not observe a stable RF phase interval")
 
     # Scenario implementations are below the high-level reporting/control flow.
     def exercise(self, case):
@@ -571,9 +603,13 @@ class FaultRunner:
             frame = m.frame(buck=buck, current=current)
             self.require(m.predict(frame.channels)["power_mw"] > power, "Stimulus exceeds selected power ceiling")
             self.queue([frame])
-            self.target.wait(lambda s: s["pwm"] > 0, description="logical power-based attenuation")
+            # Default builds use RF duty cycling, not measured-wattage PWM.
+            # This stimulus stays below 5.2 A even in the 100W case.
+            self.target.wait(lambda s: s["pwm"] == 0, description="no wattage-based attenuation")
             self.quiet(0.5)
-            self.capture("power_limited")
+            self.require(self.target.status()["pwm"] == 0, "Wattage alone does not activate buck PWM")
+            self.check_rf_cycle(p["power"])
+            self.capture("rf_duty_mode")
             self.queue([m.frame()])
             self.target.wait(lambda s: s["pwm"] == 0, timeout=8, description="logical attenuation release")
         elif kind in ("ntc_warning", "ntc_late"):

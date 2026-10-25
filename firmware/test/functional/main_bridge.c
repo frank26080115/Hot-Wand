@@ -547,6 +547,15 @@ bool rfgen_tip_allows_start(void)
     return true;
 }
 void rfgen_start(void) {}
+void rfgen_task(pwrlvl_mode_t mode)
+{
+    // Exercise the real main-loop dispatch without connecting native peripherals.
+    // The driver's actual ON/OFF behavior is covered by the RF fixture.
+    if (supervisor_calls == 0)
+    {
+        __builtin_trap();
+    }
+}
 void ntc_task(void) {}
 void fan_task(void) {}
 void UART_debug_task(void) {}

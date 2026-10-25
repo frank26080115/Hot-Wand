@@ -353,11 +353,14 @@ class FunctionalRunner(FaultRunner):
                 self.wait(lambda s: s["power"] == p["power"] and not s["reasons"] & 1)
                 self.capture("preference_restored")
             else:
-                # Keep current below 5.2 A even above the 100 W power ceiling.
+                # High wattage below 5.2 A must not activate buck attenuation;
+                # the applied mode is enforced through foreground RF phases.
                 high = self.model.frame(buck=self.model.voltage_count(22000), current=self.model.current_count(4900))
                 self.settle(high)
-                self.wait(lambda s: s["pwm"] == 31)
-                self.capture("logical_attenuation_increased")
+                self.wait(lambda s: s["pwm"] == 0)
+                self.check_rf_cycle(p["power"])
+                self.require(self.status()["pwm"] == 0, "Wattage alone leaves buck PWM inactive")
+                self.capture("rf_duty_mode")
                 self.settle(self.model.frame())
                 self.wait(lambda s: s["pwm"] == 0)
                 self.capture("logical_attenuation_relaxed")

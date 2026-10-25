@@ -33,8 +33,8 @@ output voltage if the current draw exceeds a certain threshold
 #define PWRLVL_LIMIT_75_PERCENT_MW  75000
 #define PWRLVL_LIMIT_50_PERCENT_MW  50000
 
-#define PWRLVL_PWM_MAX           31
-#define PWRLVL_PWM_FULL_DUTY     (PWRLVL_PWM_MAX + 1)
+#define PWRLVL_PWM_MAX       31
+#define PWRLVL_PWM_FULL_DUTY (PWRLVL_PWM_MAX + 1)
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -42,8 +42,10 @@ output voltage if the current draw exceeds a certain threshold
 
 static pwrlvl_mode_t pwrlvl_mode = PWRLVL_MODE_100_PERCENT;
 static uint32_t      pwrlvl_last_update_ms;
-static uint32_t      pwrlvl_previous_power_mw;
-static uint32_t      pwrlvl_short_circuit_started_ms;
+#if PWRLVL_POWER_LIMIT_ENABLED
+static uint32_t pwrlvl_previous_power_mw;
+#endif
+static uint32_t pwrlvl_short_circuit_started_ms;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
 static uint16_t pwrlvl_previous_current_ma;
 #endif
@@ -57,8 +59,10 @@ static bool    pwrlvl_short_circuit_timing;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
+#if PWRLVL_POWER_LIMIT_ENABLED
 static uint32_t pwrlvl_get_limit_mw(void);
-static void     pwrlvl_set_pwm(uint8_t value);
+#endif
+static void pwrlvl_set_pwm(uint8_t value);
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -66,8 +70,10 @@ static void     pwrlvl_set_pwm(uint8_t value);
 
 void pwrlvl_task(void)
 {
+#if PWRLVL_POWER_LIMIT_ENABLED
     uint32_t current_power_mw;
     uint32_t limit_mw;
+#endif
     uint32_t now;
     uint32_t update_period_ms;
     uint16_t current_ma;
@@ -115,6 +121,8 @@ void pwrlvl_task(void)
         return;
     }
 
+    ramp_up = false;
+#if PWRLVL_POWER_LIMIT_ENABLED
     /*
      * Sample on every task call. Keeping the previous sample in the decision
      * prevents a single over-limit reading from being discarded immediately.
@@ -123,6 +131,7 @@ void pwrlvl_task(void)
     limit_mw                 = pwrlvl_get_limit_mw();
     ramp_up                  = (current_power_mw > limit_mw) || (pwrlvl_previous_power_mw > limit_mw);
     pwrlvl_previous_power_mw = current_power_mw;
+#endif
 
 #if PWRLVL_CURRENT_LIMIT_ENABLED
     /*
@@ -227,8 +236,10 @@ void pwrlvl_init(void)
 
 #endif
 
-    pwrlvl_pwm_value                = initial_pwm_value;
-    pwrlvl_previous_power_mw        = 0;
+    pwrlvl_pwm_value = initial_pwm_value;
+#if PWRLVL_POWER_LIMIT_ENABLED
+    pwrlvl_previous_power_mw = 0;
+#endif
     pwrlvl_short_circuit_started_ms = 0;
     pwrlvl_short_circuit_timing     = false;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
@@ -298,7 +309,7 @@ void pwrlvl_release_minimum(void)
     }
 
     /* Resume at almost full attenuation, then let pwrlvl_task() ramp toward
-     * the power limit selected before the forced-minimum request. */
+     * the current limit (and the selected wattage ceiling when enabled). */
 #if !HOT_WAND_TEST_HARNESS
     TIM3->CCR1         = PWRLVL_PWM_MAX;
     gpio_cfg.Pin       = PWR_ATTENU_PINn;
@@ -335,6 +346,7 @@ void pwrlvl_set_mode(pwrlvl_mode_t mode)
 // Small Helpers
 // -----------------------------------------------------------------------------
 
+#if PWRLVL_POWER_LIMIT_ENABLED
 static uint32_t pwrlvl_get_limit_mw(void)
 {
     switch (pwrlvl_mode)
@@ -350,6 +362,8 @@ static uint32_t pwrlvl_get_limit_mw(void)
         return PWRLVL_LIMIT_100_PERCENT_MW;
     }
 }
+
+#endif
 
 static void pwrlvl_set_pwm(uint8_t value)
 {

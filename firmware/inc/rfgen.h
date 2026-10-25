@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hotwand.h"
+#include "pwrlvl.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -12,6 +13,10 @@ bool rfgen_clock_init(void);
 bool rfgen_has_fault(void);
 bool rfgen_has_clock_fault(void);
 bool rfgen_is_active(void);
+/* Foreground runtime gate: applied mode selects a system-clock RF phase.
+ * Legacy wattage-regulation builds allow continuous RF instead. Direct start
+ * APIs below deliberately remain available for standalone bring-up tests. */
+void rfgen_task(pwrlvl_mode_t mode);
 /* Shared automated-test firmware inhibits physical starts through both APIs. */
 void rfgen_start(void);
 /* Bring-up-only entry point: retains clock and emergency-stop checks, but

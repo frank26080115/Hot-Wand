@@ -20,6 +20,7 @@ class SupervisionTests(unittest.TestCase):
         subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
                         "-ffunction-sections", "-fdata-sections", "-DPWRLVL_PWM_JUMP_LEVEL=16", "-DPWRLVL_RAMP_UP_STEP=1", "-Itest/faults/support",
                         "-DLEAKY_BUCKET_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1",
+                        "-DPWRLVL_POWER_LIMIT_ENABLED=1",
                         "-Iinc", "-Ilib/u8g2/csrc", "test/faults/power_bridge.c",
                         "-o", str(dll), "-Wl,/noentry", "-Wl,/opt:ref"], cwd=ROOT, check=True)
         cls.lib = ctypes.CDLL(str(dll))

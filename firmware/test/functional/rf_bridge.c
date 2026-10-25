@@ -1,11 +1,39 @@
 #include "../../src/rfgen.c"
-RF_TIM_TypeDef             mock_tim1;
-uint32_t                   mock_pa6_mode, mock_pa6_level, mock_pb1_mode, mock_pb1_level, mock_af_calls;
-static bool                present, qualifying, triggered;
+RF_TIM_TypeDef  mock_tim1;
+uint32_t        mock_pa6_mode, mock_pa6_level, mock_pb1_mode, mock_pb1_level, mock_af_calls;
+static bool     present, qualifying, triggered;
+static uint32_t rf_now;
+#ifndef RF_BRIDGE_EXTERNAL_CLOCK
+uint32_t systick_get_ms(void)
+{
+    return rf_now;
+}
+#endif
+__declspec(dllexport) uint32_t rf_step(uint32_t now, uint32_t mode)
+{
+    rf_now = now;
+    rfgen_task((pwrlvl_mode_t)mode);
+    return rfgen_is_active();
+}
+__declspec(dllexport) void rf_interlocks(uint32_t flags)
+{
+    present                       = (flags & 1) == 0;
+    qualifying                    = (flags & 2) != 0;
+    triggered                     = (flags & 4) != 0;
+    rfgen_clock_fault_logged      = (flags & 8) != 0;
+    rfgen_emergency_stop_latched  = (flags & 16) != 0;
+    rfgen_power_loss_stop_latched = (flags & 32) != 0;
+}
+__declspec(dllexport) uint32_t rf_handoffs(void)
+{
+    return mock_af_calls;
+}
 __declspec(dllexport) void rf_reset(uint32_t input_present, uint32_t input_qualifying)
 {
     rfgen_clock_fault_logged = rfgen_emergency_stop_latched = rfgen_power_loss_stop_latched = false;
     rfgen_active                                                                            = false;
+    rf_now                                                                                  = 0;
+    mock_af_calls                                                                           = 0;
     present                                                                                 = input_present != 0;
     qualifying                                                                              = input_qualifying != 0;
     triggered                                                                               = false;
@@ -26,6 +54,11 @@ __declspec(dllexport) uint32_t rf_run(uint32_t action)
         rfgen_emergency_stop();
     }
     return rfgen_is_active();
+}
+__declspec(dllexport) uint32_t rf_enabled(void)
+{
+    return ((TIM1->CR1 & TIM_CR1_CEN) != 0) || ((TIM1->CCER & (TIM_CCER_CC3E | TIM_CCER_CC3NE)) != 0) ||
+           ((TIM1->BDTR & TIM_BDTR_MOE) != 0);
 }
 __declspec(dllexport) uint32_t rf_bits(void)
 {

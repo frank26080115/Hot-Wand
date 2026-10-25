@@ -420,6 +420,55 @@ assert main(['--list', '--camera', 'off']) == 0
             self.assertFalse(list((runner.output / case.id).glob("*.png")))
 
 
+class RFPhaseHostTests(unittest.TestCase):
+    def runner(self, samples):
+        runner = object.__new__(FaultRunner)
+        runner.log = Mock()
+        runner.target = SimpleNamespace(wait=Mock(side_effect=samples))
+        return runner
+
+    def sample(self, tick, attempts, mode=2):
+        return {"stage": 5, "tick": tick, "rf_attempts": attempts, "power": mode}
+
+    def test_phase_checks_require_requests_on_and_no_requests_off(self):
+        for mode, on_ms in ((0, 1000), (1, 750), (2, 500)):
+            samples = [self.sample(100, 1, mode), self.sample(150, 5, mode)]
+            if mode:
+                samples += [self.sample(on_ms + 100, 10, mode), self.sample(on_ms + 150, 10, mode)]
+            self.runner(samples).check_rf_cycle(mode)
+
+    def test_edge_crossing_is_retried(self):
+        self.runner([self.sample(100, 1), self.sample(600, 5),
+                     self.sample(1100, 10), self.sample(1150, 12),
+                     self.sample(1600, 15), self.sample(1650, 15)]).check_rf_cycle(2)
+
+    def test_restart_request_during_off_phase_fails(self):
+        runner = self.runner([self.sample(100, 1), self.sample(150, 2),
+                              self.sample(600, 2), self.sample(650, 3)])
+        with self.assertRaisesRegex(AssertionError, "ON/OFF phase"):
+            runner.check_rf_cycle(2)
+
+    def test_recovery_waits_for_next_eligible_phase_without_reset(self):
+        first = {"rf_at_fault": 5, "reset_flags": 77}
+        held = {"stage": 6, "message": "POWER\nLOSS\nFAULT", "rf_attempts": 5}
+        off = {"stage": 5, "flags": 64, "rf_attempts": 5, "reset_flags": 77}
+        on = {**off, "rf_attempts": 6}
+        runner = self.runner([off, on])
+        runner.args = SimpleNamespace(latch_hold=1.2)
+        runner.current = Case("F05.fast", "fast_loss")
+        runner.results = {runner.current.id: {}}
+        runner.model = SimpleNamespace(base=(676,), frame=lambda **values: values)
+        runner.queue = Mock()
+        runner.capture = Mock(side_effect=({"state": held}, {"state": on}))
+        runner.target.status = Mock(return_value={"stage": 6})
+        with patch("faults_test.time.sleep"):
+            runner.input_fault_recovery(first)
+        predicate = runner.target.wait.call_args_list[1].args[0]
+        self.assertFalse(predicate(off))
+        self.assertTrue(predicate(on))
+        self.assertTrue(runner.results[runner.current.id]["automatic_recovery"])
+
+
 COMMAND_ADC_INIT = 20
 
 if __name__ == "__main__":

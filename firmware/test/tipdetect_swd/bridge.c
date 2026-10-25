@@ -38,7 +38,9 @@ __declspec(dllexport) void bridge_reset(void)
     tipdetect_initialized               = false;
     tipdetect_tip_present               = false;
     tipdetect_triggered                 = true;
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
     tipdetect_edge_count = tipdetect_edge_decay_ms = 0;
+#endif
 #if TIP_SWD_TEST_HARNESS
     tip_swd_virtual_present = true;
     tip_swd_test_command    = TIP_SWD_NO_COMMAND;
@@ -144,7 +146,11 @@ __declspec(dllexport) uint32_t bridge_read(uint32_t selector)
     case 3:
         return mock_stops;
     case 4:
+#if TIPDETECT_EDGE_FAULT_COUNT > 0
         return tipdetect_edge_count;
+#else
+        return 0;
+#endif
     case 5:
         return (EXTI->IMR & TIP_DET_PINn) != 0;
     case 6:

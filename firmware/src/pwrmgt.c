@@ -243,9 +243,10 @@ __attribute__((noinline)) void pwrmgt_task(void)
         reasons |= PWRMGT_ATTENUATION_LOW_DC_INPUT;
     }
 
-    /* Low input voltage may not recover while the tool remains loaded. The
-     * buck converter's current ceiling also naturally caps the power that a
-     * low input voltage can provide; this explicit 50 W cap is intentional. */
+    /* Low input voltage and high temperature select the same reduced mode.
+     * By default this requests 500 ms RF ON / 500 ms OFF, so cooling does not
+     * depend on the measured power exceeding a wattage ceiling. Legacy
+     * wattage-regulation builds instead enforce their original 50 W cap. */
     if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited)
     {
         next_power_level = PWRLVL_MODE_50_PERCENT;
