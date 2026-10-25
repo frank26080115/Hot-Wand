@@ -148,7 +148,7 @@ Solder first, then fill the void with hot glue to prevent short circuits from ha
 
 [<img src="../bld-photos/shp-wires-soldered-2.jpg" alt="Shp wires soldered 2" width="400">](../bld-photos/shp-wires-soldered-2.jpg)
 
-Finally, heatshrink it all to protect it.
+Finally, heatshrink it all to protect it. I believe I used 3/8" heatshrink tubing for this.
 
 ## Tip Temperature Check
 
