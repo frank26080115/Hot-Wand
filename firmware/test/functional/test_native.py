@@ -566,6 +566,9 @@ class FanTests(unittest.TestCase):
 
     @covers("fan.binary")
     def test_all_binary_profiles_thresholds_hysteresis_and_dwell(self):
+        # conf.h is authoritative: verify equality and one degree below the
+        # configured OFF boundary without assuming the former 2 C hysteresis.
+        hysteresis = self.lib.fan_value(7)
         for mode, threshold, duty in ((5, 50, 100), (6, 70, 100), (7, 50, 50),
                                       (8, 70, 50), (9, 50, 25), (10, 70, 25)):
             with self.subTest(mode=mode):
@@ -576,13 +579,13 @@ class FanTests(unittest.TestCase):
                 self.assertTrue(self.lib.fan_value(6))
                 self.lib.fan_step(4100, threshold)
                 self.assertEqual(self.lib.fan_value(0), duty)
-                self.lib.fan_step(10099, threshold - 3)
+                self.lib.fan_step(10099, threshold - hysteresis - 1)
                 self.assertTrue(self.lib.fan_value(6))
-                self.lib.fan_step(10100, threshold - 2)
+                self.lib.fan_step(10100, threshold - hysteresis)
                 self.assertTrue(self.lib.fan_value(6))
-                self.lib.fan_step(10101, threshold - 3)
+                self.lib.fan_step(10101, threshold - hysteresis - 1)
                 self.assertFalse(self.lib.fan_value(6))
-                self.lib.fan_step(15001, threshold - 3)  # Finish a possible 100% ramp-down.
+                self.lib.fan_step(15001, threshold - hysteresis - 1)  # Finish a possible 100% ramp-down.
                 self.assertEqual(self.lib.fan_value(0), 0)
                 self.lib.fan_step(15002, threshold)
                 self.assertFalse(self.lib.fan_value(6))

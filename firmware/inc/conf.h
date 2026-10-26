@@ -160,7 +160,7 @@
 #define FAN_ADAPTIVE_ON_TEMPERATURE_C   40
 #define FAN_COOL_ON_TEMPERATURE_C       50
 #define FAN_QUIET_ON_TEMPERATURE_C      70
-#define FAN_TEMPERATURE_HYSTERESIS_C    2
+#define FAN_TEMPERATURE_HYSTERESIS_C    5
 #define FAN_MINIMUM_PWM_PERCENT         25
 #define FAN_RAMP_PERCENT_PER_SECOND     25
 #define FAN_STARTUP_BOOST_TIME_MS       500
@@ -268,18 +268,22 @@
 #error "PWRMGT_POWER_LOSS_RECOVERY_MS must be between 1000 and 60000 milliseconds"
 #endif
 
-/* Buck overvoltage protection compares the unfiltered 10-bit ADC sample.
- * With the fixed 22K/2K2 divider and 3.3 V ADC reference */
+/* Buck overvoltage protection compares the unfiltered 10-bit ADC sample
+ * using the fixed 22K/2K2 divider and 3.3 V reference. Set the mV threshold
+ * to zero to compile out this detector and its RF-stop action, regardless
+ * of any ADC-count override. Other fault protections remain independent. */
 #ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_MV
-#define PWRMGT_BUCK_VOLTAGE_SPIKE_MV 25000UL
+#define PWRMGT_BUCK_VOLTAGE_SPIKE_MV 0 // 25000UL
 #endif
 
 #ifndef PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS
 #define PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS ADC_VOLTAGE_TO_COUNTS(PWRMGT_BUCK_VOLTAGE_SPIKE_MV)
 #endif
 
-#if (PWRMGT_BUCK_VOLTAGE_SPIKE_MV == 0) || (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS > ADC_FULL_SCALE)
-#error "Buck voltage-spike threshold must be nonzero and fit in the ADC input range"
+#if (PWRMGT_BUCK_VOLTAGE_SPIKE_MV < 0) || \
+    ((PWRMGT_BUCK_VOLTAGE_SPIKE_MV > 0) && \
+     ((PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS <= 0) || (PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS > ADC_FULL_SCALE)))
+#error "Buck voltage-spike threshold must be zero (disabled) or positive and fit in the ADC input range"
 #endif
 
 #define DC_HIGH_POWER_MINIMUM_MV    19000

@@ -66,7 +66,7 @@ class AdcSimulationTests(unittest.TestCase):
         import os
         dll = build / f"bridge-{os.getpid()}.dll"
         subprocess.run([clang, "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-ffunction-sections",
-                        "-fdata-sections", "-DADC_SIM_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1", "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=85", "-Itest/adc_sim/support", "-Iinc",
+                        "-fdata-sections", "-DPWRMGT_BUCK_VOLTAGE_SPIKE_MV=25000", "-DADC_SIM_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1", "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=85", "-Itest/adc_sim/support", "-Iinc",
                         "-Ilib/u8g2/csrc", "test/adc_sim/bridge.c", "-o", str(dll),
                         "-Wl,/noentry", "-Wl,/opt:ref", "-Wl,/export:adc_sim",
                         "-Wl,/export:adc_sim_decode_table"], cwd=ROOT, check=True)
@@ -359,6 +359,58 @@ class AdcSimulationTests(unittest.TestCase):
         self.assertLess(self.value(1, 1), 705)
         self.assertEqual(self.value(3), 1)
 
+    def test_enabled_buck_spike_threshold_is_inclusive_and_latches_once(self):
+        threshold = (25000 * 1023 + 36300 - 1) // 36300
+        self.lib.bridge_init_adc()
+        while self.value(11) != 1:
+            self.lib.bridge_conversion(600)
+        self.lib.bridge_conversion(threshold - 1)
+        self.assertEqual(self.value(3), 0)
+        while self.value(11) != 1:
+            self.lib.bridge_conversion(600)
+        self.lib.bridge_conversion(threshold)
+        self.assertEqual(self.value(3), 1)
+        self.assertEqual(self.lib.bridge_latches() & 2, 2)
+        while self.value(11) != 1:
+            self.lib.bridge_conversion(600)
+        self.lib.bridge_conversion(1023)
+        self.assertEqual(self.value(3), 1)
+
+    def test_zero_buck_spike_disables_raw_trip_even_with_adc_count_override(self):
+        import os
+        build = ROOT / ".cache/adc_sim_test"
+        dll = build / f"no-buck-spike-{os.getpid()}.dll"
+        flags = ["-DADC_SIM_ENABLED=1", "-DPWRMGT_BUCK_VOLTAGE_SPIKE_MV=0",
+                 "-DPWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS=1", "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=85",
+                 "-Itest/adc_sim/support", "-Iinc", "-Ilib/u8g2/csrc"]
+        subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
+                        "-ffunction-sections", "-fdata-sections", *flags,
+                        "test/adc_sim/bridge.c", "-o", str(dll), "-Wl,/noentry", "-Wl,/opt:ref"],
+                       cwd=ROOT, check=True)
+        preprocessed = subprocess.check_output(["clang", "-E", *flags, "test/adc_sim/bridge.c"],
+                                               cwd=ROOT, text=True)
+        self.assertNotIn("adc_buck_voltage_spike_shutdown", preprocessed)
+        lib = ctypes.CDLL(str(dll))
+        lib.bridge_conversion.argtypes = [ctypes.c_uint16]
+        lib.bridge_reset()
+        lib.bridge_init_adc()
+        for _ in range(7 * 256):
+            lib.bridge_conversion(1023)
+        self.assertEqual(lib.bridge_value(0, 1), 1023)  # Acquisition still runs at full scale.
+        self.assertEqual(lib.bridge_value(3, 0), 0)     # No emergency shutdown.
+        self.assertEqual(lib.bridge_latches() & 2, 0)
+        while lib.bridge_value(11, 0) != 0:
+            lib.bridge_conversion(1023)
+        history = (ctypes.c_uint16 * 1)(700)
+        lib.bridge_exact_history(history, 1)
+        lib.bridge_conversion(0)                     # Independent fast-loss protection still works.
+        self.assertEqual(lib.bridge_value(4, 0), 1)
+        self.assertEqual(lib.bridge_value(3, 0), 0)
+        self.assertEqual(lib.bridge_latches() & 1, 1)
+        lib.bridge_rearm_conditions(0, 1, 1)          # A disabled spike latch cannot block recovery.
+        self.assertEqual(lib.bridge_rearm(0), 1)
+        self.assertEqual(lib.bridge_latches() & 3, 0)
+
     def test_fast_power_loss_uses_simulated_average_and_raw_sample(self):
         reports = self.begin([self.frame(dc=700, repeats=128), self.frame(dc=600, repeats=10)])
         for _ in range(128):
@@ -401,7 +453,7 @@ class AdcSimulationTests(unittest.TestCase):
         build = ROOT / ".cache/adc_sim_test"
         dll = build / f"no-fast-drop-{os.getpid()}.dll"
         flags = ["-DADC_SIM_ENABLED=1", "-DPWRMGT_POWER_LOSS_SUSTAINED_ENABLED=1",
-                 "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=0",
+                 "-DPWRMGT_BUCK_VOLTAGE_SPIKE_MV=25000", "-DPWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS=0",
                  "-Itest/adc_sim/support", "-Iinc", "-Ilib/u8g2/csrc"]
         subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1",
                         "-ffunction-sections", "-fdata-sections", *flags,

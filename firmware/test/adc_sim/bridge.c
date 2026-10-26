@@ -40,7 +40,9 @@ __declspec(dllexport) void bridge_reset(void)
 #if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     adc_power_loss_shutdown         = false;
 #endif
+#if PWRMGT_BUCK_VOLTAGE_SPIKE_MV > 0
     adc_buck_voltage_spike_shutdown = false;
+#endif
     adc_round_started               = false;
     input_voltage_calibration       = INPUT_VOLTAGE_CALIB_NONE;
     current_idx                     = MCU_TEMP_IDX;
@@ -95,7 +97,9 @@ __declspec(dllexport) void bridge_set_latches(void)
 #if PWRMGT_POWER_LOSS_FAST_DROP_ADC_COUNTS > 0
     adc_power_loss_shutdown         = true;
 #endif
+#if PWRMGT_BUCK_VOLTAGE_SPIKE_MV > 0
     adc_buck_voltage_spike_shutdown = true;
+#endif
     adc_set_input_voltage_calibration(INPUT_VOLTAGE_CALIB_P5);
 }
 
@@ -294,7 +298,9 @@ __declspec(dllexport) void bridge_rearm_conditions(uint32_t active, uint32_t all
 #endif
     mock_rf_active                  = active;
     mock_rf_rearm_allowed           = allowed;
+#if PWRMGT_BUCK_VOLTAGE_SPIKE_MV > 0
     adc_buck_voltage_spike_shutdown = spike;
+#endif
 }
 
 void show_undervoltage_fault(void) {}

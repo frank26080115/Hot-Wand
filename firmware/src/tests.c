@@ -212,6 +212,7 @@ void test_run(void)
     // test_bringup_oled_button();
     // test_bringup_adc();
     // test_bringup_fan();
+    // test_bringup_fan_pwm_steps();
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
@@ -1106,6 +1107,98 @@ void test_bringup_fan(void)
 #endif
         }
 
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
+void test_bringup_fan_pwm_steps(void)
+{
+    u8g2_t* graphics;
+#if FAN_PWM_ENABLED
+    static const char* const duty_text[]   = {"0%", "25%", "50%", "75%", "100%"};
+    uint8_t                  step          = 0;
+    bool                     fan_pin_owned = false;
+#endif
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        // RF stays off; let the watchdog reset an unsuccessful clock setup.
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+    btn_set_short_press_mode(BTN_SHORT_PRESS_ON_PRESS);
+    // A button held during boot must be released before it can select a step.
+    btn_discard_until_release();
+    fan_stop(); // Keep the production temperature controller out of this test.
+
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        // Keep RF off and leave PA13 available for debugging display setup.
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+    u8g2_ClearBuffer(graphics);
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "FAN");
+#if FAN_PWM_ENABLED
+    // PA13 still belongs to SWD. Do not display a commanded duty until the
+    // first press actually initializes the PWM hardware at zero percent.
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, "PRESS");
+#else
+    // GPIO-only builds cannot represent the intermediate PWM steps.
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, "PWM");
+    u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT), "OFF");
+#endif
+    OLED_SendBuffer(&oled);
+
+    for (;;)
+    {
+        btn_task();
+#if FAN_PWM_ENABLED
+        if (btn_has_short_press(true))
+        {
+            if (!fan_pin_owned)
+            {
+                // Standalone direct-input test: SJ4-A and SJ5-D. No saved
+                // settings are read. SJ5-C instead needs EXTERNAL_MOSFET mode.
+                if (!fanpwm_init(FANPWM_MODE_DIRECT))
+                {
+                    show_fault("FAN\nPWM\nFAULT", false);
+                }
+                fan_pin_owned = true;
+            }
+            else
+            {
+                step = (uint8_t)((step + 1) % (sizeof(duty_text) / sizeof(duty_text[0])));
+            }
+            // This is PWM duty, not tachometer-measured RPM. Hold each value
+            // until the next down-edge; a held button must not auto-repeat.
+            fanpwm_set((uint8_t)(step * 25));
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "FAN");
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, duty_text[step]);
+            OLED_SendBuffer(&oled);
+        }
+#endif
+        btn_has_long_press(true); // No sleep or alternate action in this test.
         HAL_Delay(1);
         watchdog_feed();
     }

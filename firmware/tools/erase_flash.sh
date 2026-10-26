@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 # Erase all firmware and saved settings through ST-Link.
 # Upload firmware again after running this script.
+# ST-Link NRST must be wired to the MCU reset pin. Assert reset before init
+# so firmware cannot reclaim the SWD pins. Halt directly after connecting;
+# a second reset-halt can fail on clone ST-Link probes.
 set -eu
 
 pio_root="${PLATFORMIO_CORE_DIR:-$HOME/.platformio}"
@@ -15,7 +18,8 @@ if [ ! -x "$openocd" ]; then
     exit 1
 fi
 
+printf 'Connecting under hardware reset; ST-Link NRST must be connected.\n'
 printf 'Erasing all firmware and saved settings on the connected STM32F042...\n'
 exec "$openocd" -s "$openocd_root/openocd/scripts" \
     -f interface/stlink.cfg -f target/stm32f0x.cfg \
-    -c 'init; reset halt; stm32f0x mass_erase 0; shutdown'
+    -c 'adapter speed 100; reset_config srst_only srst_nogate connect_assert_srst; init; halt; stm32f0x mass_erase 0; shutdown'

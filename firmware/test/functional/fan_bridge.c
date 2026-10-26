@@ -55,6 +55,10 @@ __declspec(dllexport) uint32_t fan_value(uint32_t selector)
         return topology;
     case 4:
         return fan_mode;
+    case 7:
+        // Expose configuration, not the controller decision: Python still
+        // independently checks both sides of the configured boundary.
+        return FAN_TEMPERATURE_HYSTERESIS_C;
 #if FAN_PWM_ENABLED
     case 5:
         return fan_requested_duty_percent;
