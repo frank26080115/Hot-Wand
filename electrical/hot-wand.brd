@@ -1846,10 +1846,10 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C64879" x="89" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="JLC_ROTATION" value="180" x="89" y="63" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="TVS1" library="hot-wand" package="SMC" value="SM15T150CA" x="101.2" y="61.3" smashed="yes" rot="MR180">
-<attribute name="NAME" x="97.741" y="57.941" size="0.8128" layer="26" font="vector" rot="MR180"/>
-<attribute name="VALUE" x="97.741" y="56.729" size="0.8128" layer="28" font="vector" rot="MR180"/>
-<attribute name="JLCPARTNUM" value="C133715" x="101.2" y="61.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<element name="TVS1" library="hot-wand" package="SMC" value="SM15T150CA" x="101.2" y="60.3" smashed="yes" rot="MR180">
+<attribute name="NAME" x="97.741" y="56.941" size="0.8128" layer="26" font="vector" rot="MR180"/>
+<attribute name="VALUE" x="97.741" y="55.729" size="0.8128" layer="28" font="vector" rot="MR180"/>
+<attribute name="JLCPARTNUM" value="C133715" x="101.2" y="60.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
 <element name="L3" library="hot-wand" package="IND_K16X8X6_X2" value="9uH" x="69" y="47" smashed="yes" rot="R270">
 <attribute name="NAME" x="67" y="44.9" size="0.8128" layer="25" font="vector"/>
@@ -3292,7 +3292,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="93" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="91" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="95" y="51.2" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="96.1" y="58" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="96.1" y="57.3" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="96.1" y="56" extent="1-16" drill="0.3" shape="octagon"/>
 <contactref element="Q9" pad="2"/>
 <contactref element="R44" pad="2"/>
@@ -3363,18 +3363,18 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="94.1" y="67" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="96" y="65" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="98" y="65" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="103.4" y="63.3" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="63.3" extent="1-16" drill="0.3" shape="square"/>
-<via x="104.9" y="63.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="106.6" y="61.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="103.2" y="61.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="104.9" y="59.1" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="103.4" y="59.3" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="59.3" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="62.6" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="61.9" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="60.7" extent="1-16" drill="0.3" shape="square"/>
-<via x="106.4" y="60" extent="1-16" drill="0.3" shape="square"/>
+<via x="103.4" y="62.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="62.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="104.9" y="62.5" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="106.6" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="103.2" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="104.9" y="58.1" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="103.4" y="58.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="58.3" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="61.6" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="60.9" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="59.7" extent="1-16" drill="0.3" shape="square"/>
+<via x="106.4" y="59" extent="1-16" drill="0.3" shape="square"/>
 <wire x1="72.8" y1="14.5" x2="72.8" y2="11.7" width="1.016" layer="16"/>
 <contactref element="STANDOFF1" pad="1"/>
 <contactref element="STANDOFF2" pad="1"/>
@@ -3530,9 +3530,9 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <via x="55" y="66" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55" y="67.1" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="55" y="68.5" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="101" y="61.3" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="101" y="62.9" extent="1-16" drill="0.3" shape="octagon"/>
-<via x="101" y="59.7" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="101" y="60.3" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="101" y="61.9" extent="1-16" drill="0.3" shape="octagon"/>
+<via x="101" y="58.7" extent="1-16" drill="0.3" shape="octagon"/>
 <via x="75.1" y="44.7" extent="1-16" drill="1" diameter="2" shape="octagon" alwaysstop="yes"/>
 <via x="68" y="47" extent="1-16" drill="1" diameter="2" shape="octagon" alwaysstop="yes"/>
 <via x="24.8" y="21" extent="1-16" drill="0.3" shape="octagon"/>
@@ -3927,7 +3927,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <contactref element="D4" pad="C"/>
 <contactref element="TVS1" pad="C"/>
 <polygon width="0.2032" layer="16" spacing="0.2032" isolate="0.8" thermals="no" rank="2">
-<vertex x="96.3" y="61.2"/>
+<vertex x="96.3" y="59.8"/>
+<vertex x="94.9" y="61.2"/>
 <vertex x="92.9" y="61.2"/>
 <vertex x="91.6" y="62.4"/>
 <vertex x="90.7" y="62.4"/>
