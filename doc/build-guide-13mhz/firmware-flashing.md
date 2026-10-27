@@ -12,9 +12,15 @@ The easiest tool to use for firmware flashing is a ST-Link V2 (or V3). This tool
 
 The programmer I used is the [STLINK-V3MINIE](https://www.st.com/en/development-tools/stlink-v3minie.html), for about $25 (plus taxes and shipping). You may need to get an adapter like [this](https://www.amazon.com/dp/B09DKDG7XN) to make it easier to connect.
 
+![](../bld-photos/fw-flash-stlinkv3.jpg)
+
 You can purchase a cheap ST-Link V2 from online retailers very easily, however, they are a bit problematic. They do work but can be frustrating to use.
 
+![](../bld-photos/flash-fw-stlinkv2-clone.jpg)
+
 If you own a STM32 development board, you can also use the on-board ST-Link that is built into those development boards.
+
+![](../bld-photos/flash-fw-nucleo.jpg)
 
 You might own a dedicated JTAG/SWD debugger device, such as a Segger J-Link, Keil ULINK, or [Black Magic Debug](https://black-magic.org/), in which case, I will leave it up to you on how to perform the flashing.
 
@@ -62,7 +68,7 @@ You will see a list of build targets. Click on "stm32f042" for a normal build, c
 
 ## Firmware Updating
 
-You can update the firmware using the same procedure. But, as SJ3 is connected, the debug signal will cause the fan to do weird things.
+You can update the firmware using the same procedure. But, as SJ3 is connected, the debug signal will cause the fan to do weird things. (mine makes a weird noise during flashing, it does flash successfully, just be aware that the fan can make a noise)
 
 ## Troubleshooting
 

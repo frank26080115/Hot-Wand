@@ -64,6 +64,8 @@ The fan is inserted into the plastic enclosure and held in place using hot glue.
 
 ![](imgs/econo_install_fan.png)
 
+![](../bld-photos/econo-fans-installed.jpg)
+
 Make sure the airflow direction is into the box.
 
 Plug in the fan before closing the box.

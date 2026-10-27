@@ -120,6 +120,8 @@ Insert the cooling fan into the slot for the fan. Make sure the direction of air
 
 ![](imgs/3dp_box_insert_fan.png)
 
+![](../bld-photos/lite-fan-inserted.jpg)
+
 Plug in the fan, making sure the polarity is correct.
 
 Make sure the fan wires are tidy and won't get jammed back into the fan blades once the box is closed, maybe use tape or zip-ties or something to keep the wires short and together.
