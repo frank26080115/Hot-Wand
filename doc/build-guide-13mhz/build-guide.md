@@ -124,6 +124,12 @@ Short **SJ6** and **SJ7** and **SJ8** with solder.
 
 (DEVELOPMENT ONLY) SJ8 used to measure the current consumption of the 12V rail, to determine the gate driver's efficiency. The tuning happens after the MOSFETs are ready. Short it out with solder if you are not performing this measurement.
 
+## Admire
+
+![](../bld-photos/circuit-1.jpg)
+
+![](../bld-photos/circuit-2.jpg)
+
 ## 7. Printed Parts and Templates
 
 3D print: face plate, air intake grille, air exhaust duct, internal air blocker
@@ -270,7 +276,9 @@ Using the screws that came with the purchase of the enclosure, screw the lid to 
 
 Stick on some rubber feet to the bottom of the enclosure.
 
-<!-- TODO: photograph -->
+![](../bld-photos/megametal-front.jpg)
+
+![](../bld-photos/megametal-back.jpg)
 
 ## 11. Enclosed Development
 

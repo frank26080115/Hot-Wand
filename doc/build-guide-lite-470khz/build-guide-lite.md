@@ -94,6 +94,12 @@ SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground retu
 
 (DEVELOPMENT ONLY) At this point, full testing can happen, as long as tests are short enough as to not require a cooling fan.
 
+## Admire Your Work
+
+![](../bld-photos/circuit-lite-1.jpg)
+
+![](../bld-photos/circuit-lite-2.jpg)
+
 ## 7. 3D Printed Box
 
 3D print the box, consisting of two parts: the body, and the bottom. Avoid using PLA for this, use something that can stand a bit more temperature. The design is meant to be printed without any supports.
@@ -109,6 +115,8 @@ SJ1, SJ2, SJ3, SJ4, SJ5 are all meant for a developer to measure the ground retu
 **Perform a final review of all soldering, including test points, test resistors, solder jumpers.**
 
 Clean the entire PCB, using an antistatic brush and rubbing alcohol.
+
+I used high temperature RTV gasket maker to "glue" down the inductors.
 
 At this point, you may apply conformal coating over the circuit board if you wish.
 
