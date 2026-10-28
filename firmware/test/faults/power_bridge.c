@@ -58,6 +58,9 @@ __declspec(dllexport) void bridge_reset(uint32_t now)
     pwrmgt_temperature_limited = pwrmgt_temperature_shutdown_pending = pwrmgt_low_dc_limited = false;
     pwrmgt_pending_blocked_message                                                           = 0;
     pwrmgt_blocked_release_pending                                                           = false;
+#if PWRLVL_POWER_RISE_ENABLED
+    pwrmgt_history_has_sample = pwrmgt_history_reference_valid = false;
+#endif
     pwrlvl_init();
     mock_rf_for_activity         = false;
     pwrmgt_activity_history_mask = pwrmgt_activity_on_guard_segments = 0;

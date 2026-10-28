@@ -58,6 +58,11 @@ extern "C"
 
 void pwrlvl_init(void);
 void pwrlvl_task(void);
+#if PWRLVL_POWER_RISE_ENABLED
+/* One filtered-power observation per foreground supervision pass. The history
+ * reference is fixed for this graph segment; false excludes unwritten slots. */
+void pwrlvl_observe_power(uint32_t current_mw, uint32_t previous_peak_mw, bool segment_started, bool reference_valid);
+#endif
 void pwrlvl_set_mode(pwrlvl_mode_t mode);
 bool pwrlvl_is_current_limiting(void);
 void pwrlvl_force_minimum(void);

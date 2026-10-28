@@ -372,13 +372,17 @@ class FunctionalRunner(FaultRunner):
                 # Observe RF phases at zero power; the shared test image also
                 # enables the virtual thermal bucket for its protection cases.
                 self.check_rf_cycle(p["power"])
+                if self.power_rise_enabled and p["power"] == 0:
+                    self.check_power_rise()
                 # High wattage below 5.2 A must not activate buck attenuation;
                 # the applied mode is enforced through foreground RF phases.
                 high = self.model.frame(buck=self.model.voltage_count(22000), current=self.model.current_count(4900))
                 try:
                     self.settle(high)
+                    if self.power_rise_enabled and p["power"] == 0:
+                        self.hold_runtime(1800)  # Let the transient decay while ADC power holds.
                     self.wait(lambda s: s["pwm"] == 0)
-                    self.require(self.status()["pwm"] == 0, "Wattage alone leaves buck PWM inactive")
+                    self.require(self.status()["pwm"] == 0, "Steady wattage alone leaves buck PWM inactive")
                 finally:
                     # Even on failure, restore the held-last stimulus before
                     # slow captures or further observation can heat the bucket.
@@ -590,7 +594,8 @@ class FunctionalRunner(FaultRunner):
         """Check both activity paths through the real inactivity timer.
 
         Stimulus changes stay below the soft-current and buck-voltage limits.
-        Plateau waits exceed the graph-history lifetime before checking inactivity.
+        A load transition remains activity until its old extrema leave history.
+        Wait for the measured inactivity interval, not just a fixed plateau time.
         """
         delta, absolute = IDLE_ACTIVITY_PROFILES[profile]
         buck = self.model.voltage_count(20000)
@@ -606,9 +611,22 @@ class FunctionalRunner(FaultRunner):
                          "Delta stimulus is active without crossing the absolute threshold")
         else:
             self.require(high_mw >= absolute * 1000, "Absolute stimulus crosses the selected threshold")
+        def wait_inactive(milliseconds, seconds, description):
+            start = self.status()["tick"]
+            # The 0W -> 5W baseline step itself exceeds every delta setting.
+            # Its old zero peaks can reset activity for about four seconds;
+            # the requested inactivity interval starts only after they expire.
+            # Also require fresh elapsed time so a stale pre-transition timer
+            # cannot satisfy the condition on the first observation.
+            state = self.wait(lambda s: s["stage"] == RUNTIME and s["inactive_ms"] >= milliseconds and
+                              ((s["tick"] - start) & 0xFFFFFFFF) >= milliseconds,
+                              seconds=seconds, target_time=True, interval=0.25,
+                              description=description)
+            self.require(state["inactive_ms"] >= milliseconds,
+                         f"{description}: {state['inactive_ms']} ms inactive")
+
         self.settle(low)
-        self.hold_runtime(6000)
-        self.require(self.status()["inactive_ms"] >= 5000, "Constant low power becomes inactive after history settles")
+        wait_inactive(5000, 12, "Low-power baseline history expires, then stays inactive for five seconds")
         self.settle(high)
         self.wait(lambda state: state["inactive_ms"] < 500, description="selected activity rule resets inactivity")
         if rule == "delta":
@@ -620,8 +638,7 @@ class FunctionalRunner(FaultRunner):
         self.require(self.status()["inactive_ms"] < 500, "Selected activity rule keeps resetting inactivity")
         self.capture("profile_activity")
         self.settle(low)
-        self.hold_runtime(6000)
-        self.require(self.status()["inactive_ms"] >= 1000, "Activity expires after eligible history ages out")
+        wait_inactive(1000, 8, "Activity expires after eligible history ages out")
         self.capture("profile_inactive")
 
     def native(self):

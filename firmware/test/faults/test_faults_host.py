@@ -33,7 +33,7 @@ class MemorySession:
             ("btn_swd_test_boot_hold", 0x20001300),
             ("vision_test_fiducial_enabled", 0x20001304),
             ("tip_swd_test_command", 0x20001308),
-            ("fault_test_dimming_enabled", 0x08001400), ("fault_test_inactive_ms", 0x2000130c))}
+            ("fault_test_power_rise_enabled", 0x08001404), ("fault_test_dimming_enabled", 0x08001400), ("fault_test_inactive_ms", 0x2000130c))}
         self.memory = {}
         self.writes = []
         self.running = False
@@ -425,6 +425,7 @@ class RFPhaseHostTests(unittest.TestCase):
     def runner(self, samples):
         runner = object.__new__(FaultRunner)
         runner.log = Mock()
+        runner.power_rise_enabled = False
         runner.target = SimpleNamespace(wait=Mock(side_effect=samples))
         return runner
 
@@ -513,6 +514,42 @@ class RFPhaseHostTests(unittest.TestCase):
                     else:
                         runner.exercise(case)
                     self.assertFalse(loaded, "High stimulus must also be removed on failure")
+
+    def test_low_power_rise_probe_checks_attack_release_and_restores_baseline_on_failure(self):
+        for fault in (False, True):
+            runner = self.runner([])
+            runner.model = Stimulus(TABLE, CALIBRATION)
+            runner.current = Case("L03.power.mode0", "power_limit", parameters={"power": 0})
+            runner.results = {runner.current.id: {}}
+            frames = []
+            runner.queue = lambda batch: frames.append(batch[0])
+            stage = 6 if fault else 5
+
+            def snapshot(tick, pwm, channel_frame, app_stage=5):
+                return {"stage": app_stage, "tick": tick, "pwm": pwm, "filtered": channel_frame.channels[:6],
+                        "current_ma": 1000, "reasons": 0, "message": "FAULT" if app_stage == 6 else ""}
+
+            m = runner.model
+            baseline = m.frame(buck=m.voltage_count(20000), current=m.current_count(500))
+            raised = m.frame(buck=m.voltage_count(20000), current=m.current_count(1000))
+            snapshots = iter((snapshot(100, 0, baseline), snapshot(850, 0, baseline),
+                              snapshot(860, 16, raised, stage), snapshot(1660, 0, raised)))
+
+            def wait(predicate, **kwargs):
+                state = next(snapshots)
+                self.assertTrue(predicate(state))
+                return state
+
+            runner.target.wait.side_effect = wait
+            runner.target.status = Mock(return_value={"tick": 100})
+            if fault:
+                with self.assertRaisesRegex(AssertionError, "Power-rise probe stayed in runtime"):
+                    runner.check_power_rise()
+            else:
+                runner.check_power_rise()
+                self.assertEqual(runner.results[runner.current.id]["power_rise_probe"]["peak"]["pwm"], 16)
+            self.assertEqual(frames[-1].channels[2], 0)
+            self.assertTrue(all(m.predict(f.channels)["power_mw"] < 60000 for f in frames))
 
     def test_recovery_waits_for_next_eligible_phase_without_reset(self):
         first = {"rf_at_fault": 5, "reset_flags": 77}

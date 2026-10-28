@@ -111,6 +111,7 @@ class FunctionalHostTests(unittest.TestCase):
                     runner = object.__new__(FunctionalRunner)
                     runner.log = Mock()
                     runner.dimming_enabled = False
+                    runner.power_rise_enabled = False
                     runner.boot_normal = Mock()
                     runner.wait = Mock()
                     runner.status = lambda: {"pwm": 0}
@@ -137,6 +138,21 @@ class FunctionalHostTests(unittest.TestCase):
                     else:
                         runner._exercise(case)
                     self.assertFalse(loaded, "High stimulus must also be removed on failure")
+
+    def test_sport_rise_probe_is_selected_only_when_compiled_in(self):
+        for enabled in (False, True):
+            for mode in range(3):
+                runner = object.__new__(FunctionalRunner)
+                runner.log = Mock()
+                runner.power_rise_enabled = enabled
+                runner.dimming_enabled = False
+                runner.boot_normal = runner.wait = runner.settle = runner.capture = runner.hold_runtime = Mock()
+                runner.check_rf_cycle = Mock()
+                runner.check_power_rise = Mock()
+                runner.status = lambda: {"pwm": 0}
+                runner.model = SimpleNamespace(frame=lambda **kw: kw, voltage_count=lambda v: v, current_count=lambda i: i)
+                runner._exercise(next(c for c in catalog() if c.id == f"FUN.power.request.{mode}"))
+                self.assertEqual(runner.check_power_rise.call_count, int(enabled and mode == 0))
 
     def test_camera_off_import_has_no_camera_dependency(self):
         code = "import sys; sys.path.insert(0, 'tools/auto_testing'); import functional_test; assert not any(x in sys.modules for x in ('cv2','gphoto2','eyes_rx0'))"

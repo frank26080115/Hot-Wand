@@ -3,8 +3,8 @@ The circuit of the Hot Wand has a main buck converter
 This particular code module is responsible for controlling the output voltage of that buck converter
 The buck converter's feedback signal is connected to our PWM pin through a resistor and diode
 By sending a PWM signal, a higher duty cycle will drive the feedback signal higher, which will lower the output voltage
-of the buck converter This code module is responsible for slowly ramping the PWM duty cycle up and down to avoid sudden
-changes in output voltage This code module also monitors the current draw of the buck converter and will limit the
+of the buck converter. The existing regulator ramps PWM up and down; SPORT also applies immediate attenuation from
+new power-rise peaks with an independent slow decay. This code module monitors buck current and limits the
 output voltage if the current draw exceeds a certain threshold
 */
 
@@ -49,11 +49,21 @@ static uint32_t pwrlvl_short_circuit_started_ms;
 #if PWRLVL_CURRENT_LIMIT_ENABLED
 static uint16_t pwrlvl_previous_current_ma;
 #endif
+// Keep the requested regulator value separate from the value already written
+// to hardware, including builds that compile out the SPORT contribution.
 static uint8_t pwrlvl_pwm_value;
-static bool    pwrlvl_initialized;
-static bool    pwrlvl_forced_minimum;
-static bool    pwrlvl_current_limiting;
-static bool    pwrlvl_short_circuit_timing;
+static uint8_t pwrlvl_regulator_value;
+#if PWRLVL_POWER_RISE_ENABLED
+// Each controller owns its demand and timing; the output is their maximum.
+static uint8_t  pwrlvl_rise_value;
+static uint8_t  pwrlvl_rise_pending;
+static uint32_t pwrlvl_rise_peak_mw;
+static uint32_t pwrlvl_rise_last_decay_ms;
+#endif
+static bool pwrlvl_initialized;
+static bool pwrlvl_forced_minimum;
+static bool pwrlvl_current_limiting;
+static bool pwrlvl_short_circuit_timing;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -63,6 +73,10 @@ static bool    pwrlvl_short_circuit_timing;
 static uint32_t pwrlvl_get_limit_mw(void);
 #endif
 static void pwrlvl_set_pwm(uint8_t value);
+static void pwrlvl_apply_requests(void);
+#if PWRLVL_POWER_RISE_ENABLED
+static void pwrlvl_clear_power_rise(void);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -148,36 +162,57 @@ void pwrlvl_task(void)
 #endif
 
     update_period_ms = ramp_up ? PWRLVL_RAMP_UP_PERIOD_MS : PWRLVL_UPDATE_PERIOD_MS;
-    if ((uint32_t)(now - pwrlvl_last_update_ms) < update_period_ms)
+    if ((uint32_t)(now - pwrlvl_last_update_ms) >= update_period_ms)
     {
-        return;
-    }
-    pwrlvl_last_update_ms = now;
-
-    next_pwm = pwrlvl_pwm_value;
-
-    if (ramp_up)
-    {
-        if (next_pwm < PWRLVL_PWM_JUMP_LEVEL)
+        pwrlvl_last_update_ms = now;
+        next_pwm              = pwrlvl_regulator_value;
+        if (ramp_up)
         {
-            next_pwm = PWRLVL_PWM_JUMP_LEVEL;
+            // An existing stronger output must not weaken the current-limit
+            // response. Its attack clock is never reset by spike observations.
+            if (pwrlvl_pwm_value > next_pwm)
+            {
+                next_pwm = pwrlvl_pwm_value;
+            }
+            if (next_pwm < PWRLVL_PWM_JUMP_LEVEL)
+            {
+                next_pwm = PWRLVL_PWM_JUMP_LEVEL;
+            }
+            else if (next_pwm < PWRLVL_PWM_MAX)
+            {
+                next_pwm += PWRLVL_RAMP_UP_STEP;
+            }
+            if (next_pwm > PWRLVL_PWM_MAX)
+            {
+                next_pwm = PWRLVL_PWM_MAX;
+            }
         }
-        else if (next_pwm < PWRLVL_PWM_MAX)
+        else if (next_pwm > 0)
         {
-            /* The configured step fits in uint8_t; pwrlvl_set_pwm clamps
-             * a final step that would exceed the maximum PWM count. */
-            next_pwm += PWRLVL_RAMP_UP_STEP;
+            --next_pwm;
         }
-    }
-    else if (next_pwm > 0)
-    {
-        --next_pwm;
+        pwrlvl_regulator_value = next_pwm;
     }
 
-    if (next_pwm != pwrlvl_pwm_value)
+#if PWRLVL_POWER_RISE_ENABLED
+    // The free-running decay is independent of power direction and regulator
+    // timing. Delayed calls remove only one count, never a catch-up burst.
+    if ((uint32_t)(now - pwrlvl_rise_last_decay_ms) >= PWRLVL_POWER_RISE_DECAY_PERIOD_MS)
     {
-        pwrlvl_set_pwm(next_pwm);
+        pwrlvl_rise_last_decay_ms = now;
+        if (pwrlvl_rise_value > 0)
+        {
+            --pwrlvl_rise_value;
+        }
     }
+    // Decay first: a simultaneous new peak then establishes its mapped value.
+    if (pwrlvl_rise_pending > pwrlvl_rise_value)
+    {
+        pwrlvl_rise_value = pwrlvl_rise_pending;
+    }
+    pwrlvl_rise_pending = 0;
+#endif
+    pwrlvl_apply_requests();
 }
 
 void pwrlvl_init(void)
@@ -236,7 +271,11 @@ void pwrlvl_init(void)
 
 #endif
 
-    pwrlvl_pwm_value = initial_pwm_value;
+    pwrlvl_pwm_value       = initial_pwm_value;
+    pwrlvl_regulator_value = initial_pwm_value;
+#if PWRLVL_POWER_RISE_ENABLED
+    pwrlvl_clear_power_rise();
+#endif
 #if PWRLVL_POWER_LIMIT_ENABLED
     pwrlvl_previous_power_mw = 0;
 #endif
@@ -268,7 +307,11 @@ void pwrlvl_force_minimum(void)
      * PWM was already running, first move its compare above ARR so both sides
      * of the alternate-function-to-GPIO handoff are high.
      */
-    pwrlvl_forced_minimum   = true;
+    pwrlvl_forced_minimum = true;
+#if PWRLVL_POWER_RISE_ENABLED
+    pwrlvl_clear_power_rise();
+#endif
+    pwrlvl_regulator_value  = PWRLVL_PWM_FULL_DUTY;
     pwrlvl_current_limiting = false;
 
 #if !HOT_WAND_TEST_HARNESS
@@ -322,7 +365,11 @@ void pwrlvl_release_minimum(void)
     /* In the shared test build this releases only the logical override.
      * PA6 remains GPIO-high, independent of the requested PWM below. */
     FT_SET(pwm, PWRLVL_PWM_MAX);
-    pwrlvl_pwm_value      = PWRLVL_PWM_MAX;
+    pwrlvl_pwm_value       = PWRLVL_PWM_MAX;
+    pwrlvl_regulator_value = PWRLVL_PWM_MAX;
+#if PWRLVL_POWER_RISE_ENABLED
+    pwrlvl_clear_power_rise();
+#endif
     pwrlvl_last_update_ms = systick_get_ms();
     pwrlvl_forced_minimum = false;
 }
@@ -334,7 +381,16 @@ void pwrlvl_set_mode(pwrlvl_mode_t mode)
     case PWRLVL_MODE_100_PERCENT:
     case PWRLVL_MODE_75_PERCENT:
     case PWRLVL_MODE_50_PERCENT:
+#if PWRLVL_POWER_RISE_ENABLED
+        if (pwrlvl_mode != mode)
+        {
+            // Leaving SPORT clears the contribution immediately; entering
+            // SPORT starts a new running peak even midway through a segment.
+            pwrlvl_clear_power_rise();
+        }
+#endif
         pwrlvl_mode = mode;
+        pwrlvl_apply_requests();
         break;
 
     default:
@@ -365,11 +421,69 @@ static uint32_t pwrlvl_get_limit_mw(void)
 
 #endif
 
+#if PWRLVL_POWER_RISE_ENABLED
+void pwrlvl_observe_power(uint32_t current_mw, uint32_t previous_peak_mw, bool segment_started, bool reference_valid)
+{
+    if (!pwrlvl_initialized || pwrlvl_forced_minimum || (pwrlvl_mode != PWRLVL_MODE_100_PERCENT))
+    {
+        return;
+    }
+    if (segment_started)
+    {
+        pwrlvl_rise_peak_mw = 0;
+    }
+    if (current_mw <= pwrlvl_rise_peak_mw)
+    {
+        return; // Repeated/falling readings cannot undo the independent decay.
+    }
+    pwrlvl_rise_peak_mw = current_mw;
+    if (!reference_valid || (current_mw <= previous_peak_mw))
+    {
+        return;
+    }
+    uint32_t rise = current_mw - previous_peak_mw;
+    // Clamp first, avoiding overflow and making 20 W exactly full duty (32).
+    uint8_t target = rise >= PWRLVL_POWER_RISE_FULL_SCALE_MW
+                         ? PWRLVL_PWM_FULL_DUTY
+                         : (uint8_t)((rise * PWRLVL_PWM_FULL_DUTY) / PWRLVL_POWER_RISE_FULL_SCALE_MW);
+    if (target > pwrlvl_rise_pending)
+    {
+        pwrlvl_rise_pending = target;
+    }
+}
+
+static void pwrlvl_clear_power_rise(void)
+{
+    pwrlvl_rise_value = pwrlvl_rise_pending = 0;
+    pwrlvl_rise_peak_mw                     = 0;
+    pwrlvl_rise_last_decay_ms               = systick_get_ms();
+}
+#endif
+
+static void pwrlvl_apply_requests(void)
+{
+    if (!pwrlvl_initialized || pwrlvl_forced_minimum)
+    {
+        return;
+    }
+    uint8_t value = pwrlvl_regulator_value;
+#if PWRLVL_POWER_RISE_ENABLED
+    if (pwrlvl_rise_value > value)
+    {
+        value = pwrlvl_rise_value;
+    }
+#endif
+    if (value != pwrlvl_pwm_value)
+    {
+        pwrlvl_set_pwm(value);
+    }
+}
+
 static void pwrlvl_set_pwm(uint8_t value)
 {
-    if (value > PWRLVL_PWM_MAX)
+    if (value > PWRLVL_PWM_FULL_DUTY)
     {
-        value = PWRLVL_PWM_MAX;
+        value = PWRLVL_PWM_FULL_DUTY;
     }
 
     FT_SET(pwm, value);

@@ -72,6 +72,7 @@ typedef struct
 } fault_test_state_t;
 extern volatile fault_test_state_t fault_test;
 extern const uint32_t              fault_test_dimming_enabled;
+extern const uint32_t              fault_test_power_rise_enabled;
 extern volatile uint32_t           fault_test_inactive_ms;
 void                               fault_test_init(void);
 void                               fault_test_task(void);

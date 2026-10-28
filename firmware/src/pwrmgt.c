@@ -114,11 +114,15 @@ static uint32_t      pwrmgt_blocked_release_started_ms;
 static bool          pwrmgt_blocked_release_pending;
 static uint32_t      pwrmgt_power_history_mw[PWRMGT_HISTORY_RECORD_COUNT];
 static uint8_t       pwrmgt_history_push_idx;
-static uint32_t      pwrmgt_history_last_update_ms;
-static uint32_t      pwrmgt_idle_started_ms;
-static uint32_t      pwrmgt_last_active_ms;
-static uint16_t      pwrmgt_idle_power_threshold_mw = 30000;
-static uint16_t      pwrmgt_idle_power_delta_mw     = 2000;
+#if PWRLVL_POWER_RISE_ENABLED
+static bool pwrmgt_history_has_sample;
+static bool pwrmgt_history_reference_valid;
+#endif
+static uint32_t pwrmgt_history_last_update_ms;
+static uint32_t pwrmgt_idle_started_ms;
+static uint32_t pwrmgt_last_active_ms;
+static uint16_t pwrmgt_idle_power_threshold_mw = 30000;
+static uint16_t pwrmgt_idle_power_delta_mw     = 2000;
 // Eligibility is separate from graph data: OFF/transition peaks stay visible.
 static uint16_t pwrmgt_activity_history_mask;
 static uint8_t  pwrmgt_activity_on_guard_segments;
@@ -268,6 +272,37 @@ __attribute__((noinline)) void pwrmgt_task(void)
     pwrlvl_set_mode(next_power_level);
     pwrmgt_applied_power_level = next_power_level;
 
+    power_milliwatts = adc_get_milliwatts();
+    {
+        bool start_new_segment = false;
+
+        if ((uint32_t)(now - pwrmgt_history_last_update_ms) >= PWRMGT_GRAPH_UPDATE_INTERVAL_MS)
+        {
+            pwrmgt_history_last_update_ms = now;
+            start_new_segment             = true;
+        }
+
+#if PWRLVL_POWER_RISE_ENABLED
+        if (start_new_segment)
+        {
+            // A first call long after reset must not make an unwritten zero a
+            // saved reference. Real recorded zeros qualify like other peaks.
+            pwrmgt_history_reference_valid = pwrmgt_history_has_sample;
+        }
+#endif
+        /* Capture the peak between graph updates, not merely one sample at
+         * the graph-update boundary. */
+        pwrmgt_history_push(power_milliwatts, start_new_segment);
+        pwrmgt_activity_history_update(start_new_segment);
+#if PWRLVL_POWER_RISE_ENABLED
+        pwrmgt_history_has_sample = true;
+        pwrlvl_observe_power(power_milliwatts,
+                             pwrmgt_history_peek(1),
+                             start_new_segment,
+                             pwrmgt_history_reference_valid);
+#endif
+    }
+
     pwrlvl_task();
     if (pwrlvl_is_current_limiting())
     {
@@ -284,22 +319,6 @@ __attribute__((noinline)) void pwrmgt_task(void)
         // main's normal RF start gate still enforces tip/clock/emergency latches.
         pwrlvl_release_minimum();
         fan_resume();
-    }
-
-    power_milliwatts = adc_get_milliwatts();
-    {
-        bool start_new_segment = false;
-
-        if ((uint32_t)(now - pwrmgt_history_last_update_ms) >= PWRMGT_GRAPH_UPDATE_INTERVAL_MS)
-        {
-            pwrmgt_history_last_update_ms = now;
-            start_new_segment             = true;
-        }
-
-        /* Capture the peak between graph updates, not merely one sample at
-         * the graph-update boundary. */
-        pwrmgt_history_push(power_milliwatts, start_new_segment);
-        pwrmgt_activity_history_update(start_new_segment);
     }
 
     // Scan after updating history, including an eligible in-progress peak.

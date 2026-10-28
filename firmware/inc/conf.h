@@ -309,6 +309,28 @@
 #error "PWRLVL_POWER_LIMIT_ENABLED must be 0 or 1"
 #endif
 
+/* SPORT-only transient response, independent of wattage ceilings and the
+ * current limiter. A new segment peak 20 W above the previous completed peak
+ * requests CCR32; its contribution continuously decays one count per 50 ms. */
+#ifndef PWRLVL_POWER_RISE_ENABLED
+#define PWRLVL_POWER_RISE_ENABLED 1
+#endif
+#ifndef PWRLVL_POWER_RISE_FULL_SCALE_MW
+#define PWRLVL_POWER_RISE_FULL_SCALE_MW 20000
+#endif
+#ifndef PWRLVL_POWER_RISE_DECAY_PERIOD_MS
+#define PWRLVL_POWER_RISE_DECAY_PERIOD_MS 50
+#endif
+#if (PWRLVL_POWER_RISE_ENABLED != 0) && (PWRLVL_POWER_RISE_ENABLED != 1)
+#error "PWRLVL_POWER_RISE_ENABLED must be 0 or 1"
+#endif
+#if (PWRLVL_POWER_RISE_FULL_SCALE_MW < 1) || (PWRLVL_POWER_RISE_FULL_SCALE_MW > 134217727)
+#error "Power-rise full scale must be positive and permit a safe 32-count product"
+#endif
+#if (PWRLVL_POWER_RISE_DECAY_PERIOD_MS < 1) || (PWRLVL_POWER_RISE_DECAY_PERIOD_MS > 1000)
+#error "Power-rise decay period must be between 1 and 1000 milliseconds"
+#endif
+
 /* Increasing attenuation PWM lowers buck output voltage and power. These
  * controls govern the fast response to excess power or current. */
 #ifndef PWRLVL_PWM_JUMP_LEVEL
@@ -319,7 +341,7 @@
 #error "PWRLVL_PWM_JUMP_LEVEL must be between 0 and 31 PWM counts"
 #endif
 
-/* Attenuation increase after the initial jump. The PWM setter clamps the
+/* Attenuation increase after the initial jump. The existing regulator clamps the
  * result at 31 counts; larger steps reduce buck power more aggressively. */
 #ifndef PWRLVL_RAMP_UP_STEP
 #define PWRLVL_RAMP_UP_STEP 4

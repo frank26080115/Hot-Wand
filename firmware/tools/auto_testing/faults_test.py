@@ -63,6 +63,7 @@ class FaultRunner:
         self.results = {c.id: {**asdict(c), "status": "NOT_RUN", "observations": [], "visual_review": "PENDING" if c.level == "target" else "NOT_APPLICABLE"}
                         for c in self.case_catalog()}
         self.target = self.session = self.model = self.camera = self.current = None
+        self.power_rise_enabled = False
         self.dimming_enabled = False
         self.camera_available = False
         self.serial = self.last_generation = 0
@@ -106,6 +107,8 @@ class FaultRunner:
                             session.reset()
                         self.require(session.read_memory(NVM_START, 1024) == self.original_nvm, "Flash preserved NVM")
                         self.target = FaultTarget(session, metadata)
+                        self.power_rise_enabled = self.target.power_rise_enabled
+                        self.manifest["power_rise_enabled"] = self.power_rise_enabled
                         self.dimming_enabled = self.target.dimming_enabled
                         self.manifest["oled_dimming_enabled"] = self.dimming_enabled
                         self.target.wait_boot_gate()
@@ -481,6 +484,41 @@ class FaultRunner:
             else:
                 raise AssertionError("Could not observe a stable RF phase interval")
 
+    def check_power_rise(self):
+        """Low-power open-loop probe: a new peak attacks, held power releases.
+
+        Keep simulated watts below the virtual bucket's leak rate; measured
+        ADC power does not fall in response to the physically inhibited PWM.
+        """
+        m = self.model
+        buck = m.voltage_count(20000)
+        baseline = m.frame(buck=buck, current=m.current_count(500))
+        raised = m.frame(buck=buck, current=m.current_count(1000))
+
+        def runtime(state):
+            if state["stage"] != RUNTIME:
+                self.require(False, f"Power-rise probe stayed in runtime: {state.get('message', '')}")
+            return True
+
+        try:
+            self.queue([baseline])
+            self.target.wait(lambda s: runtime(s) and s["pwm"] == 0 and all(abs(s["filtered"][i] - baseline.channels[i]) <= 1
+                                                       for i in range(6)), description="stable power-rise baseline")
+            start = self.target.status()["tick"]
+            self.target.wait(lambda s: runtime(s) and ((s["tick"] - start) & 0xFFFFFFFF) >= 750,
+                             description="completed baseline history segments")
+            self.queue([raised])
+            peak = self.target.wait(lambda s: runtime(s) and s["pwm"] > 0,
+                                    description="SPORT power-rise attenuation", interval=0.01)
+            self.require(peak["current_ma"] < 5200 and not peak["reasons"] & 4,
+                         "Power-rise response occurs below the independent current limit")
+            released = self.target.wait(lambda s: runtime(s) and s["pwm"] == 0 and
+                                        all(abs(s["filtered"][i] - raised.channels[i]) <= 1 for i in range(6)),
+                                        description="held power permits independent PWM decay", interval=0.03)
+            self.results[self.current.id]["power_rise_probe"] = {"peak": peak, "released": released}
+        finally:
+            self.queue([m.frame()])
+
     # Scenario implementations are below the high-level reporting/control flow.
     def exercise(self, case):
         p, kind, m = case.parameters, case.kind, self.model
@@ -617,6 +655,8 @@ class FaultRunner:
             # baseline, before the brief wattage-only stimulus heats the virtual
             # bucket retained for positive protection tests in this image.
             self.check_rf_cycle(p["power"])
+            if self.power_rise_enabled and p["power"] == 0:
+                self.check_power_rise()
             power = (100000, 75000, 50000)[p["power"]]
             buck = m.voltage_count(24000)
             current = m.current_count((power + 7000) * 1000 / m.voltage(buck))
@@ -626,9 +666,15 @@ class FaultRunner:
                 self.queue([frame])
                 # Default builds use RF duty cycling, not measured-wattage PWM.
                 # This stimulus stays below 5.2 A even in the 100W case.
-                self.target.wait(lambda s: s["pwm"] == 0, description="no wattage-based attenuation")
+                self.target.wait(lambda s: s["stage"] == RUNTIME and
+                                 all(abs(s["filtered"][i] - frame.channels[i]) <= 1 for i in range(6)),
+                                 description="settled high-power plateau")
+                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] == 0,
+                                 description="transient attenuation releases at steady power")
                 self.quiet(0.5)
-                self.require(self.target.status()["pwm"] == 0, "Wattage alone does not activate buck PWM")
+                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] == 0,
+                                 description="steady wattage without sustained attenuation")
+                self.require(self.target.status()["pwm"] == 0, "Steady wattage alone does not sustain buck PWM")
             finally:
                 # Stop accumulating virtual heat before waits or optional photos.
                 self.queue([m.frame()])

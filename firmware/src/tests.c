@@ -216,7 +216,7 @@ void test_run(void)
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
-    test_oled_brite_steps();
+    // test_oled_brite_steps();
     // test_bringup_oled_fiducial();
     // test_bringup_oled_kiddiepool();
     // test_bringup_oled_inputs();

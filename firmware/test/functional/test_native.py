@@ -5,6 +5,7 @@ main bridge runs actual helpers and the unchanged main loop with peripheral
 mocks; target cases cover MCU integration and electrical cases remain separate.
 """
 import ctypes
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -22,6 +23,8 @@ def covers(*families):
 
 
 def library(name, *, support="faults", flags=(), memory=True):
+    if not any("PWRLVL_POWER_RISE_ENABLED=" in f for f in flags):
+        flags = ("-DPWRLVL_POWER_RISE_ENABLED=0", *flags)  # Existing isolated/legacy contracts.
     if name in ("main", "message", "recovery", "storage") and not any("OLED_DIMMING_ENABLED=" in f for f in flags):
         flags = ("-DOLED_DIMMING_ENABLED=1", *flags)  # Explicit positive-feature fixtures.
     if name == "power" and not any("PWRLVL_PWM_JUMP_LEVEL=" in flag for flag in flags):
@@ -33,7 +36,9 @@ def library(name, *, support="faults", flags=(), memory=True):
             if not any(feature + "=" in flag for flag in flags):
                 flags = (f"-D{feature}=1", *flags)
     BUILD.mkdir(parents=True, exist_ok=True)
-    destination = BUILD / f"{name}-{'-'.join(flags).replace('=', '')}-{os.getpid()}.dll"
+    # Hash the full flag tuple: long tuning matrices exceed Windows path limits.
+    variant = hashlib.sha256("\0".join(flags).encode()).hexdigest()[:16]
+    destination = BUILD / f"{name}-{variant}-{os.getpid()}.dll"
     command = ["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-fno-builtin",
                "-Wno-pointer-to-int-cast", "-ffunction-sections", "-fdata-sections",
                "-DHOT_WAND_TARGET_STM32F042", f"-Itest/{support}/support", "-Iinc", "-Ilib/u8g2/csrc",

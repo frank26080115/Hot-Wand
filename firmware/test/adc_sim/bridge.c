@@ -182,6 +182,10 @@ uint16_t leaky_bucket_get_temperature_c(void)
 void pwrlvl_set_mode(pwrlvl_mode_t mode) {}
 
 void pwrlvl_task(void) {}
+#if PWRLVL_POWER_RISE_ENABLED
+// This ADC fixture isolates conversion/history, not buck regulation.
+void pwrlvl_observe_power(uint32_t power, uint32_t previous, bool segment, bool valid) {}
+#endif
 
 bool pwrlvl_is_current_limiting(void)
 {

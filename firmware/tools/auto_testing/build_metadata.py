@@ -87,7 +87,7 @@ class BuildMetadata:
                         "vision_test_oled_sent_framebuffer", "setup_menu_items", "setup_menu_item_count",
                         "btn_swd_test_boot_hold", "vision_test_fiducial_enabled",
                         "adc_sim", "adc_sim_decode_table", "tip_swd_test_command", "tip_swd_test_state",
-                        "fault_test_dimming_enabled", "fault_test_inactive_ms")
+                        "fault_test_dimming_enabled", "fault_test_inactive_ms", "fault_test_power_rise_enabled")
         for name in required:
             self.address(name)
         if not self.load_ranges or not any(FLASH_START <= start < NVM_START for _, start, _ in self.load_ranges):

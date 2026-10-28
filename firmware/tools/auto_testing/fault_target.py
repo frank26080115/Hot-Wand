@@ -71,6 +71,7 @@ class FaultTarget:
                      "vision_test_oled_sent_framebuffer", "btn_swd_test_boot_hold", "tip_swd_test_command"):
             metadata.address(name)
         self.dimming_enabled = bool(session.read_u32(metadata.address("fault_test_dimming_enabled")))
+        self.power_rise_enabled = bool(session.read_u32(metadata.address("fault_test_power_rise_enabled")))
         self.producer = None
         self.boot_number = 0
         self.last_state = None

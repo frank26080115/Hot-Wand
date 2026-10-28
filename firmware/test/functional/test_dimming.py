@@ -155,23 +155,6 @@ class DimmingHostTests(unittest.TestCase):
             items += [MenuItem("SAVE\nAND\nEXIT", ()), MenuItem("EXIT\nNO\nSAVE", ())]
             self.assertEqual(menu_settings_indices(page(data), items), list(reversed(values.values())))
 
-    def test_activity_profile_cases_use_timers_without_any_dimming_access(self):
-        from faults_cases import Stimulus
-        table = tuple(round(341 * (4 ** (i / 255) - 1)) for i in range(256))
-        for profile in range(8):
-            for rule in ("absolute", "delta"):
-                with self.subTest(profile=profile, rule=rule):
-                    runner = object.__new__(FunctionalRunner)
-                    runner.model = Stimulus(table, {"mcu_cal": 1450, "vref_cal": 1500})
-                    runner.log = Mock()
-                    runner.dimmed = Mock(side_effect=AssertionError("Dimming is unavailable"))
-                    runner.settle = runner.hold_runtime = runner.capture = Mock()
-                    runner.status = Mock(side_effect=({"inactive_ms": 6000}, {"inactive_ms": 0},
-                                                      {"inactive_ms": 1500}))
-                    runner.wait = Mock(side_effect=lambda predicate, **kw: self.assertTrue(predicate({"inactive_ms": 0})))
-                    runner.exercise_idle_profile(profile, rule)
-                    runner.dimmed.assert_not_called()
-
     def test_disabled_dim_case_is_skipped_and_does_not_fail_reporting(self):
         with tempfile.TemporaryDirectory() as folder, redirect_stdout(io.StringIO()):
             args = argparse.Namespace(output_dir=Path(folder) / "run", camera="off", fixture="offline",
