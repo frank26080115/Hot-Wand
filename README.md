@@ -8,7 +8,7 @@ It is compatible with 13.56 MHz handpieces (Metcal, Thermaltronics, Hakko). If t
 
 The project's name, Hot-Wand, reflects how a RF soldering iron feels like magic, and justifies their typical multiple-hundreds-of-dollars price. The spirit of this project is not to lower the price, but to make it portable.
 
-This is nearly a clone of [SergeyMax's design](https://github.com/SergeyMax/SolderingStation), but with modifications:
+The RF circuitry is a derivative of [SergeyMax's design](https://github.com/SergeyMax/SolderingStation), with modifications:
 
  * redrawn schematic for clarity
  * layout to fit in a Hammond MFG enclosure (or 3D printed enclosure)
