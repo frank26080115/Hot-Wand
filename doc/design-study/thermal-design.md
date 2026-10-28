@@ -124,3 +124,29 @@ I've met with the developers of Radio Thermal, I commented on how big their desi
 In my design, there's still a fan and a heatsink (actually two heatsinks stuck together) on the MOSFET. The air is blowing against the heatsink and the toroids internally.
 
 ![](../build-guide-lite-470khz/imgs/cooling_airflow.png)
+
+## Thermal Results
+
+#### For the 13.56 MHz version
+
+The plastic econo enclosure is more than sufficient if the fan is available.
+
+Test Conditions:
+
+ * room at 22C
+ * input configured as 28V 5A
+ * load is the dummy load, drawing 60W to 75W continuously
+
+The behavior is that one of the thermistors will hit 50C, the fan turns on automatically, and will cool the unit down to about 48C.
+
+Under a lighter (more realistic) idle load, the fan will be even more effective, eventually the thermistor will read under 45C and the fan will turn off.
+
+#### For the Lite 470 kHz version
+
+Test Conditions:
+
+ * room at 22C
+ * input configured as 28V 5A
+ * load is the soldering iron cartridge just idling, power drawn is roughly 20W or more
+
+There are no temperature sensors but under normal usage, with the fan blowing, the MOSFET heatsink stays completely cool to the touch.

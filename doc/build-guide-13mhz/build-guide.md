@@ -110,7 +110,7 @@ Populate all custom wound inductors and transformer.
 
 ![](imgs/soldering_5.jpg)
 
-(DEVELOPMENT ONLY) Sanity check buck converter voltage isn't affected by power factor detector circuit
+(DEVELOPMENT ONLY) Sanity check buck converter voltage, use the dummy load and test firmware
 
 ## 6. Solder/Measurement Jumpers
 

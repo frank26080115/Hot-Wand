@@ -89,7 +89,7 @@ Also, it's hard to get the directions wrong, because the directions for the curr
 
 ![](./imgs/sergeymax_currenttransformer_ss.png)
 
-He did say that if you screw this up, it could make the circuit do the opposite, which is boosting the voltage when it should be lowering it. I have spent a ton of time making sure I did not make this mistake.
+He did say that if you screw this up, it could make the circuit do the opposite, which is boosting the voltage when it should be lowering it. I have spent a ton of time making sure I did not make this mistake, including using a dummy load with configurable reactance to verify my circuit.
 
 ## Iron Tip Model
 

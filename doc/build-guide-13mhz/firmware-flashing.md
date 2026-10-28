@@ -68,7 +68,11 @@ You will see a list of build targets. Click on "stm32f042" for a normal build, c
 
 ## Firmware Updating
 
-You can update the firmware using the same procedure. But, as SJ3 is connected, the debug signal will cause the fan to do weird things. (mine makes a weird noise during flashing, it does flash successfully, just be aware that the fan can make a noise)
+You can update the firmware using the same procedure. If the unit is already enclosed, my enclosure designs feature a bottom debug port opening:
+
+![](../bld-photos/fw-flash-bottom-port.jpg)
+
+As SJ3 is connected, the debug signal will cause the fan to do weird things. (mine makes a weird noise during flashing, it does flash successfully, just be aware that the fan can make a noise)
 
 ## Troubleshooting
 

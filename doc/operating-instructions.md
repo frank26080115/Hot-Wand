@@ -4,9 +4,11 @@ When powered up, the soldering iron does not really need any interaction. It jus
 
 The GUI will display the DC input voltage, and a graph representing power draw. The voltage helps users determine battery voltage or USB host delivered voltage. The power graph show how much power is being consumed by the soldering iron cartridge.
 
-Remember, this is a RF soldering iron, there is no need (and no way) to adjust temperature. The temperature is just magically always correct. Since you are using one and knows it's worth like $1000, I assume this is why you are using one.
+Remember, this is a RF soldering iron, there is no need (and no way) to adjust temperature. The temperature is just magically always correct (within a range specified by the manufacture of the cartridges). Since you are using one and knows it's worth like $1000, I assume this is why you are using one.
 
 Pressing the button quickly will cycle between the three power limit modes. The SPORT mode is essentially unlimited. The Normal and Eco modes will show a dotted line on the power graph indicating where the virtual power limit is.
+
+NOTE: I would stick with SPORT mode unless you have broken fan and the unit is overheating. The lower power mode will make the iron tip slightly cooler (this was discovered after testing).
 
 Pressing and holding the button for a few seconds will place the Hot-Wand into sleep mode, it is essentially powered off. Pressing the button again will wake it back up.
 
@@ -42,7 +44,7 @@ The voltage and current requested from a USB-PD host can be configured using jum
 
 ![](imgs/config_jumpers.jpg)
 
-The voltage requested is 20V by default without the jumper, and 28V when the jumper is installed. Some USB hosts can still provide 20V even if 28V is requested.
+The voltage requested is 20V by default without the jumper, and 28V when the jumper is installed. Some USB hosts can still provide 20V even if 28V is requested (the actual input voltage is displayed on the screen).
 
 The current requested is "automatic" without the jumper, and 5A when the jumper is installed. However, requesting 5A, you need a special USB-C cable with a "E-marker" chip, and it must be rated 140W or more.
 
