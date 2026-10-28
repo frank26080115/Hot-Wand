@@ -8,12 +8,13 @@ sequence and start directly; default controls enter normal supervision.
 
 from __future__ import annotations
 
+import struct
 import time
 
 try:
-    from .adc_sim import AdcSimProducer, Frame
+    from .adc_sim import AdcSimProducer, Frame, FRAME_SIZE
 except ImportError:
-    from adc_sim import AdcSimProducer, Frame
+    from adc_sim import AdcSimProducer, Frame, FRAME_SIZE
 
 
 # STM32F042 factory calibration words: 12-bit readings at VDDA=3.3 V, MCU=30 C.
@@ -29,11 +30,23 @@ def start_test_boot(target, symbols, *, setup: bool = False, fiducial: bool = Fa
     not a fault-test sequence. Long-running fault tests supply their own frames.
     """
     target.resume()
+    # Reset does not clear SRAM; startup clears BSS progressively. Let it run
+    # before polling, rather than interpreting the previous boot's nonzero ABI
+    # word as readiness while its other header fields are being cleared.
+    time.sleep(0.05)
     deadline = time.monotonic() + 5
-    while target.read_u32(symbols["adc_sim"].address) == 0:
-        if time.monotonic() >= deadline:
-            raise RuntimeError("Shared test build did not reach its ADC boot gate")
+    header = None
+    while time.monotonic() < deadline:
+        # Read a coherent complete header under one halt. The firmware publishes
+        # ABI version 1 last, after capacity/frame-size/channel-count are ready.
+        header = target.inspect(lambda: struct.unpack("<4I", target.read_memory(symbols["adc_sim"].address, 16)))
+        version, capacity, frame_size, count = header
+        if (version == 1 and frame_size == FRAME_SIZE and count == 7 and
+                2 <= capacity <= 65536 and capacity & (capacity - 1) == 0):
+            break
         time.sleep(0.02)
+    else:
+        raise RuntimeError(f"Shared test build did not reach its ADC boot gate; observed header {header}")
     producer = AdcSimProducer(target, symbols)
 
     def configure():

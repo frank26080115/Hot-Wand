@@ -243,6 +243,7 @@ void OLED_ShowFiducial(void)
 
 #endif
 
+#if OLED_DIMMING_ENABLED
 bool OLED_SetDimMode(OLED_Handle* oled, bool dimmed)
 {
     uint8_t requested = dimmed ? 1 : 0;
@@ -267,6 +268,7 @@ bool OLED_SetDimMode(OLED_Handle* oled, bool dimmed)
     oled->dimmed = requested;
     return true;
 }
+#endif
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef* handle)
 {
@@ -352,10 +354,7 @@ static uint8_t OLED_I2CByteCallback(u8x8_t* u8x8, uint8_t message, uint8_t argum
         }
 
         if ((oled->transfer_length > 0) &&
-            !OLED_I2CTransmit(oled,
-                              (uint16_t)u8x8_GetI2CAddress(u8x8),
-                              oled->transfer_buffer,
-                              oled->transfer_length))
+            !OLED_I2CTransmit(oled, (uint16_t)u8x8_GetI2CAddress(u8x8), oled->transfer_buffer, oled->transfer_length))
         {
             return 0;
         }
@@ -375,7 +374,7 @@ static bool OLED_I2CWaitFor(OLED_Handle* oled, uint32_t flag, OLED_Error timeout
 
     do
     {
-        status = I2C1->ISR;
+        status                = I2C1->ISR;
         oled->last_i2c_status = status;
         if ((status & I2C_ISR_NACKF) != 0)
         {

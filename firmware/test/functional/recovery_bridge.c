@@ -186,12 +186,16 @@ void btn_discard_until_release(void)
 }
 bool nvm_read(hotwand_setup_nvm_t* settings)
 {
+#if OLED_DIMMING_ENABLED
     settings->auto_dim = 1;
+#endif
     return true;
 }
 void nvm_apply_defaults(hotwand_setup_nvm_t* settings)
 {
+#if OLED_DIMMING_ENABLED
     settings->auto_dim = 0;
+#endif
 }
 uint16_t adc_to_millivolts(uint8_t index)
 {

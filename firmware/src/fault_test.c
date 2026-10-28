@@ -9,6 +9,7 @@
 #include "adc_sim.h"
 #include "rfgen.h"
 #include "oled.h"
+#include "pwrmgt.h"
 #include "systick.h"
 #include "stm32f0xx_hal.h"
 
@@ -16,6 +17,9 @@
 // Globals
 // -----------------------------------------------------------------------------
 volatile fault_test_state_t fault_test __attribute__((used, externally_visible));
+// Separate symbols preserve the established 128-byte snapshot ABI.
+const uint32_t    fault_test_dimming_enabled __attribute__((used, externally_visible)) = OLED_DIMMING_ENABLED;
+volatile uint32_t fault_test_inactive_ms __attribute__((used, externally_visible));
 _Static_assert(sizeof(fault_test_state_t) == 128, "fault test ABI size changed");
 
 // -----------------------------------------------------------------------------
@@ -61,6 +65,7 @@ void fault_test_snapshot(void)
     adc_get_reference_millivolts(&reference);
     fault_test.reference_mv = reference;
     fault_test.tick         = systick_get_ms();
+    fault_test_inactive_ms  = pwrmgt_get_time_since_last_activity_ms();
     fault_test.flags = (fault_test.flags & 101) | (rfgen_is_active() ? 2 : 0) |
                        (adc_has_buck_voltage_spike_shutdown() ? 8 : 0) | (adc_has_power_loss_shutdown() ? 16 : 0);
 }

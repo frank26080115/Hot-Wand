@@ -48,7 +48,9 @@
 // -----------------------------------------------------------------------------
 
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
-static const uint32_t auto_dim_delay_ms[]   = {0, 15 * 1000, 30 * 1000, 60 * 1000};
+#if OLED_DIMMING_ENABLED
+static const uint32_t auto_dim_delay_ms[] = {0, 15 * 1000, 30 * 1000, 60 * 1000};
+#endif
 
 static uint32_t debug_readings[5];
 static uint32_t debug_peaks[5];
@@ -71,16 +73,16 @@ uint8_t pixshift_y = 0;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void boot_check_for_setup(void);
-static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
-static void boot_wait_for_power_stable(void);
+static void                           boot_check_for_setup(void);
+static void                           boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
+static void                           boot_wait_for_power_stable(void);
 static void __attribute__((noinline)) main_render_display(void);
-static void main_handle_short_press(uint32_t now);
-static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts);
-static void main_update_debug_readings(void);
-static void main_reset_debug_peaks(void);
-static void main_handle_runtime_button(uint32_t now);
-static void Error_Handler(void);
+static void                           main_handle_short_press(uint32_t now);
+static void                           main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts);
+static void                           main_update_debug_readings(void);
+static void                           main_reset_debug_peaks(void);
+static void                           main_handle_runtime_button(uint32_t now);
+static void                           Error_Handler(void);
 
 void enter_sleep_mode(void);
 
@@ -169,11 +171,17 @@ int main(void)
 #if HOT_WAND_TEST_HARNESS
     if ((fault_test.setup & 0x80000000) != 0)
     {
-        settings.batt_mode = (fault_test.setup >> 8) & 7;
+        settings.batt_mode           = (fault_test.setup >> 8) & 7;
         settings.startup_power_level = (fault_test.setup >> 11) & 3;
-        settings.input_v_calib = (fault_test.setup >> 13) & 15;
-        settings.auto_sleep = (fault_test.setup >> 17) & 3;
+        settings.input_v_calib       = (fault_test.setup >> 13) & 15;
+        settings.auto_sleep          = (fault_test.setup >> 17) & 3;
+#if OLED_DIMMING_ENABLED
         settings.auto_dim = (fault_test.setup >> 19) & 3;
+#endif
+        if ((fault_test.setup & (1 << 25)) != 0)
+        {
+            settings.idle_detect_thresh = (fault_test.setup >> 22) & 7;
+        }
     }
 #endif
     adc_set_input_voltage_calibration(settings.input_v_calib);
@@ -301,8 +309,10 @@ int main(void)
             enter_sleep_mode();
         }
 
+#if OLED_DIMMING_ENABLED
         OLED_SetDimMode(&oled,
                         (settings.auto_dim != AUTO_DIM_OFF) && (inactive_ms >= auto_dim_delay_ms[settings.auto_dim]));
+#endif
 
         // Transient messages own the display while active. Refresh the graph at up to
         // 15 FPS and debug numbers at 5 FPS; peak sampling remains independent.

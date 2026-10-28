@@ -9,7 +9,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/auto_testing"))
@@ -103,6 +103,40 @@ class FunctionalHostTests(unittest.TestCase):
             self.assertEqual([c.id for c in init.call_args.args[1]], ["FUN.sleep.auto.3"])
             main(["--native-only"])
             self.assertTrue(all(c.level == "native" for c in init.call_args.args[1]))
+
+    def test_power_request_observes_cycles_and_captures_only_at_cool_baseline(self):
+        for mode in range(3):
+            for fail in (False, True):
+                with self.subTest(mode=mode, failed_observation=fail):
+                    runner = object.__new__(FunctionalRunner)
+                    runner.log = Mock()
+                    runner.dimming_enabled = False
+                    runner.boot_normal = Mock()
+                    runner.wait = Mock()
+                    runner.status = lambda: {"pwm": 0}
+                    runner.model = SimpleNamespace(frame=lambda **kwargs: "high" if kwargs else "low",
+                                                   voltage_count=lambda v: v, current_count=lambda i: i)
+                    loaded = False
+
+                    def settle(frame):
+                        nonlocal loaded
+                        loaded = frame == "high"
+                        if loaded and fail:
+                            raise RuntimeError("ADC settling failed")
+
+                    def unloaded(*args):
+                        self.assertFalse(loaded, "Slow phase/camera operations must use the cool baseline")
+
+                    runner.settle = settle
+                    runner.check_rf_cycle = unloaded
+                    runner.capture = unloaded
+                    case = next(c for c in catalog() if c.id == f"FUN.power.request.{mode}")
+                    if fail:
+                        with self.assertRaisesRegex(RuntimeError, "ADC settling failed"):
+                            runner._exercise(case)
+                    else:
+                        runner._exercise(case)
+                    self.assertFalse(loaded, "High stimulus must also be removed on failure")
 
     def test_camera_off_import_has_no_camera_dependency(self):
         code = "import sys; sys.path.insert(0, 'tools/auto_testing'); import functional_test; assert not any(x in sys.modules for x in ('cv2','gphoto2','eyes_rx0'))"
@@ -230,6 +264,46 @@ class FunctionalHostTests(unittest.TestCase):
                 self.assertEqual(runner.results[case.id]["status"], "ERROR")
             finally:
                 runner.report.close()
+
+
+class ActivityProtocolTests(unittest.TestCase):
+    def test_optional_profile_uses_only_reserved_setup_bits(self):
+        from fault_target import BootSettings
+        base = BootSettings(power=2, auto_dim=1).pack()
+        self.assertEqual(base & (15 << 22), 0)
+        for index in range(8):
+            packed = BootSettings(power=2, auto_dim=1, idle_profile=index).pack()
+            self.assertEqual((packed >> 22) & 7, index)
+            self.assertTrue(packed & (1 << 25))
+            self.assertEqual(packed & ~(15 << 22), base)
+        for invalid in (-1, 8, True, "1"):
+            with self.assertRaises(ValueError):
+                BootSettings(idle_profile=invalid).pack()
+
+    def test_host_catalog_covers_both_rules_for_all_profiles(self):
+        from functional_cases import IDLE_ACTIVITY_PROFILES
+        self.assertEqual(IDLE_ACTIVITY_PROFILES,
+                         ((2,20),(2,30),(2,40),(3,20),(3,30),(3,40),(4,25),(4,40)))
+        actual = {(c.parameters["profile"], c.parameters["rule"]) for c in catalog() if c.kind == "idle_profile"}
+        self.assertEqual(actual, {(profile, rule) for profile in range(8) for rule in ("absolute", "delta")})
+
+    def test_nvm_decoder_accepts_all_three_bit_profile_values(self):
+        from build_metadata import latest_nvm_record, settings_indices
+        self.assertEqual(settings_indices(None)[4], 1)
+        for profile in range(8):
+            # Four payload bytes plus the unchanged Fletcher-16 checksum.
+            data = bytes((0xA7, 0, profile, 0x50))
+            a = b = 0
+            for value in data:
+                a = (a + value) % 255
+                b = (b + a) % 255
+            record = data + (b << 8 | a).to_bytes(2, "little")
+            page = record + b"\xff" * (1024 - 6)
+            self.assertEqual(latest_nvm_record(page), record)
+            self.assertEqual(settings_indices(record)[4], profile)
+            corrupt = bytearray(page)
+            corrupt[4] ^= 1
+            self.assertIsNone(latest_nvm_record(bytes(corrupt)))
 
 
 if __name__ == "__main__":

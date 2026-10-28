@@ -39,8 +39,9 @@ class BootSettings:
     power: int = 0
     calibration: int = 0
     auto_sleep: int = 0
-    auto_dim: int = 0
+    auto_dim: int = 0  # Reserved/ignored by OLED_DIMMING_ENABLED=0 firmware.
     tip_absent: bool = False
+    idle_profile: int | None = None  # None keeps the saved/factory profile.
 
     def pack(self):
         for name, maximum in (("mode", 6), ("cells", 255), ("power", 2), ("calibration", 10),
@@ -48,10 +49,13 @@ class BootSettings:
             value = getattr(self, name)
             if type(value) is not int or not 0 <= value <= maximum:
                 raise ValueError(f"Invalid {name}: {value}")
+        if self.idle_profile is not None and (type(self.idle_profile) is not int or not 0 <= self.idle_profile <= 7):
+            raise ValueError(f"Invalid idle_profile: {self.idle_profile}")
+        idle_override = 0 if self.idle_profile is None else (1 << 25) | (self.idle_profile << 22)
         if self.mode == 0 and self.cells != 0:
             raise ValueError("Disabled battery mode requires zero cells")
         return (0x80000000 | self.cells | self.mode << 8 | self.power << 11 | self.calibration << 13 |
-                self.auto_sleep << 17 | self.auto_dim << 19 | int(self.tip_absent) << 21)
+                self.auto_sleep << 17 | self.auto_dim << 19 | int(self.tip_absent) << 21 | idle_override)
 
 
 class AbiNotReady(RuntimeError):
@@ -66,6 +70,7 @@ class FaultTarget:
         for name in ("adc_sim", "adc_sim_decode_table", "vision_test_oled_sent_generation",
                      "vision_test_oled_sent_framebuffer", "btn_swd_test_boot_hold", "tip_swd_test_command"):
             metadata.address(name)
+        self.dimming_enabled = bool(session.read_u32(metadata.address("fault_test_dimming_enabled")))
         self.producer = None
         self.boot_number = 0
         self.last_state = None
@@ -92,6 +97,7 @@ class FaultTarget:
                                  if result["message_address"] else "")
             result["boot_number"] = self.boot_number
             result["generation"] = self.session.read_u32(self.symbols["vision_test_oled_sent_generation"].address)
+            result["inactive_ms"] = self.session.read_u32(self.symbols["fault_test_inactive_ms"].address)
             if registers:
                 result["registers"] = {name: self.session.read_u32(address) for name, address in REGISTERS.items()}
                 result["inside_isr"] = bool(result["registers"]["icsr"] & 0x1FF)

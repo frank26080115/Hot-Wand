@@ -37,8 +37,13 @@ def catalog():
         add(f"FUN.button.edges.{duration}", "edge", duration=duration)
     add("FUN.button.repeat", "repeat")
     add("FUN.idle.threshold.saved", "idle")
+    for profile in range(8):
+        for rule in ("absolute", "delta"):
+            cases.append(FunctionalCase(f"FUN.idle.profile.{profile}.{rule}", "idle_profile",
+                                        {"profile": profile, "rule": rule}, timeout=90))
     for dim in range(4):
-        add(f"FUN.dim.delay.{dim}", "dim", dim=dim)
+        cases.append(FunctionalCase(f"FUN.dim.delay.{dim}", "dim", {"dim": dim},
+                                    note="Requires OLED_DIMMING_ENABLED=1; otherwise skipped"))
     add("FUN.sleep.manual", "sleep")
     add("FUN.sleep.display", "sleep_display")
     for mode, seconds in ((0, 310), (1, 300), (2, 900), (3, 1800)):
@@ -77,6 +82,8 @@ def catalog():
                                     note="Requires a separate physical fixture/procedure; shared image keeps outputs inhibited."))
     return cases
 
+
+IDLE_ACTIVITY_PROFILES = ((2, 20), (2, 30), (2, 40), (3, 20), (3, 30), (3, 40), (4, 25), (4, 40))
 
 MODE_SEQUENCES = {0: (1, 2, 1, 0, 1), 1: (2, 1, 0, 1), 2: (1, 0, 1, 2)}
 CALIBRATION = ((1024, 0), (1029, 5), (1034, 10), (1039, 15), (1044, 20), (1050, 25),

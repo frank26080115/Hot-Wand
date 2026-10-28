@@ -13,6 +13,10 @@ bool rfgen_clock_init(void);
 bool rfgen_has_fault(void);
 bool rfgen_has_clock_fault(void);
 bool rfgen_is_active(void);
+#if HOT_WAND_TEST_HARNESS
+/* Test-only phase observation; rfgen_is_active() still reports physical OFF. */
+bool rfgen_is_requested_for_test(void);
+#endif
 /* Foreground runtime gate: applied mode selects a system-clock RF phase.
  * Legacy wattage-regulation builds allow continuous RF instead. Direct start
  * APIs below deliberately remain available for standalone bring-up tests. */

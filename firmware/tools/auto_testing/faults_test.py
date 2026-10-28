@@ -63,6 +63,7 @@ class FaultRunner:
         self.results = {c.id: {**asdict(c), "status": "NOT_RUN", "observations": [], "visual_review": "PENDING" if c.level == "target" else "NOT_APPLICABLE"}
                         for c in self.case_catalog()}
         self.target = self.session = self.model = self.camera = self.current = None
+        self.dimming_enabled = False
         self.camera_available = False
         self.serial = self.last_generation = 0
         self.manifest = {"contract_version": 2, "physical_outputs": "RF off; buck PA6 GPIO-high/minimum", "pwm_semantics": "logical request; physical GPIO remains clamped", "native_only": args.native_only, "fixture": args.fixture, "camera": args.camera,
@@ -105,6 +106,8 @@ class FaultRunner:
                             session.reset()
                         self.require(session.read_memory(NVM_START, 1024) == self.original_nvm, "Flash preserved NVM")
                         self.target = FaultTarget(session, metadata)
+                        self.dimming_enabled = self.target.dimming_enabled
+                        self.manifest["oled_dimming_enabled"] = self.dimming_enabled
                         self.target.wait_boot_gate()
                         self.target.producer = AdcSimProducer(session, metadata.symbols)
                         calibration = self.target.calibration()
@@ -118,7 +121,7 @@ class FaultRunner:
                                     self.results[case.id].update(status="BLOCKED", error=case.note)
                                 continue
                             self.run_case(case)
-                        if any(self.results[c.id]["status"] != "PASS" for c in self.cases):
+                        if any(self.results[c.id]["status"] not in ("PASS", "SKIPPED") for c in self.cases):
                             exit_code = 1
                     finally:
                         try:
@@ -132,7 +135,7 @@ class FaultRunner:
                             self.manifest["cleanup_error"] = str(exc)
                             exit_code = 2
                         self.manifest["debugger_halts"] = session.halt_spans
-            if any(self.results[c.id]["status"] != "PASS" for c in self.cases):
+            if any(self.results[c.id]["status"] not in ("PASS", "SKIPPED") for c in self.cases):
                 exit_code = max(exit_code, 1)
         except KeyboardInterrupt:
             self.log("Run interrupted; partial evidence retained and cleanup attempted", "ERROR")
@@ -446,15 +449,28 @@ class FaultRunner:
         Samples spanning a phase edge are retried, not treated as failures.
         """
         on_ms = (1000, 750, 500)[mode]
+
+        def healthy(state):
+            if state["stage"] == FAULT:
+                message = state.get("message", "unknown fault").replace("\n", " / ")
+                raise AssertionError(f"RF phase check interrupted by firmware fault: {message}; "
+                                     f"temperature={state.get('temperature_c')}C, applied mode={state['power']}")
+            return state["stage"] == RUNTIME
+
         for enabled in ((True,) if mode == 0 else (True, False)):
-            lower, upper = (100, on_ms - 100) if enabled else (on_ms + 100, 900)
+            start, end = (0, on_ms) if enabled else (on_ms, 1000)
+            # Leave a usable interior even for the 250-ms OFF phase. The old
+            # 850..900-ms window was narrower than the 120-ms poll interval.
+            margin = min(100, (end - start) // 5)
+            lower, upper = start + margin, end - margin
             for _ in range(4):
-                first = self.target.wait(lambda s: s["stage"] == RUNTIME and s["power"] == mode and
+                first = self.target.wait(lambda s: healthy(s) and s["power"] == mode and
                                          lower <= s["tick"] % 1000 <= upper,
-                                         description="interior RF phase")
-                second = self.target.wait(lambda s: s["stage"] == RUNTIME and
+                                         description=f"mode {mode} RF {'ON' if enabled else 'OFF'} phase "
+                                                     f"({lower}..{upper} ms)", interval=0.01)
+                second = self.target.wait(lambda s: healthy(s) and
                                           ((s["tick"] - first["tick"]) & 0xFFFFFFFF) >= 40,
-                                          description="RF phase observation interval")
+                                          description="RF phase observation interval", interval=0.01)
                 if (second["power"] != mode or second["tick"] // 1000 != first["tick"] // 1000 or
                         not lower <= second["tick"] % 1000 <= upper):
                     continue
@@ -597,20 +613,26 @@ class FaultRunner:
             self.target.wait(lambda s: not s["reasons"] & bit and s["power"] == 0,
                              description="preferred power restored")
         elif kind == "power_limit":
+            # Phase sampling may span several seconds. Do it at the zero-power
+            # baseline, before the brief wattage-only stimulus heats the virtual
+            # bucket retained for positive protection tests in this image.
+            self.check_rf_cycle(p["power"])
             power = (100000, 75000, 50000)[p["power"]]
             buck = m.voltage_count(24000)
             current = m.current_count((power + 7000) * 1000 / m.voltage(buck))
             frame = m.frame(buck=buck, current=current)
             self.require(m.predict(frame.channels)["power_mw"] > power, "Stimulus exceeds selected power ceiling")
-            self.queue([frame])
-            # Default builds use RF duty cycling, not measured-wattage PWM.
-            # This stimulus stays below 5.2 A even in the 100W case.
-            self.target.wait(lambda s: s["pwm"] == 0, description="no wattage-based attenuation")
-            self.quiet(0.5)
-            self.require(self.target.status()["pwm"] == 0, "Wattage alone does not activate buck PWM")
-            self.check_rf_cycle(p["power"])
+            try:
+                self.queue([frame])
+                # Default builds use RF duty cycling, not measured-wattage PWM.
+                # This stimulus stays below 5.2 A even in the 100W case.
+                self.target.wait(lambda s: s["pwm"] == 0, description="no wattage-based attenuation")
+                self.quiet(0.5)
+                self.require(self.target.status()["pwm"] == 0, "Wattage alone does not activate buck PWM")
+            finally:
+                # Stop accumulating virtual heat before waits or optional photos.
+                self.queue([m.frame()])
             self.capture("rf_duty_mode")
-            self.queue([m.frame()])
             self.target.wait(lambda s: s["pwm"] == 0, timeout=8, description="logical attenuation release")
         elif kind in ("ntc_warning", "ntc_late"):
             if kind == "ntc_late":

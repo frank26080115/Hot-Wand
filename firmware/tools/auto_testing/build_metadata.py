@@ -86,7 +86,8 @@ class BuildMetadata:
                         "vision_test_fiducial_press", "vision_test_oled_sent_generation",
                         "vision_test_oled_sent_framebuffer", "setup_menu_items", "setup_menu_item_count",
                         "btn_swd_test_boot_hold", "vision_test_fiducial_enabled",
-                        "adc_sim", "adc_sim_decode_table", "tip_swd_test_command", "tip_swd_test_state")
+                        "adc_sim", "adc_sim_decode_table", "tip_swd_test_command", "tip_swd_test_state",
+                        "fault_test_dimming_enabled", "fault_test_inactive_ms")
         for name in required:
             self.address(name)
         if not self.load_ranges or not any(FLASH_START <= start < NVM_START for _, start, _ in self.load_ranges):
@@ -124,35 +125,64 @@ def read_menu_items(target, table_address: int, count: int | None = None) -> lis
     return items
 
 
-def latest_nvm_record(page: bytes) -> bytes | None:
-    """Return the newest valid six-byte journal record, or None for defaults."""
+def latest_nvm_record(page: bytes, *, dimming_enabled=False) -> bytes | None:
+    """Decode this build's journal; foreign layouts invalidate the whole page."""
     if len(page) != NVM_END - NVM_START:
         raise ValueError("Expected one complete 1 KiB NVM page")
+    expected = 0xA8 if dimming_enabled else 0xA7
     latest = None
+    foreign = False
+    erased_slot_seen = False
     for offset in range(0, len(page) - 5, 6):
-        record = page[offset : offset + 6]
-        if record == b"\xff" * 6 or record[0] != 0xA6 or record[2] & 0xC0:
+        record = page[offset:offset + 6]
+        if record == b"\xff" * 6:
+            erased_slot_seen = True
             continue
-        # The target stores fletcher16 over its first four packed bytes.
-        sum1 = sum2 = 0
+        a = b = 0
         for value in record[:4]:
-            sum1 = (sum1 + value) % 255
-            sum2 = (sum2 + sum1) % 255
+            a = (a + value) % 255
+            b = (b + a) % 255
+        if int.from_bytes(record[4:6], "little") != (b << 8 | a):
+            continue
+        if record[0] in (0xA6, 0xA7, 0xA8) and record[0] != expected:
+            foreign = True
         first, second, third = record[1:4]
-        valid_fields = ((first & 3) < 3 and (second & 7) < 7 and
-                        ((second >> 3) & 7) < 7 and (third & 15) < 11)
-        if valid_fields and int.from_bytes(record[4:6], "little") == (sum2 << 8 | sum1):
+        if (not erased_slot_seen and record[0] == expected and not second & 0xC0 and (first & 3) < 3 and
+                ((second >> 3) & 7) < 7 and (third & 15) < 11 and
+                (dimming_enabled or not first & 0xC0)):
             latest = record
-    return latest
+    return None if foreign else latest
 
 
-def settings_indices(record: bytes | None) -> list[int]:
-    """Decode option indices in the compiled menu's PWM page order."""
-    if record is None:
-        return [0, 5, 0, 0, 0, 3, 0, 0, 1]
-    if len(record) != 6:
-        raise ValueError("NVM record must be six bytes")
-    first, second, third = record[1:4]
-    return [first & 3, third >> 4, first >> 7, (first >> 2) & 3,
-            (first >> 4) & 3, second & 7, (second >> 3) & 7,
-            third & 15, (first >> 6) & 1]
+def settings_values(record: bytes | None, *, dimming_enabled=False) -> dict[str, int]:
+    """Named page values avoid depending on optional pages' positions."""
+    if record is not None and (len(record) != 6 or record[0] != (0xA8 if dimming_enabled else 0xA7)):
+        raise ValueError("Settings record does not match the compiled dimming layout")
+    first, second, third = record[1:4] if record is not None else (0, 1, 0x50)
+    result = {"START\nPOWER\nLEVEL": first & 3, "FAN\nMODE": third >> 4,
+              "FAN\nSIGNL\nPOLAR": (first >> (7 if dimming_enabled else 5)) & 1,
+              "AUTO\nSLEEP": (first >> 2) & 3}
+    if dimming_enabled:
+        result["AUTO\nDIM"] = (first >> 4) & 3
+    result.update({"IDLE\nD;ABS": second & 7, "BATT\nMODE": (second >> 3) & 7,
+                   "INPUT\nVOLT\nCALIB": third & 15,
+                   "SHOW\nSPLASH": (first >> (6 if dimming_enabled else 4)) & 1 if record is not None else 1})
+    return result
+
+
+def settings_indices(record: bytes | None, *, dimming_enabled=False) -> list[int]:
+    return list(settings_values(record, dimming_enabled=dimming_enabled).values())
+
+
+def menu_settings_indices(page: bytes, items) -> list[int]:
+    enabled = any(item.title == "AUTO\nDIM" for item in items)
+    values = settings_values(latest_nvm_record(page, dimming_enabled=enabled), dimming_enabled=enabled)
+    result = []
+    for item in items:
+        if not item.options:
+            continue
+        value = values[item.title]
+        if item.title == "FAN\nMODE" and len(item.options) == 4:
+            value = {0: 0, 1: 1, 5: 2, 6: 3}.get(value, 0)
+        result.append(value)
+    return result

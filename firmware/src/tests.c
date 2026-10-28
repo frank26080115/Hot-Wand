@@ -216,6 +216,7 @@ void test_run(void)
     // test_bringup_pwrlvl();
     // test_bringup_pwrlvl_min();
     // test_bringup_oled();
+    test_oled_brite_steps();
     // test_bringup_oled_fiducial();
     // test_bringup_oled_kiddiepool();
     // test_bringup_oled_inputs();
@@ -1624,6 +1625,75 @@ void test_bringup_adc(void)
     }
 }
 
+void test_oled_brite_steps(void)
+{
+    u8g2_t* graphics;
+    uint8_t brightness = 1;
+    bool    redraw     = true;
+    char    value[4];
+
+    HAL_Init();
+    rfgen_stop();
+    if (!watchdog_init() || !rfgen_clock_init())
+    {
+        // RF stays off; a failed clock setup is retried by the watchdog.
+        for (;;)
+        {
+        }
+    }
+    systick_init();
+    btn_init();
+    btn_set_short_press_mode(BTN_SHORT_PRESS_ON_PRESS);
+    // A boot-held button must be released before selecting a brightness step.
+    btn_discard_until_release();
+    UART_SetAllowed(false);
+    fan_stop();
+
+    I2C1_Init();
+    if (!OLED_Init(&oled, &i2c1))
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    OLED_ConfigureGraphics(&oled);
+    graphics = OLED_GetGraphics(&oled);
+    if (graphics == NULL)
+    {
+        for (;;)
+        {
+            watchdog_feed();
+        }
+    }
+    u8g2_SetFont(graphics, u8g2_font_6x10_tr);
+
+    // Raw contrast settings, not percentages: only representable powers of two
+    // (1..128) are used. No NVM settings or automatic dimming are involved.
+    for (;;)
+    {
+        btn_task();
+        if (btn_has_short_press(true))
+        {
+            brightness = brightness == 128 ? 1 : (uint8_t)(brightness << 1);
+            redraw     = true;
+        }
+        if (redraw)
+        {
+            u8g2_SetContrast(graphics, brightness);
+            int_to_str((int)brightness, value, 10, NULL);
+            u8g2_ClearBuffer(graphics);
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE, "BRITE");
+            u8g2_DrawStr(graphics, 1, OLED_FIRST_TEXT_BASELINE + OLED_TEXT_LINE_HEIGHT, value);
+            OLED_SendBuffer(&oled);
+            redraw = false;
+        }
+        btn_has_long_press(true); // A hold neither sleeps nor repeats the step.
+        HAL_Delay(1);
+        watchdog_feed();
+    }
+}
+
 void test_bringup_oled(void)
 {
     HAL_Init();
@@ -1820,10 +1890,12 @@ static void test_nvm_make_settings(uint16_t sequence, hotwand_setup_nvm_t* setti
     value /= 2;
     settings->auto_sleep = (uint8_t)(value % 4);
     value /= 4;
+#if OLED_DIMMING_ENABLED
     settings->auto_dim = (uint8_t)(value % 4);
     value /= 4;
-    settings->idle_detect_thresh = (uint8_t)(value % 7);
-    value /= 7;
+#endif
+    settings->idle_detect_thresh = (uint8_t)(value % 8);
+    value /= 8;
     settings->batt_mode = (uint8_t)(value % 7);
     value /= 7;
     settings->input_v_calib = (uint8_t)(value % 11);
@@ -1962,7 +2034,10 @@ static bool test_nvm_settings_equal(const hotwand_setup_nvm_t* left, const hotwa
 {
     return (left != NULL) && (right != NULL) && (left->startup_power_level == right->startup_power_level) &&
            (left->fan_mode == right->fan_mode) && (left->auto_sleep == right->auto_sleep) &&
-           (left->auto_dim == right->auto_dim) && (left->idle_detect_thresh == right->idle_detect_thresh) &&
+#if OLED_DIMMING_ENABLED
+           (left->auto_dim == right->auto_dim) &&
+#endif
+           (left->idle_detect_thresh == right->idle_detect_thresh) &&
            (left->batt_mode == right->batt_mode) && (left->input_v_calib == right->input_v_calib) &&
            (left->show_splash == right->show_splash) && (left->fan_sig_inv == right->fan_sig_inv);
 }
@@ -2073,8 +2148,10 @@ static void test_nvm_report_settings(const hotwand_setup_nvm_t* settings)
     test_uart_write_number(settings->fan_sig_inv);
     UART_Write(" SLEEP=");
     test_uart_write_number(settings->auto_sleep);
+#if OLED_DIMMING_ENABLED
     UART_Write(" DIM=");
     test_uart_write_number(settings->auto_dim);
+#endif
     UART_Write(" IDLE=");
     test_uart_write_number(settings->idle_detect_thresh);
     UART_Write(" BATT=");

@@ -48,6 +48,8 @@ __declspec(dllexport) uint32_t rf_value(uint32_t selector)
         return mock_tim1.CR1 | mock_tim1.CCER | mock_tim1.BDTR;
     case 4:
         return mock_af_calls;
+    case 6:
+        return rfgen_is_requested_for_test();
     default:
         return fault_test.rf_attempts;
     }

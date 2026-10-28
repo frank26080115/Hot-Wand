@@ -32,7 +32,11 @@ __declspec(dllexport) uint32_t message_sends(void)
 __declspec(dllexport) uint32_t message_dim_delay(uint32_t selection)
 {
     saved_dim = selection;
+#if OLED_DIMMING_ENABLED
     return fault_get_auto_dim_delay_ms();
+#else
+    return 0;
+#endif
 }
 uint32_t systick_get_ms(void)
 {
@@ -63,12 +67,16 @@ bool btn_has_long_press(bool clear)
 }
 bool nvm_read(hotwand_setup_nvm_t* settings)
 {
+#if OLED_DIMMING_ENABLED
     settings->auto_dim = saved_dim;
+#endif
     return true;
 }
 void nvm_apply_defaults(hotwand_setup_nvm_t* settings)
 {
+#if OLED_DIMMING_ENABLED
     settings->auto_dim = 0;
+#endif
 }
 uint16_t adc_to_millivolts(uint8_t idx)
 {

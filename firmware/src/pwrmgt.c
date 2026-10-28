@@ -24,6 +24,7 @@
 #include "miscutils.h"
 #include "pins.h"
 #include "pwrlvl.h"
+#include "rfgen.h"
 #include "systick.h"
 
 #include <stdbool.h>
@@ -116,18 +117,26 @@ static uint8_t       pwrmgt_history_push_idx;
 static uint32_t      pwrmgt_history_last_update_ms;
 static uint32_t      pwrmgt_idle_started_ms;
 static uint32_t      pwrmgt_last_active_ms;
-static uint32_t      pwrmgt_idle_power_threshold_mw = 10000;
-static bool          pwrmgt_is_idle;
-static uint32_t      pwrmgt_high_voltage_phase_started_ms;
-static uint8_t       pwrmgt_high_voltage_message_index;
-static bool          pwrmgt_high_voltage_warning_active;
-static bool          pwrmgt_high_voltage_warning_visible;
+static uint16_t      pwrmgt_idle_power_threshold_mw = 30000;
+static uint16_t      pwrmgt_idle_power_delta_mw     = 2000;
+// Eligibility is separate from graph data: OFF/transition peaks stay visible.
+static uint16_t pwrmgt_activity_history_mask;
+static uint8_t  pwrmgt_activity_on_guard_segments;
+static bool     pwrmgt_activity_previous_rf_active;
+static bool     pwrmgt_activity_segment_excluded;
+static bool     pwrmgt_is_idle;
+static uint32_t pwrmgt_high_voltage_phase_started_ms;
+static uint8_t  pwrmgt_high_voltage_message_index;
+static bool     pwrmgt_high_voltage_warning_active;
+static bool     pwrmgt_high_voltage_warning_visible;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
 static uint32_t pwrmgt_history_peek(uint8_t age);
+static void     pwrmgt_activity_history_update(bool start_new_segment);
+static bool     pwrmgt_activity_delta_met(void);
 static void     pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_segment);
 static void     pwrmgt_draw_power_pair(u8g2_t* graphics, uint8_t distance_from_center, uint32_t power_milliwatts);
 static uint8_t  pwrmgt_power_to_pixels(uint32_t power_milliwatts);
@@ -278,20 +287,6 @@ __attribute__((noinline)) void pwrmgt_task(void)
     }
 
     power_milliwatts = adc_get_milliwatts();
-    if (power_milliwatts < pwrmgt_idle_power_threshold_mw)
-    {
-        if (!pwrmgt_is_idle)
-        {
-            pwrmgt_idle_started_ms = now;
-            pwrmgt_is_idle         = true;
-        }
-    }
-    else
-    {
-        pwrmgt_is_idle        = false;
-        pwrmgt_last_active_ms = now;
-    }
-
     {
         bool start_new_segment = false;
 
@@ -304,6 +299,22 @@ __attribute__((noinline)) void pwrmgt_task(void)
         /* Capture the peak between graph updates, not merely one sample at
          * the graph-update boundary. */
         pwrmgt_history_push(power_milliwatts, start_new_segment);
+        pwrmgt_activity_history_update(start_new_segment);
+    }
+
+    // Scan after updating history, including an eligible in-progress peak.
+    if (!pwrmgt_activity_delta_met() && (power_milliwatts < pwrmgt_idle_power_threshold_mw))
+    {
+        if (!pwrmgt_is_idle)
+        {
+            pwrmgt_idle_started_ms = now;
+            pwrmgt_is_idle         = true;
+        }
+    }
+    else
+    {
+        pwrmgt_is_idle        = false;
+        pwrmgt_last_active_ms = now;
     }
 }
 
@@ -665,6 +676,73 @@ static void pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_segmen
 // Small Helpers
 // -----------------------------------------------------------------------------
 
+// Only metadata is added to the existing peak ring. A slot that sees any
+// excluded sample stays excluded until recycled, including mixed ON/OFF slots.
+static void pwrmgt_activity_history_update(bool start_new_segment)
+{
+    uint16_t slot_mask = (uint16_t)(1 << pwrmgt_history_push_idx);
+#if HOT_WAND_TEST_HARNESS
+    // Observe the scheduled phase without allowing the harness to energize RF.
+    bool rf_active = rfgen_is_requested_for_test();
+#else
+    bool rf_active = rfgen_is_active();
+#endif
+
+    if (start_new_segment)
+    {
+        pwrmgt_activity_history_mask &= (uint16_t)~slot_mask;
+        pwrmgt_activity_segment_excluded = false;
+        if (pwrmgt_activity_on_guard_segments != 0)
+        {
+            --pwrmgt_activity_on_guard_segments;
+        }
+    }
+    if (rf_active && !pwrmgt_activity_previous_rf_active)
+    {
+        // Exclude the edge-containing segment and the next two entire slots.
+        pwrmgt_activity_on_guard_segments = 3;
+    }
+    pwrmgt_activity_previous_rf_active = rf_active;
+    if (!rf_active || (pwrmgt_activity_on_guard_segments != 0))
+    {
+        pwrmgt_activity_segment_excluded = true;
+    }
+    if (pwrmgt_activity_segment_excluded)
+    {
+        pwrmgt_activity_history_mask &= (uint16_t)~slot_mask;
+    }
+    else
+    {
+        // A real zero is valid; unfilled graph slots never acquire this bit.
+        pwrmgt_activity_history_mask |= slot_mask;
+    }
+}
+
+static bool pwrmgt_activity_delta_met(void)
+{
+    uint32_t minimum = UINT32_MAX;
+    uint32_t maximum = 0;
+    uint8_t  count   = 0;
+
+    for (uint8_t i = 0; i < PWRMGT_HISTORY_RECORD_COUNT; ++i)
+    {
+        if ((pwrmgt_activity_history_mask & (uint16_t)(1 << i)) != 0)
+        {
+            uint32_t power = pwrmgt_power_history_mw[i];
+            if (power < minimum)
+            {
+                minimum = power;
+            }
+            if (power > maximum)
+            {
+                maximum = power;
+            }
+            ++count;
+        }
+    }
+    return (count >= 2) && ((maximum - minimum) >= pwrmgt_idle_power_delta_mw);
+}
+
 static uint32_t pwrmgt_history_peek(uint8_t age)
 {
     uint8_t index;
@@ -732,11 +810,25 @@ static uint8_t pwrmgt_power_to_pixels(uint32_t power_milliwatts)
 
 void pwrmgt_set_idle_power_threshold(uint8_t threshold)
 {
-    static const uint32_t thresholds_mw[] = {1000, 2000, 5000, 10000, 20000, 30000, 40000};
-
-    if (threshold < (sizeof(thresholds_mw) / sizeof(thresholds_mw[0])))
+    static const struct
     {
-        pwrmgt_idle_power_threshold_mw = thresholds_mw[threshold];
+        uint16_t delta_mw;
+        uint16_t absolute_mw;
+    } profiles[] = {
+        {2000, 20000},
+        {2000, 30000},
+        {2000, 40000},
+        {3000, 20000},
+        {3000, 30000},
+        {3000, 40000},
+        {4000, 25000},
+        {4000, 40000}
+    };
+
+    if (threshold < (sizeof(profiles) / sizeof(profiles[0])))
+    {
+        pwrmgt_idle_power_delta_mw     = profiles[threshold].delta_mw;
+        pwrmgt_idle_power_threshold_mw = profiles[threshold].absolute_mw;
     }
 }
 

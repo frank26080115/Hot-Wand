@@ -63,8 +63,12 @@ static bool UART_TX_Init(void);
 // Main Flow
 // -----------------------------------------------------------------------------
 
+/* SWD builds never transmit on PA14. Compile out the complete UART path,
+ * including formatting/HAL dependencies, instead of only denying permission
+ * at runtime. This also leaves room for the automated-test instrumentation. */
 void UART_debug_task(void)
 {
+#if !defined(HOT_WAND_SWD_DEBUG) || !HOT_WAND_SWD_DEBUG
     char     timestamp[12];
     char     value[UART_DEBUG_VALUE_CAPACITY];
     uint16_t reference_millivolts;
@@ -140,10 +144,12 @@ void UART_debug_task(void)
     UART_Write("0x");
     UART_Write(value);
     UART_Write("\r\n");
+#endif
 }
 
 void UART_Write(const char* text)
 {
+#if !defined(HOT_WAND_SWD_DEBUG) || !HOT_WAND_SWD_DEBUG
     size_t length;
 
     if (!uart_allowed || (text == NULL))
@@ -166,6 +172,7 @@ void UART_Write(const char* text)
     {
         return;
     }
+#endif
 }
 
 // -----------------------------------------------------------------------------

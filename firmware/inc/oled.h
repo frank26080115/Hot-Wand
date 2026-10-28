@@ -36,7 +36,9 @@ typedef struct
     uint8_t            transfer_active;
     uint8_t            transport_ok;
     uint8_t            initialized;
-    uint8_t            dimmed;
+#if OLED_DIMMING_ENABLED
+    uint8_t dimmed;
+#endif
 } OLED_Handle;
 
 extern I2C_HandleTypeDef i2c1;
@@ -48,12 +50,14 @@ bool    OLED_Init(OLED_Handle* oled, I2C_HandleTypeDef* i2c);
 void    OLED_ConfigureGraphics(OLED_Handle* oled);
 u8g2_t* OLED_GetGraphics(OLED_Handle* oled);
 bool    OLED_SendBuffer(OLED_Handle* oled);
-bool    OLED_SetDimMode(OLED_Handle* oled, bool dimmed);
-void    show_splash(void);
+#if OLED_DIMMING_ENABLED
+bool OLED_SetDimMode(OLED_Handle* oled, bool dimmed);
+#endif
+void show_splash(void);
 #if defined(HOT_WAND_VISION_TEST) && HOT_WAND_VISION_TEST
 #define OLED_VISION_FRAMEBUFFER_BYTES 512
 /* Even generation means the mirror contains one completed OLED send. */
 extern volatile uint32_t vision_test_oled_sent_generation;
 extern volatile uint8_t  vision_test_oled_sent_framebuffer[OLED_VISION_FRAMEBUFFER_BYTES];
-void    OLED_ShowFiducial(void);
+void                     OLED_ShowFiducial(void);
 #endif

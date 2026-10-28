@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "conf.h"
 
 enum
 {
@@ -39,6 +40,7 @@ enum
     AUTO_SLEEP_30MIN = 3,
 };
 
+#if OLED_DIMMING_ENABLED
 enum
 {
     AUTO_DIM_OFF   = 0,
@@ -46,16 +48,19 @@ enum
     AUTO_DIM_30SEC = 2,
     AUTO_DIM_60SEC = 3,
 };
+#endif
 
 enum
 {
-    IDLE_DETECT_THRESH_1W  = 0,
-    IDLE_DETECT_THRESH_2W  = 1,
-    IDLE_DETECT_THRESH_5W  = 2,
-    IDLE_DETECT_THRESH_10W = 3,
-    IDLE_DETECT_THRESH_20W = 4,
-    IDLE_DETECT_THRESH_30W = 5,
-    IDLE_DETECT_THRESH_40W = 6,
+    // Three-bit profile indices; each pair is delta watts / absolute watts.
+    IDLE_DETECT_2W_20W = 0,
+    IDLE_DETECT_2W_30W = 1,
+    IDLE_DETECT_2W_40W = 2,
+    IDLE_DETECT_3W_20W = 3,
+    IDLE_DETECT_3W_30W = 4,
+    IDLE_DETECT_3W_40W = 5,
+    IDLE_DETECT_4W_25W = 6,
+    IDLE_DETECT_4W_40W = 7,
 };
 
 enum
@@ -90,9 +95,14 @@ typedef struct __attribute__((packed, aligned(2)))
 
     uint8_t startup_power_level : 2;
     uint8_t auto_sleep : 2;
+#if OLED_DIMMING_ENABLED
     uint8_t auto_dim : 2;
+#endif
     uint8_t show_splash : 1;
     uint8_t fan_sig_inv : 1;
+#if !OLED_DIMMING_ENABLED
+    uint8_t rsvd_0 : 2; // Repacked layout: splash/polarity occupy the old dim bits.
+#endif
 
     uint8_t idle_detect_thresh : 3;
     uint8_t batt_mode : 3;

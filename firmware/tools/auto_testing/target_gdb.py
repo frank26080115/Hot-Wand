@@ -96,7 +96,7 @@ class GdbSession:
             raise
         return self
 
-    def __exit__(self, *_):
+    def __exit__(self, exc_type=None, exc_value=None, exc_traceback=None):
         cleanup_error = None
         if self.factory_defaults_on_exit:
             try:
@@ -125,14 +125,21 @@ class GdbSession:
                 handle.close()
 
         if cleanup_error is not None:
-            raise RuntimeError(f"Factory-default NVM cleanup failed: {cleanup_error}") from cleanup_error
+            message = f"Factory-default NVM cleanup failed: {cleanup_error}"
+            if exc_value is not None:
+                # Keep the test failure visible in the runner's one-line report,
+                # as well as in the chained traceback saved with its artifacts.
+                message = f"{type(exc_value).__name__}: {exc_value}; additionally, {message}"
+            raise RuntimeError(message) from cleanup_error
 
     def restore_factory_defaults(self):
         """Erase only the settings page, verify it, and reload defaults at reset.
 
-        Reset before halting so no RF output is frozen active during flash erase.
+        GDB requires an interrupt/stop notification before a monitor command.
+        Then reset-halt before erasing so outputs are in their reset state.
         This deliberately discards test settings and the pre-test configuration.
         """
+        self.halt()
         self.command('-interpreter-exec console "monitor reset halt"', timeout=20)
         self.running = False
         self.command('-interpreter-exec console "monitor flash erase_address 0x08007c00 0x400"', timeout=30)

@@ -21,9 +21,14 @@ This code module is responsible for loading and saving persistent user settings
 // -----------------------------------------------------------------------------
 
 #define NVM_EXPECTED_PAGE_SIZE 1024
-#define NVM_RECORD_MAGIC       0xA6
-#define NVM_ERASED_HALFWORD    0xFFFF
-#define NVM_SLOT_SIZE_BYTES    ((uint16_t)sizeof(hotwand_setup_nvm_t))
+/* Layout tags deliberately invalidate legacy records and the opposite build. */
+#if OLED_DIMMING_ENABLED
+#define NVM_RECORD_MAGIC 0xA8
+#else
+#define NVM_RECORD_MAGIC 0xA7
+#endif
+#define NVM_ERASED_HALFWORD 0xFFFF
+#define NVM_SLOT_SIZE_BYTES ((uint16_t)sizeof(hotwand_setup_nvm_t))
 
 #if FLASH_PAGE_SIZE != NVM_EXPECTED_PAGE_SIZE
 #error "The NVM layout requires 1 KiB flash erase pages"
@@ -175,12 +180,14 @@ void nvm_apply_defaults(hotwand_setup_nvm_t* settings)
     settings->startup_power_level = POWER_LEVEL_MAX;
     settings->fan_mode            = FAN_MODE_AUTO_BINARY_100_COOL;
     settings->auto_sleep          = AUTO_SLEEP_OFF;
-    settings->auto_dim            = AUTO_DIM_OFF;
-    settings->idle_detect_thresh  = IDLE_DETECT_THRESH_10W;
-    settings->batt_mode           = BATT_MODE_NONE;
-    settings->show_splash         = true;
-    settings->fan_sig_inv         = false;
-    settings->input_v_calib       = INPUT_VOLTAGE_CALIB_NONE;
+#if OLED_DIMMING_ENABLED
+    settings->auto_dim = AUTO_DIM_OFF;
+#endif
+    settings->idle_detect_thresh = IDLE_DETECT_2W_30W;
+    settings->batt_mode          = BATT_MODE_NONE;
+    settings->show_splash        = true;
+    settings->fan_sig_inv        = false;
+    settings->input_v_calib      = INPUT_VOLTAGE_CALIB_NONE;
 }
 
 // -----------------------------------------------------------------------------
@@ -192,6 +199,7 @@ static void nvm_scan_page(void)
     hotwand_setup_nvm_t record;
     uint16_t            slot;
     bool                found_erased_slot = false;
+    bool                foreign_format    = false;
 
     nvm_has_saved_settings = false;
     nvm_erase_required     = false;
@@ -209,6 +217,13 @@ static void nvm_scan_page(void)
             continue;
         }
 
+        nvm_read_record(slot, &record);
+        if ((record.magic != NVM_RECORD_MAGIC) &&
+            ((record.magic == 0xA6) || (record.magic == 0xA7) || (record.magic == 0xA8)) &&
+            (record.checksum == nvm_checksum(&record)))
+        {
+            foreign_format = true;
+        }
         /* Data after a blank slot indicates an interrupted page erase. */
         if (found_erased_slot)
         {
@@ -216,7 +231,6 @@ static void nvm_scan_page(void)
             continue;
         }
 
-        nvm_read_record(slot, &record);
         if (nvm_record_is_valid(&record))
         {
             nvm_saved_settings     = record;
@@ -224,6 +238,13 @@ static void nvm_scan_page(void)
         }
     }
 
+    // Switching layouts invalidates the whole journal, including older matching
+    // records. The next save erases it so switching back cannot resurrect them.
+    if (foreign_format)
+    {
+        nvm_has_saved_settings = false;
+        nvm_erase_required     = true;
+    }
     if (!found_erased_slot)
     {
         nvm_erase_required = true;
@@ -332,6 +353,7 @@ static bool nvm_settings_fields_are_valid(const hotwand_setup_nvm_t* settings)
         return false;
     }
 
+#if OLED_DIMMING_ENABLED
     switch (settings->auto_dim)
     {
     case AUTO_DIM_OFF:
@@ -344,15 +366,17 @@ static bool nvm_settings_fields_are_valid(const hotwand_setup_nvm_t* settings)
         return false;
     }
 
+#endif
     switch (settings->idle_detect_thresh)
     {
-    case IDLE_DETECT_THRESH_1W:
-    case IDLE_DETECT_THRESH_2W:
-    case IDLE_DETECT_THRESH_5W:
-    case IDLE_DETECT_THRESH_10W:
-    case IDLE_DETECT_THRESH_20W:
-    case IDLE_DETECT_THRESH_30W:
-    case IDLE_DETECT_THRESH_40W:
+    case IDLE_DETECT_2W_20W:
+    case IDLE_DETECT_2W_30W:
+    case IDLE_DETECT_2W_40W:
+    case IDLE_DETECT_3W_20W:
+    case IDLE_DETECT_3W_30W:
+    case IDLE_DETECT_3W_40W:
+    case IDLE_DETECT_4W_25W:
+    case IDLE_DETECT_4W_40W:
         break;
 
     default:
@@ -406,14 +430,19 @@ static void nvm_prepare_record(const hotwand_setup_nvm_t* settings, hotwand_setu
     record->startup_power_level = settings->startup_power_level;
     record->fan_mode            = settings->fan_mode;
     record->auto_sleep          = settings->auto_sleep;
-    record->auto_dim            = settings->auto_dim;
-    record->idle_detect_thresh  = settings->idle_detect_thresh;
-    record->batt_mode           = settings->batt_mode;
-    record->show_splash         = settings->show_splash;
-    record->fan_sig_inv         = settings->fan_sig_inv;
-    record->input_v_calib       = settings->input_v_calib;
-    record->rsvd_1              = 0;
-    record->checksum            = nvm_checksum(record);
+#if OLED_DIMMING_ENABLED
+    record->auto_dim = settings->auto_dim;
+#endif
+    record->idle_detect_thresh = settings->idle_detect_thresh;
+    record->batt_mode          = settings->batt_mode;
+    record->show_splash        = settings->show_splash;
+    record->fan_sig_inv        = settings->fan_sig_inv;
+    record->input_v_calib      = settings->input_v_calib;
+#if !OLED_DIMMING_ENABLED
+    record->rsvd_0 = 0;
+#endif
+    record->rsvd_1   = 0;
+    record->checksum = nvm_checksum(record);
 }
 
 static bool nvm_records_are_equal(const hotwand_setup_nvm_t* left, const hotwand_setup_nvm_t* right)
@@ -487,8 +516,12 @@ static bool nvm_page_layout_is_valid(void)
 
 static bool nvm_record_is_valid(const hotwand_setup_nvm_t* record)
 {
-    return (record->magic == NVM_RECORD_MAGIC) && (record->rsvd_1 == 0) && nvm_settings_fields_are_valid(record) &&
-           (record->checksum == nvm_checksum(record));
+    return
+#if !OLED_DIMMING_ENABLED
+        (record->rsvd_0 == 0) &&
+#endif
+        (record->magic == NVM_RECORD_MAGIC) && (record->rsvd_1 == 0) && nvm_settings_fields_are_valid(record) &&
+        (record->checksum == nvm_checksum(record));
 }
 
 // -----------------------------------------------------------------------------

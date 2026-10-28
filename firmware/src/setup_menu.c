@@ -68,7 +68,9 @@ enum
     SETUP_ITEM_FAN_SIGNAL_POLARITY,
 #endif
     SETUP_ITEM_AUTO_SLEEP,
+#if OLED_DIMMING_ENABLED
     SETUP_ITEM_AUTO_DIM,
+#endif
     SETUP_ITEM_IDLE_DETECT_THRESH,
     SETUP_ITEM_BATTERY_MODE,
     SETUP_ITEM_INPUT_V_CALIB,
@@ -124,17 +126,19 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
                                           .items     = "OFF|5 MIN|15 MIN|30 MIN",
                                           .items_cnt = 4,
                                           },
+#if OLED_DIMMING_ENABLED
     [SETUP_ITEM_AUTO_DIM] =
         {
                                           .title     = "AUTO\nDIM",
                                           .items     = "OFF|15 SEC|30 SEC|60 SEC",
                                           .items_cnt = 4,
                                           },
+#endif
     [SETUP_ITEM_IDLE_DETECT_THRESH] =
         {
-                                          .title     = "ACTIVE\nMIN W",
-                                          .items     = "1 W|2 W|5 W|10 W|20 W|30 W|40 W",
-                                          .items_cnt = 7,
+                                          .title     = "IDLE\nD;ABS",
+                                          .items     = "2;20|2;30|2;40|3;20|3;30|3;40|4;25|4;40",
+                                          .items_cnt = 8,
                                           },
     [SETUP_ITEM_BATTERY_MODE] =
         {
@@ -328,9 +332,11 @@ static void setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item)
     case SETUP_ITEM_AUTO_SLEEP:
         settings->auto_sleep = value;
         break;
+#if OLED_DIMMING_ENABLED
     case SETUP_ITEM_AUTO_DIM:
         settings->auto_dim = value;
         break;
+#endif
     case SETUP_ITEM_IDLE_DETECT_THRESH:
         settings->idle_detect_thresh = value;
         break;
@@ -444,8 +450,10 @@ static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t
 #endif
     case SETUP_ITEM_AUTO_SLEEP:
         return settings->auto_sleep;
+#if OLED_DIMMING_ENABLED
     case SETUP_ITEM_AUTO_DIM:
         return settings->auto_dim;
+#endif
     case SETUP_ITEM_IDLE_DETECT_THRESH:
         return settings->idle_detect_thresh;
     case SETUP_ITEM_BATTERY_MODE:

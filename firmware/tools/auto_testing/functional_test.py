@@ -23,14 +23,14 @@ try:
     from .faults_test import FaultRunner, ROOT
     from .adc_waveform import save_adc_waveform
     from .fault_target import BootSettings, BOOT, ADC, OLED, SETUP, RUNTIME, FAULT
-    from .functional_cases import catalog, MODE_SEQUENCES, calibrate, guess_cells
-    from .build_metadata import TEST_ELF, latest_nvm_record, settings_indices
+    from .functional_cases import catalog, MODE_SEQUENCES, IDLE_ACTIVITY_PROFILES, calibrate, guess_cells
+    from .build_metadata import TEST_ELF, latest_nvm_record, settings_values
 except ImportError:
     from faults_test import FaultRunner, ROOT
     from adc_waveform import save_adc_waveform
     from fault_target import BootSettings, BOOT, ADC, OLED, SETUP, RUNTIME, FAULT
-    from functional_cases import catalog, MODE_SEQUENCES, calibrate, guess_cells
-    from build_metadata import TEST_ELF, latest_nvm_record, settings_indices
+    from functional_cases import catalog, MODE_SEQUENCES, IDLE_ACTIVITY_PROFILES, calibrate, guess_cells
+    from build_metadata import TEST_ELF, latest_nvm_record, settings_values
 
 
 class SafetyViolation(RuntimeError):
@@ -58,6 +58,11 @@ class FunctionalRunner(FaultRunner):
             long_enabled=args.long)
 
     def run_case(self, case):
+        if case.kind == "dim" and not self.dimming_enabled:
+            self.results[case.id].update(status="SKIPPED", visual_review="NOT_APPLICABLE",
+                                         note="OLED_DIMMING_ENABLED=0; dimming is compiled out")
+            self.log(f"{case.id}: SKIPPED (dimming compiled out)")
+            return
         super().run_case(case)
         # The base writes all partial evidence and resets in finally. A safety
         # error must then escape its ordinary per-case failure containment.
@@ -170,7 +175,7 @@ class FunctionalRunner(FaultRunner):
         entry["boot_number"] = self.target.boot_number
         entry["cadence"] = dict(self.results[self.current.id].get("cadence", {}))
         settings = self.results[self.current.id].get("boot", {}).get("settings", {})
-        selection = (settings_indices(latest_nvm_record(self.original_nvm))[7]
+        selection = (self.saved_settings()["INPUT\nVOLT\nCALIB"]
                      if settings == "saved NVM" else settings.get("calibration", 0))
         for frame in entry["frames"]:
             frame["predicted_settled"]["dc_mv"] = calibrate(frame["predicted_settled"]["dc_mv"], selection)
@@ -222,7 +227,14 @@ class FunctionalRunner(FaultRunner):
         with Image.open(path) as picture:
             return np.asarray(picture).copy()
 
+    def saved_settings(self):
+        enabled = self.dimming_enabled
+        record = latest_nvm_record(self.original_nvm, dimming_enabled=enabled)
+        return settings_values(record, dimming_enabled=enabled)
+
     def dimmed(self):
+        if not self.dimming_enabled:
+            return False
         if self.oled_dim_address is None:
             def resolve():
                 base = self.session.symbols["oled"].address
@@ -282,11 +294,11 @@ class FunctionalRunner(FaultRunner):
                 self.capture("early_release_runtime")
             return
         if kind == "settings":
-            self.boot_normal(settings=BootSettings(power=2, calibration=5, auto_dim=1))
+            self.boot_normal(settings=BootSettings(power=2, calibration=5, auto_dim=int(self.dimming_enabled)))
             self.require(self.status()["power"] == 2, "RAM startup preference applied")
             self.boot_normal(saved=True)
-            indices = settings_indices(latest_nvm_record(self.original_nvm))
-            self.require(self.status()["power"] == indices[0], "Saved startup preference applied without RAM override")
+            indices = self.saved_settings()
+            self.require(self.status()["power"] == indices["START\nPOWER\nLEVEL"], "Saved startup preference applied without RAM override")
             self.results[case.id]["saved_settings"] = indices
             return
         if kind == "battery":
@@ -310,11 +322,15 @@ class FunctionalRunner(FaultRunner):
             return
 
         settings = BootSettings(power=p.get("power", 0), calibration=p.get("calibration", 0),
-                                auto_dim=p.get("dim", 1 if kind == "idle" else 0),
+                                auto_dim=p.get("dim", 0) if self.dimming_enabled else 0,
                                 auto_sleep=p.get("mode", 0) if kind == "auto_sleep" else 1 if kind == "sleep_activity" else 0)
+        if kind == "idle_profile":
+            settings = BootSettings(idle_profile=p["profile"])
         self.boot_normal(settings=settings)
 
-        if kind == "healthy":
+        if kind == "idle_profile":
+            self.exercise_idle_profile(p["profile"], p["rule"])
+        elif kind == "healthy":
             initial = self.status()
             self.hold_runtime(6200)
             state = self.status()
@@ -353,29 +369,28 @@ class FunctionalRunner(FaultRunner):
                 self.wait(lambda s: s["power"] == p["power"] and not s["reasons"] & 1)
                 self.capture("preference_restored")
             else:
+                # Observe RF phases at zero power; the shared test image also
+                # enables the virtual thermal bucket for its protection cases.
+                self.check_rf_cycle(p["power"])
                 # High wattage below 5.2 A must not activate buck attenuation;
                 # the applied mode is enforced through foreground RF phases.
                 high = self.model.frame(buck=self.model.voltage_count(22000), current=self.model.current_count(4900))
-                self.settle(high)
-                self.wait(lambda s: s["pwm"] == 0)
-                self.check_rf_cycle(p["power"])
-                self.require(self.status()["pwm"] == 0, "Wattage alone leaves buck PWM inactive")
+                try:
+                    self.settle(high)
+                    self.wait(lambda s: s["pwm"] == 0)
+                    self.require(self.status()["pwm"] == 0, "Wattage alone leaves buck PWM inactive")
+                finally:
+                    # Even on failure, restore the held-last stimulus before
+                    # slow captures or further observation can heat the bucket.
+                    self.settle(self.model.frame())
                 self.capture("rf_duty_mode")
-                self.settle(self.model.frame())
                 self.wait(lambda s: s["pwm"] == 0)
                 self.capture("logical_attenuation_relaxed")
         elif kind in ("dim", "idle"):
             if kind == "idle":
-                saved = settings_indices(latest_nvm_record(self.original_nvm))[5]
-                self.results[case.id]["saved_idle_threshold_w"] = (1, 2, 5, 10, 20, 30, 40)[saved]
-                self.wait(lambda s: self.dimmed(), seconds=25, description="low measured power becomes inactive", target_time=True, interval=0.5)
-                self.observe_dim("saved_threshold_low_power_dimmed")
-                watts = self.results[case.id]["saved_idle_threshold_w"] + 1
-                self.settle(self.model.frame(current=self.model.current_count(watts * 50)))
-                self.wait(lambda s: not self.dimmed(), description="power above saved idle threshold restores activity")
-                self.hold_runtime(16000)
-                self.require(not self.dimmed(), "Continuous measured power prevents inactivity dimming")
-                self.observe_dim("saved_threshold_active_power")
+                saved = self.saved_settings()["IDLE\nD;ABS"]
+                self.results[case.id]["saved_idle_profile"] = saved
+                self.exercise_idle_profile(saved, "absolute")
                 return
             delay = (0, 15, 30, 60)[p["dim"]]
             self.require(not self.dimmed(), "Runtime begins bright")
@@ -405,7 +420,7 @@ class FunctionalRunner(FaultRunner):
                 after = self.capture("sleep_shifted")
                 self.require(after["state"]["rf_attempts"] == start, "Terminal sleep makes no RF restart requests")
                 self.require((self.image(before) != self.image(after)).any(), "Sleep text moves for burn-in protection")
-                saved_delay = (0, 15, 30, 60)[settings_indices(latest_nvm_record(self.original_nvm))[4]]
+                saved_delay = (0, 15, 30, 60)[self.saved_settings().get("AUTO\nDIM", 0)]
                 self.results[case.id]["saved_sleep_dim_delay_seconds"] = saved_delay
                 if saved_delay:
                     deadline = time.monotonic() + saved_delay + 10
@@ -570,6 +585,44 @@ class FunctionalRunner(FaultRunner):
             for millivolts in (24000, 26000):
                 self.ramp_dc(self.model.voltage_count(millivolts))
                 self.capture(f"voltage_{millivolts}")
+
+    def exercise_idle_profile(self, profile, rule):
+        """Check both activity paths through the real inactivity timer.
+
+        Stimulus changes stay below the soft-current and buck-voltage limits.
+        Plateau waits exceed the graph-history lifetime before checking inactivity.
+        """
+        delta, absolute = IDLE_ACTIVITY_PROFILES[profile]
+        buck = self.model.voltage_count(20000)
+        def frame_for(watts):
+            current = self.model.current_count(watts * 1000000 / self.model.voltage(buck))
+            frame = self.model.frame(buck=buck, current=current)
+            return frame, self.model.predict(frame.channels)["power_mw"]
+        low, low_mw = frame_for(5)
+        high, high_mw = frame_for(absolute + 3 if rule == "absolute" else 5 + delta + 3)
+        self.require(low_mw < absolute * 1000, "Baseline is below the selected absolute threshold")
+        if rule == "delta":
+            self.require(high_mw < absolute * 1000 and high_mw - low_mw >= delta * 1000,
+                         "Delta stimulus is active without crossing the absolute threshold")
+        else:
+            self.require(high_mw >= absolute * 1000, "Absolute stimulus crosses the selected threshold")
+        self.settle(low)
+        self.hold_runtime(6000)
+        self.require(self.status()["inactive_ms"] >= 5000, "Constant low power becomes inactive after history settles")
+        self.settle(high)
+        self.wait(lambda state: state["inactive_ms"] < 500, description="selected activity rule resets inactivity")
+        if rule == "delta":
+            for index in range(18):
+                self.settle(low if index % 2 == 0 else high)
+                self.hold_runtime(1000)
+        else:
+            self.hold_runtime(16000)
+        self.require(self.status()["inactive_ms"] < 500, "Selected activity rule keeps resetting inactivity")
+        self.capture("profile_activity")
+        self.settle(low)
+        self.hold_runtime(6000)
+        self.require(self.status()["inactive_ms"] >= 1000, "Activity expires after eligible history ages out")
+        self.capture("profile_inactive")
 
     def native(self):
         # Machine-readable per-test results prevent one passing unrelated

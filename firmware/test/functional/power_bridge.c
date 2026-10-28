@@ -37,7 +37,7 @@ __declspec(dllexport) void normal_reset(uint32_t now)
     pwrmgt_last_active_ms = pwrmgt_idle_started_ms = pwrmgt_history_last_update_ms = now;
     pwrmgt_is_idle                                                                 = false;
     pwrmgt_history_push_idx                                                        = 0;
-    pwrmgt_idle_power_threshold_mw                                                 = 10000;
+    pwrmgt_set_idle_power_threshold(IDLE_DETECT_2W_30W);
     for (uint32_t i = 0; i < 16; ++i)
     {
         pwrmgt_power_history_mw[i] = 0;
@@ -54,6 +54,19 @@ __declspec(dllexport) void normal_press(void)
 __declspec(dllexport) void normal_threshold(uint32_t selection)
 {
     pwrmgt_set_idle_power_threshold(selection);
+}
+__declspec(dllexport) uint32_t activity_value(uint32_t selector)
+{
+    switch (selector)
+    {
+    case 0: return pwrmgt_activity_history_mask;
+    case 1: return pwrmgt_activity_on_guard_segments;
+    case 2: return pwrmgt_activity_delta_met();
+    case 3: return pwrmgt_is_idle;
+    case 4: return pwrmgt_idle_power_delta_mw;
+    case 5: return pwrmgt_idle_power_threshold_mw;
+    }
+    return 0;
 }
 __declspec(dllexport) uint32_t normal_value(uint32_t selector)
 {

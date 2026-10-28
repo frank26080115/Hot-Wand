@@ -9,6 +9,8 @@
  * Commands and packed setup are written at the ADC boot gate, command last.
  * setup: cells[7:0] (zero = real guess), mode[10:8], power[12:11],
  * calibration[16:13], auto-sleep[18:17], auto-dim[20:19], absent tip[21],
+ * auto-dim bits are ignored when OLED_DIMMING_ENABLED=0.
+ * optional idle profile[24:22], idle override valid[25],
  * RAM settings override valid[31]. No NVM writes are needed for ordinary cases. */
 enum
 {
@@ -33,13 +35,13 @@ enum
 };
 enum
 {
-    FT_BOOT    = 1,
-    FT_ADC     = 2,
-    FT_OLED    = 3,
-    FT_SETUP   = 4,
-    FT_RUNTIME = 5,
-    FT_FAULT   = 6,
-    FT_BATTERY = 7,
+    FT_BOOT     = 1,
+    FT_ADC      = 2,
+    FT_OLED     = 3,
+    FT_SETUP    = 4,
+    FT_RUNTIME  = 5,
+    FT_FAULT    = 6,
+    FT_BATTERY  = 7,
     FT_RESUMING = 8 /* Outputs remain stopped until normal supervision passes. */
 };
 
@@ -56,7 +58,8 @@ enum
  * 1 = spike, 2 = fast loss, 3 = sustained history (no raw ISR frame).
  * History is newest-first. raw[] freezes the seven decoded values on the
  * first ISR trigger; it remains zero for a foreground-only history trigger.
- * reserved[0] is the target-paced tip burst count; reserved[1] is the high-input overlay: active bit 1, visible bit 0. */
+ * reserved[0] is the target-paced tip burst count; reserved[1] is the high-input overlay: active bit 1, visible bit 0.
+ */
 typedef struct
 {
     uint32_t abi, command, ack, stage, reset_flags, message, tick;
@@ -68,6 +71,8 @@ typedef struct
     uint32_t event_ms, event_round, event_raw;
 } fault_test_state_t;
 extern volatile fault_test_state_t fault_test;
+extern const uint32_t              fault_test_dimming_enabled;
+extern volatile uint32_t           fault_test_inactive_ms;
 void                               fault_test_init(void);
 void                               fault_test_task(void);
 void                               fault_test_snapshot(void);

@@ -60,17 +60,19 @@ static uint32_t input_recovered_since_ms;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void     fault_show_recoverable_input(const char* text);
-static bool     fault_input_recovered(uint32_t now);
-static void     fault_show(const char* text, bool allow_button_reset, bool recover_input);
-static uint8_t  fault_count_message_lines(const char* text);
-static size_t   fault_get_max_line_length(const char* text);
-static bool     fault_uses_big_font(const char* text);
-static void     fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
-static void     fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
-static uint8_t  fault_random_x(const char* text);
-static void     fault_reset_if_button_pressed(void);
+static void    fault_show_recoverable_input(const char* text);
+static bool    fault_input_recovered(uint32_t now);
+static void    fault_show(const char* text, bool allow_button_reset, bool recover_input);
+static uint8_t fault_count_message_lines(const char* text);
+static size_t  fault_get_max_line_length(const char* text);
+static bool    fault_uses_big_font(const char* text);
+static void    fault_draw_line(u8g2_t* graphics, const char* line, uint8_t x_offset, int16_t baseline);
+static void    fault_draw_text(u8g2_t* graphics, const char* text, uint8_t x_offset, int16_t first_baseline);
+static uint8_t fault_random_x(const char* text);
+static void    fault_reset_if_button_pressed(void);
+#if OLED_DIMMING_ENABLED
 static uint32_t fault_get_auto_dim_delay_ms(void);
+#endif
 
 // -----------------------------------------------------------------------------
 // Main Flow
@@ -103,9 +105,11 @@ static void fault_show_recoverable_input(const char* text)
 static void fault_show(const char* text, bool allow_button_reset, bool recover_input)
 {
     // One fault screen owns this state; terminal preemption never returns.
-    static u8g2_t*  graphics;
+    static u8g2_t* graphics;
+#if OLED_DIMMING_ENABLED
     static uint32_t auto_dim_delay_ms;
     static uint32_t last_activity_ms;
+#endif
     static uint32_t last_refresh_ms;
     static uint32_t last_shift_ms;
     static int16_t  text_height;
@@ -138,8 +142,10 @@ static void fault_show(const char* text, bool allow_button_reset, bool recover_i
         fault_button_release_pending = false;
     }
 
+#if OLED_DIMMING_ENABLED
     auto_dim_delay_ms = fault_get_auto_dim_delay_ms();
     OLED_SetDimMode(&oled, false);
+#endif
 
     graphics = OLED_GetGraphics(&oled);
     /* Graphics coordinates follow the configured OLED rotation. Use its
@@ -164,9 +170,11 @@ static void fault_show(const char* text, bool allow_button_reset, bool recover_i
         fault_render(graphics, text, x_offset, y_offset);
         OLED_SendBuffer(&oled);
     }
-    last_shift_ms    = systick_get_ms();
-    last_refresh_ms  = last_shift_ms;
+    last_shift_ms   = systick_get_ms();
+    last_refresh_ms = last_shift_ms;
+#if OLED_DIMMING_ENABLED
     last_activity_ms = last_shift_ms;
+#endif
 
     for (;;)
     {
@@ -181,7 +189,9 @@ static void fault_show(const char* text, bool allow_button_reset, bool recover_i
             btn_task();
             if (btn_has_short_press(true))
             {
+#if OLED_DIMMING_ENABLED
                 last_activity_ms = systick_get_ms();
+#endif
             }
         }
         now = systick_get_ms();
@@ -205,7 +215,9 @@ static void fault_show(const char* text, bool allow_button_reset, bool recover_i
             return;
         }
 
+#if OLED_DIMMING_ENABLED
         OLED_SetDimMode(&oled, (auto_dim_delay_ms != 0) && ((uint32_t)(now - last_activity_ms) >= auto_dim_delay_ms));
+#endif
 
         if (graphics != NULL && (uint32_t)(now - last_shift_ms) >= FAULT_SHIFT_INTERVAL_MS)
         {
@@ -508,6 +520,7 @@ static uint8_t fault_random_x(const char* text)
     return (uint8_t)((uint32_t)hotwand_rand() % ((uint32_t)maximum_shift + 1));
 }
 
+#if OLED_DIMMING_ENABLED
 static uint32_t fault_get_auto_dim_delay_ms(void)
 {
     hotwand_setup_nvm_t settings;
@@ -533,3 +546,4 @@ static uint32_t fault_get_auto_dim_delay_ms(void)
         return 0;
     }
 }
+#endif

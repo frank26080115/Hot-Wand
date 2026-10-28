@@ -34,6 +34,44 @@ class FactoryCleanupTests(unittest.TestCase):
             session.__exit__(None, None, None)
         session.reset.assert_not_called()
 
+    def test_running_cleanup_waits_for_interrupt_before_reset_and_erase(self):
+        session = self.session()
+        session.running = True
+        session.stopped.wait = Mock(return_value=True)
+
+        def command(instruction, **kwargs):
+            if instruction.startswith('-interpreter-exec'):
+                self.assertFalse(session.running, "Monitor commands require GDB's stopped state")
+                session.stopped.wait.assert_called_once_with(timeout=3)
+
+        session.command.side_effect = command
+        session.restore_factory_defaults()
+        self.assertEqual([call.args[0] for call in session.command.call_args_list], [
+            '-exec-interrupt --all',
+            '-interpreter-exec console "monitor reset halt"',
+            '-interpreter-exec console "monitor flash erase_address 0x08007c00 0x400"',
+        ])
+        session.read_memory.assert_called_once_with(0x08007C00, 1024)
+        session.reset.assert_called_once()
+
+    def test_failed_interrupt_cannot_proceed_to_flash_erase(self):
+        session = self.session()
+        session.running = True
+        session.stopped.wait = Mock(return_value=False)
+        with self.assertRaisesRegex(RuntimeError, "did not report the target stopped"):
+            session.restore_factory_defaults()
+        session.command.assert_called_once_with('-exec-interrupt --all')
+        session.read_memory.assert_not_called()
+        session.reset.assert_not_called()
+
+    def test_cleanup_failure_also_reports_the_original_test_failure(self):
+        session = self.session()
+        session.factory_defaults_on_exit = True
+        session.read_memory.return_value = bytes(1024)
+        with self.assertRaisesRegex(RuntimeError, "ADC boot failed.*Factory-default NVM cleanup failed"):
+            with session_context(session):
+                raise RuntimeError("ADC boot failed")
+
     def test_test_failure_and_keyboard_interrupt_still_cleanup(self):
         for error in (AssertionError("failed"), KeyboardInterrupt()):
             with self.subTest(error=type(error).__name__):

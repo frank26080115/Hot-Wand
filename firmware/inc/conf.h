@@ -421,7 +421,18 @@
 // Display
 // -----------------------------------------------------------------------------
 
-#define OLED_DIM_CONTRAST 32
+/* Compile out automatic dimming, its saved timeout, and its setup page.
+ * Each layout has its own NVM magic; changing this flag resets settings. */
+#ifndef OLED_DIMMING_ENABLED
+#define OLED_DIMMING_ENABLED 0
+#endif
+#if (OLED_DIMMING_ENABLED != 0) && (OLED_DIMMING_ENABLED != 1)
+#error "OLED_DIMMING_ENABLED must be 0 or 1"
+#endif
+
+#if OLED_DIMMING_ENABLED
+#define OLED_DIM_CONTRAST 8
+#endif
 
 /* Horizontal burn-in shifts for the two fixed-width OLED fonts. */
 #define OLED_MAX_PIXEL_SHIFT_X_SMALLFONT 7

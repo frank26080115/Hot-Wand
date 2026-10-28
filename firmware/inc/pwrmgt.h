@@ -19,7 +19,8 @@ extern "C"
 {
 #endif
 
-void     pwrmgt_set_desired_power_level(pwrlvl_mode_t mode);
+void pwrmgt_set_desired_power_level(pwrlvl_mode_t mode);
+/* Selects one of the eight delta/absolute activity profiles by stored index. */
 void     pwrmgt_set_idle_power_threshold(uint8_t threshold);
 uint32_t pwrmgt_get_idle_duration_ms(void);
 uint32_t pwrmgt_get_time_since_last_activity_ms(void);

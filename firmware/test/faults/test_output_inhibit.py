@@ -66,6 +66,7 @@ class OutputInhibitTests(unittest.TestCase):
                 before = self.rf.rf_value(5)
                 self.rf.rf_task_check(now, mode)
                 self.assertEqual(self.rf.rf_value(5) - before, int(now % 1000 < on_ms))
+                self.assertEqual(self.rf.rf_value(6), int(now % 1000 < on_ms))
                 self.assertEqual(self.rf.rf_value(0), 0)
                 self.assertEqual(self.rf.rf_value(2), 0)
                 self.assertEqual(self.rf.rf_value(3), 0)

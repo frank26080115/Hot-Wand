@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import cv2
 import numpy as np
 
 try:
@@ -40,6 +39,9 @@ def compare_framebuffer_to_capture(framebuffer: bytes, captured_bgr: np.ndarray,
     pixel). Surrounding four pixels are excluded from each square. The
     synthetic PNG, classified camera pixels, and disagreements are retained.
     """
+    # Framebuffer signatures also serve camera-free tests, which need no OpenCV.
+    import cv2
+
     expected = framebuffer_to_array(framebuffer)
     if expected.shape != (OLED_HEIGHT, OLED_WIDTH):
         raise RuntimeError(f"Unexpected framebuffer raster shape: {expected.shape}")

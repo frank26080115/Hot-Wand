@@ -114,6 +114,33 @@ class SharedBootTests(unittest.TestCase):
         self.assertEqual(self.target.read_u32(0x20001000), 1)
         self.assertEqual(self.target.read_u32(0x20001004), 0)
 
+    def test_reset_poll_ignores_stale_nonzero_and_partly_cleared_abi_headers(self):
+        original = self.target.read_memory
+        # Reset can leave the old ABI word intact while startup clears the
+        # remaining fields. No producer/options may be committed in that state.
+        pending = [struct.pack("<4I", 0xA5A5A5A5, 0, 0, 0),
+                   struct.pack("<4I", 1, 0, 0, 0),
+                   struct.pack("<4I", 0, 128, 12, 7)]
+
+        def read(address, length):
+            if address == 0x20000000 and length == 16 and pending:
+                self.assertEqual(self.target.writes, [])
+                return pending.pop(0)
+            return original(address, length)
+
+        with patch.object(self.target, "read_memory", side_effect=read), patch("harness.time.sleep"):
+            self.boot(setup=True)
+        self.assertEqual(pending, [])
+        self.assertTrue(self.target.running)
+        self.assertEqual(self.target.read_u32(0x20000018), 1)
+
+    def test_incompatible_header_times_out_without_starting_adc(self):
+        self.target.put(0x20000000, struct.pack("<4I", 99, 128, 12, 7))
+        with patch("harness.time.sleep"), patch("harness.time.monotonic", side_effect=(0, 1, 6)):
+            with self.assertRaisesRegex(RuntimeError, "ADC boot gate; observed header.*99"):
+                self.boot(setup=True)
+        self.assertEqual(self.target.writes, [])
+
     def test_active_sequence_is_never_overwritten(self):
         self.target.put(0x2000001c, struct.pack("<I", 2))
         with self.assertRaisesRegex(RuntimeError, "fresh, empty"):

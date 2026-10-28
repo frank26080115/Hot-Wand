@@ -22,6 +22,8 @@ def covers(*families):
 
 
 def library(name, *, support="faults", flags=(), memory=True):
+    if name in ("main", "message", "recovery", "storage") and not any("OLED_DIMMING_ENABLED=" in f for f in flags):
+        flags = ("-DOLED_DIMMING_ENABLED=1", *flags)  # Explicit positive-feature fixtures.
     if name == "power" and not any("PWRLVL_PWM_JUMP_LEVEL=" in flag for flag in flags):
         flags = ("-DPWRLVL_PWM_JUMP_LEVEL=16", *flags)  # Fixed fixture tuning; preserve bench experiments.
     if name == "power" and not any("PWRLVL_POWER_LIMIT_ENABLED=" in flag for flag in flags):
@@ -671,7 +673,7 @@ class PowerTests(unittest.TestCase):
 
     @covers("idle.threshold", "time.wrap")
     def test_all_idle_thresholds_equality_and_activity_timer(self):
-        for index, threshold in enumerate((1000, 2000, 5000, 10000, 20000, 30000, 40000)):
+        for index, threshold in enumerate((20000, 30000, 40000, 20000, 30000, 40000, 25000, 40000)):
             self.lib.normal_reset(100)
             self.lib.normal_threshold(index)
             self.step(200, threshold - 1)
@@ -989,7 +991,7 @@ class StorageTests(unittest.TestCase):
     @covers("settings.defaults", "settings.journal", "components")
     def test_defaults_normal_journal_rollover_and_factory_reset_in_ram(self):
         self.lib.storage_reset()
-        self.assertEqual([self.lib.default_value(i) for i in range(9)], [0,5,0,0,3,0,1,0,0])
+        self.assertEqual([self.lib.default_value(i) for i in range(9)], [0,5,0,0,1,0,1,0,0])
         self.assertEqual(self.lib.storage_read(), 255)
         self.assertEqual(self.lib.storage_save(0), 1)
         calls = self.lib.storage_value(0)
@@ -1105,14 +1107,14 @@ class OledDimTests(unittest.TestCase):
         # its I2C/u8g2 boundary is mocked; no second dimming implementation.
         source = (ROOT / "src/oled.c").read_text(encoding="utf-8")
         start = source.index("bool OLED_SetDimMode(")
-        finish = source.index("\nvoid HAL_I2C_MspInit", start)
+        finish = source.index("\n#endif", start)
         unit = BUILD / "oled_dim_unit.c"
         unit.write_text('#include "oled.h"\n' + source[start:finish] +
                         '\n#include "' + (ROOT / "test/functional/oled_bridge.inc").as_posix() + '"\n',
                         encoding="utf-8", newline="\r\n")
         dll = BUILD / f"oled-{os.getpid()}.dll"
         subprocess.run(["clang", "-shared", "-nostdlib", "-fuse-ld=lld", "-O1", "-Itest/faults/support",
-                        "-Iinc", "-Ilib/u8g2/csrc", str(unit), "-o", str(dll), "-Wl,/noentry"], cwd=ROOT, check=True)
+                        "-Iinc", "-Ilib/u8g2/csrc", "-DOLED_DIMMING_ENABLED=1", str(unit), "-o", str(dll), "-Wl,/noentry"], cwd=ROOT, check=True)
         cls.lib = ctypes.CDLL(str(dll))
 
     @covers("dim.delay")
@@ -1121,7 +1123,7 @@ class OledDimTests(unittest.TestCase):
         self.assertEqual(self.lib.dim_set(0), 1)
         self.assertEqual(self.lib.dim_value(2), 0)
         self.assertEqual(self.lib.dim_set(1), 1)
-        self.assertEqual(self.lib.dim_value(1), 32)
+        self.assertEqual(self.lib.dim_value(1), 8)
         self.assertEqual(self.lib.dim_value(0), 1)
         self.lib.dim_set(1)
         self.assertEqual(self.lib.dim_value(2), 1)

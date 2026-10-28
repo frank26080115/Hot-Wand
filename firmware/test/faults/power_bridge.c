@@ -11,10 +11,23 @@ uint32_t                    adc_get_completed_round_count(void)
     return 0;
 }
 #endif
-TIM_TypeDef        mock_tim3;
-static uint32_t    mock_now, mock_power;
-static uint16_t    mock_dc, mock_current, mock_temperature, mock_bucket, mock_reference;
-static bool        mock_spike, mock_loss, mock_battery_ok, mock_allowed;
+TIM_TypeDef     mock_tim3;
+static uint32_t mock_now, mock_power;
+static uint16_t mock_dc, mock_current, mock_temperature, mock_bucket, mock_reference;
+static bool     mock_spike, mock_loss, mock_battery_ok, mock_allowed;
+static bool     mock_rf_for_activity;
+#ifndef NATIVE_RF_INTEGRATION
+bool rfgen_is_active(void)
+{
+    return mock_rf_for_activity;
+}
+#if HOT_WAND_TEST_HARNESS
+bool rfgen_is_requested_for_test(void)
+{
+    return mock_rf_for_activity;
+}
+#endif
+#endif
 static const char* mock_fault;
 static uint32_t mock_recovery_count, mock_fan_resumes, mock_trend_remaining, mock_undervoltage_count, mock_recovered_mv;
 static bool     mock_abort_terminal;
@@ -46,6 +59,17 @@ __declspec(dllexport) void bridge_reset(uint32_t now)
     pwrmgt_pending_blocked_message                                                           = 0;
     pwrmgt_blocked_release_pending                                                           = false;
     pwrlvl_init();
+    mock_rf_for_activity         = false;
+    pwrmgt_activity_history_mask = pwrmgt_activity_on_guard_segments = 0;
+    pwrmgt_activity_previous_rf_active = pwrmgt_activity_segment_excluded = false;
+    pwrmgt_history_push_idx                                               = 0;
+    pwrmgt_history_last_update_ms = pwrmgt_last_active_ms = pwrmgt_idle_started_ms = now;
+    pwrmgt_is_idle                                                                 = false;
+    pwrmgt_set_idle_power_threshold(IDLE_DETECT_2W_30W);
+    for (uint8_t i = 0; i < PWRMGT_HISTORY_RECORD_COUNT; ++i)
+    {
+        pwrmgt_power_history_mw[i] = 0;
+    }
 }
 
 /* One call observes one real task pass. The fault mock returns, so tests stop
@@ -112,6 +136,9 @@ __declspec(dllexport) void bridge_input(uint32_t selector, uint32_t value)
         break;
     case 12:
         mock_recovered_mv = value;
+        break;
+    case 13:
+        mock_rf_for_activity = value != 0;
         break;
     }
 }
@@ -233,6 +260,10 @@ void fan_resume(void)
 }
 void show_power_loss_fault(void)
 {
+#ifdef NATIVE_RF_INTEGRATION
+    // Mirror the returning screen: latch RF off before its recovery wait.
+    rfgen_power_loss_stop();
+#endif
     pwrlvl_force_minimum();
     if (mock_fault == NULL)
     {
@@ -242,9 +273,16 @@ void show_power_loss_fault(void)
     ++mock_recovery_count;
     mock_loss = false;
     mock_now += PWRMGT_POWER_LOSS_RECOVERY_MS;
+#ifdef NATIVE_RF_INTEGRATION
+    rfgen_rearm_power_loss();
+#endif
 }
 void show_undervoltage_fault(void)
 {
+#ifdef NATIVE_RF_INTEGRATION
+    // Mirror the returning screen: latch RF off before its recovery wait.
+    rfgen_power_loss_stop();
+#endif
     pwrlvl_force_minimum();
     if (mock_fault == NULL)
     {
@@ -255,6 +293,9 @@ void show_undervoltage_fault(void)
     ++mock_undervoltage_count;
     mock_now += PWRMGT_POWER_LOSS_RECOVERY_MS;
     mock_dc = mock_recovered_mv;
+#ifdef NATIVE_RF_INTEGRATION
+    rfgen_rearm_power_loss();
+#endif
 }
 void show_fault(const char* text, bool reset)
 {

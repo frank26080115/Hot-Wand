@@ -1,8 +1,8 @@
 """Run the STM32F042 Setup Menu SWD and RX0 II hardware test.
 
 Build ``stm32f042_test`` in PlatformIO first. The powered board and ST-Link
-must be connected. Camera capture is optional (--no-camera); a synthetic PNG
-from the sent framebuffer is always saved for every observation.
+must be connected. Camera capture is off by default; use --camera rx0 to enable
+it. A synthetic PNG from the sent framebuffer is saved for every observation.
 This script flashes the existing ELF, preserves the NVM page during flashing,
 drives synthetic presses, and saves a report and every observation image.
 """
@@ -19,19 +19,17 @@ import traceback
 
 try:
     from .build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START, TEST_ELF, TEST_ENVIRONMENT,
-                                 latest_nvm_record, read_menu_items, settings_indices)
+                                 latest_nvm_record, read_menu_items, menu_settings_indices)
     from .harness import start_test_boot
-    from .eyes_rx0 import Rx0Camera
     from .frmbuf2png import save_framebuffer_png
-    from .image_processing import compare_framebuffer_to_capture, stable_frame_signature
+    from .image_processing import stable_frame_signature
     from .target_gdb import GdbSession
 except ImportError:  # Direct execution from this directory.
     from build_metadata import (BuildMetadata, GPHOTO2_EXE, NVM_START, TEST_ELF, TEST_ENVIRONMENT,
-                                latest_nvm_record, read_menu_items, settings_indices)
+                                latest_nvm_record, read_menu_items, menu_settings_indices)
     from harness import start_test_boot
-    from eyes_rx0 import Rx0Camera
     from frmbuf2png import save_framebuffer_png
-    from image_processing import compare_framebuffer_to_capture, stable_frame_signature
+    from image_processing import stable_frame_signature
     from target_gdb import GdbSession
 
 
@@ -50,7 +48,7 @@ class TestRunner:
         self.report_file = (self.output / "report.txt").open("w", encoding="utf-8", buffering=1)
         self.events = []
         self.errors = 0
-        self.camera_ok = not args.no_camera
+        self.camera_ok = args.camera == "rx0"
         self.target = None
         self.camera = None
         self.items = []
@@ -86,10 +84,15 @@ class TestRunner:
                 corrected = self.camera.capture_rectified(prefix.with_name(stem + "_camera.png"),
                                                          raw_output=prefix.with_name(stem + "_full.jpg"))
                 if compare:
+                    # Camera comparison dependencies are optional in framebuffer-only runs.
+                    try:
+                        from .image_processing import compare_framebuffer_to_capture
+                    except ImportError:
+                        from image_processing import compare_framebuffer_to_capture
                     # The voltage footer is recomputed every 100 ms, while a
                     # PTP still takes several seconds. Compare its stable
                     # title/value region, and report whole-frame error too.
-                    volatile_rows = 18 if self.page == 7 else 0
+                    volatile_rows = 18 if self.items[self.page].title == "INPUT\nVOLT\nCALIB" else 0
                     score = compare_framebuffer_to_capture(framebuffer, corrected, prefix,
                                                            volatile_bottom_rows=volatile_rows)
                     self.log(f"{label}: camera/framebuffer mismatch {score.mismatch_count}/{score.pixel_count} "
@@ -102,6 +105,9 @@ class TestRunner:
                 self.camera_ok = False
                 self.log(f"Camera evidence failed at {label}: {exc}; continuing framebuffer-only", status="FAIL")
         return framebuffer
+
+    def item_index(self, title: str) -> int:
+        return next(index for index, item in enumerate(self.items) if item.title == title)
 
     def page_name(self, index: int | None = None) -> str:
         index = self.page if index is None else index
@@ -165,7 +171,7 @@ class TestRunner:
         self.log("Shared test boot: " + json.dumps(report))
 
     def exit_menu(self, save: bool, label: str):
-        self.go_to(len(self.items) - (2 if save else 1), label)
+        self.go_to(self.item_index("SAVE\nAND\nEXIT" if save else "EXIT\nNO\nSAVE"), label)
         after = self.press(LONG_MS, label)
         self.check(after[1] == 0, f"{label}: menu exit reset to boot-held state")
         self.page = 0
@@ -174,14 +180,14 @@ class TestRunner:
         page = self.target.read_memory(NVM_START, 1024)
         # SHOW_SPLASH is absent in the shared test image. The saved field remains
         # in the journal; project only the compiled editable pages for this run.
-        return settings_indices(latest_nvm_record(page))[:len(self.items) - 2]
+        return menu_settings_indices(page, self.items)
 
     def save_nvm_at_stop(self):
         """Capture NVM while GDB is still connected, even after a test error."""
         try:
             current = self.target.read_memory(NVM_START, 1024)
             (self.output / "nvm_at_stop.bin").write_bytes(current)
-            self.log(f"NVM setting indices at stop: {settings_indices(latest_nvm_record(current))}")
+            self.log(f"NVM setting indices at stop: {menu_settings_indices(current, self.items)}")
         except Exception as exc:
             self.log(f"Could not read NVM at stop: {exc}", status="ERROR")
 
@@ -220,24 +226,24 @@ class TestRunner:
 
         for index, item in enumerate(self.items[:len(self.values)]):
             self.go_to(index, f"B2_go_{index}")
-            initial = stable_frame_signature(self.capture(f"B2_{index}_initial"), voltage_page=index == 7)
+            initial = stable_frame_signature(self.capture(f"B2_{index}_initial"), voltage_page=item.title == "INPUT\nVOLT\nCALIB")
             images = [initial]
             for option in range(len(item.options)):
                 image = self.long(f"B2_{index}_option_{option + 1:02d}")
-                images.append(stable_frame_signature(image, voltage_page=index == 7))
+                images.append(stable_frame_signature(image, voltage_page=item.title == "INPUT\nVOLT\nCALIB"))
             self.check(images[-1] == initial, f"B2 {self.page_name()}: options wrap to initial image")
             self.check(len(set(images[:-1])) == len(item.options),
                        f"B2 {self.page_name()}: each option has a distinct image")
 
         # Two RAM edits must survive page navigation, then disappear on discard.
-        self.set_value(0, (self.values[0] + 1) % 3, "B3_edit_power")
+        self.set_value(self.item_index("START\nPOWER\nLEVEL"), (self.values[self.item_index('START\nPOWER\nLEVEL')] + 1) % 3, "B3_edit_power")
         edited_power = stable_frame_signature(self.target.framebuffer())
-        self.set_value(3, (self.values[3] + 1) % 4, "B3_edit_sleep")
+        self.set_value(self.item_index("AUTO\nSLEEP"), (self.values[self.item_index('AUTO\nSLEEP')] + 1) % 4, "B3_edit_sleep")
         edited_sleep = stable_frame_signature(self.target.framebuffer())
-        self.go_to(0, "B3_return_power")
+        self.go_to(self.item_index("START\nPOWER\nLEVEL"), "B3_return_power")
         self.check(stable_frame_signature(self.capture("B3_unsaved_power")) == edited_power,
                    "B3: unsaved power selection survived navigation")
-        self.go_to(3, "B3_return_sleep")
+        self.go_to(self.item_index("AUTO\nSLEEP"), "B3_return_sleep")
         self.check(stable_frame_signature(self.capture("B3_unsaved_sleep")) == edited_sleep,
                    "B3: unsaved sleep selection survived navigation")
         self.exit_menu(False, "B3_discard")
@@ -245,7 +251,7 @@ class TestRunner:
         self.dismiss_and_enter("B3_reenter", reset=False)
         self.check(self.values == self.baseline, "B3: discarded RAM edits absent after reentry")
 
-        self.set_value(7, 0, "B4_voltage_zero")
+        self.set_value(self.item_index("INPUT\nVOLT\nCALIB"), 0, "B4_voltage_zero")
         self.capture("B4_voltage_first")
         time.sleep(2)
         self.capture("B4_voltage_second")
@@ -257,17 +263,17 @@ class TestRunner:
 
     def phase_c(self):
         self.log("C: save, discard, GDB reset persistence, restore")
-        changed_power = (self.baseline[0] + 1) % 3
-        self.set_value(0, changed_power, "C1_power")
+        changed_power = (self.baseline[self.item_index('START\nPOWER\nLEVEL')] + 1) % 3
+        self.set_value(self.item_index("START\nPOWER\nLEVEL"), changed_power, "C1_power")
         self.exit_menu(True, "C1_save")
         saved = self.read_saved_values()
-        self.check(saved[0] == changed_power, "C1: power level saved in NVM")
+        self.check(saved[self.item_index('START\nPOWER\nLEVEL')] == changed_power, "C1: power level saved in NVM")
         self.dismiss_and_enter("C1_reenter", reset=False)
-        self.check(self.values[0] == changed_power, "C1: saved power level visible after reset")
+        self.check(self.values[self.item_index('START\nPOWER\nLEVEL')] == changed_power, "C1: saved power level visible after reset")
 
-        edits = {0: (self.values[0] + 1) % 3, 1: (self.values[1] + 1) % 16,
-                 3: (self.values[3] + 1) % 4, 6: (self.values[6] + 1) % 7,
-                 7: (self.values[7] + 1) % 11}
+        edits = {self.item_index(title): (self.values[self.item_index(title)] + 1) %
+                 len(self.items[self.item_index(title)].options) for title in
+                 ("START\nPOWER\nLEVEL", "FAN\nMODE", "AUTO\nSLEEP", "BATT\nMODE", "INPUT\nVOLT\nCALIB")}
         for index, value in edits.items():
             self.set_value(index, value, f"C2_edit_{index}")
         self.exit_menu(True, "C2_save")
@@ -277,8 +283,8 @@ class TestRunner:
         self.dismiss_and_enter("C2_reenter", reset=False)
         self.check(self.values == saved, "C2: all saved settings reloaded")
 
-        self.set_value(0, (self.values[0] + 1) % 3, "C3_unsaved_power")
-        self.set_value(3, (self.values[3] + 1) % 4, "C3_unsaved_sleep")
+        self.set_value(self.item_index("START\nPOWER\nLEVEL"), (self.values[self.item_index('START\nPOWER\nLEVEL')] + 1) % 3, "C3_unsaved_power")
+        self.set_value(self.item_index("AUTO\nSLEEP"), (self.values[self.item_index('AUTO\nSLEEP')] + 1) % 4, "C3_unsaved_sleep")
         self.exit_menu(False, "C3_discard")
         self.check(self.read_saved_values() == saved, "C3: discard preserved last saved NVM record")
         self.dismiss_and_enter("C3_reenter", reset=False)
@@ -298,7 +304,7 @@ class TestRunner:
 
     def phase_d(self):
         self.log("D: inactivity and safe state")
-        self.set_value(0, (self.baseline[0] + 1) % 3, "D1_unsaved_edit")
+        self.set_value(self.item_index("START\nPOWER\nLEVEL"), (self.baseline[self.item_index('START\nPOWER\nLEVEL')] + 1) % 3, "D1_unsaved_edit")
         before_timeout = stable_frame_signature(self.capture("D1_before_timeout"))
         self.log("D1: waiting 305 seconds with no button commands")
         time.sleep(305)
@@ -350,25 +356,24 @@ class TestRunner:
                                                                 "btn_swd_test_command_ms", "btn_swd_test_state",
                                                                 "btn_swd_test_completed", "vision_test_fiducial_press")}))
             self.log("C4 uses GDB reset and does not claim removal of board power")
-            with GdbSession(metadata.elf, metadata.symbols, port=self.args.gdb_port) as target:
+            with GdbSession(metadata.elf, metadata.symbols, port=self.args.gdb_port, log_dir=self.output) as target:
                 target.factory_defaults_on_exit = True
                 self.log("Exit cleanup erases saved test settings and restores factory defaults")
                 self.target = target
                 original_page = target.read_memory(NVM_START, 1024)
                 (self.output / "nvm_before.bin").write_bytes(original_page)
-                self.baseline = settings_indices(latest_nvm_record(original_page))
-                self.log(f"Starting setting indices: {self.baseline}")
                 target.flash()
                 flashed_page = target.read_memory(NVM_START, 1024)
                 self.check(flashed_page == original_page, "Flash preserved the reserved NVM page", critical=True)
                 self.items = target.inspect(lambda: read_menu_items(target, metadata.address("setup_menu_items")))
                 self.log("Compiled menu: " + json.dumps([{"title": x.title, "options": x.options} for x in self.items]))
 
-                self.baseline = self.baseline[:len(self.items) - 2]
+                self.baseline = menu_settings_indices(original_page, self.items)
+                self.log(f"Starting setting indices: {self.baseline}")
                 self.start_menu_boot()
 
                 try:
-                    if self.args.no_camera:
+                    if self.args.camera == "off":
                         self.log("Camera disabled; saving synthetic framebuffer images only")
                     else:
                         self.setup_camera()
@@ -395,6 +400,13 @@ class TestRunner:
         return 1 if self.errors else 0
 
     def setup_camera(self):
+        if self.args.camera == "off":
+            return
+        # Do not import the RX0/OpenCV pipeline unless explicitly requested.
+        try:
+            from .eyes_rx0 import Rx0Camera
+        except ImportError:
+            from eyes_rx0 import Rx0Camera
         self.camera = Rx0Camera(camera_index=self.args.camera_index, gphoto2=self.args.gphoto2)
         self.log(f"Camera: {self.camera.model}")
         if self.args.calibration:
@@ -410,7 +422,11 @@ class TestRunner:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, help="New artifact directory; default is timestamped under cwd")
-    parser.add_argument("--no-camera", action="store_true", help="Save synthetic framebuffer PNGs without camera access")
+    camera = parser.add_mutually_exclusive_group()
+    camera.add_argument("--camera", choices=("off", "rx0"), default="off",
+                        help="Camera evidence (default: off); framebuffer PNGs are always saved")
+    camera.add_argument("--no-camera", dest="camera", action="store_const", const="off",
+                        help="Alias for --camera off")
     parser.add_argument("--calibration", type=Path, help="Reuse a prior fiducial JSON instead of searching focus/EV")
     parser.add_argument("--crop-to", type=int, default=800, help="Central fiducial search square (default 800)")
     parser.add_argument("--camera-index", type=int, help="RX0 camera index; default first available")

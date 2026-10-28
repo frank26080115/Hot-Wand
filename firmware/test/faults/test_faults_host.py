@@ -32,7 +32,8 @@ class MemorySession:
             ("vision_test_oled_sent_framebuffer", 0x20001100),
             ("btn_swd_test_boot_hold", 0x20001300),
             ("vision_test_fiducial_enabled", 0x20001304),
-            ("tip_swd_test_command", 0x20001308))}
+            ("tip_swd_test_command", 0x20001308),
+            ("fault_test_dimming_enabled", 0x08001400), ("fault_test_inactive_ms", 0x2000130c))}
         self.memory = {}
         self.writes = []
         self.running = False
@@ -447,6 +448,71 @@ class RFPhaseHostTests(unittest.TestCase):
                               self.sample(600, 2), self.sample(650, 3)])
         with self.assertRaisesRegex(AssertionError, "ON/OFF phase"):
             runner.check_rf_cycle(2)
+
+    def test_seventyfive_percent_off_phase_is_observable_with_real_poll_cadence(self):
+        runner = self.runner([])
+        tick = attempts = 0
+
+        def wait(predicate, *, timeout=10, interval=0.12, **kwargs):
+            nonlocal tick, attempts
+            deadline = tick + timeout * 1000
+            while tick < deadline:
+                attempts += int(tick % 1000 < 750)
+                sample = self.sample(tick, attempts, 1)
+                tick += round(interval * 1000)
+                if predicate(sample):
+                    return sample
+            raise TimeoutError("No observable phase window")
+
+        runner.target.wait.side_effect = wait
+        runner.check_rf_cycle(1)
+        self.assertLess(tick, 1000)
+
+    def test_phase_wait_reports_a_firmware_fault_instead_of_timing_out(self):
+        fault = {"stage": 6, "message": "CIRKT\nTOO\nHOT\nFAULT", "temperature_c": 111, "power": 2}
+        for fail_on_second_read in (False, True):
+            runner = self.runner([])
+            states = iter(([self.sample(100, 1, 1)] if fail_on_second_read else []) + [fault])
+
+            def wait(predicate, **kwargs):
+                state = next(states)
+                self.assertTrue(predicate(state))
+                return state
+
+            runner.target.wait.side_effect = wait
+            with self.assertRaisesRegex(AssertionError, "firmware fault: CIRKT / TOO / HOT / FAULT.*111C"):
+                runner.check_rf_cycle(1)
+
+    def test_power_case_never_holds_high_stimulus_during_phase_waits_or_captures(self):
+        for mode in range(3):
+            for fail in (False, True):
+                with self.subTest(mode=mode, failed_observation=fail):
+                    runner = self.runner([])
+                    runner.model = Stimulus(TABLE, CALIBRATION)
+                    runner.boot = Mock()
+                    loaded = False
+
+                    def queue(frames):
+                        nonlocal loaded
+                        loaded = bool(frames[0].channels[2])
+
+                    def unloaded(*args):
+                        self.assertFalse(loaded, "Slow phase/camera operations must use the cool baseline")
+
+                    runner.queue = queue
+                    runner.check_rf_cycle = unloaded
+                    runner.capture = unloaded
+                    runner.quiet = Mock()
+                    runner.target.wait = Mock()
+                    runner.target.status = Mock(side_effect=RuntimeError("read failed") if fail else None,
+                                                return_value={"pwm": 0})
+                    case = Case("L03.power", "power_limit", parameters={"power": mode})
+                    if fail:
+                        with self.assertRaisesRegex(RuntimeError, "read failed"):
+                            runner.exercise(case)
+                    else:
+                        runner.exercise(case)
+                    self.assertFalse(loaded, "High stimulus must also be removed on failure")
 
     def test_recovery_waits_for_next_eligible_phase_without_reset(self):
         first = {"rf_at_fault": 5, "reset_flags": 77}

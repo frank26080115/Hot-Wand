@@ -54,15 +54,17 @@ __declspec(dllexport) uint32_t main_run(uint32_t duration,
     short_event = long_event = false;
     dim_commands = mode_changes = runtime_mark = 0;
     boot_settings                              = (hotwand_setup_nvm_t){0};
-    boot_settings.auto_dim                     = dim;
-    boot_settings.auto_sleep                   = sleep;
-    boot_settings.show_splash                  = splash;
-    stop_at                                    = duration;
-    quantum                                    = duration > 10000 ? 1000 : 1;
-    event_at                                   = first_press;
-    second_event_at                            = next_press;
-    transient_until                            = message_until;
-    running_main                               = true;
+#if OLED_DIMMING_ENABLED
+    boot_settings.auto_dim = dim;
+#endif
+    boot_settings.auto_sleep  = sleep;
+    boot_settings.show_splash = splash;
+    stop_at                   = duration;
+    quantum                   = duration > 10000 ? 1000 : 1;
+    event_at                  = first_press;
+    second_event_at           = next_press;
+    transient_until           = message_until;
+    running_main              = true;
     if (__builtin_setjmp(loop_context) == 0)
     {
         unused_firmware_main();
@@ -427,7 +429,18 @@ __declspec(dllexport) const char* main_sleep(void)
 }
 __declspec(dllexport) uint32_t main_delay(uint32_t dim, uint32_t selection)
 {
-    return dim ? auto_dim_delay_ms[selection] : auto_sleep_delay_ms[selection];
+#if OLED_DIMMING_ENABLED
+    if (dim)
+    {
+        return auto_dim_delay_ms[selection];
+    }
+#else
+    if (dim)
+    {
+        return 0;
+    }
+#endif
+    return auto_sleep_delay_ms[selection];
 }
 __declspec(dllexport) const char* format_voltage(uint32_t value)
 {
@@ -449,7 +462,11 @@ __declspec(dllexport) uint32_t main_loop_value(uint32_t selection)
 {
     if (selection == 0)
     {
+#if OLED_DIMMING_ENABLED
         return oled.dimmed;
+#else
+        return 0;
+#endif
     }
     if (selection == 1)
     {
@@ -482,7 +499,9 @@ void btn_init(void) {}
 void I2C1_Init(void) {}
 bool OLED_Init(OLED_Handle* handle, I2C_HandleTypeDef* i2c)
 {
+#if OLED_DIMMING_ENABLED
     handle->dimmed = 0;
+#endif
     return true;
 }
 void OLED_ConfigureGraphics(OLED_Handle* handle) {}
@@ -568,6 +587,7 @@ uint32_t pwrmgt_get_time_since_last_activity_ms(void)
 {
     return now_ms - last_activity;
 }
+#if OLED_DIMMING_ENABLED
 bool OLED_SetDimMode(OLED_Handle* handle, bool dimmed)
 {
     if (handle->dimmed != dimmed)
@@ -577,6 +597,7 @@ bool OLED_SetDimMode(OLED_Handle* handle, bool dimmed)
     handle->dimmed = dimmed;
     return true;
 }
+#endif
 bool short_msg_task(void)
 {
     return (uint32_t)(now_ms - runtime_start) < transient_until;

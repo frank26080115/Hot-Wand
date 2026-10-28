@@ -39,6 +39,10 @@ static volatile bool rfgen_clock_fault_logged;
 static volatile bool rfgen_emergency_stop_latched;
 static volatile bool rfgen_power_loss_stop_latched;
 static volatile bool rfgen_active;
+#if HOT_WAND_TEST_HARNESS
+// Logical phase for activity-history tests; physical RF stays inhibited.
+static volatile bool rfgen_requested_for_test;
+#endif
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -62,6 +66,7 @@ static void rfgen_start_impl(bool bypass_tip_detector)
      * disabled regardless of settings, ADC frames or debugger commands. */
     ++fault_test.rf_attempts;
     rfgen_stop();
+    rfgen_requested_for_test = true;
 #else
     GPIO_InitTypeDef gpio_cfg = {0};
     uint32_t         interrupt_state;
@@ -238,6 +243,9 @@ static void rfgen_latched_stop(void)
      * Latched callers are checked at both RF-start gates, so an interrupted
      * or later start cannot undo their safety shutdown. */
     rfgen_active = false;
+#if HOT_WAND_TEST_HARNESS
+    rfgen_requested_for_test = false;
+#endif
 
     if (__HAL_RCC_TIM1_IS_CLK_ENABLED())
     {
@@ -295,6 +303,9 @@ void rfgen_task(pwrlvl_mode_t mode)
     // can retrigger the detector and defeat its existing 300 us debounce.
     if (!allow_rf || rfgen_has_fault() || tipdetect_has_triggered())
     {
+#if HOT_WAND_TEST_HARNESS
+        rfgen_requested_for_test = false;
+#endif
         if (rfgen_is_active())
         {
             rfgen_stop();
@@ -386,6 +397,13 @@ bool rfgen_is_active(void)
 {
     return rfgen_active;
 }
+
+#if HOT_WAND_TEST_HARNESS
+bool rfgen_is_requested_for_test(void)
+{
+    return rfgen_requested_for_test;
+}
+#endif
 
 // -----------------------------------------------------------------------------
 // Debug / Fault Helpers

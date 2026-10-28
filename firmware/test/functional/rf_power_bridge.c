@@ -1,5 +1,6 @@
 /* Actual power supervision, buck regulation, and RF generator in one fixture.
  * Only UI, sensor inputs, and hardware registers are mocked. */
+#define NATIVE_RF_INTEGRATION 1
 #include "../faults/power_bridge.c"
 #define RF_BRIDGE_EXTERNAL_CLOCK 1
 #include "rf_bridge.c"
@@ -23,4 +24,10 @@ __declspec(dllexport) uint32_t integrated_step(uint32_t now)
     }
     mock_guard_active = false;
     return rfgen_is_active();
+}
+
+// Inspect eligibility after the real supervision/RF restart ordering.
+__declspec(dllexport) uint32_t integrated_activity_guard(void)
+{
+    return pwrmgt_activity_on_guard_segments;
 }
