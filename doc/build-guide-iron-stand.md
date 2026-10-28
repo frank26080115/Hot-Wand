@@ -4,6 +4,8 @@ This soldering iron stand fits any handpiece that has a 16mm flange, which is co
 
 It consists of mostly 3D printed components and one aluminum plate that is supposed to be cut by SendCutSend (or similar).
 
+![](./bld-photos/stand.jpg)
+
 ![](imgs/stand/side_view_2.png)
 
 ![](imgs/stand/front_view.png)

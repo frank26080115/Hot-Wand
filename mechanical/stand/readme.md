@@ -2,6 +2,8 @@ this directory contains the 3D printed and milled/cut components used for the fo
 
 see [this document to see the instructions](../../doc/build-guide-iron-stand.md)
 
+![](../../doc/bld-photos/stand.jpg)
+
 ![](../../doc/imgs/stand/side_view_2.png)
 
 ![](../../doc/imgs/stand/front_view.png)
