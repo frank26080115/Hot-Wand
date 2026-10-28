@@ -30,9 +30,19 @@ I implemented a rather fancy GUI, fancier than what is available on a Metcal sol
  * various fault detection
  * easter eggs! try and find them
 
-A key aspect of my design is that it's **easy to build**, and to prove it, I built 5 of these in my **first** batch, and they needed no rework. (ahem, I said easy, not cheap, and I meant easier than just straight copying SergeyMax)
+A key aspect of my design is that it's **easy to build, and to prove it, I built 5 of these in my first batch, and they needed no rework**. All of the lessons and mistakes from the SergeyMax design are accounted for. The files are ready for PCBA assembly service upload and I've optimized the hand assembly to minimize tuning.
 
 ![](./doc/bld-photos/variations-anim.webp)
+
+Actually I built 10, there are 5 of each design, you can see why designing it in a way that doesn't annoy me during the build is important. These are going to be gifts to my BattleBots teammates and friends. The world could use some cheer right now.
+
+![](./doc/bld-photos/family-photo-1.jpg)
+
+The circuit board was partially manufactured by a PCBA service, and there are some hand assembly still to be done afterwards. Some of the inductors has to be custom wound.
+
+![](./doc/bld-photos/circuit-1.jpg)
+
+![](./doc/bld-photos/circuit-2.jpg)
 
 The XT30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
@@ -56,7 +66,13 @@ In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz
  * user selectable power levels via externally pluggable jumpers
  * internal glass fuse
 
+![](./doc/bld-photos/lite.jpg)
+
 Physically, Hot-Wand and Hot-Wand-Lite uses the same PCB dimensions. The power input stage are almost identical. The RF output connector is a SMA connector this time. [Radio Thermal](https://radiothermal.com/) (the inspiration for this) has instructions on how to build a cheap handpiece.
+
+![](./doc/bld-photos/circuit-lite-1.jpg)
+
+![](./doc/bld-photos/circuit-lite-2.jpg)
 
 This cost saving design has way less fault protection.
 
@@ -90,7 +106,9 @@ Please see [my full design study (click here)](doc/design-study/design-study.md)
 
 and please explore the [documentation directory itself](doc), as I might've written something but forgot to link it.
 
-## Build Guides
+## Files and Build Guides
 
+ * [Electrical Design Files](electrical)
+ * [Files for Mechanical Parts](mechanical)
  * [DIY build guide for the Hot Wand (13.56 MHz version)](doc/build-guide-13mhz/build-guide.md)
  * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc/build-guide-lite-470khz/build-guide-lite.md)
