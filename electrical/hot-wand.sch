@@ -22657,7 +22657,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <attribute name="JLCPARTNUM" value="C698873"/>
 <attribute name="JLC_ROTATION" value="180"/>
 </part>
-<part name="F1" library="hot-wand" deviceset="FUSE" device="X20MM" value="8A 20x5mm">
+<part name="F1" library="hot-wand" deviceset="FUSE" device="X20MM" value="7A 20x5mm">
 <attribute name="JLC-DNP" value="1"/>
 <attribute name="PARTNUM" value="Keystone 3518P"/>
 </part>
@@ -22697,7 +22697,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="JP2" library="hot-wand" deviceset="USBC-CHGONLY-4M" device="-DRILL" value="USBC-CHGONLY-4M-DRILL">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="Q8" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="2N7002K">
+<part name="Q8" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="Si2318">
 <attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659"/>
 <attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>
@@ -22880,7 +22880,7 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <part name="PCB2" library="hot-wand" deviceset="PCB-ART-VERSION" device="">
 <attribute name="JLC-DNP" value="1"/>
 </part>
-<part name="Q9" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="G3404">
+<part name="Q9" library="hot-wand" deviceset="MOSFET-NCHANNEL" device="SMD" value="Si2318">
 <attribute name="JLCPARTNUM" value="C14498;C547263;C96615"/>
 <attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR"/>
 </part>

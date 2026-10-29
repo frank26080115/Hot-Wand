@@ -2165,7 +2165,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="JLCPARTNUM" value="C698873" x="32.5" y="28.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="JLC_ROTATION" value="180" x="32.5" y="28.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="F1" library="hot-wand" package="FUSE_5MM" value="8A 20x5mm" x="23.5" y="68.2" smashed="yes" rot="R270">
+<element name="F1" library="hot-wand" package="FUSE_5MM" value="7A 20x5mm" x="23.5" y="68.2" smashed="yes" rot="R270">
 <attribute name="PARTNUM" value="Keystone 3518P" x="23.5" y="68.2" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="JLC-DNP" value="1" x="23.5" y="68.2" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
@@ -2218,7 +2218,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="PACKAGE" value="None" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="JLC-DNP" value="1" x="2.6" y="40" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="Q8" library="hot-wand" package="SOT23-3" value="2N7002K" x="22" y="41.5" smashed="yes" rot="MR0">
+<element name="Q8" library="hot-wand" package="SOT23-3" value="Si2318" x="22" y="41.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="23.778" y="41.1745" size="0.8128" layer="26" font="vector" rot="MR90"/>
 <attribute name="JLCPARTNUM" value="C14498;C547263;C5224211;C54347659" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="PARTNUM" value="2N7002K;SSM3K388R,LF;Si2318CDS-T1-GE3;PMV60ENEAR" x="22" y="41.5" size="1.778" layer="28" rot="MR0" display="off"/>
@@ -2477,7 +2477,7 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <element name="PCB2" library="hot-wand" package="PCB-ART-VERSION" value="PCB-ART-VERSION" x="107" y="43.6" rot="MR270">
 <attribute name="JLC-DNP" value="1" x="107" y="43.6" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="Q9" library="hot-wand" package="SOT23-3" value="G3404" x="20.7" y="19" smashed="yes" rot="MR0">
+<element name="Q9" library="hot-wand" package="SOT23-3" value="Si2318" x="20.7" y="19" smashed="yes" rot="MR0">
 <attribute name="PARTNUM" value="G3404;MMFTN3404A;PJA3404A;Si2318CDS-T1-GE3;PMV60ENEAR" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="18.922" y="19.6255" size="0.8128" layer="26" rot="MR270"/>
 <attribute name="JLCPARTNUM" value="C14498;C547263;C96615" x="20.7" y="19" size="1.778" layer="28" rot="MR0" display="off"/>
