@@ -44,6 +44,8 @@ The circuit board was partially manufactured by a PCBA service, and there are so
 
 ![](./doc/bld-photos/circuit-2.jpg)
 
+![](./doc/bld-photos/hot-wand-history.png)
+
 The XT30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
 The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (capable of 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. There are some tricks being done to make sure the system does not overload the USB-PD host.
@@ -73,6 +75,8 @@ Physically, Hot-Wand and Hot-Wand-Lite uses the same PCB dimensions. The power i
 ![](./doc/bld-photos/circuit-lite-1.jpg)
 
 ![](./doc/bld-photos/circuit-lite-2.jpg)
+
+![](./doc/bld-photos/hot-wand-lite-history.png)
 
 This cost saving design has way less fault protection.
 
