@@ -34,7 +34,7 @@ A key aspect of my design is that it's **easy to build, and to prove it, I built
 
 ![](./doc/bld-photos/variations-anim.webp)
 
-Actually I built 10, there are 5 of each design, you can see why designing it in a way that doesn't annoy me during the build is important. These are going to be gifts to my BattleBots teammates and friends. The world could use some cheer right now.
+Actually I built 10, there are 5 of each design, you can see why designing it in a way that doesn't annoy me during the build is important. These are going to be gifts to my BattleBots teammates and friends. The world is stressing everyone out, we could all use some cheering up right now.
 
 ![](./doc/bld-photos/family-photo-1.jpg)
 
@@ -60,7 +60,7 @@ While this is a DIY project and not a commercial product, it is a difficult proj
 
 ## Hot-Wand Lite
 
-In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz handpieces. This is the inexpensive version. It is a clone of the [Radio Thermal](https://radiothermal.com/), but with modifications
+In the same spirit, a compact RF soldering iron station. Compatible with 470 kHz handpieces. This is the inexpensive version. It is a derivative of the [Radio Thermal](https://radiothermal.com/) soldering iron station, but with modifications
 
  * layout to fit in a 3D printed enclosure (but compatible with the Hammond enclosure)
  * uses battery XT30 connector or USB-PD for input
