@@ -12,9 +12,7 @@ PlatformIO will attempt to load the project, this might take a long time. After 
 
  * seeed_xiao_rp2040
  * seeed_xiao_samd21
- * waveshare_rp2040_zero
  * seeed_xiao_esp32c3
- * esp32c3_supermini
 
 Expand one of these, and click "Upload". It should be that simple.
 

@@ -3,7 +3,7 @@
 // Select 1 or 2, or -1 for V1 reworked for the XIAO ESP32-C3.
 // A build flag can select the rework without changing the default for other builds.
 #ifndef HOTWANDLITE_PCB_VERSION
-#define HOTWANDLITE_PCB_VERSION 1
+#define HOTWANDLITE_PCB_VERSION 2
 #endif
 
 #if defined(HOTWANDLITE_TARGET_XIAO_ESP32S3) || defined(HOTWANDLITE_TARGET_WAVESHARE_ESP32C3_ZERO)

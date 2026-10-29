@@ -34,21 +34,23 @@ Run `STM32CubeProgrammer`.
 
 Power on the Hot-Wand, using your preferred power input method. (be smart about it, if you can use one with a current limit, then use a 0.5A current limit)
 
-Click on `Connect` inside `STM32CubeProgrammer`. The GUI should populate with some information about the current microcontroller, indicating that it is a `STM32F042`.
+Set the connection parameters correctly, see the screenshot. Click on `Connect` inside `STM32CubeProgrammer`.
 
-<!-- Insert screenshot of a successful STM32CubeProgrammer connection here. -->
+![](../../firmware/doc/flashing-screenshots/1.png)
 
-Open the `Erasing & Programming` page using the navigation on the left side of the window.
+The GUI should populate with some information about the current microcontroller, indicating that it is a `STM32F042`.
 
-Under `File path`, browse to and select the downloaded firmware `*.hex` file. The addresses required for programming are contained in the hex file, so no start address needs to be entered manually.
+![](../../firmware/doc/flashing-screenshots/2.png)
+
+Open the `Erasing & Programming` page using the navigation on the left side of the window. Under `File path`, browse to and select the downloaded firmware `*.hex` file. The addresses required for programming are contained in the hex file, so no start address needs to be entered manually.
 
 Enable the option to verify the programmed data after writing, if it is available in the installed version of STM32CubeProgrammer.
 
 Click `Start Programming` or `Download`, depending on the version of the software. Wait for both the programming and verification operations to complete successfully. Do not disconnect the debugger or remove power while this operation is in progress.
 
-<!-- Insert screenshot of the selected firmware file and programming controls here. -->
+![](../../firmware/doc/flashing-screenshots/3.png)
 
-<!-- Insert screenshot of the successful programming and verification message here. -->
+![](../../firmware/doc/flashing-screenshots/4.png)
 
 Click `Disconnect`, close STM32CubeProgrammer, and then remove power from the Hot-Wand. Disconnect the USB cable and jumper wires after the target is no longer powered.
 
@@ -62,7 +64,13 @@ Open the "firmware" directory of Hot-Wand using VS Code.
 
 Click on the PlatformIO icon on the sidebar (or otherwise, activate PlatformIO).
 
+![](../../firmware/doc/flashing-screenshots/vs1.png)
+
 You will see a list of build targets. Click on "stm32f042" for a normal build, click the "Build" button, wait until the build completes, the click on the "Flash" button.
+
+![](../../firmware/doc/flashing-screenshots/vs2.png)
+
+![](../../firmware/doc/flashing-screenshots/vs3.png)
 
 (if you are using a cheap clone ST-Link V2, use "stm32f042_stlink_v2_clone" instead)
 
