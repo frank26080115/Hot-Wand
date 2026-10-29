@@ -173,22 +173,26 @@ class SharedBootTests(unittest.TestCase):
         self.assertTrue(self.target.running)
 
     def test_menu_length_is_read_from_firmware(self):
-        for count in (10, 11):
+        for count in (11, 12):
             with self.subTest(count=count):
                 target = MemoryTarget()
                 target.put(target.symbols["setup_menu_item_count"].address, struct.pack("<I", count))
                 table_address = 0x08002000
                 for index in range(count):
-                    title = f"VALUE{index}" if index < count - 2 else ("SAVE\nAND\nEXIT" if index == count - 2 else "EXIT\nNO\nSAVE")
+                    title = (f"VALUE{index}" if index < count - 3 else
+                             ("SAVE\nAND\nEXIT", "EXIT\nNO\nSAVE", "V1.0")[index - (count - 3)])
                     title_address = 0x08003000 + index * 128
                     option_address = title_address + 64
                     target.put(title_address, title.encode("ascii") + b"\0")
                     target.put(option_address, b"A|B\0")
                     target.put(table_address + index * 12,
-                               struct.pack("<IIB3x", title_address, option_address, 2 if index < count - 2 else 0))
+                               struct.pack("<IIB3x", title_address, option_address, 2 if index < count - 3 else 0))
                 items = read_menu_items(target, table_address)
                 self.assertEqual(len(items), count)
-                self.assertEqual(items[-2].title, "SAVE\nAND\nEXIT")
+                self.assertEqual(items[-3].title, "SAVE\nAND\nEXIT")
+                self.assertEqual(items[-2].title, "EXIT\nNO\nSAVE")
+                self.assertEqual(items[-1].title, "V1.0")
+                self.assertEqual(items[-1].options, ())
 
 
 if __name__ == "__main__":

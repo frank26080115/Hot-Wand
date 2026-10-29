@@ -545,7 +545,8 @@ class FaultRunner:
             self.capture("setup", require_new_frame=False)
             items = self.session.inspect(lambda: read_menu_items(self.session, self.session.symbols["setup_menu_items"].address))
             self.session.press(1250)  # Real startup-power edit; no flash write yet.
-            for _ in range(len(items) - 2):
+            save_index = next(index for index, item in enumerate(items) if item.title == "SAVE\nAND\nEXIT")
+            for _ in range(save_index):
                 self.session.press(200)
             self.target.command("nvm_save")
             self.session.press(1250)

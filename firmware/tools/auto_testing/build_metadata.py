@@ -120,7 +120,8 @@ def read_menu_items(target, table_address: int, count: int | None = None) -> lis
         if len(choices) != option_count:
             raise RuntimeError(f"Compiled menu item {index} has inconsistent option count")
         items.append(MenuItem(title, tuple(choices)))
-    if [item.title for item in items[-2:]] != ["SAVE\nAND\nEXIT", "EXIT\nNO\nSAVE"]:
+    if ([item.title for item in items[-3:-1]] != ["SAVE\nAND\nEXIT", "EXIT\nNO\nSAVE"]
+            or items[-1].options):
         raise RuntimeError("Compiled menu action pages differ from the expected layout")
     return items
 

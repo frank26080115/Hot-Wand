@@ -1812,7 +1812,6 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <attribute name="VALUE" x="90.516" y="49.503" size="0.8128" layer="28" font="vector" rot="MR0"/>
 <attribute name="JLCPARTNUM" value="C6958299" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="PARTNUM" value="QCCT102Q101J1GV001E" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PLACEHOLDERPART" value="C28233" x="89.1" y="48.5" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="L4" library="hot-wand" package="IND_T130-6_X2" value="180nH" x="93" y="53" smashed="yes">
 <attribute name="NAME" x="94" y="52" size="0.8128" layer="25" font="vector"/>

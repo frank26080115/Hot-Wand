@@ -24,6 +24,7 @@
 #include "stm32f0xx_hal.h"
 #include "systick.h"
 #include "typedefs.h"
+#include "version.h"
 #include "watchdog.h"
 
 #include <stdbool.h>
@@ -79,6 +80,7 @@ enum
 #endif
     SETUP_ITEM_SAVE_AND_EXIT,
     SETUP_ITEM_EXIT_NO_SAVE,
+    SETUP_ITEM_VERSION,
     SETUP_MENU_ITEM_COUNT,
 };
 
@@ -172,6 +174,12 @@ static const setup_menu_item_t setup_menu_items[SETUP_MENU_ITEM_COUNT] = {
                                           .items     = "",
                                           .items_cnt = 0,
                                           },
+    [SETUP_ITEM_VERSION] =
+        {
+                                          .title     = firmware_version,
+                                          .items     = "",
+                                          .items_cnt = 0,
+                                          },
 };
 
 #if !FAN_PWM_ENABLED
@@ -194,7 +202,7 @@ static uint8_t     setup_menu_get_option_count(uint8_t item);
 static void        setup_menu_cycle_value(hotwand_setup_nvm_t* settings, uint8_t item);
 static const char* setup_menu_find_option(const char* items, uint8_t option);
 static uint8_t     setup_menu_draw_text(u8g2_t* graphics, const char* text, char terminator, uint8_t baseline);
-static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline);
+static void        setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline, bool centered);
 static void        setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* settings, uint8_t item);
 static void        setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibration);
 static void        setup_menu_exit(const hotwand_setup_nvm_t* settings, bool save);
@@ -394,15 +402,40 @@ static void setup_menu_render(u8g2_t* graphics, const hotwand_setup_nvm_t* setti
 
     u8g2_ClearBuffer(graphics);
 
-    setup_menu_draw_line(graphics, "SETUP", SETUP_MENU_FIVE_CHAR_COUNT, OLED_FIRST_TEXT_BASELINE);
+    setup_menu_draw_line(graphics, "SETUP", SETUP_MENU_FIVE_CHAR_COUNT, OLED_FIRST_TEXT_BASELINE, false);
 
     /* Advance two rows: row two is deliberately blank. */
     baseline = (uint8_t)(OLED_FIRST_TEXT_BASELINE + (2 * OLED_TEXT_LINE_HEIGHT));
-    baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
+    if (item == SETUP_ITEM_VERSION)
+    {
+        const char* text = menu_item->title;
+
+        setup_menu_draw_line(graphics, "VER", 3, baseline, true);
+        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
+        setup_menu_draw_line(graphics, "=", 1, baseline, true);
+        baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
+
+        while (*text != '\0')
+        {
+            size_t length = 0;
+
+            while ((length < SETUP_MENU_FIVE_CHAR_COUNT) && (text[length] != '\0'))
+            {
+                ++length;
+            }
+            setup_menu_draw_line(graphics, text, length, baseline, true);
+            baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
+            text += length;
+        }
+    }
+    else
+    {
+        baseline = setup_menu_draw_text(graphics, menu_item->title, '\0', baseline);
+    }
 
     if (item <= SETUP_MENU_LAST_VALUE_ITEM)
     {
-        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, baseline);
+        setup_menu_draw_line(graphics, "  =  ", SETUP_MENU_FIVE_CHAR_COUNT, baseline, false);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
         option   = setup_menu_find_option(menu_item->items, setup_menu_get_value(settings, item));
         setup_menu_draw_text(graphics, option, '|', baseline);
@@ -429,7 +462,7 @@ static void setup_menu_draw_calibrated_voltage(u8g2_t* graphics, uint8_t calibra
     voltage[voltage_length++] = 'V';
     voltage[voltage_length]   = '\0';
 
-    setup_menu_draw_line(graphics, voltage, voltage_length, SETUP_MENU_BOTTOM_TEXT_BASELINE);
+    setup_menu_draw_line(graphics, voltage, voltage_length, SETUP_MENU_BOTTOM_TEXT_BASELINE, false);
 }
 
 static uint8_t setup_menu_get_value(const hotwand_setup_nvm_t* settings, uint8_t item)
@@ -484,7 +517,7 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
         }
 
         length = (size_t)(end - line);
-        setup_menu_draw_line(graphics, line, length, baseline);
+        setup_menu_draw_line(graphics, line, length, baseline, false);
         baseline = (uint8_t)(baseline + OLED_TEXT_LINE_HEIGHT);
 
         if (*end != '\n')
@@ -497,10 +530,11 @@ static uint8_t setup_menu_draw_text(u8g2_t* graphics, const char* text, char ter
     return baseline;
 }
 
-static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline)
+static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t length, uint8_t baseline, bool centered)
 {
     char   line[SETUP_MENU_CHARS_PER_LINE + 1];
     size_t index;
+    u8g2_uint_t x = SETUP_MENU_CENTERED_MARGIN;
 
     if ((graphics == NULL) || (text == NULL))
     {
@@ -519,7 +553,17 @@ static void setup_menu_draw_line(u8g2_t* graphics, const char* text, size_t leng
     line[length] = '\0';
 
     u8g2_SetFont(graphics, length <= SETUP_MENU_FIVE_CHAR_COUNT ? u8g2_font_6x10_tr : u8g2_font_5x7_tr);
-    u8g2_DrawStr(graphics, SETUP_MENU_CENTERED_MARGIN, baseline, line);
+    if (centered)
+    {
+        u8g2_uint_t display_width = u8g2_GetDisplayWidth(graphics);
+        u8g2_uint_t text_width    = u8g2_GetStrWidth(graphics, line);
+
+        if (text_width < display_width)
+        {
+            x = (u8g2_uint_t)((display_width - text_width) / 2);
+        }
+    }
+    u8g2_DrawStr(graphics, x, baseline, line);
 }
 
 // -----------------------------------------------------------------------------

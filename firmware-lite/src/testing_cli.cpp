@@ -20,8 +20,10 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include "pins.h"
 #include "power.h"
 #include "rfgen.h"
+#include "version.h"
 
 // -----------------------------------------------------------------------------
 // Test CLI
@@ -46,6 +48,7 @@ uint8_t  g_simulatedMode            = 0;
 uint32_t g_simulatedVoltageMv       = 0;
 uint32_t g_lastVoltageReportMs     = 0;
 
+static void version_command(SerialCommands* sender);
 static void set_power_command(SerialCommands* sender);
 static void set_freq_command(SerialCommands* sender);
 static void enable_voltage_command(SerialCommands* sender);
@@ -56,6 +59,7 @@ static void start_testing(SerialCommands* sender);
 static void report_voltage(uint32_t currentTimeMs, uint32_t voltageMv);
 static const char* simulated_mode_name(uint8_t modeNumber);
 
+SerialCommand versionCommand("version", version_command);
 SerialCommand powerCommand("power", set_power_command);
 SerialCommand freqCommand("freq", set_freq_command);
 SerialCommand voltageCommand("voltage", enable_voltage_command);
@@ -82,6 +86,7 @@ SerialCommand simulateVoltageCommand("simvoltage", simulate_voltage_command);
 
 void cli_init()
 {
+    testingCli.AddCommand(&versionCommand);
     testingCli.AddCommand(&powerCommand);
     testingCli.AddCommand(&freqCommand);
     testingCli.AddCommand(&voltageCommand);
@@ -157,6 +162,19 @@ bool testing_get_simulated_voltage_mv(uint32_t* voltageMv)
 
 namespace
 {
+static void version_command(SerialCommands* sender)
+{
+    if (sender->Next() != nullptr)
+    {
+        sender->GetSerial()->println("ERROR: usage: version");
+        return;
+    }
+
+    sender->GetSerial()->println(firmware_version);
+    sender->GetSerial()->print("PCB version: ");
+    sender->GetSerial()->println(HOTWANDLITE_PCB_VERSION);
+}
+
 static void set_power_command(SerialCommands* sender)
 {
     char* argument = sender->Next();
@@ -293,7 +311,7 @@ static void unrecognized_command(SerialCommands* sender, const char* command)
 {
     sender->GetSerial()->print("ERROR: unknown test command: ");
     sender->GetSerial()->println(command);
-    sender->GetSerial()->println("Commands: power <percent>, freq <hertz>, voltage, simmode <0-2>, simvoltage <mV>");
+    sender->GetSerial()->println("Commands: version, power <percent>, freq <hertz>, voltage, simmode <0-2>, simvoltage <mV>");
 }
 
 static void start_testing(SerialCommands* sender)
