@@ -13,3 +13,6 @@ temp_downloads
 *.b#8
 *.b#9
 stand/strike-plate-gerber/*
+
+# Generated GitHub release package
+/hot-wand-mechanical.zip
