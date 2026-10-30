@@ -56,9 +56,13 @@ I accidentally touched the underside of the PCB while it was running, my finger 
 
 The individual toroid cores are not very consistent. Around... 1/3rd of the inductors I've hand wound needed additional hand manipulation before being close enough to the specified inductance. The technique is to remove a wind (which lowers the inductance drastically) and then squish all the winds tighter together (which raises the inductance again, to the target value).
 
+It is my opinion that the Lite version of Hot Wand is impossible to build without either a LCR meter or a VNA.
+
 ### Tip Temperatures
 
 Since my target temperature is 390C, it seems like the only way to accomplish this is to run the input at 28V, and then use my fingers to manipulate some of the inductors.
+
+It is my opinion that, it'll be foolish to attempt to build the Lite version of Hot Wand without a soldering iron tip temperature measurement device or a LCR meter or VNA for the tuning, you can't build this thing blind.
 
 ### Power Consumption
 
