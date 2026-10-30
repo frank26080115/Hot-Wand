@@ -4,6 +4,8 @@ This document is written after I've built all 10 units and have tested them. I h
 
 ## 13.56 MHz Version
 
+Most tests were performed on my first, metal-enclosed unit, which I use as the reference unit. Enclosed cooling-performance tests were performed on the four plastic-enclosed units.
+
 ### Voltage Tuning
 
 It seems like with the Metcal cartridges, tuning the buck converter potentiometer to about 20V will result in the iron tips idling at about 390C. This is my tuning target.
@@ -18,6 +20,8 @@ The default is 10 turns with 1.0mm winding pitch. This worked well for 3 out of 
 
 ### Metcal vs Hakko
 
+Most of my tip testing used a Metcal STTC-147P and a Hakko T31B-02D08. Tip temperatures were measured with a knockoff FG-100 thermometer. These cartridge-temperature measurements were made on Hot-Wand only; I did not have access to a commercial Metcal or Hakko station for a comparison with the same thermometer.
+
 When I started this project, I didn't even know Hakko also made a RF soldering iron. They make the FX-100 soldering station which uses the FX1001 handpiece. This is compatible with Hot-Wand directly, using the same F-type coaxial connector.
 
 The Hakko tip seems to run much hotter, on a unit tuned for 390C for Metcal, the Hakko tip reaches about 420C. I think if you are planning to use the Hakko handpiece, then you need to tune the buck converter voltage down a bit.
@@ -28,23 +32,29 @@ The Hakko tip also seem to need a different position for the sleep-magnet in the
 
 All of my testing is done with cartridges specified for around 390C. This is key to contextualize the following observation.
 
+The power readings below were taken from the OLED debug display with SPORT mode selected. The other power modes also affect tip temperature, so these results should be read as SPORT-mode measurements. With the Metcal STTC-147P, the tip temperature settled at about 320C in both NORMAL and ECO. I let the temperature settle after changing modes. I did not measure the Hakko cartridge in NORMAL or ECO.
+
 While the initial heat-up power can spike to 100W or more, it is not possible to cause more than 60W of power draw by sinking heat from the tip. I've tested this by pooling solder on a 80x80x1mm piece of copper plate and using that to heatsink hot iron tips.
 
 Without a firmware power spike suppression, I've seen power draw spiking to more than 130W, and also some cases when my 140W USB-C brick actually just browned out. The firmware was updated to detect sharp rises in power draw and respond by reducing voltage, which solved this problem.
 
-Idle power consumption is in the neighborhood of 17W, while under the magnetic stand's influence. It's not much higher without the magnets, maybe 2 more watts. The inactivity detection is configurable but the default setting is tuned against this result (the detection is both relative and absolute).
+Idle power consumption is in the neighborhood of 17W, while under the magnetic stand's influence. It's not much higher without the magnets, maybe 2 more watts. The inactivity detection is configurable but the default setting is tuned against this result (the detection is both relative and absolute). I did not measure tip temperature while the handpiece was in the magnetic stand, so the temperature reduction in the stand has not been quantified.
 
 ### Cooling Performance
 
 Testing was done with input configured for 28V, room temperature is 72F (22C) as read by my apartment thermostat, and the load is my RF dummy load, which pulls 75W in the configuration. The enclosure for the testing is the plastic one (nicknamed "econo"), not the metal one.
 
-The temperature measured by the internal thermistor rises slowly to 50C, and then the cooling fan kicks on, it will cool to about 48C under these conditions and the fan remains on (the hysteresis in the firmware to turn the fan off is 5C).
+The temperature measured by the internal thermistor rises slowly to 50C, and then the cooling fan kicks on, it will cool to about 48C under these conditions and the fan remains on (the hysteresis in the firmware to turn the fan off is 5C). The approximately 48C result was consistent and repeatable across all four plastic-enclosed units.
 
 This assures me that as long as the fan is functioning, the soldering station can work indefinitely, as it is difficult to load it past 60W continuously in real usage.
 
 As for the buck converter (which is where we've put custom copper heatsinking fins), a test was done with a constant-current dummy-load on the output directly. There was no enclosure and no active cooling, just open room temperature air. A K-type thermocouple was covered in one layer of kapton tape and used as a probe. The point of probing is the ground plane nearest to the buck converter IC on the same side as the IC itself.
 
+From memory, the buck converter was adjusted to 21V output and supplied with 28V through XT30. These voltage settings are recalled approximately.
+
 At 21V 4A, the highest measured temperature was 60C. At 5A, the highest temperature measured was about 97C, and I didn't let it stay that way for too long.
+
+The current was set on the electronic load, and the microcontroller's current readings agreed with the load settings. There was no fixed test duration: I monitored the temperature and waited until it stopped rising, which I took to indicate thermal equilibrium. I did not hold the 5A condition for an extended period after that.
 
 The result is good, the temperature is still low enough for me to not worry. The buck converter IC itself has internal protections for junction overheating. And we are not likely to sustain a 5A power draw ever in real usage situations.
 
@@ -62,6 +72,8 @@ It is my opinion that the Lite version of Hot Wand is impossible to build withou
 
 ### Tip Temperatures
 
+At 20V input, most Lite units reached roughly 320C. These are approximate recalled readings, taken after the warm-up power spike had passed and the power draw had settled.
+
 Since my target temperature is 390C, it seems like the only way to accomplish this is to run the input at 28V, and then use my fingers to manipulate some of the inductors.
 
 It is my opinion that, it'll be foolish to attempt to build the Lite version of Hot Wand without a soldering iron tip temperature measurement device or a LCR meter or VNA for the tuning, you can't build this thing blind.
@@ -72,4 +84,4 @@ Most of the time, at 28V input, the unit will start at around 35W, then suddenly
 
 ### Heatsink Temperature
 
-While enclosed and the fan working, the heatsink basically stays completely cool all the time even at maximum load.
+While enclosed and with the fan working, the heatsink felt completely cool to the touch, even at maximum load. This was a touch assessment; I did not measure the heatsink temperature with an instrument.
