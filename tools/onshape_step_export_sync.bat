@@ -22,6 +22,7 @@ set "ECONO_STEP=%TEMP_DIR%\econo.step"
 set "LITE_STEP=%TEMP_DIR%\lite.step"
 set "STAND_16MM_STEP=%TEMP_DIR%\stand-16mm.step"
 set "STAND_18MM_STEP=%TEMP_DIR%\stand-18mm.step"
+set "STAND_HAKKO_STEP=%TEMP_DIR%\stand-hakko.step"
 
 set "SKIP_DOWNLOAD=0"
 if /I "%~1"=="--skip-download" (
@@ -122,6 +123,15 @@ call :download_if_needed "%STAND_URL%" "%STAND_18MM_STEP%" "18mm"
 if errorlevel 1 goto :failure_popd
 
 call :export_body "%STAND_18MM_STEP%" "Handle-Rest" "mechanical\stand\handle-rest-18mm.step"
+if errorlevel 1 goto :failure_popd
+
+rem ---------------------------------------------------------------------------
+rem Stand (hakko) Part Studio - only the tip shroud varies
+rem ---------------------------------------------------------------------------
+call :download_if_needed "%STAND_URL%" "%STAND_HAKKO_STEP%" "hakko"
+if errorlevel 1 goto :failure_popd
+
+call :export_body "%STAND_HAKKO_STEP%" "Tip-Shroud" "mechanical\stand\tip-shroud-hakko.step"
 if errorlevel 1 goto :failure_popd
 
 echo.
