@@ -105,6 +105,10 @@ It is my opinion that, it'll be foolish to attempt to build the Lite version of 
 
 Most of the time, at 28V input, the unit will start at around 35W, then suddenly spike to 100W, then slow taper down to 35W again. The weird part is that the sharp spike does not happen at the lowest temperature, it's a particular "warm" temperature band that causes it, so there is a delay after power on.
 
+### Magnetic Stand
+
+The 470 kHz cartridges do not respond at all to a magnetic stand.
+
 ### Heatsink Temperature
 
 While enclosed and the fan working, the heatsink basically stays completely cool to the touch even at maximum load. It didn't even feel warm, so I didn't bother measuring it with a tool.
