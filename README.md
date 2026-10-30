@@ -108,7 +108,9 @@ Please see [my full design study (click here)](doc/design-study/design-study.md)
  * My additional design choices, justifications, calculations
  * and more
 
-and please explore the [documentation directory itself](doc), as I might've written something but forgot to link it.
+See my [post-build report](doc/post-build-report.md) with findings and observations that I've made after completing the project
+
+Please explore the [documentation directory itself](doc), as I might've written something but forgot to link it.
 
 ## Files and Build Guides
 
@@ -116,5 +118,3 @@ and please explore the [documentation directory itself](doc), as I might've writ
  * [Files for Mechanical Parts](mechanical)
  * [DIY build guide for the Hot Wand (13.56 MHz version)](doc/build-guide-13mhz/build-guide.md)
  * [DIY build guide for the Hot Wand Lite (470 kHz version)](doc/build-guide-lite-470khz/build-guide-lite.md)
-
-Also interesting, my [post-build report](doc/post-build-report.md)

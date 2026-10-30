@@ -38,7 +38,9 @@ While the initial heat-up power can spike to 100W or more, it is not possible to
 
 Without a firmware power spike suppression, I've seen power draw spiking to more than 130W, and also some cases when my 140W USB-C brick actually just browned out. The firmware was updated to detect sharp rises in power draw and respond by reducing voltage, which solved this problem.
 
-Idle power consumption is in the neighborhood of 17W, while under the magnetic stand's influence. It's not much higher without the magnets, maybe 2 more watts. The inactivity detection is configurable but the default setting is tuned against this result (the detection is both relative and absolute). I did one tip temperature measurement while the Hakko tip was in the magnetic stand, it settled at about 270C.
+Idle power consumption is in the neighborhood of 17W, while under the magnetic stand's influence. It's not much higher without the magnets, maybe 2 more watts. The inactivity detection is configurable but the default setting is tuned against this result (the detection is both relative and absolute).
+
+I did one tip temperature measurement while the Hakko tip was in the magnetic stand, it settled at about 270C.
 
 ### Cooling Performance
 
