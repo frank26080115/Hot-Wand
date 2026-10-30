@@ -10,7 +10,7 @@ This firmware is built under PlatformIO under the Arduino framework. The RF gene
 
 The "Sport" mode is a 100%-no-matter-what power mode.
 
-The "Normal" power mode is one that allows 100% power for 21V of power input or lower. When above 21V, the firmware attempts to lower power consumption in a way that caps it at 100W.
+The "Adaptive" power mode is one that allows 100% power for 21V of power input or lower. When above 21V, the firmware attempts to lower power consumption in a way that caps it at 100W.
 
 The "Eco" power mode is a 70% power mode. The intention is to allow a 3A capable power supply to be used instead of a 5A power supply.
 

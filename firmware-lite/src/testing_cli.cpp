@@ -258,7 +258,7 @@ static void simulate_mode_command(SerialCommands* sender)
     char* argument = sender->Next();
     if ((argument == nullptr) || (sender->Next() != nullptr))
     {
-        sender->GetSerial()->println("ERROR: usage: simmode <0=ECO, 1=NORMAL, 2=SPORT>");
+        sender->GetSerial()->println("ERROR: usage: simmode <0=ECO, 1=ADAPTIVE, 2=SPORT>");
         return;
     }
 
@@ -267,7 +267,7 @@ static void simulate_mode_command(SerialCommands* sender)
     const long modeNumber = strtol(argument, &end, 10);
     if ((errno == ERANGE) || (end == argument) || (*end != '\0') || (modeNumber < 0) || (modeNumber > 2))
     {
-        sender->GetSerial()->println("ERROR: mode must be 0 (ECO), 1 (NORMAL), or 2 (SPORT)");
+        sender->GetSerial()->println("ERROR: mode must be 0 (ECO), 1 (ADAPTIVE), or 2 (SPORT)");
         return;
     }
 
@@ -345,7 +345,7 @@ static const char* simulated_mode_name(uint8_t modeNumber)
 
     case 1:
     default:
-        return "NORMAL";
+        return "ADAPTIVE";
     }
 }
 } // namespace

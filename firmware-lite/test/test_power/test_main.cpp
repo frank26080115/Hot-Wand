@@ -167,7 +167,7 @@ void test_entering_sport_while_powered_skips_ramp()
     mode = 2; at(1000); at(3000); expect_power(100);
 }
 
-void test_normal_mode_cancels_using_current_voltage()
+void test_adaptive_mode_cancels_using_current_voltage()
 {
     start(); mode = 1; at(1500);
     voltageMv = 24000; at(3500); expect_power(91);
@@ -219,6 +219,6 @@ int main(int, char**)
     RUN_TEST(test_mode_change_waits_two_seconds_independent_of_voltage);
     RUN_TEST(test_brief_mode_change_does_not_cancel);
     RUN_TEST(test_entering_sport_while_powered_skips_ramp);
-    RUN_TEST(test_normal_mode_cancels_using_current_voltage);
+    RUN_TEST(test_adaptive_mode_cancels_using_current_voltage);
     return UNITY_END();
 }

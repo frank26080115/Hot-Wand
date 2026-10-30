@@ -11,11 +11,11 @@ typedef enum
     BLINK_VOLTAGE_TOO_HIGH,
 } blink_voltage_t;
 
-// Power modes select the Eco, Normal, and Sport status patterns.
+// Power modes select the Eco, Adaptive, and Sport status patterns.
 typedef enum
 {
     BLINK_POWER_ECO = 0,
-    BLINK_POWER_NORMAL,
+    BLINK_POWER_ADAPTIVE,
     BLINK_POWER_SPORT,
 } blink_power_t;
 

@@ -82,10 +82,10 @@ constexpr uint32_t kReportIntervalMs           = 1000;
 constexpr uint32_t kPowerSwitchSampleMs        = 100;
 constexpr uint32_t kVoltageSampleIntervalMs    = 50;
 constexpr uint32_t kVoltageFilterDivisor       = 8;
-constexpr uint32_t kNormalRfTrackingIntervalMs = 5000;
+constexpr uint32_t kAdaptiveRfTrackingIntervalMs = 5000;
 
 /*
- * RF power mappings are kept here for easy product tuning. Normal mode uses
+ * RF power mappings are kept here for easy product tuning. Adaptive mode uses
  * the two voltage/power points to define its linear slope.
  */
 constexpr uint8_t  kEcoRfPowerPercent              = 70;
@@ -100,37 +100,37 @@ static_assert(kSportRampStartPowerPercent >= RFGEN_MINIMUM_POWER_PERCENT &&
                   kSportRampStartPowerPercent <= kSportRfPowerPercent,
               "Sport ramp start power is outside the supported range");
 
-constexpr uint32_t kNormalFullPowerVoltageMv       = 21000;
-constexpr uint8_t  kNormalFullPowerPercent         = 100;
-constexpr uint32_t kNormalReferenceVoltageMv       = 36000;
-constexpr uint8_t  kNormalReferencePowerPercent    = 56;
+constexpr uint32_t kAdaptiveFullPowerVoltageMv       = 21000;
+constexpr uint8_t  kAdaptiveFullPowerPercent         = 100;
+constexpr uint32_t kAdaptiveReferenceVoltageMv       = 36000;
+constexpr uint8_t  kAdaptiveReferencePowerPercent    = 56;
 
-static_assert(kNormalFullPowerVoltageMv < kNormalReferenceVoltageMv, "Normal power voltage range is invalid");
-static_assert(kNormalFullPowerPercent > kNormalReferencePowerPercent, "Normal power must fall as voltage rises");
-static_assert(kNormalReferencePowerPercent >= RFGEN_MINIMUM_POWER_PERCENT, "Normal reference power is below RF minimum");
+static_assert(kAdaptiveFullPowerVoltageMv < kAdaptiveReferenceVoltageMv, "Adaptive power voltage range is invalid");
+static_assert(kAdaptiveFullPowerPercent > kAdaptiveReferencePowerPercent, "Adaptive power must fall as voltage rises");
+static_assert(kAdaptiveReferencePowerPercent >= RFGEN_MINIMUM_POWER_PERCENT, "Adaptive reference power is below RF minimum");
 
-constexpr uint32_t normal_power_drop(uint32_t voltageMv)
+constexpr uint32_t adaptive_power_drop(uint32_t voltageMv)
 {
     return static_cast<uint32_t>(
-        (static_cast<uint64_t>(voltageMv - kNormalFullPowerVoltageMv) *
-             (kNormalFullPowerPercent - kNormalReferencePowerPercent) +
-         ((kNormalReferenceVoltageMv - kNormalFullPowerVoltageMv) / 2u)) /
-        (kNormalReferenceVoltageMv - kNormalFullPowerVoltageMv));
+        (static_cast<uint64_t>(voltageMv - kAdaptiveFullPowerVoltageMv) *
+             (kAdaptiveFullPowerPercent - kAdaptiveReferencePowerPercent) +
+         ((kAdaptiveReferenceVoltageMv - kAdaptiveFullPowerVoltageMv) / 2u)) /
+        (kAdaptiveReferenceVoltageMv - kAdaptiveFullPowerVoltageMv));
 }
 
-constexpr uint8_t normal_power_percent(uint32_t voltageMv)
+constexpr uint8_t adaptive_power_percent(uint32_t voltageMv)
 {
-    return (voltageMv <= kNormalFullPowerVoltageMv)
-               ? kNormalFullPowerPercent
-               : ((normal_power_drop(voltageMv) >= (kNormalFullPowerPercent - RFGEN_MINIMUM_POWER_PERCENT))
+    return (voltageMv <= kAdaptiveFullPowerVoltageMv)
+               ? kAdaptiveFullPowerPercent
+               : ((adaptive_power_drop(voltageMv) >= (kAdaptiveFullPowerPercent - RFGEN_MINIMUM_POWER_PERCENT))
                       ? RFGEN_MINIMUM_POWER_PERCENT
-                      : static_cast<uint8_t>(kNormalFullPowerPercent - normal_power_drop(voltageMv)));
+                      : static_cast<uint8_t>(kAdaptiveFullPowerPercent - adaptive_power_drop(voltageMv)));
 }
 
-static_assert(normal_power_percent(21000) == 100, "Normal mode must be full power at 21 V");
-static_assert(normal_power_percent(28500) == 78, "Normal mode midpoint is incorrect");
-static_assert(normal_power_percent(36000) == 56, "Normal mode must be 56 percent at 36 V");
-static_assert(normal_power_percent(40000) == 44, "Normal mode must remain linear above 36 V");
+static_assert(adaptive_power_percent(21000) == 100, "Adaptive mode must be full power at 21 V");
+static_assert(adaptive_power_percent(28500) == 78, "Adaptive mode midpoint is incorrect");
+static_assert(adaptive_power_percent(36000) == 56, "Adaptive mode must be 56 percent at 36 V");
+static_assert(adaptive_power_percent(40000) == 44, "Adaptive mode must remain linear above 36 V");
 
 // -----------------------------------------------------------------------------
 // Types
@@ -146,7 +146,7 @@ enum class VoltageRange : uint8_t
 enum class PowerMode : uint8_t
 {
     Eco,
-    Normal,
+    Adaptive,
     Sport,
 };
 
@@ -168,8 +168,8 @@ uint8_t g_sportRampPowerPercent = 0;
 
 VoltageRange g_voltageRange        = VoltageRange::Low;
 VoltageRange g_appliedVoltageRange = VoltageRange::Low;
-PowerMode    g_powerMode           = PowerMode::Normal;
-PowerMode    g_appliedPowerMode    = PowerMode::Normal;
+PowerMode    g_powerMode           = PowerMode::Adaptive;
+PowerMode    g_appliedPowerMode    = PowerMode::Adaptive;
 
 uint32_t g_voltageChangedMs         = 0;
 uint32_t g_powerChangedMs           = 0;
@@ -178,7 +178,7 @@ uint32_t g_lastPowerSwitchSampleMs = 0;
 uint32_t g_lastVoltageSampleMs      = 0;
 uint32_t g_latestRawVoltageMv       = 0;
 uint32_t g_filteredVoltageMv        = 0;
-uint32_t g_lastNormalRfTrackingMs   = 0;
+uint32_t g_lastAdaptiveRfTrackingMs   = 0;
 
 // -----------------------------------------------------------------------------
 // Function Prototypes
@@ -216,8 +216,8 @@ void pwrmgt_test_reset_state(void)
     g_sportRampPowerPercent = 0;
     g_voltageRange = VoltageRange::Low;
     g_appliedVoltageRange = VoltageRange::Low;
-    g_powerMode = PowerMode::Normal;
-    g_appliedPowerMode = PowerMode::Normal;
+    g_powerMode = PowerMode::Adaptive;
+    g_appliedPowerMode = PowerMode::Adaptive;
     g_voltageChangedMs = 0;
     g_powerChangedMs = 0;
     g_lastReportMs = 0;
@@ -225,7 +225,7 @@ void pwrmgt_test_reset_state(void)
     g_lastVoltageSampleMs = 0;
     g_latestRawVoltageMv = 0;
     g_filteredVoltageMv = 0;
-    g_lastNormalRfTrackingMs = 0;
+    g_lastAdaptiveRfTrackingMs = 0;
 }
 #endif
 
@@ -335,15 +335,15 @@ void pwrmgt_task(void)
         return;
     }
 
-    // In Normal mode the RF target follows the filtered battery voltage, but
+    // In Adaptive mode the RF target follows the filtered battery voltage, but
     // no faster than the battery can realistically require. Mode changes and
     // initial startup are still applied immediately by apply_state().
     if (powerIsStable && (g_voltageRange == g_appliedVoltageRange) &&
-        (g_powerMode == PowerMode::Normal) && (g_powerMode == g_appliedPowerMode) &&
-        (static_cast<uint32_t>(currentTimeMs - g_lastNormalRfTrackingMs) >= kNormalRfTrackingIntervalMs))
+        (g_powerMode == PowerMode::Adaptive) && (g_powerMode == g_appliedPowerMode) &&
+        (static_cast<uint32_t>(currentTimeMs - g_lastAdaptiveRfTrackingMs) >= kAdaptiveRfTrackingIntervalMs))
     {
         rfgen_set(power_percent(g_powerMode, voltageMv));
-        g_lastNormalRfTrackingMs = currentTimeMs;
+        g_lastAdaptiveRfTrackingMs = currentTimeMs;
     }
 
     if (!voltageIsStable || !powerIsStable)
@@ -450,9 +450,9 @@ static void apply_state(uint32_t currentTimeMs, uint32_t voltageMv)
         {
             rfgen_set(power_percent(g_powerMode, voltageMv));
         }
-        if (g_powerMode == PowerMode::Normal)
+        if (g_powerMode == PowerMode::Adaptive)
         {
-            g_lastNormalRfTrackingMs = currentTimeMs;
+            g_lastAdaptiveRfTrackingMs = currentTimeMs;
         }
     }
     blink_set_pattern(voltage_to_blink_mode(g_voltageRange), power_to_blink_mode(g_powerMode));
@@ -603,7 +603,7 @@ static PowerMode read_power_mode()
         return PowerMode::Sport;
     }
 
-    return PowerMode::Normal;
+    return PowerMode::Adaptive;
 }
 
 static uint8_t power_percent(PowerMode powerMode, uint32_t voltageMv)
@@ -616,9 +616,9 @@ static uint8_t power_percent(PowerMode powerMode, uint32_t voltageMv)
     case PowerMode::Sport:
         return kSportRfPowerPercent;
 
-    case PowerMode::Normal:
+    case PowerMode::Adaptive:
     default:
-        return normal_power_percent(voltageMv);
+        return adaptive_power_percent(voltageMv);
     }
 }
 
@@ -648,9 +648,9 @@ static blink_power_t power_to_blink_mode(PowerMode powerMode)
     case PowerMode::Sport:
         return BLINK_POWER_SPORT;
 
-    case PowerMode::Normal:
+    case PowerMode::Adaptive:
     default:
-        return BLINK_POWER_NORMAL;
+        return BLINK_POWER_ADAPTIVE;
     }
 }
 
@@ -683,9 +683,9 @@ static const char* power_mode_name(PowerMode powerMode)
     case PowerMode::Sport:
         return "SPORT";
 
-    case PowerMode::Normal:
+    case PowerMode::Adaptive:
     default:
-        return "NORMAL";
+        return "ADAPTIVE";
     }
 }
 } // namespace
