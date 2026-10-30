@@ -32,7 +32,7 @@ The Hakko tip also seem to need a different position for the sleep-magnet in the
 
 All of my testing is done with cartridges specified for around 390C. This is key to contextualize the following observation.
 
-I'm reading the power from the OLED debug display, and all of these power tests are in SPORT mode. The other modes affect tip temperature too. With the Metcal STTC-147P, both 75W-mode and 50W-mode settled at about 320C, after waiting for the temperature to stop changing. I didn't try this with the Hakko.
+I'm reading the power from the OLED debug display, and all of these power tests are in SPORT mode (the 100W-ish mode).
 
 While the initial heat-up power can spike to 100W or more, it is not possible to cause more than 60W of power draw by sinking heat from the tip. I've tested this by pooling solder on a 80x80x1mm piece of copper plate and using that to heatsink hot iron tips.
 
@@ -41,6 +41,23 @@ Without a firmware power spike suppression, I've seen power draw spiking to more
 Idle power consumption is in the neighborhood of 17W, while under the magnetic stand's influence. It's not much higher without the magnets, maybe 2 more watts. The inactivity detection is configurable but the default setting is tuned against this result (the detection is both relative and absolute).
 
 I did one tip temperature measurement while the Hakko tip was in the magnetic stand, it settled at about 270C.
+
+### Power Modes
+
+This test was done with a benchtop adjustable power supply and an inline power measurement device. The handpiece is the Hakko FX1001 with the T31-02 tip, and note that the unit under test is tuned a bit higher than what this tip expects, it's over driven slightly and reaches a tip temperature of 420C instead of the 390C target that I should be tuning for (thus, these are worst case measurements). The firmware power spike attenuation and power level limiter are on, firmware version is `v1.1`.
+
+| Input Voltage | Power Mode | Input Peak Power | Output Peak Power | Recommended USB Spec     |
+|--------------:|-----------:|-----------------:|------------------:|-------------------------:|
+| 28V           | 100W       | 110W             | 100W              | 140W                     |
+| 28V           | 75W        | 88W              | 75W               | 100W                     |
+| 28V           | 50W        | 60W              | 50W               | 65W                      |
+| 20V           | 100W       | 88W              | 80W               | 100W                     |
+| 20V           | 75W        | 83W              | 75W               | 100W                     |
+| 20V           | 50W        | 57W              | 50W               | 65W                      |
+
+Note that a 100W or 140W USB-PD charger is needed to reach 28V anyways.
+
+Tests with my 65W charger causes the undervoltage detection to trigger and go into the 50W mode temporarily during peak power use, this indicates that the charger I used exhibited a slight voltage dip during high current draw. There are other layers of protection in play too.
 
 ### Cooling Performance
 
@@ -63,6 +80,10 @@ The result is good, the temperature is still low enough for me to not worry. The
 ### High RF Voltage Exposure
 
 I accidentally touched the underside of the PCB while it was running, my finger was on the RF output near the current transformer. I felt a burning pain sensation. Be careful! It is quite different from touching power from a AC outlet, which has a much lower frequency.
+
+### Other
+
+The OLED screen cannot be dimmed, there's a "contrast" setting that is 0-255, and while it does kinda work, it's really REALLY hard to see a difference between the levels. So I removed the auto dimming screen feature.
 
 ## Lite (470 kHz) Version
 

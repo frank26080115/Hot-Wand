@@ -48,7 +48,7 @@ The circuit board was partially manufactured by a PCBA service, and there are so
 
 The XT30 connector allows the user to connect a battery pack. If the user configures what kind of battery chemistry is being used, then the firmware will automatically determine the number of series cells in the battery pack and set an appropriate low battery cutoff threshold. When the battery voltage is considered too low, the power is automatically cutoff and the user is offered an option to override the cutoff.
 
-The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (capable of 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. There are some tricks being done to make sure the system does not overload the USB-PD host.
+The USB-C connector is connected to a USB-PD negotiation IC. The negotiator is configured to request 28V at the maximum allowable current (capable of 5A). Depending on the USB-PD host's implementation, the actual offered voltage may be 28V or 20V. There are some tricks (firmware and electrical) being done to make sure the system does not overload the USB-PD host.
 
 The RF power output is through a F-type connector, so it is compatible with most 13.56 MHz handpieces, such as Metcal, Thermaltronics, Hakko.
 
