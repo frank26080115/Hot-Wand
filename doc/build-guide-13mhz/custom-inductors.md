@@ -89,6 +89,22 @@ The default dimensions (10 turns with 1mm pitch) worked for 3 out of 5 units. 1 
 
 The 3D printed model is generated via OpenSCAD, file is at `mechanical\utilities\coreless_inductor_post.scad`
 
-## Securing the Inductors
+#### Testing and Verification
 
-Custom inductors are commonly secured with neutral-cure, electronics-grade RTV silicone, which remains flexible and is relatively easy to remove, or with two-part epoxy when a rigid, permanent bond is wanted. Avoid acid-cure RTV silicone, recognizable by its vinegar smell, because it can corrode copper and electronics. Avoid hot-melt glue as it is very possible for this circuit to get hot.
+WARNING: testing with the circuit board exposed and the RF generator active means there is high RF voltages involved, be careful not to touch the circuit!!!
+
+Inside the firmware, find the file `firmware\src\tests.c`, edit it such that the test `test_rfgen_no_power` is enabled (uncomment it). Build and flash that firmware.
+
+Connect a dummy load or cartridge to the RF output, make sure it's in the lowest power state (meaning, within a magnetic stand)
+
+Give an input voltage of 20V with some sort of current measurement device.
+
+When holding the button, the RF generator will turn on.
+
+The current measured at the power input should be less than 0.4A. Most of my units reported about 0.2A.
+
+You can also measure the current at `SJ8`, which is designed for a 0.1 ohm resistor. Ideally the current there is measuring under 0.3A.
+
+## Physically Securing the Inductors
+
+I found that the wires are stiff enough to hold all the inductors pretty still. If you want additional protection against rough handling, use high temperature silicone RTV gasket maker as an putty adhesive to secure the inductors. Avoid anything that is acidic.
