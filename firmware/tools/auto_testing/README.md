@@ -20,7 +20,7 @@ pin GPIO-high (minimum output) throughout startup, runtime, setup and faults.
 Neither RF start entry point can enable TIM1/PB1, and PA6 is never connected to
 TIM3 PWM. Logical power/current limiting and requested PWM still run for tests.
 The runner checks both GPIO modes/levels and disabled RF timer outputs.
-Fault ABI 2 is required; rebuild/flash the shared image to replace older images
+Fault ABI 2 and the compiled buck-spike threshold symbol are required; rebuild/flash the shared image to replace older images
 that permitted real outputs. The clamp is established at firmware startup;
 GPIO levels during MCU reset itself depend on the board's hardware bias.
 Physical PA5 is replaced by the virtual tip; physical detection and shutdown latency require
@@ -97,6 +97,13 @@ Results distinguish `PASS`, `FAIL`, `ERROR`, `NOT_RUN` and `BLOCKED`. The manife
 also contains eight native cases and five electrical cases. Electrical cases
 remain `BLOCKED` without physical fixture evidence. A successful default run
 means its selected target cases passed, not complete electrical coverage.
+
+`SKIPPED` means a selected check does not apply to the compiled image. In
+particular, F04 spike and below-threshold checks are skipped when buck-voltage
+spike detection is compiled out. The manifest records the actual ADC trip
+threshold (zero means disabled); expectations never come from the current
+source configuration alone. Rebuild the shared image after this metadata change.
+
 Exit codes: 0 selected checks passed; 1 failed/blocked selected cases; 2
 infrastructure failure. Unselected target cases remain `NOT_RUN`.
 
@@ -146,6 +153,10 @@ py tools/auto_testing/frmbuf2png.py framebuffer-hex.txt oled.png
 ```
 
 The menu runner retains its report/image workflow and settings behavior.
+Debugger halts retry one interrupt if a firmware reset consumes the first request.
+A confirmed stop is still required before inspecting memory; a persistent
+transport failure remains an ERROR.
+
 The ADC producer can attach without resetting a streaming sequence, enqueue
 JSON frames, request start and read progress. Its module comments and `--help`
 describe the seven-channel format and SPSC publication protocol.

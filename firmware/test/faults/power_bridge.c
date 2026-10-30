@@ -63,8 +63,11 @@ __declspec(dllexport) void bridge_reset(uint32_t now)
 #endif
     pwrlvl_init();
     mock_rf_for_activity         = false;
-    pwrmgt_activity_history_mask = pwrmgt_activity_on_guard_segments = 0;
+    pwrmgt_activity_history_mask = 0;
+#if !PWRLVL_POWER_LIMIT_ENABLED
+    pwrmgt_activity_on_guard_segments = 0;
     pwrmgt_activity_previous_rf_active = pwrmgt_activity_segment_excluded = false;
+#endif
     pwrmgt_history_push_idx                                               = 0;
     pwrmgt_history_last_update_ms = pwrmgt_last_active_ms = pwrmgt_idle_started_ms = now;
     pwrmgt_is_idle                                                                 = false;

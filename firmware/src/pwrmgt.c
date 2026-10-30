@@ -123,11 +123,13 @@ static uint32_t pwrmgt_idle_started_ms;
 static uint32_t pwrmgt_last_active_ms;
 static uint16_t pwrmgt_idle_power_threshold_mw = 30000;
 static uint16_t pwrmgt_idle_power_delta_mw     = 2000;
-// Eligibility is separate from graph data: OFF/transition peaks stay visible.
+// Eligibility distinguishes recorded samples (including zero) from empty slots.
 static uint16_t pwrmgt_activity_history_mask;
+#if !PWRLVL_POWER_LIMIT_ENABLED
 static uint8_t  pwrmgt_activity_on_guard_segments;
 static bool     pwrmgt_activity_previous_rf_active;
 static bool     pwrmgt_activity_segment_excluded;
+#endif
 static bool     pwrmgt_is_idle;
 static uint32_t pwrmgt_high_voltage_phase_started_ms;
 static uint8_t  pwrmgt_high_voltage_message_index;
@@ -256,10 +258,8 @@ __attribute__((noinline)) void pwrmgt_task(void)
         reasons |= PWRMGT_ATTENUATION_LOW_DC_INPUT;
     }
 
-    /* Low input voltage and high temperature select the same reduced mode.
-     * By default this requests 500 ms RF ON / 500 ms OFF, so cooling does not
-     * depend on the measured power exceeding a wattage ceiling. Legacy
-     * wattage-regulation builds instead enforce their original 50 W cap. */
+    /* Low input voltage and high temperature select the same reduced mode:
+     * a 50 W ceiling by default, or 500 ms ON/OFF in duty-cycle builds. */
     if (pwrmgt_temperature_limited || pwrmgt_low_dc_limited)
     {
         next_power_level = PWRLVL_MODE_50_PERCENT;
@@ -695,11 +695,15 @@ static void pwrmgt_history_push(uint32_t power_milliwatts, bool start_new_segmen
 // Small Helpers
 // -----------------------------------------------------------------------------
 
-// Only metadata is added to the existing peak ring. A slot that sees any
-// excluded sample stays excluded until recycled, including mixed ON/OFF slots.
+// Duty-cycle builds exclude OFF/transition segments. Wattage builds accept
+// every recorded segment without consulting RF state.
 static void pwrmgt_activity_history_update(bool start_new_segment)
 {
     uint16_t slot_mask = (uint16_t)(1 << pwrmgt_history_push_idx);
+#if PWRLVL_POWER_LIMIT_ENABLED
+    (void)start_new_segment;
+    pwrmgt_activity_history_mask |= slot_mask;
+#else
 #if HOT_WAND_TEST_HARNESS
     // Observe the scheduled phase without allowing the harness to energize RF.
     bool rf_active = rfgen_is_requested_for_test();
@@ -735,6 +739,7 @@ static void pwrmgt_activity_history_update(bool start_new_segment)
         // A real zero is valid; unfilled graph slots never acquire this bit.
         pwrmgt_activity_history_mask |= slot_mask;
     }
+#endif
 }
 
 static bool pwrmgt_activity_delta_met(void)

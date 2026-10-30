@@ -60,7 +60,7 @@ class FactoryCleanupTests(unittest.TestCase):
         session.stopped.wait = Mock(return_value=False)
         with self.assertRaisesRegex(RuntimeError, "did not report the target stopped"):
             session.restore_factory_defaults()
-        session.command.assert_called_once_with('-exec-interrupt --all')
+        self.assertEqual([entry.args[0] for entry in session.command.call_args_list], ['-exec-interrupt --all'] * 2)
         session.read_memory.assert_not_called()
         session.reset.assert_not_called()
 

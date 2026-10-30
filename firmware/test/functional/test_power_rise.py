@@ -1,4 +1,4 @@
-"""Actual-C SPORT transient response and its graph/current/fault integration."""
+"""Actual-C shared attenuation response and its graph/current/fault integration."""
 import ctypes
 import subprocess
 import unittest
@@ -11,8 +11,8 @@ class PowerRiseTests(unittest.TestCase):
         cls.lib = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=1",))
         cls.off = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=0",))
         cls.tuned = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=1",
-                            "-DPWRLVL_POWER_RISE_FULL_SCALE_MW=10000", "-DPWRLVL_POWER_RISE_DECAY_PERIOD_MS=10"))
-        cls.legacy = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=1", "-DPWRLVL_POWER_LIMIT_ENABLED=1"))
+                            "-DPWRLVL_POWER_RISE_FULL_SCALE_100W_MW=10000", "-DPWRLVL_UPDATE_PERIOD_MS=10"))
+        cls.duty = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=1", "-DPWRLVL_POWER_LIMIT_ENABLED=0"))
         cls.lib.bridge_fault.restype = ctypes.c_char_p
         cls.inhibited = library("power_rise", flags=("-DPWRLVL_POWER_RISE_ENABLED=1",
                                 "-DHOT_WAND_TEST_HARNESS=1", "-DNATIVE_OUTPUT_MODEL=1"))
@@ -39,7 +39,7 @@ class PowerRiseTests(unittest.TestCase):
         self.assertEqual(self.observe(1, 0xFFFFFFFF, new=True), 32)
 
     @covers("power.request")
-    def test_repeated_and_falling_readings_cannot_cancel_free_running_decay(self):
+    def test_repeated_and_falling_readings_cannot_cancel_shared_release(self):
         for now, power, expected in ((1, 30000, 16), (49, 30000, 16), (50, 30000, 15),
                                      (60, 35000, 24), (100, 35000, 23), (150, 25000, 22),
                                      (200, 20000, 21), (250, 0, 20)):
@@ -89,12 +89,12 @@ class PowerRiseTests(unittest.TestCase):
         self.history(0, 0)
         self.assertEqual(self.history(250, 20000), 32)
         self.assertEqual(self.lib.rise_value(5), 1)
-        self.assertEqual(self.lib.activity_value(0), 0)  # RF-OFF zeros are still valid power references.
+        self.assertEqual(self.lib.activity_value(0), 3)  # Both recorded slots count, even with RF off.
 
     def test_first_task_long_after_reset_does_not_qualify_an_unwritten_slot(self):
-        self.assertEqual(self.history(2000, 100000), 0)
+        self.assertEqual(self.history(2000, 60000), 0)
         self.assertEqual(self.lib.rise_value(5), 0)
-        self.assertEqual(self.history(2250, 110000), 16)
+        self.assertEqual(self.history(2250, 70000), 16)
 
     def test_current_segment_participates_immediately_and_last_peak_is_fixed(self):
         self.history(0, 20000)
@@ -114,24 +114,26 @@ class PowerRiseTests(unittest.TestCase):
                 self.assertEqual(self.lib.rise_value(2), 3)
 
     @covers("power.preference")
-    def test_only_sport_attacks_and_exiting_clears_immediately(self):
-        for mode in (1, 2):
+    def test_mode_changes_keep_attenuation_clear_pending_and_restart_peak(self):
+        for mode, scale in ((1, 25000), (2, 30000)):
             self.lib.normal_reset(0)
-            self.observe(1, 40000)
+            self.assertEqual(self.observe(1, 30000), 16)
+            self.lib.rise_pending(40000, 20000)
             self.lib.rise_mode(mode)
-            self.assertEqual(self.lib.rise_value(2), 0)
-            self.assertEqual(self.observe(2, 100000, new=True), 0)
-            self.lib.rise_mode(0)
-            self.assertEqual(self.observe(3, 30000), 16)  # Fresh peak on entry, even within a segment.
+            self.assertEqual(self.lib.rise_value(2), 16)
+            self.assertEqual(self.lib.rise_value(4), 0)
+            self.assertEqual(self.lib.rise_value(3), 0)
+            self.assertEqual(self.observe(2, 20000 + scale), 32)
+            self.assertEqual(self.observe(50, 20000 + scale), 31)
 
     @covers("power.preference")
-    def test_thermal_and_low_voltage_derating_clear_the_spike_contribution(self):
+    def test_thermal_and_low_voltage_derating_select_eco_rise_scale(self):
         for selector, threshold in ((1, 10), (2, 11)):
             self.lib.normal_reset(0)
             self.history(0, 10000)
-            self.assertEqual(self.history(250, 30000), 32)
+            self.assertEqual(self.history(250, 20000), 16)
             self.lib.bridge_input(selector, self.lib.rise_value(threshold))
-            self.assertEqual(self.history(251, 50000), 0)
+            self.assertEqual(self.history(251, 40000), 32)  # Eco: +30 W is full scale.
             self.assertEqual(self.lib.bridge_value(3), 2)
 
     def test_current_regulator_is_independent_and_cannot_be_postponed_by_spikes(self):
@@ -145,13 +147,25 @@ class PowerRiseTests(unittest.TestCase):
         self.lib.rise_mode(1)
         self.assertEqual(self.lib.rise_value(2), self.lib.rise_value(1))
 
-    def test_output_takes_maximum_not_sum_and_regulator_still_saturates_at_31(self):
-        self.observe(1, 40000)
-        self.lib.bridge_input(0, 5200)
-        for tick in range(2, 110):
-            self.observe(tick, 40000)
-            self.assertEqual(self.lib.rise_value(2), max(self.lib.rise_value(0), self.lib.rise_value(1)))
-            self.assertLessEqual(self.lib.rise_value(1), 31)
+    def test_output_takes_maximum_of_jump_and_rise_not_sum(self):
+        for delta in (5000, 10000, 15000, 17500, 20000):
+            self.lib.normal_reset(0)
+            self.lib.bridge_input(0, 5200)
+            self.assertEqual(self.observe(2, 20000 + delta), max(24, min(32, delta * 32 // 20000)))
+            self.assertEqual(self.lib.rise_value(1), self.lib.rise_value(2))
+
+    def test_full_duty_is_held_over_either_limit_then_released_once(self):
+        for selector, value in ((0, 5200), (4, 100001)):
+            self.lib.normal_reset(0)
+            self.assertEqual(self.observe(1, 40000), 32)
+            self.lib.bridge_input(selector, value)
+            for now in (2, 4, 100, 200):
+                self.assertEqual(self.observe(now, 40000), 32)
+            self.lib.bridge_input(selector, 0)
+            self.assertEqual(self.observe(202, 40000), 32)  # Previous over-limit sample.
+            self.assertEqual(self.observe(251, 40000), 32)
+            self.assertEqual(self.observe(252, 40000), 31)
+            self.assertEqual(self.observe(302, 40000), 30)
 
     @covers("outputs.production", "power.recovery")
     def test_forced_shutdown_and_recovery_discard_pending_and_active_spikes(self):
@@ -160,13 +174,13 @@ class PowerRiseTests(unittest.TestCase):
         self.assertEqual(self.lib.rise_value(4), 32)
         self.lib.bridge_input(9, 1)
         self.assertEqual(self.observe(2, 100000), 32)
-        self.assertEqual(self.lib.rise_value(0), 0)
+        self.assertEqual(self.lib.rise_value(3), 0)
         self.assertEqual(self.lib.rise_value(4), 0)
         self.lib.bridge_input(9, 0)
         self.assertEqual(self.lib.rise_value(2), 31)
         self.lib.bridge_step(52, 0)
         self.assertEqual(self.lib.rise_value(2), 30)
-        self.assertEqual(self.lib.rise_value(0), 0)
+        self.assertEqual(self.lib.rise_value(3), 0)
 
     def test_returning_input_fault_preserves_gradual_release_not_stale_spike(self):
         self.history(0, 10000)
@@ -174,7 +188,7 @@ class PowerRiseTests(unittest.TestCase):
         self.lib.bridge_input(7, 1)
         self.history(251, 30000)
         self.assertEqual(self.lib.rise_value(2), 31)
-        self.assertEqual(self.lib.rise_value(0), 0)
+        self.assertEqual(self.lib.rise_value(3), 0)
         self.assertEqual(self.lib.rise_value(4), 0)
 
     def test_sustained_overcurrent_still_trips_with_spike_controller_enabled(self):
@@ -185,11 +199,11 @@ class PowerRiseTests(unittest.TestCase):
         self.observe(5001, 40000)
         self.assertEqual(self.lib.bridge_fault(), b"SHORT\nCIRKT\nFAULT")
 
-    def test_switch_off_and_independent_gain_decay_tuning(self):
+    def test_switch_off_and_gain_with_shared_release_tuning(self):
         self.off.normal_reset(0)
         self.off.bridge_input(4, 10000)
         self.off.bridge_step(0, 1)
-        self.off.bridge_input(4, 150000)
+        self.off.bridge_input(4, 90000)
         self.off.bridge_step(250, 1)
         self.assertEqual(self.off.rise_value(2), 0)
         self.tuned.normal_reset(0)
@@ -220,21 +234,49 @@ class PowerRiseTests(unittest.TestCase):
         self.assertEqual(p.bridge_value(7), 0)  # No alternate-function handoff.
         self.assertEqual(p.bridge_value(8), 0)  # TIM3 never started.
 
-    def test_optional_legacy_wattage_regulation_can_coexist_with_rise_response(self):
-        p = self.legacy
+    def test_optional_duty_build_retains_rise_response_without_wattage_cap(self):
+        p = self.duty
         p.normal_reset(0)
         p.bridge_input(4, 150000)
         p.rise_observe(1, 40000, 20000, 1, 1)
         self.assertEqual(p.rise_value(2), 32)
-        p.rise_observe(2, 40000, 20000, 0, 1)
-        self.assertEqual(p.rise_value(1), 31)
-        p.rise_mode(1)
-        self.assertEqual(p.rise_value(0), 0)
+        p.rise_observe(50, 40000, 20000, 0, 1)
         self.assertEqual(p.rise_value(2), 31)
+        p.rise_mode(1)
+        self.assertEqual(p.rise_value(2), 31)
+        p.rise_observe(100, 40000, 20000, 0, 1)
+        self.assertEqual(p.rise_value(2), 30)
+
+    def test_all_mode_mapping_boundaries_and_saturation(self):
+        for mode, scale in enumerate((20000, 25000, 30000)):
+            for delta in (0, 1, scale // 32 - 1, scale // 32, scale // 2, scale - 1, scale, scale + 1, 0xFFFFFFFF - 20000):
+                with self.subTest(mode=mode, delta=delta):
+                    self.lib.normal_reset(0)
+                    self.lib.rise_mode(mode)
+                    self.assertEqual(self.observe(1, 20000 + delta, new=True), min(32, delta * 32 // scale))
+
+    def test_scale_override_is_independent_for_each_mode(self):
+        for mode, scale in enumerate((10000, 25000, 30000)):
+            self.tuned.normal_reset(0)
+            self.tuned.rise_mode(mode)
+            self.tuned.rise_observe(1, 25000, 20000, 1, 1)
+            self.assertEqual(self.tuned.rise_value(2), 5000 * 32 // scale)
+
+    def test_default_preprocessing_excludes_duty_cycle_and_rf_history_guards(self):
+        for duty in (False, True):
+            flags = ["-DPWRLVL_POWER_LIMIT_ENABLED=0"] if duty else []
+            for source, marker in (("test/functional/rf_bridge.c", "uint32_t phase_ms"),
+                                   ("test/functional/power_bridge.c", "pwrmgt_activity_previous_rf_active")):
+                result = subprocess.run(["clang", "-E", "-P", "-DHOT_WAND_TARGET_STM32F042=1",
+                                         "-Itest/functional/support", "-Iinc", "-Ilib/u8g2/csrc",
+                                         *flags, source], cwd=ROOT, capture_output=True, text=True, check=True)
+                self.assertEqual(marker in result.stdout, duty, source)
 
     def test_bad_configuration_is_rejected(self):
-        for setting, value in (("ENABLED", 2), ("FULL_SCALE_MW", 0), ("FULL_SCALE_MW", 134217728),
-                               ("DECAY_PERIOD_MS", 0), ("DECAY_PERIOD_MS", 1001)):
+        settings = [("ENABLED", 2)]
+        for mode in ("100W", "75W", "50W"):
+            settings.extend((f"FULL_SCALE_{mode}_MW", value) for value in (0, 134217728))
+        for setting, value in settings:
             result = subprocess.run(["clang", "-E", "-x", "c", "-Iinc", f"-DPWRLVL_POWER_RISE_{setting}={value}", "-"],
                                     input='#include "conf.h"\n', cwd=ROOT, capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0, setting)

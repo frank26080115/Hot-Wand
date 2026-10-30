@@ -28,12 +28,6 @@ __declspec(dllexport) uint32_t rise_value(uint32_t index)
 {
     switch (index)
     {
-    case 0:
-#if PWRLVL_POWER_RISE_ENABLED
-        return pwrlvl_rise_value;
-#else
-        return 0;
-#endif
     case 1:
         return pwrlvl_regulator_value;
     case 2:
@@ -48,7 +42,7 @@ __declspec(dllexport) uint32_t rise_value(uint32_t index)
     case 6:
         return pwrmgt_history_peek(1);
     case 7:
-        return pwrlvl_rise_last_decay_ms;
+        return pwrlvl_last_update_ms;
 #endif
     case 8:
         return PWRLVL_PWM_JUMP_LEVEL;

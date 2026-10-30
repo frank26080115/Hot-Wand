@@ -72,6 +72,7 @@ class FaultTarget:
             metadata.address(name)
         self.dimming_enabled = bool(session.read_u32(metadata.address("fault_test_dimming_enabled")))
         self.power_rise_enabled = bool(session.read_u32(metadata.address("fault_test_power_rise_enabled")))
+        self.buck_voltage_spike_adc_counts = session.read_u32(metadata.address("fault_test_buck_voltage_spike_adc_counts"))
         self.producer = None
         self.boot_number = 0
         self.last_state = None

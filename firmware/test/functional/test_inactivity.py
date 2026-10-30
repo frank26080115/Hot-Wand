@@ -177,11 +177,61 @@ class ActivityTests(unittest.TestCase):
         self.assertEqual(self.lib.normal_value(1), 27)
 
 
+class WattageHistoryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.lib = library("activity")  # Exercise the production default.
+
+    def setUp(self):
+        self.lib.normal_reset(0)
+
+    def step(self, now, power, rf):
+        self.lib.bridge_input(13, rf)
+        self.lib.bridge_input(4, power)
+        self.lib.bridge_step(ctypes.c_uint32(now), 1)
+
+    @covers("idle.threshold")
+    def test_empty_slots_are_excluded_and_recorded_zero_counts_even_with_rf_off(self):
+        self.assertEqual(self.lib.activity_value(0), 0)
+        self.step(0, 0, False)
+        self.assertEqual(self.lib.activity_value(0), 1)
+        self.assertEqual(self.lib.activity_value(2), 0)
+        self.step(250, 2000, False)
+        self.assertEqual(self.lib.activity_value(0), 3)
+        self.assertEqual(self.lib.activity_value(2), 1)
+        self.assertEqual(self.lib.normal_value(1), 0)
+
+    def test_rf_edges_and_mixed_segments_never_exclude_recorded_history(self):
+        for now, rf in ((0, False), (1, True), (2, False), (250, True), (251, False)):
+            self.step(now, 5000 if now < 250 else 7000, rf)
+            self.assertEqual(self.lib.activity_value(1), 0)
+            self.assertEqual(self.lib.activity_value(0), 1 if now < 250 else 3)
+        self.assertEqual(self.lib.activity_value(2), 1)
+
+    def test_history_ring_eviction_removes_old_activity_without_rf_guards(self):
+        self.step(0, 0, False)
+        for index in range(1, 16):
+            self.step(index * 250, 5000, bool(index % 2))
+            self.assertEqual(self.lib.activity_value(2), 1)
+        self.step(4000, 5000, False)
+        self.assertEqual(self.lib.activity_value(0), 65535)
+        self.assertEqual(self.lib.activity_value(2), 0)
+        self.assertEqual(self.lib.normal_value(1), 250)
+
+    @covers("time.wrap")
+    def test_recorded_history_and_delta_survive_clock_wrap(self):
+        self.lib.normal_reset(ctypes.c_uint32(0xFFFFFFF0))
+        self.step(0xFFFFFFF0, 0, False)
+        self.step(0xFFFFFFF0 + 250, 2000, True)
+        self.assertEqual(self.lib.activity_value(0), 3)
+        self.assertEqual(self.lib.activity_value(2), 1)
+
+
 class ActivityRecoveryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.lib = library("rf_power", support="functional",
-                          flags=("-DNATIVE_OUTPUT_MODEL=1", "-DNATIVE_ACTIVITY_INTEGRATION=1"))
+                          flags=("-DNATIVE_OUTPUT_MODEL=1", "-DNATIVE_ACTIVITY_INTEGRATION=1", "-DPWRLVL_POWER_LIMIT_ENABLED=0"))
 
     @covers("idle.threshold", "power.recovery")
     def test_returning_input_fault_restarts_the_on_guard_after_rf_restarts(self):

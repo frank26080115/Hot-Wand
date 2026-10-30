@@ -188,10 +188,15 @@ class GdbSession:
 
     def halt(self):
         if self.running:
-            self.command("-exec-interrupt --all")
-            if not self.stopped.wait(timeout=3):
-                raise RuntimeError("GDB did not report the target stopped after interrupt")
-            self.running = False
+            # A firmware reset can consume an interrupt request: GDB replies
+            # ^done but OpenOCD reports external reset without *stopped. Retry
+            # once after that window; never inspect memory without a real stop.
+            for _ in range(2):
+                self.command("-exec-interrupt --all")
+                if self.stopped.wait(timeout=3):
+                    self.running = False
+                    return
+            raise RuntimeError("GDB did not report the target stopped after two interrupt attempts")
 
     def resume(self):
         if not self.running:

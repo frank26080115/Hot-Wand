@@ -82,7 +82,7 @@ def catalog():
         cases.append(Case(f"F09.reference.{reference}", "reference", "VOLT\nREF\nFAULT", True, {"reference": reference}))
     for mode in range(3):
         cases.append(Case(f"L03.power.mode{mode}", "power_limit", parameters={"power": mode},
-                          note="Default RF duty cycle; wattage alone must not activate buck PWM"))
+                          note="Continuous RF with the selected 100/75/50 W ceiling enforced by buck PWM"))
     for command in ("adc_init", "adc_calibration", "adc_channel", "adc_vref", "adc_start", "oled_init", "graphics"):
         family = "R03" if command in ("oled_init", "graphics") else "R02"
         cases.append(Case(f"{family}.{command}", "boot_reset", parameters={"injection": command}, timeout=15))

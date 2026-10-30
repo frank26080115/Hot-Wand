@@ -20,6 +20,12 @@ volatile fault_test_state_t fault_test __attribute__((used, externally_visible))
 // Separate symbols preserve the established 128-byte snapshot ABI.
 const uint32_t    fault_test_power_rise_enabled __attribute__((used, externally_visible)) = PWRLVL_POWER_RISE_ENABLED;
 const uint32_t    fault_test_dimming_enabled __attribute__((used, externally_visible))    = OLED_DIMMING_ENABLED;
+const uint32_t fault_test_buck_voltage_spike_adc_counts __attribute__((used, externally_visible)) =
+#if PWRMGT_BUCK_VOLTAGE_SPIKE_MV > 0
+    PWRMGT_BUCK_VOLTAGE_SPIKE_ADC_COUNTS;
+#else
+    0;
+#endif
 volatile uint32_t fault_test_inactive_ms __attribute__((used, externally_visible));
 _Static_assert(sizeof(fault_test_state_t) == 128, "fault test ABI size changed");
 

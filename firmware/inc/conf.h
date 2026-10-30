@@ -298,37 +298,38 @@
 // Buck Power Limiting and Protection
 // -----------------------------------------------------------------------------
 
-/* Default control: RF duty cycling selects the power mode; buck PWM still
- * enforces the independent current limit. Enable this option to restore the
- * legacy measured-wattage ceilings and continuous RF in all three modes. */
+/* Default control: measured 100/75/50 W ceilings with continuous RF.
+ * Set to zero to compile the optional RF duty-cycle mode instead. */
 #ifndef PWRLVL_POWER_LIMIT_ENABLED
-#define PWRLVL_POWER_LIMIT_ENABLED 0
+#define PWRLVL_POWER_LIMIT_ENABLED 1
 #endif
 
 #if (PWRLVL_POWER_LIMIT_ENABLED != 0) && (PWRLVL_POWER_LIMIT_ENABLED != 1)
 #error "PWRLVL_POWER_LIMIT_ENABLED must be 0 or 1"
 #endif
 
-/* SPORT-only transient response, independent of wattage ceilings and the
- * current limiter. A new segment peak 20 W above the previous completed peak
- * requests CCR32; its contribution continuously decays one count per 50 ms. */
+/* New segment peaks above the previous completed peak request attenuation
+ * in every mode. The selected rise scale maps to CCR32. Limit and rise
+ * requests share one value, released below limits at UPDATE_PERIOD_MS. */
 #ifndef PWRLVL_POWER_RISE_ENABLED
 #define PWRLVL_POWER_RISE_ENABLED 1
 #endif
-#ifndef PWRLVL_POWER_RISE_FULL_SCALE_MW
-#define PWRLVL_POWER_RISE_FULL_SCALE_MW 20000
+#ifndef PWRLVL_POWER_RISE_FULL_SCALE_100W_MW
+#define PWRLVL_POWER_RISE_FULL_SCALE_100W_MW 20000
 #endif
-#ifndef PWRLVL_POWER_RISE_DECAY_PERIOD_MS
-#define PWRLVL_POWER_RISE_DECAY_PERIOD_MS 50
+#ifndef PWRLVL_POWER_RISE_FULL_SCALE_75W_MW
+#define PWRLVL_POWER_RISE_FULL_SCALE_75W_MW 25000
+#endif
+#ifndef PWRLVL_POWER_RISE_FULL_SCALE_50W_MW
+#define PWRLVL_POWER_RISE_FULL_SCALE_50W_MW 30000
 #endif
 #if (PWRLVL_POWER_RISE_ENABLED != 0) && (PWRLVL_POWER_RISE_ENABLED != 1)
 #error "PWRLVL_POWER_RISE_ENABLED must be 0 or 1"
 #endif
-#if (PWRLVL_POWER_RISE_FULL_SCALE_MW < 1) || (PWRLVL_POWER_RISE_FULL_SCALE_MW > 134217727)
+#if (PWRLVL_POWER_RISE_FULL_SCALE_100W_MW < 1) || (PWRLVL_POWER_RISE_FULL_SCALE_100W_MW > 134217727) || \
+    (PWRLVL_POWER_RISE_FULL_SCALE_75W_MW < 1) || (PWRLVL_POWER_RISE_FULL_SCALE_75W_MW > 134217727) || \
+    (PWRLVL_POWER_RISE_FULL_SCALE_50W_MW < 1) || (PWRLVL_POWER_RISE_FULL_SCALE_50W_MW > 134217727)
 #error "Power-rise full scale must be positive and permit a safe 32-count product"
-#endif
-#if (PWRLVL_POWER_RISE_DECAY_PERIOD_MS < 1) || (PWRLVL_POWER_RISE_DECAY_PERIOD_MS > 1000)
-#error "Power-rise decay period must be between 1 and 1000 milliseconds"
 #endif
 
 /* Increasing attenuation PWM lowers buck output voltage and power. These

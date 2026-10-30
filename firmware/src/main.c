@@ -288,8 +288,8 @@ int main(void)
         // A terminal fault blocks here until the user resets the controller.
         pwrmgt_task();
 
-        // Apply the supervised mode to RF duty cycling (or continuous RF in
-        // legacy wattage-regulation builds). The driver retains its own final
+        // RF is continuous by default; optional duty-cycle builds apply the
+        // supervised mode here. The driver retains its own final
         // clock, tip-debounce, and latched-stop checks at every restart.
         rfgen_task(pwrmgt_get_applied_power_level());
 

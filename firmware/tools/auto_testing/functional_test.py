@@ -369,25 +369,22 @@ class FunctionalRunner(FaultRunner):
                 self.wait(lambda s: s["power"] == p["power"] and not s["reasons"] & 1)
                 self.capture("preference_restored")
             else:
-                # Observe RF phases at zero power; the shared test image also
-                # enables the virtual thermal bucket for its protection cases.
-                self.check_rf_cycle(p["power"])
-                if self.power_rise_enabled and p["power"] == 0:
+                # Observe continuous RF at zero power before loading the bucket.
+                self.check_rf_continuous(p["power"])
+                if self.power_rise_enabled:
                     self.check_power_rise()
-                # High wattage below 5.2 A must not activate buck attenuation;
-                # the applied mode is enforced through foreground RF phases.
+                # High wattage below 5.2 A isolates the selected power ceiling.
                 high = self.model.frame(buck=self.model.voltage_count(22000), current=self.model.current_count(4900))
                 try:
                     self.settle(high)
-                    if self.power_rise_enabled and p["power"] == 0:
-                        self.hold_runtime(1800)  # Let the transient decay while ADC power holds.
-                    self.wait(lambda s: s["pwm"] == 0)
-                    self.require(self.status()["pwm"] == 0, "Steady wattage alone leaves buck PWM inactive")
+                    self.wait(lambda s: s["pwm"] >= 31)
+                    self.hold_runtime(500)
+                    self.require(self.status()["pwm"] >= 31, "Excess wattage holds buck attenuation")
                 finally:
                     # Even on failure, restore the held-last stimulus before
                     # slow captures or further observation can heat the bucket.
                     self.settle(self.model.frame())
-                self.capture("rf_duty_mode")
+                self.capture("wattage_limit_mode")
                 self.wait(lambda s: s["pwm"] == 0)
                 self.capture("logical_attenuation_relaxed")
         elif kind in ("dim", "idle"):

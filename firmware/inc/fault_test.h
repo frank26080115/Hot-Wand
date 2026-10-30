@@ -73,6 +73,8 @@ typedef struct
 extern volatile fault_test_state_t fault_test;
 extern const uint32_t              fault_test_dimming_enabled;
 extern const uint32_t              fault_test_power_rise_enabled;
+/* Zero when compiled out; otherwise the actual raw-ADC trip threshold. */
+extern const uint32_t              fault_test_buck_voltage_spike_adc_counts;
 extern volatile uint32_t           fault_test_inactive_ms;
 void                               fault_test_init(void);
 void                               fault_test_task(void);

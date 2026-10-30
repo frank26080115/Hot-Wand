@@ -11,7 +11,7 @@ class RFDutyTests(unittest.TestCase):
         cls.legacy = library("rf", support="functional", flags=("-DNATIVE_OUTPUT_MODEL=1", "-DPWRLVL_POWER_LIMIT_ENABLED=1"))
         cls.power = library("power", flags=("-DPWRLVL_POWER_LIMIT_ENABLED=0", "-DPWRLVL_RAMP_UP_STEP=1"))
         cls.power.bridge_fault.restype = ctypes.c_char_p
-        cls.integrated = library("rf_power", support="functional", flags=("-DNATIVE_OUTPUT_MODEL=1",))
+        cls.integrated = library("rf_power", support="functional", flags=("-DNATIVE_OUTPUT_MODEL=1", "-DPWRLVL_POWER_LIMIT_ENABLED=0"))
         cls.integrated.bridge_fault.restype = ctypes.c_char_p
 
     def setUp(self):

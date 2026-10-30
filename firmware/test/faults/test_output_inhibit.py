@@ -59,14 +59,14 @@ class OutputInhibitTests(unittest.TestCase):
         self.assertEqual(p.bridge_fault(), b"SHORT\nCIRKT\nFAULT")
         self.assert_buck_minimum()
 
-    def test_rf_cycle_only_requests_starts_in_on_phase_and_keeps_hardware_off(self):
+    def test_all_modes_continuously_request_rf_and_keep_hardware_off(self):
         self.rf.rf_check(0)
-        for mode, on_ms in ((0, 1000), (1, 750), (2, 500)):
+        for mode in range(3):
             for now in (0, 499, 500, 749, 750, 999, 1000):
                 before = self.rf.rf_value(5)
                 self.rf.rf_task_check(now, mode)
-                self.assertEqual(self.rf.rf_value(5) - before, int(now % 1000 < on_ms))
-                self.assertEqual(self.rf.rf_value(6), int(now % 1000 < on_ms))
+                self.assertEqual(self.rf.rf_value(5) - before, 1)
+                self.assertEqual(self.rf.rf_value(6), 1)
                 self.assertEqual(self.rf.rf_value(0), 0)
                 self.assertEqual(self.rf.rf_value(2), 0)
                 self.assertEqual(self.rf.rf_value(3), 0)

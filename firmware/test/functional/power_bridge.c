@@ -60,7 +60,12 @@ __declspec(dllexport) uint32_t activity_value(uint32_t selector)
     switch (selector)
     {
     case 0: return pwrmgt_activity_history_mask;
-    case 1: return pwrmgt_activity_on_guard_segments;
+    case 1:
+#if !PWRLVL_POWER_LIMIT_ENABLED
+        return pwrmgt_activity_on_guard_segments;
+#else
+        return 0;
+#endif
     case 2: return pwrmgt_activity_delta_met();
     case 3: return pwrmgt_is_idle;
     case 4: return pwrmgt_idle_power_delta_mw;

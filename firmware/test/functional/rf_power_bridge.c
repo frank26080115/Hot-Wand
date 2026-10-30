@@ -29,5 +29,9 @@ __declspec(dllexport) uint32_t integrated_step(uint32_t now)
 // Inspect eligibility after the real supervision/RF restart ordering.
 __declspec(dllexport) uint32_t integrated_activity_guard(void)
 {
+#if !PWRLVL_POWER_LIMIT_ENABLED
     return pwrmgt_activity_on_guard_segments;
+#else
+    return 0;
+#endif
 }

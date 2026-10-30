@@ -33,7 +33,7 @@ class MemorySession:
             ("btn_swd_test_boot_hold", 0x20001300),
             ("vision_test_fiducial_enabled", 0x20001304),
             ("tip_swd_test_command", 0x20001308),
-            ("fault_test_power_rise_enabled", 0x08001404), ("fault_test_dimming_enabled", 0x08001400), ("fault_test_inactive_ms", 0x2000130c))}
+            ("fault_test_buck_voltage_spike_adc_counts", 0x08001408), ("fault_test_power_rise_enabled", 0x08001404), ("fault_test_dimming_enabled", 0x08001400), ("fault_test_inactive_ms", 0x2000130c))}
         self.memory = {}
         self.writes = []
         self.running = False
@@ -99,6 +99,39 @@ class FaultHostTests(unittest.TestCase):
             if case.level == "target":
                 self.assertNotIn(case.kind, ("native", "electrical"))
         self.assertTrue(all(c.level != "target" for c in cases if c.kind == "electrical"))
+
+    def test_spike_threshold_is_read_from_compiled_image_not_source_defaults(self):
+        address = self.session.symbols["fault_test_buck_voltage_spike_adc_counts"].address
+        metadata = SimpleNamespace(symbols=self.session.symbols, address=lambda name: self.session.symbols[name].address)
+        for threshold in (0, 705, 800):
+            self.session.put(address, struct.pack("<I", threshold))
+            self.assertEqual(FaultTarget(self.session, metadata).buck_voltage_spike_adc_counts, threshold)
+
+    def test_disabled_spike_cases_skip_without_boot_or_stimulus(self):
+        for kind in ("spike", "spike_control"):
+            case = next(c for c in catalog() if c.kind == kind)
+            runner = object.__new__(FaultRunner)
+            runner.buck_voltage_spike_adc_counts = 0
+            runner.results = {case.id: {"status": "NOT_RUN"}}
+            runner.log = runner.save_results = Mock()
+            runner.exercise = Mock(side_effect=AssertionError("Disabled case must not execute"))
+            runner.run_case(case)
+            self.assertEqual(runner.results[case.id]["status"], "SKIPPED")
+            self.assertIn("compiled out", runner.results[case.id]["error"])
+            runner.exercise.assert_not_called()
+
+    def test_enabled_spike_scenarios_bracket_the_actual_compiled_threshold(self):
+        for threshold in (705, 800):
+            for kind in ("spike", "spike_control"):
+                runner = object.__new__(FaultRunner)
+                runner.model = self.model
+                runner.buck_voltage_spike_adc_counts = threshold
+                runner.boot, runner.queue, runner.terminal, runner.quiet, runner.log = (Mock() for _ in range(5))
+                runner.capture = Mock()
+                runner.exercise(next(c for c in catalog() if c.kind == kind))
+                frame = runner.queue.call_args_list[0].args[0][0]
+                self.assertIn(frame.channels[1], TABLE)
+                self.assertEqual(frame.channels[1] >= threshold, kind == "spike")
 
     def test_boot_settings_reject_out_of_range_or_disabled_battery_count(self):
         for settings in (BootSettings(mode=7), BootSettings(cells=3), BootSettings(power=3),
@@ -439,6 +472,15 @@ class RFPhaseHostTests(unittest.TestCase):
                 samples += [self.sample(on_ms + 100, 10, mode), self.sample(on_ms + 150, 10, mode)]
             self.runner(samples).check_rf_cycle(mode)
 
+    def test_default_continuous_requests_cover_a_full_second_in_every_mode(self):
+        for mode in range(3):
+            self.runner([self.sample(100 + i * 200, i + 1, mode) for i in range(6)]).check_rf_continuous(mode)
+
+    def test_default_continuous_requests_fail_if_an_interval_has_no_request(self):
+        runner = self.runner([self.sample(100, 1), self.sample(300, 1)])
+        with self.assertRaisesRegex(AssertionError, "continuously requests RF"):
+            runner.check_rf_continuous(2)
+
     def test_edge_crossing_is_retried(self):
         self.runner([self.sample(100, 1), self.sample(600, 5),
                      self.sample(1100, 10), self.sample(1150, 12),
@@ -501,12 +543,12 @@ class RFPhaseHostTests(unittest.TestCase):
                         self.assertFalse(loaded, "Slow phase/camera operations must use the cool baseline")
 
                     runner.queue = queue
-                    runner.check_rf_cycle = unloaded
+                    runner.check_rf_continuous = unloaded
                     runner.capture = unloaded
                     runner.quiet = Mock()
                     runner.target.wait = Mock()
                     runner.target.status = Mock(side_effect=RuntimeError("read failed") if fail else None,
-                                                return_value={"pwm": 0})
+                                                return_value={"pwm": 31})
                     case = Case("L03.power", "power_limit", parameters={"power": mode})
                     if fail:
                         with self.assertRaisesRegex(RuntimeError, "read failed"):

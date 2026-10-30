@@ -65,6 +65,7 @@ class FaultRunner:
         self.target = self.session = self.model = self.camera = self.current = None
         self.power_rise_enabled = False
         self.dimming_enabled = False
+        self.buck_voltage_spike_adc_counts = 0
         self.camera_available = False
         self.serial = self.last_generation = 0
         self.manifest = {"contract_version": 2, "physical_outputs": "RF off; buck PA6 GPIO-high/minimum", "pwm_semantics": "logical request; physical GPIO remains clamped", "native_only": args.native_only, "fixture": args.fixture, "camera": args.camera,
@@ -111,6 +112,8 @@ class FaultRunner:
                         self.manifest["power_rise_enabled"] = self.power_rise_enabled
                         self.dimming_enabled = self.target.dimming_enabled
                         self.manifest["oled_dimming_enabled"] = self.dimming_enabled
+                        self.buck_voltage_spike_adc_counts = self.target.buck_voltage_spike_adc_counts
+                        self.manifest["buck_voltage_spike_adc_counts"] = self.buck_voltage_spike_adc_counts
                         self.target.wait_boot_gate()
                         self.target.producer = AdcSimProducer(session, metadata.symbols)
                         calibration = self.target.calibration()
@@ -158,6 +161,12 @@ class FaultRunner:
         return exit_code
 
     def run_case(self, case):
+        if case.kind in ("spike", "spike_control") and not self.buck_voltage_spike_adc_counts:
+            self.results[case.id].update(status="SKIPPED", visual_review="NOT_APPLICABLE",
+                                         error="Buck voltage-spike detector compiled out (threshold is zero)")
+            self.log(f"{case.id}: SKIPPED (buck voltage-spike detector compiled out)")
+            self.save_results()
+            return
         self.current, self.serial, self.case_frames = case, 0, []
         result = self.results[case.id]
         started = time.monotonic()
@@ -444,6 +453,22 @@ class FaultRunner:
         self.capture("auto_recovered", camera=False)
         self.results[self.current.id]["automatic_recovery"] = True
 
+    def check_rf_continuous(self, mode):
+        """The inhibited image requests RF in every mode across a full second."""
+        def healthy(state):
+            if state["stage"] == FAULT:
+                raise AssertionError(f"Continuous RF check interrupted by firmware fault: {state.get('message', '')}")
+            return state["stage"] == RUNTIME and state["power"] == mode
+
+        first = self.target.wait(healthy, description="continuous RF baseline")
+        for _ in range(5):
+            second = self.target.wait(lambda s: healthy(s) and
+                                      ((s["tick"] - first["tick"]) & 0xFFFFFFFF) >= 200,
+                                      description="continuous RF requests", interval=0.01)
+            self.require(second["rf_attempts"] > first["rf_attempts"],
+                         "Every power mode continuously requests RF while interlocks pass")
+            first = second
+
     def check_rf_cycle(self, mode):
         """Observe logical start requests inside phase windows, away from edges.
 
@@ -509,12 +534,12 @@ class FaultRunner:
                              description="completed baseline history segments")
             self.queue([raised])
             peak = self.target.wait(lambda s: runtime(s) and s["pwm"] > 0,
-                                    description="SPORT power-rise attenuation", interval=0.01)
+                                    description="selected-mode power-rise attenuation", interval=0.01)
             self.require(peak["current_ma"] < 5200 and not peak["reasons"] & 4,
                          "Power-rise response occurs below the independent current limit")
             released = self.target.wait(lambda s: runtime(s) and s["pwm"] == 0 and
                                         all(abs(s["filtered"][i] - raised.channels[i]) <= 1 for i in range(6)),
-                                        description="held power permits independent PWM decay", interval=0.03)
+                                        description="held power below limits permits shared PWM release", interval=0.03)
             self.results[self.current.id]["power_rise_probe"] = {"peak": peak, "released": released}
         finally:
             self.queue([m.frame()])
@@ -573,7 +598,13 @@ class FaultRunner:
             self.target.wait(lambda s: s["ack"] == command, description="runtime injection acknowledged")
             self.terminal()
         elif kind in ("spike", "spike_control"):
-            self.queue([m.frame(buck=710 if kind == "spike" else 704), m.frame()])
+            threshold = self.buck_voltage_spike_adc_counts
+            # Use exactly representable LUT values bracketing the compiled
+            # threshold, including builds that override the nominal 25 V trip.
+            counts = (next(value for value in m.table if value >= threshold) if kind == "spike"
+                      else max(value for value in m.table if value < threshold))
+            self.require(m.base[1] < threshold, "Healthy baseline stays below the configured buck spike threshold")
+            self.queue([m.frame(buck=counts), m.frame()])
             self.terminal() if kind == "spike" else self.quiet()
         elif kind in ("fast_loss", "fast_control"):
             self.queue([m.frame(dc=591 if kind == "fast_loss" else 581)])
@@ -652,11 +683,9 @@ class FaultRunner:
             self.target.wait(lambda s: not s["reasons"] & bit and s["power"] == 0,
                              description="preferred power restored")
         elif kind == "power_limit":
-            # Phase sampling may span several seconds. Do it at the zero-power
-            # baseline, before the brief wattage-only stimulus heats the virtual
-            # bucket retained for positive protection tests in this image.
-            self.check_rf_cycle(p["power"])
-            if self.power_rise_enabled and p["power"] == 0:
+            # Observe RF at zero power before briefly loading the virtual bucket.
+            self.check_rf_continuous(p["power"])
+            if self.power_rise_enabled:
                 self.check_power_rise()
             power = (100000, 75000, 50000)[p["power"]]
             buck = m.voltage_count(24000)
@@ -665,21 +694,21 @@ class FaultRunner:
             self.require(m.predict(frame.channels)["power_mw"] > power, "Stimulus exceeds selected power ceiling")
             try:
                 self.queue([frame])
-                # Default builds use RF duty cycling, not measured-wattage PWM.
-                # This stimulus stays below 5.2 A even in the 100W case.
+                # Open-loop injection stays above the wattage ceiling despite
+                # PWM; it remains below 5.2 A, isolating power limiting.
                 self.target.wait(lambda s: s["stage"] == RUNTIME and
                                  all(abs(s["filtered"][i] - frame.channels[i]) <= 1 for i in range(6)),
                                  description="settled high-power plateau")
-                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] == 0,
-                                 description="transient attenuation releases at steady power")
+                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] >= 31,
+                                 description="wattage limit reaches sustained attenuation")
                 self.quiet(0.5)
-                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] == 0,
-                                 description="steady wattage without sustained attenuation")
-                self.require(self.target.status()["pwm"] == 0, "Steady wattage alone does not sustain buck PWM")
+                self.target.wait(lambda s: s["stage"] == RUNTIME and s["pwm"] >= 31,
+                                 description="steady excess power holds attenuation")
+                self.require(self.target.status()["pwm"] >= 31, "Excess wattage sustains buck attenuation")
             finally:
                 # Stop accumulating virtual heat before waits or optional photos.
                 self.queue([m.frame()])
-            self.capture("rf_duty_mode")
+            self.capture("wattage_limit_mode")
             self.target.wait(lambda s: s["pwm"] == 0, timeout=8, description="logical attenuation release")
         elif kind in ("ntc_warning", "ntc_late"):
             if kind == "ntc_late":
