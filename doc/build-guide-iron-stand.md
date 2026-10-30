@@ -23,6 +23,10 @@ The files are all [here in this directory](../mechanical/stand)
 
 There are variations: 16mm handle-rest for handpieces with a 16mm diameter flange (Metcal MX-H1-AV, Hakko FX1001, Radio Thermal 3D printed). 18mm handle-rest for handpieces with a 18mm diameter flange (Thermaltronics SHP, Metcal MX-RM3E). There is also a Hakko version that is using the 16mm handle-rest but a tip-shroud that moves the magnet closer to the tip, which works better for the Hakko FX1001 handpiece.
 
+![](./bld-photos/handpiece-diameters.jpg)
+
+![](./bld-photos/maget-positions.jpg)
+
 It can house cylindrical magnets that are 1/2" in diameter and 1/4" thick, magnetized axially. (KJ Magnetics D84, D84AH, D84B-N52, etc)
 
 The design has the strike plate intentionally taking possible hits from the hot soldering iron tip, preventing the plastic from getting melted accidentally. However it is still advised to cover exposed plastic surfaces with aluminum foil tape for added protection.
