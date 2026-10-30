@@ -40,7 +40,7 @@ The temperature measured by the internal thermistor rises slowly to 50C, and the
 
 This assures me that as long as the fan is functioning, the soldering station can work indefinitely, as it is difficult to load it past 60W continuously in real usage.
 
-As for the buck converter, a test was done with a constant-current dummy-load on the output directly. There was no enclosure and no active cooling, just open room temperature air. A K-type thermocouple was covered in one layer of kapton tape and used as a probe. The point of probing is the ground plane nearest to the buck converter IC on the same side as the IC itself.
+As for the buck converter (which is where we've put custom copper heatsinking fins), a test was done with a constant-current dummy-load on the output directly. There was no enclosure and no active cooling, just open room temperature air. A K-type thermocouple was covered in one layer of kapton tape and used as a probe. The point of probing is the ground plane nearest to the buck converter IC on the same side as the IC itself.
 
 At 21V 4A, the highest measured temperature was 60C. At 5A, the highest temperature measured was about 97C, and I didn't let it stay that way for too long.
 
