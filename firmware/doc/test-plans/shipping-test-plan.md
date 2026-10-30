@@ -40,7 +40,7 @@ The display is:
 
 ```text
 >28V       rounded input voltage; > is an input marker, not a comparator
-M:100      applied SPORT mode; M:75 is NORMAL, M:50 is ECO
+M:100      applied SPORT mode; M:75 is MEDIUM, M:50 is ECO
 NOW
 20.0V      buck output voltage
 3.2A       existing buck current-sensor measurement
@@ -55,11 +55,11 @@ MAX
 40C        maximum THERM2
 ```
 
-With default `PWRLVL_POWER_LIMIT_ENABLED=0`, SPORT requests continuous RF, NORMAL cycles 750 ms ON / 250 ms OFF, and ECO cycles 500 ms ON / 500 ms OFF. M:100/75/50 are retained mode labels, not enforced wattage ceilings. Short presses still select the same back-and-forth sequence. Thermal or low-input derating applies ECO. Timing follows the system-clock phase with best-effort foreground transitions; changing mode or recovering a fault does not start a fresh period.
+With default `PWRLVL_POWER_LIMIT_ENABLED=0`, SPORT requests continuous RF, MEDIUM cycles 750 ms ON / 250 ms OFF, and ECO cycles 500 ms ON / 500 ms OFF. M:100/75/50 are retained mode labels, not enforced wattage ceilings. Short presses still select the same back-and-forth sequence. Thermal or low-input derating applies ECO. Timing follows the system-clock phase with best-effort foreground transitions; changing mode or recovering a fault does not start a fresh period.
 
 Independent buck PWM still limits current at 5.2 A. Default-enabled SPORT rise attenuation reacts to new power peaks relative to the previous completed 250 ms history segment: +10 W requests CCR16, +20 W or more CCR32, with an independent one-count/50 ms decay. This can briefly reduce lift-out power; it does not enforce a 100 W ceiling or guarantee that a USB supply will stay on. Legacy builds with `PWRLVL_POWER_LIMIT_ENABLED=1` need a separately identified wattage-regulation procedure; the cycle-based criteria here apply to the default build.
 
-V/A/W have one decimal place; temperatures are whole degrees. The five maxima are independent and may occur at different times. **Peak power is the maximum calculated power sample, not maximum voltage multiplied by maximum current.** These are foreground-observed, filtered peaks, not captured switching spikes. Debug refresh is nominally 5 FPS; the 250 ms graph segments and peak collection continue independently. NOW is not a time-averaged power meter. In NORMAL/ECO, record the recurring low/high readings and their mode; MAX generally reflects ON-phase readings, not cycle-average power. Supply indications may average or alias the cycle differently, so neither a single NOW reading nor MAX can prove the duty ratio. Messages and warning overlays take display priority; peak collection continues. The high-voltage overlay can temporarily cover lower MAX readings.
+V/A/W have one decimal place; temperatures are whole degrees. The five maxima are independent and may occur at different times. **Peak power is the maximum calculated power sample, not maximum voltage multiplied by maximum current.** These are foreground-observed, filtered peaks, not captured switching spikes. Debug refresh is nominally 5 FPS; the 250 ms graph segments and peak collection continue independently. NOW is not a time-averaged power meter. In MEDIUM/ECO, record the recurring low/high readings and their mode; MAX generally reflects ON-phase readings, not cycle-average power. Supply indications may average or alias the cycle differently, so neither a single NOW reading nor MAX can prove the duty ratio. Messages and warning overlays take display priority; peak collection continues. The high-voltage overlay can temporarily cover lower MAX readings.
 
 OLED watts are neither whole-board input power nor RF power delivered to the load. At a recorded instant, estimate input watts as the supply's simultaneous voltage indication multiplied by its current indication. Record the input current's highest *observed* value separately: OLED MAX does not capture input voltage or input current, and human observation cannot guarantee their true peaks.
 
@@ -85,8 +85,8 @@ Mode-specific observations are:
 | Applied mode | Default request | Interpretation for this screen |
 | --- | --- | --- |
 | M:100 / SPORT | Continuous RF while interlocks pass | Use settled readings for the main dummy-load reference comparison; allow initial rise attenuation to settle |
-| M:75 / NORMAL | 750 ms ON / 250 ms OFF | Expect a repeating reduced-operation pattern; ON-phase watts can exceed 75 W without a wattage-limit malfunction |
-| M:50 / ECO | 500 ms ON / 500 ms OFF | Expect longer OFF intervals than NORMAL; ON-phase watts can exceed 50 W without a wattage-limit malfunction |
+| M:75 / MEDIUM | 750 ms ON / 250 ms OFF | Expect a repeating reduced-operation pattern; ON-phase watts can exceed 75 W without a wattage-limit malfunction |
+| M:50 / ECO | 500 ms ON / 500 ms OFF | Expect longer OFF intervals than MEDIUM; ON-phase watts can exceed 50 W without a wattage-limit malfunction |
 
 Clear peaks after selecting a mode so earlier readings are not attributed to the new mode. Reduced RF duty should reduce sustained operation, but it does not guarantee exact 75%/50% input or buck power, or a particular MOSFET temperature. Converter feedback, filtering, SPORT rise attenuation, startup losses and supply-meter response affect the observed result. Establish power expectations using a healthy reference, not the numeric mode labels.
 
@@ -130,7 +130,7 @@ The +/-20% comparison band is a provisional shipping rule, not a firmware contro
 1. After S1, select M:100, allow initial settling, clear maxima, and run for **10 minutes** with fixture air cooling operating. Record simultaneous NOW buck watts and input voltage/current at **30 s, 1 min, 5 min, and 10 min**, plus the applied mode. Record MAX at the end; do not clear peaks mid-run. Stop sooner if any general limit is reached.
 2. Compare the settled observations with the reference/band above. NORMAL requires repeatable power and input demand, no unexplained fault, and no continuing drift. At continuous SPORT a persistent large oscillation is a HOLD for investigation; do not choose only favorable samples. If the unit applies ECO because of derating, record that event and do not compare its cycling readings against the continuous-SPORT reference.
 3. Apply all general thermal limits. Both final MOSFET readings must be **<=70 C**, with a rise **<=2 C over the final five minutes**. If still rising, extend to 20 minutes under supervision; failure to stabilize is a HOLD. Expected power does not excuse excess temperature.
-4. Select M:75, clear peaks after messages settle, and observe for **two minutes**. Record repeating NOW low/high values, MAX, input indications and temperature trend. Repeat at M:50 for **two minutes**. NORMAL should show shorter interruptions than ECO. These slow instruments provide a qualitative cycling check, not proof of exact 750/250 or 500/500 ms timing. Do not fail a unit because an ON-phase reading exceeds its mode label.
+4. Select M:75, clear peaks after messages settle, and observe for **two minutes**. Record repeating NOW low/high values, MAX, input indications and temperature trend. Repeat at M:50 for **two minutes**. MEDIUM should show shorter interruptions than ECO. These slow instruments provide a qualitative cycling check, not proof of exact 750/250 or 500/500 ms timing. Do not fail a unit because an ON-phase reading exceeds its mode label.
 5. Compare reduced-mode patterns with the qualified reference under matched conditions. Sustained operation should be reduced without abnormal noise, faults or worsening thermal behavior. Unexpected absence of any reduced-operation pattern, repeated faults, or rising temperature that violates the general rules is a HOLD/STOP as applicable. Do not require exact 0.75/0.5 power ratios: startup and analog feedback can alter the operating point.
 6. Return to M:100, allow settling, and confirm the original continuous-mode reading recovers within its comparison band. A persistent unexplained change is a HOLD. Retain observations from each mode separately; mode changes and peak resets do not reset the optional virtual thermal model.
 

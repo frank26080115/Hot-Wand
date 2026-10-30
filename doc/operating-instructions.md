@@ -6,7 +6,7 @@ The GUI will display the DC input voltage, and a graph representing power draw. 
 
 Remember, this is a RF soldering iron, there is no need (and no way) to adjust temperature. The temperature is just magically always correct (within a range specified by the manufacture of the cartridges). Since you are using one and knows it's worth like $1000, I assume this is why you are using one.
 
-Pressing the button quickly will cycle between the three power limit modes. The SPORT mode is essentially unlimited. The Normal and Eco modes will show a dotted line on the power graph indicating where the virtual power limit is.
+Pressing the button quickly will cycle between the three power limit modes. The SPORT mode is essentially unlimited. The 75W and 50W modes will show a dotted line on the power graph indicating where the virtual power limit is.
 
 NOTE: I would stick with SPORT mode unless you have broken fan and the unit is overheating. The lower power mode will make the iron tip slightly cooler (this was discovered after testing).
 
