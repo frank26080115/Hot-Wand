@@ -30,6 +30,10 @@ I implemented a rather fancy GUI, fancier than what is available on a Metcal sol
  * various fault detection
  * easter eggs! try and find them
 
+Demo of the power modes:
+
+![](./doc/bld-photos/pwr-modes-video.webp)
+
 A key aspect of my design is that it's **easy to build, and to prove it, I built 5 of these in my first batch, and they needed no rework**. All of the lessons and mistakes from the SergeyMax design are accounted for. The files are ready for PCBA assembly service upload and I've optimized the hand assembly to minimize tuning. I want my github repo to be a one-stop-shop of information for anybody who wants to build one.
 
 ![](./doc/bld-photos/variations-anim.webp)
