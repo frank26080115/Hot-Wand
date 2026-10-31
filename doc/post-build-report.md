@@ -101,6 +101,16 @@ Since my target temperature is 390C, it seems like the only way to accomplish th
 
 It is my opinion that, it'll be foolish to attempt to build the Lite version of Hot Wand without a soldering iron tip temperature measurement device or a LCR meter or VNA for the tuning, you can't build this thing blind.
 
+### K Family Cartridges
+
+The original Radio Thermal authors designed a 3D printed handpiece that fits a P family cartridge. I wanted to skip that so I originally purchased an off-the-shelf K family handpiece and use a K family cartridge. This should've worked because both K and P families are 470 kHz cartridges and work on the same stations.
+
+It turns out, the K family cartridges ran much hotter, measured as 470C when I expected something between 350C and 390C. The P family didn't have this problem.
+
+My own simulations says I could've replaced one of the matching capacitors with a lower capacitance. When I talked with the Radio Thermal authors, they actually suggested I build a handpiece with a series capacitor, which is effectively the same idea.
+
+But realistically, the final solution is that I purchased a ton more P family handpieces instead.
+
 ### Power Consumption
 
 Most of the time, at 28V input, the unit will start at around 35W, then suddenly spike to 100W, then slow taper down to 35W again. The weird part is that the sharp spike does not happen at the lowest temperature, it's a particular "warm" temperature band that causes it, so there is a delay after power on.
