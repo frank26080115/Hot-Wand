@@ -88,6 +88,6 @@ Plug in the fan before closing the box.
 
 ## Final Box Closure
 
-Use M2.5 x 8mm screws to fasten the enclosure box to the enclosure bottom lid.
+Use M2.5 x 8mm screws (plastite type is preferred) to fasten the enclosure box to the enclosure bottom lid.
 
 ![](imgs/econo_screw_down_box.png)

@@ -120,7 +120,7 @@ I used high temperature RTV gasket maker to "glue" down the inductors.
 
 At this point, you may apply conformal coating over the circuit board if you wish.
 
-Fasten PCB to bottom lid using four M2.5 x 6mm screws.
+Fasten PCB to bottom lid using four M2.5 x 8mm screws.
 
 ![](imgs/3dp_box_screw_in_pcb.png)
 
@@ -134,7 +134,7 @@ Plug in the fan, making sure the polarity is correct.
 
 Make sure the fan wires are tidy and won't get jammed back into the fan blades once the box is closed, maybe use tape or zip-ties or something to keep the wires short and together.
 
-Drop the box over the whole assembly. The heatsink might touch the box, that's ok. Use four M2.5 x 6mm screws to fasten the bottom lid to the box body.
+Drop the box over the whole assembly. The heatsink might touch the box, that's ok. Use four M2.5 x 8mm screws (plastite type is preferred) to fasten the bottom lid to the box body.
 
 ![](imgs/3dp_box_final_bottom_screws.png)
 

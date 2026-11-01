@@ -2,6 +2,8 @@
 
 WARNING: High RF voltages are involved, do NOT touch the circuit board while it is powered on. It hurts as a burning sensation.
 
+NOTE: After building the metal enclosure version and also thermal testing the plastic "econo" version, I really recommend building the "econo" plastic version instead. The metal enclosure is expensive, a pain to work with, and the plastic version has more than good enough cooling.
+
 ## 0. Circuit Board Reception
 
 Get the circuit board from JLCPCB with mostly bottom components already populated. [See this guide on ordering from JLCPCB](jlcpcb-ordering.md)
