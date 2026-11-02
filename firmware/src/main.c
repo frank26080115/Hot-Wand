@@ -36,17 +36,22 @@
 #error "This source supports only the STM32F030 and STM32F042 targets."
 #endif
 
+// size and position of the bar that grows while the button is held down
 #define SETUP_HOLD_BAR_WIDTH             32
 #define SETUP_HOLD_BAR_HEIGHT            3
 #define SETUP_HOLD_BAR_Y                 45
+
+// frame rates
 #define MAIN_DISPLAY_FRAME_INTERVAL_MS   67
 #define DEBUG_DISPLAY_FRAME_INTERVAL_MS  200
-#define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8
+
+#define MAIN_DISPLAY_VOLTAGE_BUFFER_SIZE 8    // string length for the voltage display up on top
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
+// the three possible inactivity time durations before going into sleep
 static const uint32_t auto_sleep_delay_ms[] = {0, 5 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000};
 #if OLED_DIMMING_ENABLED
 static const uint32_t auto_dim_delay_ms[] = {0, 15 * 1000, 30 * 1000, 60 * 1000};
@@ -73,16 +78,16 @@ uint8_t pixshift_y = 0;
 // Function Prototypes
 // -----------------------------------------------------------------------------
 
-static void                           boot_check_for_setup(void);
-static void                           boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
-static void                           boot_wait_for_power_stable(void);
+static void boot_check_for_setup(void);
+static void boot_draw_setup_hold(u8g2_t* graphics, uint8_t bar_width);
+static void boot_wait_for_power_stable(void);
+static void main_handle_short_press(uint32_t now);
+static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts);
+static void main_update_debug_readings(void);
+static void main_reset_debug_peaks(void);
+static void main_handle_runtime_button(uint32_t now);
+static void Error_Handler(void);
 static void __attribute__((noinline)) main_render_display(void);
-static void                           main_handle_short_press(uint32_t now);
-static void                           main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts);
-static void                           main_update_debug_readings(void);
-static void                           main_reset_debug_peaks(void);
-static void                           main_handle_runtime_button(uint32_t now);
-static void                           Error_Handler(void);
 
 void enter_sleep_mode(void);
 
@@ -168,6 +173,8 @@ int main(void)
     {
         nvm_apply_defaults(&settings);
     }
+
+    // automated testing override settings
 #if HOT_WAND_TEST_HARNESS
     if ((fault_test.setup & 0x80000000) != 0)
     {
@@ -184,6 +191,7 @@ int main(void)
         }
     }
 #endif
+
     adc_set_input_voltage_calibration(settings.input_v_calib);
 
     // when all ADC channels have been read once
@@ -207,15 +215,17 @@ int main(void)
     }
 #endif
 
+    // determine the screen pixels shift (avoid burn-in) once at boot, used for this session until reboot
     pixshift_x = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_X_BIGFONT + 1);
     pixshift_y = hotwand_rand() % (OLED_MAX_PIXEL_SHIFT_Y + 1);
 
+    // check the boot button for entering setup menu
     boot_button_down = btn_is_down();
     UART_SetAllowed(boot_button_down);
     if (boot_button_down)
     {
         boot_check_for_setup();
-        // this might just reboot
+        // this might just reboot from user choice
     }
 
     boot_wait_for_power_stable();
@@ -242,6 +252,7 @@ int main(void)
         battery_set_params(fault_test.setup & 255, settings.batt_mode);
     }
 #endif
+
     /* perform all other initialization here */
     tipdetect_init();
     pwrlvl_init();
@@ -249,14 +260,17 @@ int main(void)
     pwrmgt_set_idle_power_threshold(settings.idle_detect_thresh);
     settings.fan_mode = fan_normalize_mode(settings.fan_mode);
     fan_init(settings.fan_mode, settings.fan_sig_inv != 0);
+
 #if ADC_SIM_ENABLED
     /* Resume near-full attenuation, then let the normal supervisor regulate
      * and decide whether RF may start.
      * This does not bypass any interlock. */
     pwrlvl_release_minimum();
 #endif
+
     display_last_frame_ms = systick_get_ms() - MAIN_DISPLAY_FRAME_INTERVAL_MS;
 
+    // main application loop
     for (;;)
     {
         uint32_t inactive_ms;
@@ -293,7 +307,7 @@ int main(void)
         // clock, tip-debounce, and latched-stop checks at every restart.
         rfgen_task(pwrmgt_get_applied_power_level());
 
-        ntc_task();        // reports missing external temperature sensors once after startup
+        ntc_task();        // reports missing external temperature sensors once after startup, the readings are used by pwrmgt_task
         fan_task();        // spins the fan as appropriate
         UART_debug_task(); // spits out a debug message when requested
 
@@ -340,6 +354,7 @@ int main(void)
 #endif
         watchdog_feed();
     }
+    // end of main application loop
 }
 
 // -----------------------------------------------------------------------------
@@ -370,6 +385,7 @@ static void boot_check_for_setup(void)
     boot_draw_setup_hold(graphics, 0);
     hold_start_ms = systick_get_ms();
 
+    // this is the loop that grows the bar that grows when the button is held during boot
     for (;;)
     {
         uint32_t elapsed;
@@ -392,7 +408,7 @@ static void boot_check_for_setup(void)
                 OLED_SendBuffer(&oled);
                 btn_has_short_press(true);
                 btn_has_long_press(true);
-                return;
+                return; // returns to normal application
             }
 
             HAL_Delay(1);
@@ -419,8 +435,10 @@ static void boot_check_for_setup(void)
 
         if (width >= SETUP_HOLD_BAR_WIDTH)
         {
+            // actually enter the setup menu
             setup_menu();
-            return;
+            // there's a chance that we never reach here if the user picks an option that reboot
+            return; // returns to normal application
         }
 
         HAL_Delay(1);
@@ -435,6 +453,7 @@ static void boot_wait_for_power_stable(void)
     uint32_t maximum_reached_ms = wait_started_ms;
     bool     wait_message_drawn = false;
 
+    // the waiting loop
     for (;;)
     {
         uint16_t millivolts = adc_to_millivolts(DC_SENS_IDX);
@@ -442,6 +461,7 @@ static void boot_wait_for_power_stable(void)
 
 #ifdef SHOW_SPLASH
         btn_task();
+        // dismiss splash screen on button press
         if (splash_visible && btn_has_short_press(true))
         {
             u8g2_t* graphics = OLED_GetGraphics(&oled);
@@ -455,7 +475,7 @@ static void boot_wait_for_power_stable(void)
         }
 #endif
 
-        if (millivolts > maximum_millivolts)
+        if (millivolts > maximum_millivolts) // new peak reached
         {
             maximum_millivolts = millivolts;
             maximum_reached_ms = now;
@@ -463,14 +483,18 @@ static void boot_wait_for_power_stable(void)
 
         if ((uint32_t)(now - maximum_reached_ms) >= BOOT_POWER_STABLE_MS)
         {
+            // voltage has peaked and stable, continue with application
             return;
         }
 
         if ((uint32_t)(now - wait_started_ms) >= BOOT_POWER_TIMEOUT_MS)
         {
+            // maximum allowed wait time has been reached
             return;
+            // this function is guaranteed to return because of this condition
         }
 
+        // if it takes too long, draw a message to the user
         if (!wait_message_drawn && ((uint32_t)(now - wait_started_ms) >= BOOT_POWER_WAIT_MS))
         {
             u8g2_t* graphics = OLED_GetGraphics(&oled);
@@ -480,6 +504,7 @@ static void boot_wait_for_power_stable(void)
 #ifdef SHOW_SPLASH
                 if (splash_visible)
                 {
+                    // clear an area within the artwork to display the text
                     u8g2_SetDrawColor(graphics, 0);
                     u8g2_DrawBox(graphics, 0, 0, 32, OLED_TEXT_LINE_HEIGHT);
                     u8g2_SetDrawColor(graphics, 1);
@@ -504,6 +529,7 @@ static void boot_wait_for_power_stable(void)
 static void main_handle_short_press(uint32_t now)
 {
 #ifdef SHOW_SPLASH
+    // dismiss splash screen on button press
     if (splash_visible)
     {
         splash_visible = false;
@@ -518,7 +544,8 @@ static void main_handle_short_press(uint32_t now)
         return;
     }
 
-    // Independent of the six-press Easter egg, including when derating blocks a power change.
+    // count consecutive presses for the purpose of showing the debug view
+    // this is independent of the six-press Easter egg, and including when derating blocks a power change.
     if ((uint32_t)(now - debug_last_press_ms) > BTN_CONSECUTIVE_PRESS_TIMEOUT_MS)
     {
         debug_press_count = 0;
@@ -550,6 +577,8 @@ static void main_update_debug_readings(void)
     debug_readings[2] = adc_get_milliwatts();
     debug_readings[3] = adc_to_celcius(THERM_1_IDX);
     debug_readings[4] = adc_to_celcius(THERM_2_IDX);
+
+    // track the peaks of these values
     for (uint8_t i = 0; i < 5; ++i)
     {
         if (debug_readings[i] > debug_peaks[i])
@@ -565,6 +594,7 @@ static void main_handle_runtime_button(uint32_t now)
     {
         main_handle_short_press(now);
     }
+
     if (debug_view_enabled)
     {
         // Wait for the entry press to finish before changing event classification.
@@ -590,6 +620,7 @@ static void main_handle_runtime_button(uint32_t now)
         // clears peaks after this sample; the next pass starts accumulating again.
         main_update_debug_readings();
     }
+
     if (btn_has_long_press(true))
     {
         if (debug_view_enabled)
@@ -605,37 +636,59 @@ static void main_handle_runtime_button(uint32_t now)
 
 static void main_draw_debug_text(u8g2_t* graphics, uint8_t baseline, const char* text)
 {
+    // this is just a wrapper that applies the pixel shifting
     u8g2_uint_t width     = u8g2_GetStrWidth(graphics, text);
     u8g2_uint_t available = u8g2_GetDisplayWidth(graphics);
-    u8g2_uint_t shift     = width < available ? available - width : 0;
-    if (shift > pixshift_x)
+    u8g2_uint_t shift     = pixshift_x;
+    // make sure the text actually fits, override pixshift if needed
+    if (width >= available)
     {
-        shift = pixshift_x;
+        shift = 0;
+    }
+    else if (shift > available - width)
+    {
+        shift = available - width;
     }
     u8g2_DrawStr(graphics, shift, baseline + pixshift_y, text);
 }
 
 static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts)
 {
+    const uint8_t row_spacing            = 8;
+    const uint8_t voltage_baseline       = row_spacing + 1;
+    const uint8_t power_baseline         = voltage_baseline + row_spacing;
+    const uint8_t group_heading_baseline = power_baseline + row_spacing;
+    const uint8_t first_reading_baseline = group_heading_baseline + row_spacing;
+    const uint8_t group_spacing          = 6 * row_spacing;
+    const uint8_t hot_warning_baseline   = group_heading_baseline + 2 * group_spacing;
+
     char   text[16];
     size_t length;
 
     u8g2_SetFont(graphics, u8g2_font_5x7_tr);
+
+    // first line displays input voltage
     text[0] = '>';
     millivolts_to_str(input_millivolts, text + 1, 0, &length);
     length += 1;
     text[length++] = 'V';
     text[length]   = '\0';
-    main_draw_debug_text(graphics, 9, text);
+    main_draw_debug_text(graphics, voltage_baseline, text);
 
+    // display power mode, as the wattage limit
     text[0] = 'M';
     text[1] = ':';
     int_to_str(100 - 25 * pwrmgt_get_applied_power_level(), text + 2, 10, NULL);
-    main_draw_debug_text(graphics, 17, text);
+    main_draw_debug_text(graphics, power_baseline, text);
 
+    // the two groups: live (now), and peak (max)
     for (uint8_t group = 0; group < 2; ++group)
     {
-        main_draw_debug_text(graphics, 25 + 48 * group, group == 0 ? "NOW" : "MAX");
+        // draw the group heading text
+        main_draw_debug_text(graphics, group_heading_baseline + group_spacing * group,
+                             group == 0 ? "NOW" : "MAX");
+
+        // draw the rows within each group
         for (uint8_t row = 0; row < 5; ++row)
         {
             uint32_t value = group == 0 ? debug_readings[row] : debug_peaks[row];
@@ -661,13 +714,15 @@ static void main_render_debug_view(u8g2_t* graphics, uint16_t input_millivolts)
             }
             text[length++] = unit;
             text[length]   = '\0';
-            main_draw_debug_text(graphics, 33 + 48 * group + 8 * row, text);
+            main_draw_debug_text(graphics, first_reading_baseline + group_spacing * group + row_spacing * row, text);
         }
     }
+
+    // blink a notice if the temperature exceeds the warning threshold
     if ((pwrmgt_get_attenuation_reasons() & PWRMGT_ATTENUATION_TEMPERATURE) != 0 &&
         ((systick_get_ms() / 1000) & 1) != 0)
     {
-        main_draw_debug_text(graphics, 121, "!HOT!");
+        main_draw_debug_text(graphics, hot_warning_baseline, "!HOT!");
     }
 }
 
@@ -703,6 +758,7 @@ static void __attribute__((noinline)) main_render_display(void)
     }
     else
     {
+        // the input voltage is always displayed on top
         millivolts_to_str(input_millivolts, voltage, 1, &voltage_length);
         voltage[voltage_length++] = 'V';
         voltage[voltage_length]   = '\0';
@@ -718,9 +774,13 @@ static void __attribute__((noinline)) main_render_display(void)
                       ((systick_get_ms() / 1000) & 1) != 0)
                          ? "!HOT!"
                          : voltage);
+
+        // the rest of the screen is the history graph
         pwrmgt_render_graph(graphics);
     }
-    pwrmgt_render_high_voltage_warning(graphics, input_millivolts);
+
+    pwrmgt_render_high_voltage_warning(graphics, input_millivolts); // will draw if needed, handles its own state
+
     OLED_SendBuffer(&oled);
 }
 

@@ -445,7 +445,8 @@
 // -----------------------------------------------------------------------------
 
 /* Compile out automatic dimming, its saved timeout, and its setup page.
- * Each layout has its own NVM magic; changing this flag resets settings. */
+ * In real-world testing, the dimming feature is useless, the difference between full brightness and minimal brightness is very little
+ */
 #ifndef OLED_DIMMING_ENABLED
 #define OLED_DIMMING_ENABLED 0
 #endif
