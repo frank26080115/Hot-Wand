@@ -14,8 +14,8 @@ The "Adaptive" power mode is one that allows 100% power for 21V of power input o
 
 The "Eco" power mode is a 70% power mode. The intention is to allow a 3A capable power supply to be used instead of a 5A power supply.
 
-## Firmware Version
+In Sport mode, if the input voltage is 28V or higher, the power draw is ramped up slowly from 0 to 100% in order to keep current consumption below 5A.
 
-Edit the version string in `src/version.c`. It is currently `V1.0`.
+## Fan Behavior
 
-Send `version` followed by a newline (LF or CRLF) through the serial/USB virtual COM command line to print the firmware version string and compiled PCB version (`HOTWANDLITE_PCB_VERSION`, including `-1` for reworked V1). This command leaves normal operation running and does not enter test mode.
+The fan is simply on if the power switch is on, and off if the power switch is off.

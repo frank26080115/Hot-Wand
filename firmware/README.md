@@ -4,6 +4,28 @@ It is meant to be built under PlatformIO and flashed via the SWD pins using a ST
 
 # Firmware Architecture
 
+```mermaid
+flowchart TD
+    boot([Boot]) --> init[Initialize]
+    init --> hold{Btn Hold?}
+    hold -->|Yes| setup[Setup Menu]
+    setup -->|Edit| setup
+    setup -->|Save / discard| boot
+    hold -->|No| ready[Power settle / init outputs]
+    ready --> loop[Main loop]
+    loop --> inputs[Button / tip]
+    inputs --> power[Safety / power]
+    power --> rf[RF / fan / UI]
+    rf --> feed[Feed watchdog]
+    feed --> loop
+    power -->|Input fault| wait[Outputs off]
+    wait -->|Recovered| power
+    power -->|Fatal fault| stop[Safe halt]
+    rf -->|Sleep| stop
+    setup -->|Timeout| stop
+    stop -->|Reset if allowed| boot
+```
+
 The overall firmware is split into the main application that operates the soldering iron, and a setup menu (which keeps the soldering iron unpowered while within the menu). The main application owns initialization and the continuously running control loop. The setup menu is a separate modal loop entered during boot; it stops RF generation and forces the buck-converter control to minimum output before accepting input or drawing menu pages. It uses only the button, display, timeout, and nonvolatile-settings paths needed to edit configuration, then resets the controller when exiting. This keeps setup logic out of the active power-control path and makes the safe output state explicit at the boundary between the two modes.
 
 ## Platform and hardware layer
