@@ -36,8 +36,8 @@ _Static_assert(HSE_VALUE == RFGEN_CLOCK_HZ, "RF generator requires a 27.12 MHz e
 // -----------------------------------------------------------------------------
 
 static volatile bool rfgen_clock_fault_logged;
-static volatile bool rfgen_emergency_stop_latched;
-static volatile bool rfgen_power_loss_stop_latched;
+static volatile bool rfgen_emergency_stop_latched;  // if true, only a reboot can clear a fault
+static volatile bool rfgen_power_loss_stop_latched; // if true, the fault can clear automatically only after power is restored
 static volatile bool rfgen_active;
 #if HOT_WAND_TEST_HARNESS
 // Logical phase for activity-history tests; physical RF stays inhibited.
@@ -239,6 +239,10 @@ void rfgen_stop(void)
 
 static void rfgen_latched_stop(void)
 {
+    /*
+    NOTE: the callers own the latches, the caller is responsible for manipulating rfgen_emergency_stop_latched before calling rfgen_latched_stop
+    */
+
     /* Disable the timer output before doing the slower GPIO ownership handoff.
      * Latched callers are checked at both RF-start gates, so an interrupted
      * or later start cannot undo their safety shutdown. */
@@ -475,5 +479,5 @@ static void rfgen_fault(void)
 
 void HAL_RCC_CSSCallback(void)
 {
-    rfgen_fault(); // this will signal to the application that a failure occured
+    rfgen_fault(); // this will signal to the application that a failure occurred
 }

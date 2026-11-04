@@ -1,3 +1,8 @@
+/*
+The original intended purpose for this feature is to estimate if the buck converter is about to overheat
+It does this by estimating the heat, if more watts are being consumed, we assume the temperature is rising, if less watts, then we assume the temperature is cooling (hence, leaking)
+*/
+
 // -----------------------------------------------------------------------------
 // Includes
 // -----------------------------------------------------------------------------

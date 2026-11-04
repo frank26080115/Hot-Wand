@@ -404,6 +404,12 @@ static uint32_t pwrlvl_get_limit_mw(void)
 #endif
 
 #if PWRLVL_POWER_RISE_ENABLED
+/*
+detect a sharp rise in power, and determine how much to attenuate the buck converter output
+this will avoid power draw spikes that might overload a USB-C host
+it does cost a tiny bit of heating performance as it's intentionally limiting output power but it's a very short effect
+the user is not likely to notice or care, and is happy that the USB-C host is still working
+*/
 void pwrlvl_observe_power(uint32_t current_mw, uint32_t previous_peak_mw, bool segment_started, bool reference_valid)
 {
     if (!pwrlvl_initialized || pwrlvl_forced_minimum)

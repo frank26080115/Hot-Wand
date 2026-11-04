@@ -500,7 +500,7 @@ static void pwrmgt_blocked_change_task(void)
         ++pwrmgt_blocked_change_count;
     }
 
-    message = pwrmgt_blocked_change_count >= 5 ? pwrmgt_repeated_attempt_message : pwrmgt_pending_blocked_message;
+    message = pwrmgt_blocked_change_count >= 5 ? pwrmgt_repeated_attempt_message : pwrmgt_pending_blocked_message; // haha
     show_short_msg(message, PWRMGT_BLOCKED_CHANGE_MESSAGE_MS);
     pwrmgt_clear_blocked_change();
 }

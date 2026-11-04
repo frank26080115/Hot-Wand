@@ -529,7 +529,7 @@ static void boot_wait_for_power_stable(void)
 static void main_handle_short_press(uint32_t now)
 {
 #ifdef SHOW_SPLASH
-    // dismiss splash screen on button press
+    // dismiss splash screen on button press, consumes the button press
     if (splash_visible)
     {
         splash_visible = false;

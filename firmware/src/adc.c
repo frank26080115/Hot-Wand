@@ -337,6 +337,7 @@ void ADC1_IRQHandler_Impl(void)
     uint8_t  completed_idx;
     uint8_t  next_idx;
 
+    // if no flag is set, then do nothing, restart the conversion if needed
     if ((flags & (ADC_ISR_EOC | ADC_ISR_EOS)) == 0)
     {
         adc_handle.Instance->ISR = flags & ADC_ISR_OVR;
@@ -350,19 +351,23 @@ void ADC1_IRQHandler_Impl(void)
     }
 
     completed_idx = current_idx;
-    sample        = (uint16_t)HAL_ADC_GetValue(&adc_handle);
+    sample        = (uint16_t)HAL_ADC_GetValue(&adc_handle); // actually get the value from ADC hardware register
+
 #if ADC_SIM_ENABLED
+    // override the sample with simulated result if needed
     if (adc_sim.state == ADC_SIM_ACTIVE)
     {
         sample = adc_sim.decoded[completed_idx];
     }
 #endif
-    raw[completed_idx] = sample;
+
+    raw[completed_idx] = sample; // stores the unmodified value in the buffer
 
     next_idx = (uint8_t)(completed_idx + 1);
     if (((next_idx >= ADC_INPUT_COUNT) && ((completed_round_count % ADC_VREFINT_SAMPLE_INTERVAL_ROUNDS) != 0)) ||
         (next_idx > ADC_VREFINT_IDX))
     {
+        // reached the end, round robin loop
         next_idx = 0;
     }
     current_idx = next_idx;
@@ -458,6 +463,7 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     }
 #endif
 
+    // set an initial value if not existing, no need to filter as this is the first sample
     if ((initialized_channels & initialized_mask) == 0)
     {
         lpf_state[idx] = target;
@@ -467,12 +473,10 @@ static void adc_filter_sample(uint8_t idx, uint16_t sample)
     }
 
     state = lpf_state[idx];
-    alpha = (target >= state) ? cfg->lpf_alpha_high : cfg->lpf_alpha_low;
-    if (alpha > ADC_LPF_SCALE)
-    {
-        alpha = ADC_LPF_SCALE;
-    }
+    alpha = (target >= state) ? cfg->lpf_alpha_high : cfg->lpf_alpha_low; // going up uses a different filter constant than going down
+    alpha = (alpha > ADC_LPF_SCALE) ? ADC_LPF_SCALE : alpha;
 
+    // actually do the filtering now
     new_weight   = ADC_LPF_SCALE - alpha;
     weighted_sum = (state * alpha) + (target * new_weight);
     state        = (weighted_sum + ADC_LPF_ROUNDING) / ADC_LPF_SCALE;
@@ -502,6 +506,8 @@ static void adc_complete_round(void)
 
 static void adc_publish_dc_voltage_average(void)
 {
+    // this function is used for fast-drop and sustained voltage drop detection (power loss detection)
+
     uint32_t average_sample;
 
     if (dc_voltage_accumulator_count == 0)
@@ -552,7 +558,6 @@ static void adc_check_fast_power_loss(uint16_t sample)
         rfgen_power_loss_stop();
     }
 }
-
 #endif
 
 static void adc_update_reference_voltage(uint16_t sample)
