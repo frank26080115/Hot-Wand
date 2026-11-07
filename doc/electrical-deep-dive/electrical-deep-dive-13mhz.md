@@ -2,7 +2,7 @@
 
 This [switching buck converter](https://www.ti.com/product/TPS54560) turns the input supply into the DC voltage that feeds the main RF amplifier. L1/C2 perform the main energy conversion; L2/C4 add a second filter stage to reduce RF returning from the amplifier.
 
-The feedback takeoff is before L2. Its three control inputs are the output divider, the [current-transformer phase detector](../design-study/current-transformer.md), and the microcontroller's attenuation PWM. The transformer branch can move the voltage up or down; the MCU branch is arranged to lower it only.
+The feedback takeoff is before L2. Its three control inputs are the output divider, the [current-transformer phase detector](../design-study/current-transformer.md), and the microcontroller's attenuation PWM. The transformer branch can move the voltage up or down; the microcontroller branch is arranged to lower it only.
 
 ## U1
 
@@ -18,7 +18,7 @@ Value: 33u
 
 [Digi-Key: 744750460220 (22 uH fitted)](https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/744750460220/6598151)
 
-The first-stage buck inductor. It stores energy as a magnetic field when current flows through it. When U1 switches off, the collapsing field keeps current flowing through D1 and into the load. The schematic says 33 uH and the actual fitted part is 22 uH. The calculated minimum required is about 16.3 uH.
+A purchased first-stage buck inductor. It stores energy as a magnetic field when current flows through it. When U1 switches off, the collapsing field keeps current flowing through D1 and into the load. The schematic says 33 uH and the actual fitted part is 22 uH. The calculated minimum required is about 16.3 uH.
 
 ## L2
 
@@ -26,7 +26,7 @@ Value: 4u7 IHLP2525CZ
 
 [LCSC: C845027](https://www.lcsc.com/product-detail/C845027.html)
 
-The second-stage inductor also stores energy as a magnetic field and resists sudden changes in current. Together with C4, it smooths the RF amplifier supply and reduces RF energy returning to the buck converter. The feedback takeoff is before this stage.
+The purchased second-stage inductor also stores energy as a magnetic field and resists sudden changes in current. Together with C4, it smooths the RF amplifier supply and reduces RF energy returning to the buck converter. The feedback takeoff is before this stage.
 
 ## C2
 
@@ -92,7 +92,7 @@ Value: 1K
 
 [LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)
 
-The lower arm of the feedback divider, from BUCK-FB to ground. Together with R4 and VR1, it sets the baseline output voltage. The other feedback branches add or remove current at this same node.
+The lower arm of the feedback divider, from the buck converter's feedback net (`BUCK-FB`) to ground. Together with R4 and VR1, it sets the baseline output voltage. The detector also feeds this connection through [R11](#r11); R8 and R11 work with the upper divider to set how strongly the detector influences the buck output.
 
 ## C8
 
@@ -106,7 +106,7 @@ A small capacitor from the feedback pin to ground, in parallel with R8. It reduc
 
 Value: 15nF (DNP)
 
-An unpopulated feed-forward capacitor across the upper feedback path. If fitted, it would couple output changes directly into BUCK-FB and alter the loop response. It is not another output reservoir or a simple capacitor to ground.
+An unpopulated feed-forward capacitor across the upper feedback path. If fitted, it would couple output changes directly into the buck converter's feedback net (`BUCK-FB`) and alter the loop response. It is not another output reservoir or a simple capacitor to ground.
 
 ## D2 and R5
 
@@ -118,7 +118,9 @@ R5 Value: 1K
 
 [R5 LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)
 
-D2 is a 24 V zener diode. When the first-stage output rises enough for it to conduct, current flows through R5 into the feedback pin, making U1 lower the output. It's a leak into feedback, not a clamp to ground: the idea is to discourage the output from rising past about 24 V.
+D2 is a **24 V zener diode**, specified at **22.8-25.6 V with 5 mA flowing through it** for the listed JSCJ part. Its voltage also changes with current, so 24 V is a nominal value.
+
+When the first-stage output rises enough for D2 to conduct, current flows through R5 into the feedback pin, making U1 lower the output. It's a leak into feedback, not a clamp to ground: the idea is to discourage excessive output voltage rather than impose an exact 24 V limit.
 
 ## D3
 
@@ -126,7 +128,7 @@ Value: SD103A
 
 [LCSC: C7420360](https://www.lcsc.com/product-detail/C7420360.html)
 
-Makes the microcontroller attenuation branch act in one direction. A sufficiently high filtered PWM voltage can inject current into BUCK-FB and lower the output; a low PWM voltage cannot pull feedback down through D3 and request a higher output.
+Makes the microcontroller attenuation branch act in one direction. A sufficiently high filtered PWM voltage can inject current into the buck converter's feedback net (`BUCK-FB`) and lower the output; a low PWM voltage cannot pull feedback down through D3 and request a higher output.
 
 This is a just-in-case protection against firmware mistakes: the microcontroller is allowed to turn the voltage down, but this branch cannot turn it above the level set by the other feedback paths.
 
@@ -148,7 +150,7 @@ Works with R9 to turn the attenuation PWM into a smoother control voltage. D3 th
 
 ## TP2
 
-A test point on the raw PWR-ATTENU PWM signal, before R9 and C58 smooth it. Useful for checking firmware frequency and duty cycle; it does not show the filtered voltage at D3.
+A test point on the microcontroller's power-attenuation control net (`PWR-ATTENU`), carrying the raw PWM signal before R9 and C58 smooth it. Useful for checking firmware frequency and duty cycle; it does not show the filtered voltage at D3.
 
 ## R6
 
@@ -208,7 +210,7 @@ Value: SMAJ24CA
 
 [LCSC: C148223](https://www.lcsc.com/product-detail/C148223.html)
 
-This is supposed to catch overvoltage on the final output of the buck converter. The 24 V marking is its stand-off rating; the actual clamping voltage is higher.
+This is supposed to catch overvoltage on the final output of the buck converter. The SMAJ24CA has a **24 V stand-off rating**, **26.7-29.5 V breakdown at 1 mA**, and a **38.9 V maximum clamp at 10.3 A** for a 10/1000 us surge pulse. That is why the 24 V marking doesn't mean it holds the output at 24 V. Its **400 W rating applies to that brief surge waveform**, not continuous power.
 
 Realistically, I don't consider it especially useful as protection for Q1. L3 is just an inductor feeding Q1's drain, and Q1 can handle about 200 V at its drain, with its own D4/TVS1 protection. TVS6 isn't here because Q1 needs a 24 V limit.
 
@@ -226,7 +228,7 @@ Three 0.1 ohm resistors in parallel make an approximately 0.033 ohm current shun
 
 # Main RF Power Amplifier Class E
 
-This generates a powerful 13.56 MHz waveform that powers the soldering iron cartridges. It is fed from the main buck converter output, which is a 20V-ish input, and outputs a sine wave swinging at much higher voltage, like 60V or more depending on loading conditions.
+This generates a powerful 13.56 MHz waveform that powers the soldering iron cartridges. It is fed from the main buck converter output, which is a 20V-ish input, and outputs a sine wave swinging at much higher voltage, like 60V (napkin math says 60V, simulation says up to 120V normally) or more depending on loading conditions.
 
 The transistor rapidly switches current through an inductor, storing energy in its magnetic field. When the transistor switches off, the inductor keeps pushing current, charging the surrounding capacitance and raising the voltage. The inductors and capacitors shape this into a repeating RF waveform that delivers energy to the cartridge.
 
@@ -259,39 +261,17 @@ These are [ST's datasheet figures](https://www.st.com/en/power-transistors/stp19
 
 Value: 9uH
 
-The drain-feed RF choke. It carries DC into Q1's drain but presents a large impedance to the RF waveform, keeping RF out of the supply. See the [winding instructions](../build-guide-13mhz/custom-inductors.md).
+A hand-wound RF choke using a [Fair-Rite 5961004901](https://fair-rite.com/product/toroids-5961004901/) material-61 ferrite toroid and 22 AWG enamelled wire. It carries DC into Q1's drain but presents a large impedance to the RF waveform, keeping RF out of the supply. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#9-uh-choke).
 
-## C9
+Note that "over-winding" it slightly above 9uH is acceptable, don't stress out about getting it perfect, but do aim for more than 9uH instead of less.
 
-Value: 100nF
+## C9-C12
 
-[LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
-
-One of four parallel coupling capacitors, totaling 400 nF. They pass RF from Q1's drain into L4 while blocking the drain's DC bias. Their RF current and voltage ratings matter. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md#circuit-topology).
-
-## C10
-
-Value: 100nF
+Value: 100nF each
 
 [LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
 
-One of four parallel coupling capacitors, totaling 400 nF. They pass RF from Q1's drain into L4 while blocking the drain's DC bias. Their RF current and voltage ratings matter. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md#circuit-topology).
-
-## C11
-
-Value: 100nF
-
-[LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
-
-One of four parallel coupling capacitors, totaling 400 nF. They pass RF from Q1's drain into L4 while blocking the drain's DC bias. Their RF current and voltage ratings matter. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md#circuit-topology).
-
-## C12
-
-Value: 100nF
-
-[LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
-
-One of four parallel coupling capacitors, totaling 400 nF. They pass RF from Q1's drain into L4 while blocking the drain's DC bias. Their RF current and voltage ratings matter. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md#circuit-topology).
+Four parallel 100 nF coupling capacitors, totaling 400 nF. They pass RF from Q1's drain into L4 while blocking the drain's DC bias. Their RF current and voltage ratings matter. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md#circuit-topology).
 
 ## D4
 
@@ -301,13 +281,19 @@ Value: ES1J
 
 Steers positive drain-voltage excursions into TVS1. The series diode also isolates the TVS from part of the RF swing; this pair is a protection path rather than the normal route for output power.
 
+D4 lets TVS1 catch excessive drain-voltage peaks without making Q1 drive the TVS’s full parasitic capacitance every RF cycle. This reduces how much the protection circuit disturbs the amplifier’s tuning. D4 still adds some capacitance of its own, and its switching speed matters.
+
 ## TVS1
 
 Value: SM15T150CA
 
 [LCSC: C133715](https://www.lcsc.com/product-detail/C133715.html)
 
-Absorbs drain overvoltage through D4, especially during disturbed or disconnected loading. The SM15T150CA is not an exact 150 V clamp: breakdown and clamping depend on current. It cannot absorb continuous excess RF power indefinitely.
+Absorbs drain overvoltage through D4, especially during disturbed or disconnected loading. The [SM15T150CA datasheet](https://www.st.com/en/protections-and-emi-filters/sm15t150ca.html) specifies **150 V typical breakdown**, with a range of **143-158 V at 1 mA**. Its maximum clamping voltage is **207 V at 7.2 A** for a 10/1000 us surge pulse. So the "150 V" describes its breakdown voltage; the voltage it holds while absorbing a surge rises with current.
+
+Its **1500 W rating is for a brief 10/1000 us surge pulse**, not continuous RF power. It can still overheat if asked to absorb excess power continuously. (this is a chonky SMC packaged diode but we still don't want it to dissipate continuously)
+
+For context, the [drain-voltage simulations](../design-study/sim-13mhz/vds_results.md#with-es1j-and-sm15t150ca-drain-clamp) give us an idea of what voltage to expect here. Basically it might peak to 120V when the iron is heating up, and while the simulation also says it might reach over 200V when the tip is hot, or over 500V when the tip is disconnected, we have the [current-transformer phase-detector](../design-study/current-transformer.md) that will lower the input voltage. So realistically, TVS1 is here to catch a state when the phase-detector did not do it's job, or a very short time when it has not reacted yet, which should be a very very short period, not continuous.
 
 ## R12
 
@@ -315,7 +301,7 @@ Value: 150Ω 2W
 
 [LCSC: C175287](https://www.lcsc.com/product-detail/C175287.html)
 
-Provides a resistive load from Q1's gate to ground. It damps the resonant gate drive and helps discharge the gate, but deliberately dissipates power while RF is running. See the [gate-driver study](../design-study/gate-driver-method-comparison.md).
+Provides a resistive load from Q1's gate to ground. When the microcontroller stops generating RF, for example after a fault, the energy stored in L8 and Q1's gate capacitance can keep the gate ringing briefly. R12 dissipates that energy and discharges the gate, helping Q1 stop switching promptly. The tradeoff is that it also dissipates power while RF is running. See the [gate-driver study](../design-study/gate-driver-method-comparison.md#what-the-rf-gate-amplifier-changes).
 
 ## R13
 
@@ -337,7 +323,9 @@ Value: SMBJ15CA
 
 [LCSC: C78809](https://www.lcsc.com/product-detail/C78809.html)
 
-Limits large gate-voltage excursions to protect Q1's gate oxide. Its capacitance and conduction also load the resonant gate drive, so the actual fitted part can affect tuning.
+Limits large gate-voltage excursions to protect Q1's gate oxide. The SMBJ15CA has a **15 V stand-off rating**, **16.7-18.5 V breakdown at 1 mA**, and a **24.4 V maximum clamp at 24.6 A** for a 10/1000 us surge pulse. The 15 V marking describes its stand-off rating; it doesn't hold the gate at exactly 15 V.
+
+Its capacitance and conduction also load the resonant gate drive, so the actual fitted part can affect tuning.
 
 ## SJ6
 
@@ -359,55 +347,15 @@ The L4-L6 ladder transforms the cartridge impedance seen by Q1. T1 and its surro
 
 Value: 180nH
 
-The first series inductor of the output-matching ladder. Together with the C13-C18 bank and the later stages, it transforms the cartridge load seen by Q1. See the [matching-network study](../design-study/impedance-matching-13.56MHz.md).
+A hand-wound inductor using one [Amidon T130-6](https://www.amidoncorp.com/t130-6/) iron-powder toroid and 16 AWG enamelled wire. It is the first series inductor of the output-matching ladder. Together with the C13-C18 bank and the later stages, it transforms the cartridge load seen by Q1. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#large-inductors) and [matching-network study](../design-study/impedance-matching-13.56MHz.md).
 
-## C13
+## C13-C18
 
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
-
-## C14
-
-Value: 100pF 1000V
+Value: 100pF 1000V each
 
 [LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
 
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
-
-## C15
-
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
-
-## C16
-
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
-
-## C17
-
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
-
-## C18
-
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of six parallel 100 pF capacitors making the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
+Six parallel 100 pF capacitors make the first 600 pF shunt bank after L4. This bank is part of the RF impedance transformation, not supply decoupling.
 
 ## C19
 
@@ -421,109 +369,33 @@ An unpopulated tuning position in parallel with C13-C18. Fitting it increases th
 
 Value: 400nH
 
-The second series inductor in the matching ladder. It works with the C20-C26 shunt bank and the other stages to transform the cartridge impedance and shape the output waveform.
+A hand-wound inductor using one [Amidon T130-6](https://www.amidoncorp.com/t130-6/) iron-powder toroid and 16 AWG enamelled wire. It is the second series inductor in the matching ladder. It works with the C20-C26 shunt bank and the other stages to transform the cartridge impedance and shape the output waveform. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#large-inductors).
 
-## C20
+## C20-C26
 
-Value: 47pF 1000V
+C20-C25 Value: 47pF 1000V each
 
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
+C26 Value: 100pF 1000V
 
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
+[C20-C25 LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
 
-## C21
+[C26 LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
 
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
-
-## C22
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
-
-## C23
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
-
-## C24
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
-
-## C25
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of six parallel 47 pF capacitors in the second shunt bank. Together with C26, they total 382 pF and work with L5 and L6 in the impedance-matching ladder.
-
-## C26
-
-Value: 100pF 1000V
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-Adds 100 pF to the six 47 pF capacitors C20-C25, bringing the second shunt bank to 382 pF. This deliberate mixed-value bank is part of the RF match.
+The second shunt bank in the matching ladder: six 47 pF capacitors (C20-C25) plus one 100 pF capacitor (C26), all in parallel, give 382 pF. This deliberate mixed-value bank works with L5, L6, and the other stages to transform the cartridge impedance.
 
 ## L6
 
 Value: 540nH
 
-The final series inductor in the matching ladder. It works with C27-C31 before RF current passes through T1 to the handpiece connector.
+A hand-wound inductor using one [Amidon T130-6](https://www.amidoncorp.com/t130-6/) iron-powder toroid and 16 AWG enamelled wire. It is the final series inductor in the matching ladder. It works with C27-C31 before RF current passes through T1 to the handpiece connector. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#large-inductors).
 
-## C27
+## C27-C31
 
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of five parallel 47 pF capacitors making the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
-
-## C28
-
-Value: 47pF 1000V
+Value: 47pF 1000V each
 
 [LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
 
-One of five parallel 47 pF capacitors making the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
-
-## C29
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of five parallel 47 pF capacitors making the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
-
-## C30
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of five parallel 47 pF capacitors making the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
-
-## C31
-
-Value: 47pF 1000V
-
-[LCSC: C6366545](https://www.lcsc.com/product-detail/C6366545.html)
-
-One of five parallel 47 pF capacitors making the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
+Five parallel 47 pF capacitors make the final 235 pF shunt bank after L6. This bank completes the output-matching ladder before the current transformer.
 
 ## C32
 
@@ -533,15 +405,13 @@ An unpopulated tuning position across the final shunt bank. Fitting it adds capa
 
 ## JP1
 
-Value: COAX-FTYPE-PCB-MNT
-
 [Digi-Key: 0733300030](https://www.digikey.com/en/products/detail/molex/0733300030/2755903)
 
-The F-type RF output connector for the 13.56 MHz handpiece. Its center contact carries RF power and the small tip-continuity test current; the shell is the return. It is for the 13.56 MHz cartridge family, not the Lite's 470 kHz cartridges.
+The F-type RF output connector for the 13.56 MHz handpiece. It's right angled, through hole soldered with huge supporting legs, and a screw designed to be near by to reduce PCB bending when this connector is mechanically loaded.
 
 ## T1
 
-Samples RF output current using a one-turn primary and two 14-turn secondaries. With C33 and D5-D8, it forms a phase-sensitive detector that influences the buck supply. Winding polarity matters. See the [transformer study](../design-study/current-transformer.md).
+A hand-wound current transformer using a [Fair-Rite 5961004901](https://fair-rite.com/product/toroids-5961004901/) material-61 ferrite toroid. It samples RF output current using a one-turn primary and two 14-turn secondaries. With C33 and D5-D8, it forms a phase-sensitive detector that influences the buck supply. Winding polarity matters. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#current-transformer) and [current transformer phase detector study](../design-study/current-transformer.md).
 
 ## C33
 
@@ -551,37 +421,13 @@ Value: 10pF 500V
 
 Samples RF output voltage capacitively into T1's detector circuit. Its current is phase-shifted relative to output voltage, giving the diode network a reference to compare with output current. See the [phase-detector explanation](../design-study/current-transformer.md).
 
-## D5
-
-Value: 4148
-
-[LCSC: C84367](https://www.lcsc.com/product-detail/C84367.html)
-
-One of four diodes in the phase-sensitive switching network around T1. Together they combine the current sample and C33's voltage-derived reference; this is more than an ordinary bridge rectifier. See the [detector explanation](../design-study/current-transformer.md).
-
-## D6
-
-Value: 4148
-
-[LCSC: C84367](https://www.lcsc.com/product-detail/C84367.html)
-
-One of four diodes in the phase-sensitive switching network around T1. Together they combine the current sample and C33's voltage-derived reference; this is more than an ordinary bridge rectifier. See the [detector explanation](../design-study/current-transformer.md).
-
-## D7
+## D5-D8
 
 Value: 1N4148W
 
 [LCSC: C84367](https://www.lcsc.com/product-detail/C84367.html)
 
-One of four diodes in the phase-sensitive switching network around T1. Together they combine the current sample and C33's voltage-derived reference; this is more than an ordinary bridge rectifier. See the [detector explanation](../design-study/current-transformer.md).
-
-## D8
-
-Value: 4148
-
-[LCSC: C84367](https://www.lcsc.com/product-detail/C84367.html)
-
-One of four diodes in the phase-sensitive switching network around T1. Together they combine the current sample and C33's voltage-derived reference; this is more than an ordinary bridge rectifier. See the [detector explanation](../design-study/current-transformer.md).
+The four diodes in the phase-sensitive switching network around T1. Together they combine the current sample and C33's voltage-derived reference; this is more than an ordinary bridge rectifier. See the [current transformer phase detector explanation](../design-study/current-transformer.md).
 
 ## R10
 
@@ -605,7 +451,7 @@ Value: 2K2
 
 [LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
 
-Couples the detector into BUCK-FB. A detector voltage above the approximately 0.8 V feedback reference tends to lower the buck output; below it, the branch can raise the output. See the [feedback-polarity investigation](../design-study/investigations/ct-reaction-dummy-load-polarity.md#zero-phase-and-feedback-neutral-are-different-conditions).
+Connects the detector output to the buck converter's feedback net (`BUCK-FB`). Together with [R8](#r8), it sets the detector's control gain: how much the buck output changes when the detector voltage changes. A smaller R11 gives the detector more influence; a larger one makes the correction gentler. U1 adjusts the buck output to keep its FB pin near 0.8 V, while the detector voltage can vary over a different range.
 
 ## VR4
 
@@ -613,17 +459,13 @@ Value: 5K
 
 [Digi-Key: TC33X-2-502E](https://www.digikey.com/en/products/detail/bourns-inc/TC33X-2-502E/612861)
 
-An optional adjustable path from the detector to BUCK-FB through SJ2. It tunes detector coupling. If R11 remains fitted, the two paths are parallel, so their combined resistance determines the effect.
+An optional adjustable path from the detector output to the buck converter's feedback net (`BUCK-FB`) through SJ2. It tunes detector coupling. If R11 remains fitted, the two paths are parallel, so their combined resistance determines the effect.
+
+After testing, it is advised that VR4 should not be populated.
 
 ## SJ2
 
 Connects the optional VR4 feedback path. Leaving it open isolates the trimmer; closing it enables that path alongside R11 unless R11 is removed. See the [tuning notes](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
-
-## STANDOFF2
-
-Value: STANDOFF-M2.5-4.5MMHEX
-
-A grounded mechanical mounting point for the enclosure standoff. Its electrical connection is to ground; it is not part of the RF impedance transformation.
 
 # RF Amp Gate Driver
 
@@ -635,7 +477,9 @@ Value: 1EDN8511BXUSA1
 
 [LCSC: C3655509](https://www.lcsc.com/product-detail/C3655509.html)
 
-Turns the microcontroller's logic waveform into strong gate-charge and gate-discharge pulses for Q2. Separate source and sink outputs let R16 and R17 set the two switching paths independently. See the [driver product page](https://www.infineon.com/part/1EDN8511B).
+Turns the microcontroller's logic waveform into strong gate-charge and gate-discharge pulses for Q2. Separate source and sink outputs let R16 and R17 set the two switching paths independently.
+
+This part is selected because it is used in the Radio Thermal design and is a better substitute for the MAX17602 in the SergeMax design, better in nearly all aspects. Plus, SergeMax experienced problems with some MAX17602 when operating at 13.56 MHz, when it overheats and did not output the expected waveform at all.
 
 ## Q2
 
@@ -645,65 +489,43 @@ Value: IRF510
 
 The small RF amplifier that drives Q1's much larger gate. Its drain circuit and L8 recycle reactive gate energy at 13.56 MHz instead of making U2 drive Q1 directly. See the [driver comparison](../design-study/gate-driver-method-comparison.md).
 
-## R16
+## R16 and R17
 
-Value: 3R6
-
-[LCSC: C6301221](https://www.lcsc.com/product-detail/C6301221.html)
-
-The turn-on gate resistor for Q2, connected to U2's sourcing output. It limits charging current and damps ringing in the gate loop.
-
-## R17
-
-Value: 3R6
+Value: 3R6 each
 
 [LCSC: C6301221](https://www.lcsc.com/product-detail/C6301221.html)
 
-The turn-off gate resistor for Q2, connected to U2's sinking output. It controls discharge current separately from R16's turn-on path.
+The separate turn-on and turn-off gate resistors for Q2. R16 connects U2's sourcing output to charge the gate; R17 connects its sinking output to discharge it. They limit current and damp ringing, with each switching direction controlled independently.
 
 ## L7
 
 Value: 9uH
 
-Feeds 12 V DC into Q2's drain while impeding RF current from returning to the supply. It is the RF choke for the smaller gate-driving amplifier.
+A hand-wound RF choke using a [Fair-Rite 5961004901](https://fair-rite.com/product/toroids-5961004901/) material-61 ferrite toroid and 22 AWG enamelled wire. It feeds 12 V DC into Q2's drain while impeding RF current from returning to the supply. It is the RF choke for the smaller gate-driving amplifier. See the [winding instructions](../build-guide-13mhz/custom-inductors.md#9-uh-choke).
+
+Note that "over-winding" it slightly above 9uH is acceptable, don't stress out about getting it perfect, but do aim for more than 9uH instead of less.
 
 ## L8
 
 Value: 180nH
 
-The adjustable air-core inductor in Q1's resonant gate drive. Its inductance interacts with Q1's gate capacitance, so stretching or compressing it changes drive amplitude and losses. Low current alone does not prove a good tune. See the [driver study](../design-study/gate-driver-method-comparison.md).
+A hand-wound air-core coil in Q1's resonant gate drive, with no ferrite or iron-powder core. It is made from 22 AWG enamelled wire, using a mandrel or a 3D-printed former. Its inductance interacts with Q1's gate capacitance, so changing the coil geometry or turn count changes drive amplitude and losses. See the [construction and tuning instructions](../build-guide-13mhz/custom-inductors.md#coreless-inductor-l8) and [driver study](../design-study/gate-driver-method-comparison.md).
 
-## C37
+## C37 and C38
 
-Value: 100nF
-
-[LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
-
-One of two parallel coupling capacitors, totaling 200 nF. They block Q2's drain DC voltage while passing RF into L8 and Q1's gate-drive network.
-
-## C38
-
-Value: 100nF
+Value: 100nF each
 
 [LCSC: C5182461](https://www.lcsc.com/product-detail/C5182461.html)
 
-One of two parallel coupling capacitors, totaling 200 nF. They block Q2's drain DC voltage while passing RF into L8 and Q1's gate-drive network.
+Two parallel coupling capacitors, totaling 200 nF. They block Q2's drain DC voltage while passing RF into L8 and Q1's gate-drive network.
 
-## C39
+## C39 and C40
 
-Value: 100pF
-
-[LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
-
-One of two parallel 100 pF capacitors from Q2's drain to ground. Their combined 200 pF, together with device capacitances and the load, shapes the small amplifier's drain waveform.
-
-## C40
-
-Value: 100pF
+Value: 100pF each
 
 [LCSC: C6958299](https://www.lcsc.com/product-detail/C6958299.html)
 
-One of two parallel 100 pF capacitors from Q2's drain to ground. Their combined 200 pF, together with device capacitances and the load, shapes the small amplifier's drain waveform.
+Two parallel 100 pF capacitors from Q2's drain to ground. Their combined 200 pF, together with device capacitances and the load, shapes the small amplifier's drain waveform.
 
 ## R14
 
@@ -721,31 +543,25 @@ Value: 4K7
 
 Pulls U2's input low when the microcontroller pin is not driving it. This gives the RF driver a defined off command during reset or disconnection.
 
-## C35
+## C35 and C36
 
-Value: 100n
+C35 Value: 100n
 
-[LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
+C36 Value: 1uF
 
-Fast local decoupling for U2's 12 V supply. It supplies the brief current pulses used to charge and discharge Q2's gate.
+[C35 LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-## C36
+[C36 LCSC: C15849](https://www.lcsc.com/product-detail/C15849.html)
 
-Value: 1uF
-
-[LCSC: C15849](https://www.lcsc.com/product-detail/C15849.html)
-
-Additional local energy storage beside U2. It supports the fast 100 nF decoupler C35 and reduces supply movement during repeated gate-drive pulses.
+Local 12 V decoupling for U2. The 100 nF C35 supplies fast current pulses as Q2's gate charges and discharges; the 1 uF C36 adds nearby energy storage and reduces supply movement during repeated pulses.
 
 ## SJ8
-
-Value: SJ-SMALL-1206-SJ
 
 A measurement position in the gate-driver 12 V supply. A temporary shunt here measures driver-branch current while tuning L8; normal builds bridge it. See the [tuning notes](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
 
 # Tip Detection
 
-A small DC current tests continuity through the handpiece and cartridge while an RF filter keeps the carrier away from Q3. TIP-DET is high for a connected tip and low for a disconnection. See the [detector study](../design-study/tip-detector.md).
+A small DC current tests continuity through the handpiece and cartridge while an RF filter keeps the carrier away from Q3. The tip-detection signal net (`TIP-DET`) is high for a connected tip and low for a disconnection. See the [tip-detector study](../design-study/tip-detector.md).
 
 ## Q3
 
@@ -753,7 +569,7 @@ Value: BC846B
 
 [LCSC: C181138](https://www.lcsc.com/product-detail/C181138.html)
 
-The tip-continuity switch. An open tip lets the bias network drive its base, pulling TIP-DET low; a connected low-resistance cartridge keeps it off, allowing TIP-DET high. See the [tip-detector study](../design-study/tip-detector.md#dc-operation).
+The tip-continuity switch. An open tip lets the bias network drive its base, pulling the tip-detection signal net (`TIP-DET`) low; a connected low-resistance cartridge keeps it off, allowing that signal to go high. See the [tip-detector study](../design-study/tip-detector.md#dc-operation).
 
 ## R21
 
@@ -761,7 +577,7 @@ Value: 22Ω
 
 [LCSC: C5204054](https://www.lcsc.com/product-detail/C5204054.html)
 
-Limits current and damps the path from RF-OUT into the continuity detector. With L9 and C42, it keeps RF away from Q3 while allowing the small DC test current through.
+Limits current and damps the path from the RF output net (`RF-OUT`) into the continuity detector. With L9 and C42, it keeps RF away from Q3 while allowing the small DC test current through.
 
 ## L9
 
@@ -769,7 +585,7 @@ Value: 22uH
 
 [Digi-Key: AIAP-01-220K-T](https://www.digikey.com/en/products/detail/abracon-llc/AIAP-01-220K-T/3059827)
 
-Passes the DC continuity-test current but impedes RF from the handpiece output. With C42, its ideal LC frequency is about 187 kHz, well below the 13.56 MHz carrier.
+A purchased 22 uH choke that passes the DC continuity-test current but impedes RF from the handpiece output. With C42, its ideal LC frequency is about 187 kHz, well below the 13.56 MHz carrier.
 
 ## C42
 
@@ -785,7 +601,9 @@ Value: 1K
 
 [Digi-Key: TC33X-2-102E](https://www.digikey.com/en/products/detail/bourns-inc/TC33X-2-102E/612857)
 
-An optional adjustment for the DC test current, normally bypassed with solder. In the normal bypassed configuration R19 sets that current. Changing this path also changes the resistance at which a tip looks disconnected. See the [detector study](../design-study/tip-detector.md#optional-vr2-test-current-adjustment).
+An optional adjustment for the DC test current, normally bypassed with solder. In the normal bypassed configuration R19 sets that current. Changing this path also changes the resistance at which a tip looks disconnected. See the [tip-detector study](../design-study/tip-detector.md#optional-vr2-test-current-adjustment).
+
+In actual implementation, this potentiometer is essentially useless. The latest PCB design has this footprint bypassed. Do not populate it.
 
 ## R19
 
@@ -809,13 +627,15 @@ Value: 1K
 
 An optional adjustment in Q3's base path, normally bypassed. R22 supplies the normal base-current limiting, so this trimmer is not required for ordinary operation.
 
+In actual implementation, this potentiometer is essentially useless. The latest PCB design has this footprint bypassed. Do not populate it.
+
 ## R22
 
 Value: 2K2
 
 [LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
 
-Limits current into Q3's base when the tip is disconnected. This keeps the transistor drive controlled while still allowing it to pull TIP-DET firmly low.
+Limits current into Q3's base when the tip is disconnected. This keeps the transistor drive controlled while still allowing it to pull the tip-detection signal net (`TIP-DET`) firmly low.
 
 ## R18
 
@@ -823,7 +643,7 @@ Value: 4K7
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-Pulls TIP-DET up to 3.3 V when Q3 is off. A high signal means the tip is connected; Q3 pulls it low for a disconnection.
+Pulls the tip-detection signal net (`TIP-DET`) up to 3.3 V when Q3 is off. A high signal means the tip is connected; Q3 pulls it low for a disconnection.
 
 ## C41
 
@@ -831,11 +651,11 @@ Value: 3n3
 
 [LCSC: C1613](https://www.lcsc.com/product-detail/C1613.html)
 
-Filters short disturbances on TIP-DET with R18. It adds a small analog settling delay; firmware adds its own qualification before latching a disconnect. See the [detector timing discussion](../design-study/tip-detector.md#firmware-behavior).
+Filters short disturbances on the tip-detection signal net (`TIP-DET`) with R18. It adds a small analog settling delay; firmware adds its own qualification before latching a disconnect. See the [detector timing discussion](../design-study/tip-detector.md#firmware-behavior).
 
 # Microcontroller
 
-The controller generates RF timing, supervises the measured supply conditions, and runs the user interface. Its temperature inputs monitor hardware hot spots, rather than measuring the cartridge tip directly.
+The microcontroller generates RF timing, supervises the measured supply conditions, supervises the temperature sensors, and runs the user interface.
 
 ## U3
 
@@ -843,7 +663,9 @@ Value: STM32F042F6P6
 
 [LCSC: C2969989](https://www.lcsc.com/product-detail/C2969989.html)
 
-The controller: generates the 13.56 MHz RF drive, adjusts buck attenuation, reads voltage/current/temperature signals, and handles the display, button, and fan. The tip regulates its heating through its magnetic material; the MCU does not directly measure tip temperature.
+A [32-bit Arm Cortex-M0 microcontroller](https://www.st.com/en/microcontrollers-microprocessors/stm32f042f6.html) with **32 KB of flash** for firmware and **6 KB of RAM** for working data. It generates the 13.56 MHz RF drive, adjusts buck attenuation, reads voltage/current/temperature signals, and handles the display, button, and fan.
+
+SergeyMax's original design used an **STM32F030F4P6 with 16 KB of flash**. Our full feature set, including the OLED interface, wouldn't fit in that space, so Hot-Wand upgrades to the STM32F042F6P6 with twice the flash. See the [microcontroller upgrade notes](../design-study/design-study.md#microcontroller).
 
 ## Y1
 
@@ -851,39 +673,25 @@ Value: 27.12 MHz 10pF
 
 [LCSC: C1986817](https://www.lcsc.com/product-detail/C1986817.html)
 
-The 27.12 MHz crystal reference. The controller derives the 13.56 MHz carrier by dividing this clock by two. A stable clock keeps the RF frequency aligned with the intended cartridge system.
+The 27.12 MHz crystal reference. The microcontroller derives the 13.56 MHz carrier by dividing this clock by two. A stable clock keeps the RF frequency aligned with the intended cartridge system.
 
-## C55
+## C55 and C56
 
-Value: 10p
-
-[LCSC: C1634](https://www.lcsc.com/product-detail/C1634.html)
-
-The load capacitor on the crystal's oscillator-output side. It works with C56 and stray capacitance to give Y1 its intended operating load; 10 pF here does not mean the total crystal load is 10 pF.
-
-## C56
-
-Value: 10p
+Value: 10p each
 
 [LCSC: C1634](https://www.lcsc.com/product-detail/C1634.html)
 
-The load capacitor on the crystal's oscillator-input side. Together with C55 and PCB/input capacitance, it affects oscillator startup and the actual crystal frequency.
+The crystal's two load capacitors: C55 is on the oscillator-output side, C56 on the input side. Together with stray PCB and microcontroller capacitance, they affect Y1's startup and frequency.
 
-## C53
+On SergeyMax's original design, these had to be soldered to the casing of the crystal due his digital ground plane being too close to the RF ground plane. In the Hot-Wand design, this is not an issue, the grounds are much farther apart electrically.
 
-Value: 100n
+## C53 and C54
 
-[LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
-
-Local 3.3 V decoupling for the controller supply. It provides fast current near the MCU rather than forcing switching pulses through long supply traces.
-
-## C54
-
-Value: 100n
+Value: 100n each
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-A second local 3.3 V bypass capacitor for the controller's supply connections, including its analog supply. It helps keep digital switching noise out of ADC measurements.
+Local 3.3 V bypass capacitors for the microcontroller's supply connections, including its analog supply. They provide fast current near the microcontroller and help keep digital switching noise out of ADC measurements.
 
 ## R33
 
@@ -891,17 +699,15 @@ Value: 4K7
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-Pulls the controller's reset pin high for normal operation. The programming header can pull this same node low to reset the MCU.
+Pulls the microcontroller's reset pin high for normal operation. The programming header can pull this same node low to reset the microcontroller.
 
 ## SJ1
 
-Value: SOLDERJUMPERWS
-
-Holds BOOT0 low so the controller starts the application in flash. Normal builds bridge it; changing BOOT0 is only for a deliberate boot-mode change. See the [assembly notes](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
+Holds BOOT0 low so the microcontroller starts the application in flash. Normal builds bridge it; changing BOOT0 is only for a deliberate boot-mode change. See the [assembly notes](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
 
 ## JP4
 
-The programming/debug header: exposes 3.3 V reference, ground, SWCLK, SWDIO, and reset. SWDIO is also shared with the fan-control circuit, which SJ3 can disconnect.
+The programming/debug header: exposes 3.3 V reference, ground, the debug clock (`SWCLK`) and data (`SWDIO`) signal nets, and reset. The `SWDIO` net is also shared with the fan-control circuit, which SJ3 can disconnect.
 
 ## R52
 
@@ -909,35 +715,25 @@ Value: 100Ω
 
 [LCSC: C22775](https://www.lcsc.com/product-detail/C22775.html)
 
-A series resistor on the RF logic output from the MCU, before TP1 and the U2 input path. It reduces fast-edge ringing; it is not a resistor carrying handpiece RF power.
+A series resistor on the RF logic output from the microcontroller, before TP1 and the U2 input path. It reduces fast-edge ringing.
 
 ## TP1
 
-Value: TEST-POINT-SQ-2MM
-
-A test point on the RF-GEN logic waveform between R52 and R14. It is useful for checking the 13.56 MHz command, rather than Q1's high-voltage drain waveform.
+A test point on the RF command net (`RF-GEN`) between R52 and R14. It is useful for checking the 13.56 MHz logic waveform.
 
 ## U4
 
-Value: SSD1306-4PIN-0.91N-VERT
+The [0.91-inch SSD1306 OLED display module](../build-guide-13mhz/shopping.md#oled-display-module).
 
-The 0.91-inch SSD1306 OLED module. The MCU sends status and settings over I2C; match the module's pin order to the PCB rather than relying only on its display size.
+## R35 and R36
 
-## R35
-
-Value: 4K7
+Value: 4K7 each
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-The I2C SDA pull-up to 3.3 V. Devices normally pull this data wire low or release it, so the resistor supplies its high level.
+The [I2C](https://en.wikipedia.org/wiki/I2C) pull-ups to 3.3 V: R35 is for the data net (`SDA`), R36 for the clock net (`SCL`). Devices pull these lines low, and the resistors bring them high again when released.
 
-## R36
-
-Value: 4K7
-
-[LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
-
-The I2C SCL pull-up to 3.3 V. It restores the clock wire high when released and helps determine the I2C rise time together with bus capacitance.
+Their 4.7 kohm value suits a short, low-capacitance **3.3 V, 400 kHz (Fast-mode)** bus.
 
 ## C57
 
@@ -951,7 +747,7 @@ Local reservoir capacitance for the OLED supply. It reduces voltage dips and noi
 
 [Digi-Key: MJTP1236D](https://www.digikey.com/en/products/detail/apem-inc/MJTP1236D/1798058)
 
-The user button. Pressing it pulls BTN to ground; firmware uses the press for menu actions and acknowledgements. Its mounting connection is grounded too.
+The user button. Pressing it pulls the button signal net (`BTN`) to ground; firmware uses the press for menu actions and acknowledgements. Its mounting connection is grounded too.
 
 ## D12
 
@@ -959,11 +755,11 @@ Value: 3V6
 
 [LCSC: C840638](https://www.lcsc.com/product-detail/C840638.html)
 
-Transient/ESD protection on the exposed button input. It diverts fast voltage spikes toward ground; it is not a replacement for firmware debouncing.
+Transient/ESD protection on the exposed button input.
 
 # Secondary Power Buck Converters
 
-These fixed regulators provide 12 V for the gate driver/fan and 3.3 V for the controller/display/sensors. The nearby LEDs are rail-presence indicators, not firmware status outputs.
+These fixed regulators provide 12 V for the gate driver/fan and 3.3 V for the microcontroller, display, and sensors.
 
 ## IC1
 
@@ -973,13 +769,17 @@ Value: 12V R-78K12-2.0
 
 The fixed 12 V regulator module for the gate driver and fan. Its output reaches the 12 V rail through D10, so the rail can be slightly below the module's nominal output.
 
+Its input undervoltage lockout (UVLO) stops the module when the input falls through **12.7-13.8 V**, and allows it to restart when the input rises through **13.1-14.0 V**, according to [RECOM's specifications](https://recom-power.com/en/products/switching-regulators/switching-regulators-sip/rec-p-R-78K12-2.0.html) at 25°C. This means the gate-driver and fan supply can shut down while IC2 still powers the microcontroller.
+
 ## IC2
 
 Value: 3V3 R-78K3.3
 
 [Digi-Key: R-78K3.3-1.0](https://www.digikey.com/en/products/detail/recom-power/R-78K3-3-1-0/18093033)
 
-The fixed 3.3 V regulator for the MCU, display, and sensors. A switching module keeps dissipation lower than a linear regulator dropping the full input voltage.
+The fixed 3.3 V regulator for the microcontroller, display, and sensors. A switching module keeps dissipation lower than a linear regulator dropping the full input voltage.
+
+For the fitted R-78K3.3-1.0, [RECOM specifies](https://recom-power.com/en/products/switching-regulators/switching-regulators-sip/rec-p-R-78K3.3-1.0.html) an input undervoltage lockout (UVLO) turn-off threshold of **3.6-3.8 V** as the input falls, and a restart threshold of **3.75-4.05 V** as it rises, at 25°C. Its normal specified input range starts at **4.5 V**. The much lower cutoff than IC1 lets the microcontroller remain powered after the 12 V gate-driver supply shuts down.
 
 ## C43
 
@@ -987,7 +787,7 @@ Value: 10u
 
 [LCSC: C13585](https://www.lcsc.com/product-detail/C13585.html)
 
-Input decoupling on DC-IN near the secondary regulators. It provides a local reservoir and reduces the effect of supply-trace impedance on the regulator inputs.
+Input decoupling on the input power rail (`DC-IN`) near the secondary regulators. It provides a local reservoir and reduces the effect of supply-trace impedance on the regulator inputs.
 
 ## D10
 
@@ -1009,7 +809,7 @@ The output reservoir on the 12 V rail after D10. It supports changes in gate-dri
 
 [LCSC: C698873](https://www.lcsc.com/product-detail/C698873.html)
 
-A reverse-current bypass from the 3.3 V output back to DC-IN. It limits reverse voltage across IC2 if the input falls while the output capacitor is still charged.
+A reverse-current bypass from the 3.3 V output back to the input power rail (`DC-IN`). It limits reverse voltage across IC2 if the input falls while the output capacitor is still charged.
 
 ## C45
 
@@ -1025,13 +825,15 @@ Value: 3V6
 
 [LCSC: C840638](https://www.lcsc.com/product-detail/C840638.html)
 
-A transient suppressor on the 3.3 V rail. It helps limit brief rail excursions; its 3.6 V designation should not be read as an exact rail-regulation or clamping voltage.
+A transient suppressor on the 3.3 V rail.
+
+In practice, this one is probably useless. The actual intent is to protect any potentially higher-than-normal voltages that may come from a malfunctioning tip-detector circuit.
 
 ## LED1
 
 Value: LED
 
-A simple DC-IN presence indicator, with current limited by R38. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
+A simple voltage-presence indicator for the input power rail (`DC-IN`), with current limited by R38. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
 
 ## R38
 
@@ -1039,7 +841,7 @@ Value: 22K
 
 [LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
 
-Limits current through LED1 from the DC-IN rail. Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
+Limits current through LED1 from the input power rail (`DC-IN`). Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
 
 ## R39
 
@@ -1173,7 +975,7 @@ Value: 470Ω
 
 [LCSC: C23179](https://www.lcsc.com/product-detail/C23179.html)
 
-The series gate resistor for Q9. It limits brief charging current and damps ringing between the MCU signal and the MOSFET gate.
+The series gate resistor for Q9. It limits brief charging current and damps ringing between the microcontroller signal and the MOSFET gate.
 
 ## R44
 
@@ -1181,13 +983,13 @@ Value: 4K7
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-Pulls the fan-control signal low when the MCU is not driving it. This gives Q9 a defined command during reset; the fan's actual behavior still depends on the selected jumper mode.
+Pulls the fan-control signal low when the microcontroller is not driving it. This gives Q9 a defined command during reset; the fan's actual behavior still depends on the selected jumper mode.
 
 ## SJ3
 
 Value: SHORTED
 
-Connects the fan-control circuit to the MCU pin also used for SWDIO. Keep programming access in mind when bridging it. See the [assembly instructions](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
+Connects the fan-control circuit to the microcontroller's debug-data net (`SWDIO`). Keep programming access in mind when bridging it. See the [assembly instructions](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
 
 ## SJ4
 
@@ -1195,7 +997,7 @@ Selects whether the fan ground is permanently grounded or switched by Q9. Use th
 
 ## SJ5
 
-Selects a direct MCU signal or Q9's open-drain output for the fan PWM pin. The open-drain path inverts the signal, so firmware polarity must match. See the [fan configuration](../build-guide-13mhz/assembly-supplement.md#fan-solder-jumper-selection).
+Selects a direct microcontroller signal or Q9's open-drain output for the fan PWM pin. The open-drain path inverts the signal, so firmware polarity must match. See the [fan configuration](../build-guide-13mhz/assembly-supplement.md#fan-solder-jumper-selection).
 
 ## C61
 
@@ -1241,21 +1043,17 @@ Value: 1uF
 
 Local supply bypass for U5 on the positive side of the current shunt. It keeps the monitor's supply quieter without replacing the shunt measurement itself.
 
-## R23
+## R23 and R24
 
-Value: 22K
+R23 Value: 22K
 
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
+R24 Value: 2K2
 
-The upper resistor of the RF-supply voltage divider. With R24, it scales the rail down by eleven before it reaches the MCU ADC.
+[R23 LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
 
-## R24
+[R24 LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
 
-Value: 2K2
-
-[LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
-
-The lower resistor of the RF-supply voltage divider, from the ADC node to ground. Its 2.2 kohms with R23's 22 kohms gives an 11:1 ratio.
+The RF-supply voltage divider. R23 is the upper 22 kohm resistor and R24 the lower 2.2 kohm resistor to ground, giving 11:1 scaling before the microcontroller's ADC. C47 filters this measurement.
 
 ## C47
 
@@ -1263,21 +1061,17 @@ Value: 100n
 
 Filters the RF-supply voltage ADC input with R23 and R24. It reduces switching/RF noise so firmware sees a steadier supply-voltage measurement.
 
-## R26
+## R26 and R27
 
-Value: 22K
+R26 Value: 22K
 
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
+R27 Value: 2K2
 
-The upper resistor of the DC-IN voltage divider. It lets firmware monitor the input after F1; R27 completes the 11:1 scaling.
+[R26 LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
 
-## R27
+[R27 LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
 
-Value: 2K2
-
-[LCSC: C4190](https://www.lcsc.com/product-detail/C4190.html)
-
-The lower resistor of the DC-IN voltage divider. It returns the ADC node to ground and, with R26, scales a 36 V input to about 3.27 V.
+The voltage divider monitoring the input power rail (`DC-IN`) after F1. R26 is the upper 22 kohm resistor and R27 the lower 2.2 kohm resistor to ground. Their 11:1 scaling gives about 3.27 V at the ADC for a 36 V input; C48 filters the signal.
 
 ## C48
 
@@ -1285,7 +1079,7 @@ Value: 100n
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-Filters the DC-IN ADC signal. Together with R26 and R27, it reduces noise while still allowing firmware to detect changes in the input supply.
+Filters the ADC measurement of the input power rail (`DC-IN`). Together with R26 and R27, it reduces noise while still allowing firmware to detect changes in the input supply.
 
 # XT30 DC Input
 
@@ -1327,7 +1121,7 @@ Value: 36V
 
 [LCSC: C134984](https://www.lcsc.com/product-detail/C134984.html)
 
-A transient suppressor across the XT30 input. Its 36 V stand-off rating is not an operating-voltage recommendation or an exact clamp level; downstream component ratings still limit the allowed supply.
+A transient suppressor across the XT30 input. The SMAJ36CA has a **36 V stand-off rating**, **40-44.2 V breakdown at 1 mA**, and a **58.1 V maximum clamp at 6.9 A** for a 10/1000 us surge pulse. Its 36 V rating therefore isn't a fixed clamp level or a recommended supply voltage; downstream component ratings still limit the allowed supply.
 
 ## C50
 
@@ -1343,7 +1137,7 @@ Value: 100n
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-U6's charge-pump reservoir between CAP and the common-drain supply node. It supports gate drive above the MOSFET source voltage. See the [controller documentation](https://www.ti.com/product/LM7481-Q1).
+The charge-pump reservoir between U6's `CAP` pin and the common-drain supply node. It supports gate drive above the MOSFET source voltage. See the [controller documentation](https://www.ti.com/product/LM7481-Q1).
 
 ## C52
 
@@ -1359,23 +1153,15 @@ Value: 100Ω
 
 [LCSC: C441975](https://www.lcsc.com/product-detail/C441975.html)
 
-The series resistor in U6's HGATE slew-control branch. Together with C62 and C63, it shapes turn-on behavior rather than carrying the main load current.
+The series resistor in the slew-control branch on U6's `HGATE` pin. Together with C62 and C63, it shapes turn-on behavior rather than carrying the main load current.
 
-## C62
+## C62 and C63
 
-Value: 100n
-
-[LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
-
-One of two series 100 nF capacitors in the HGATE slew-control branch, giving about 50 nF overall. They slow Q5 turn-on to reduce bulk-capacitor inrush and share voltage stress. See the [controller's inrush guidance](https://www.ti.com/product/LM7481-Q1).
-
-## C63
-
-Value: 100n
+Value: 100n each
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-One of two series 100 nF capacitors in the HGATE slew-control branch, giving about 50 nF overall. They slow Q5 turn-on to reduce bulk-capacitor inrush and share voltage stress. See the [controller's inrush guidance](https://www.ti.com/product/LM7481-Q1).
+Two series 100 nF capacitors in the slew-control branch on U6's `HGATE` pin, giving about 50 nF overall. They slow Q5 turn-on to reduce bulk-capacitor inrush and share voltage stress. See the [controller's inrush guidance](https://www.ti.com/product/LM7481-Q1).
 
 ## R53
 
@@ -1385,21 +1171,17 @@ Value: 82K
 
 The upper resistor of U6's overvoltage-sense divider. With R54 in parallel with R55, it sets the nominal cutoff near 39.5 V. That threshold does not make every downstream component safe at 39 V.
 
-## R54
+## R54 and R55
 
-Value: 3K
+R54 Value: 3K
 
-[LCSC: C4211](https://www.lcsc.com/product-detail/C4211.html)
+R55 Value: 22K
 
-One of the two parallel lower resistors in U6's overvoltage divider. Its 3 kohms in parallel with R55 gives about 2.64 kohms.
+[R54 LCSC: C4211](https://www.lcsc.com/product-detail/C4211.html)
 
-## R55
+[R55 LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
 
-Value: 22K
-
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
-
-The 22 kohm resistor in parallel with R54. It trims the effective lower-divider resistance and therefore the XT30 overvoltage cutoff threshold.
+The two parallel lower resistors in U6's overvoltage divider. R54's 3 kohms in parallel with R55's 22 kohms gives about 2.64 kohms. With upper resistor R53, this sets the XT30 overvoltage cutoff threshold.
 
 ## R34
 
@@ -1443,23 +1225,15 @@ Value: USBC-CHGONLY-4M-DRILL
 
 [Digi-Key: UJC-H-G-SMT-2-P6-TR](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/UJC-H-G-SMT-2-P6-TR/24818567)
 
-The charge-only USB-C connector. VBUS supplies power and CC1/CC2 carry USB-C/PD negotiation; this connector does not provide a general-purpose USB data interface.
+The charge-only USB-C connector. Its VBUS pins supply power and its CC1/CC2 pins carry USB-C/PD negotiation; this connector does not provide a general-purpose USB data interface.
 
-## R31
+## R31 and R32
 
-Value: 100Ω
-
-[LCSC: C441975](https://www.lcsc.com/product-detail/C441975.html)
-
-Part of the series path between U7's VOUT sense pin and the Q6/Q7 junction. With R32, it limits current into the sense connection during disturbances; it is not in the main high-current supply path.
-
-## R32
-
-Value: 100Ω
+Value: 100Ω each
 
 [LCSC: C441975](https://www.lcsc.com/product-detail/C441975.html)
 
-The second resistor in U7's VOUT sensing path. Together with R31, it isolates the controller's sense pin from the power-switch junction without adding resistance to the load-current path.
+Two series resistors between U7's VOUT sense pin and the Q6/Q7 junction, totaling 200 ohms. They limit transient current into the sense connection and isolate it from the power-switch junction. They do not add resistance to the main load-current path.
 
 ## R30
 
@@ -1475,7 +1249,7 @@ Value: 39K
 
 [LCSC: C23153](https://www.lcsc.com/product-detail/C23153.html)
 
-The default VSEL programming resistor. Its 39 kohm path requests the documented 20 V profile; grounding the alternate JP5 path adds a parallel resistance to select a different request.
+The default programming resistor for U7's `VSEL` voltage-selection pin. Its 39 kohm path requests the documented 20 V profile; grounding the alternate JP5 path adds a parallel resistance to select a different request.
 
 ## R48
 
@@ -1483,7 +1257,7 @@ Value: 3K
 
 [LCSC: C4211](https://www.lcsc.com/product-detail/C4211.html)
 
-Part of the alternate VSEL branch with R49. Grounding that branch through JP5 puts their series resistance in parallel with R47, giving approximately 26 kohms overall for the 28 V request.
+Part of the alternate programming branch for U7's `VSEL` voltage-selection pin, with R49. Grounding that branch through JP5 puts their series resistance in parallel with R47, giving approximately 26 kohms overall for the 28 V request.
 
 ## R49
 
@@ -1491,23 +1265,23 @@ Value: 75K
 
 [LCSC: C23242](https://www.lcsc.com/product-detail/C23242.html)
 
-Completes the alternate VSEL branch from R48 to JP5. With R47, this is a resistor-code selection for USB-PD negotiation, not a divider regulating the power-bus voltage.
+Completes the alternate programming branch for U7's `VSEL` voltage-selection pin, from R48 to JP5. With R47, this is a resistor-code selection for USB-PD negotiation, not a divider regulating the power-bus voltage.
 
 ## JP5
 
-The USB-PD selection header. The voltage shunt enables the alternate 28 V resistance code; the current shunt grounds ISEL directly for a 5 A request. With the current shunt open and R46/R46B unpopulated, current selection is automatic. Move shunts with power disconnected.
+The USB-PD selection header. The voltage shunt enables the alternate 28 V resistance code; the current shunt grounds U7's `ISEL` current-selection pin directly for a 5 A request. With the current shunt open and R46/R46B unpopulated, current selection is automatic. Move shunts with power disconnected.
 
 ## R46
 
 Value: DNP
 
-An optional hardwired ISEL programming branch, in series with R46B to ground. Their total resistance can set a fixed current request; JP5's direct-to-ground current shunt overrides that branch. With both positions unpopulated and no shunt, ISEL uses the automatic setting.
+An optional hardwired programming branch from U7's `ISEL` current-selection pin, in series with R46B to ground. Their total resistance can set a fixed current request; JP5's direct-to-ground current shunt overrides that branch. With both positions unpopulated and no shunt, that pin uses the automatic setting.
 
 ## R46B
 
 Value: DNP
 
-An optional second resistor from the ISEL programming path to ground. It can provide a fixed current-selection resistance; its DNP default is an open circuit, not a zero-ohm link.
+An optional second resistor from the programming path for U7's `ISEL` current-selection pin to ground. It can provide a fixed current-selection resistance; its DNP default is an open circuit, not a zero-ohm link.
 
 ## Q8
 
@@ -1515,7 +1289,7 @@ Value: Si2318
 
 [LCSC: C14498](https://www.lcsc.com/product-detail/C14498.html)
 
-Detects USB VBUS through R29/R28 and pulls U6's enable low. This gives USB priority over the XT30 path and helps prevent USB power from feeding a connected battery.
+Detects voltage on the USB power rail (`USB-VBUS`) through R29/R28 and pulls U6's enable low. This gives USB priority over the XT30 path and helps prevent USB power from feeding a connected battery.
 
 ## R28
 
@@ -1523,7 +1297,7 @@ Value: 4K7
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-The lower resistor of Q8's USB-presence divider and a gate pull-down. It makes Q8 turn off when VBUS is absent, allowing the XT30 controller to enable again.
+The lower resistor of Q8's USB-presence divider and a gate pull-down. It makes Q8 turn off when the USB power rail (`USB-VBUS`) has no voltage, allowing the XT30 controller to enable again.
 
 ## R29
 
@@ -1531,7 +1305,7 @@ Value: 4K7
 
 [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
 
-The upper resistor feeding USB VBUS into Q8's gate divider. With R28, it reduces the gate voltage and limits current into the TVS protection path.
+The upper resistor from the USB power rail (`USB-VBUS`) to Q8's gate divider. With R28, it reduces the gate voltage and limits current into the TVS protection path.
 
 ## TVS4
 
@@ -1539,7 +1313,9 @@ Value: 15V
 
 [LCSC: C2987151](https://www.lcsc.com/product-detail/C2987151.html)
 
-Protects Q8's gate from excessive voltage and fast spikes on the USB-presence signal. Its placement protects the small detection MOSFET, not the whole USB power bus.
+Protects Q8's gate from excessive voltage and fast spikes on the USB-presence signal. The linked TECH PUBLIC SD15C-01FTG is listed with a **15 V stand-off rating** and a **35 V clamp rating at 10 A** for an 8/20 us pulse. So "15V" doesn't mean the gate is held at exactly 15 V. The BOM also lists other part options, whose clamp ratings differ.
+
+Its placement protects the small detection MOSFET, not the whole USB power bus.
 
 ## TVS5
 
@@ -1547,7 +1323,7 @@ Value: 36V
 
 [LCSC: C134984](https://www.lcsc.com/product-detail/C134984.html)
 
-A transient suppressor across USB VBUS. It deals with short spikes; it does not regulate the negotiated voltage or make AP53781's pins tolerant of continuous overvoltage.
+A transient suppressor across the USB power rail (`USB-VBUS`). The SMAJ36CA has a **36 V stand-off rating**, **40-44.2 V breakdown at 1 mA**, and a **58.1 V maximum clamp at 6.9 A** for a 10/1000 us surge pulse. It catches short spikes above that rail's normal voltage; it does not regulate the negotiated voltage or make AP53781's pins tolerant of continuous overvoltage.
 
 ## C64
 
@@ -1555,4 +1331,4 @@ Value: 100n
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-Decouples U7's internal V5V output. This is a local controller-support capacitor, not the main USB input reservoir. See the [AP53781 documentation](https://www.diodes.com/part/view/AP53781).
+Decouples U7's internal 5 V output pin (`V5V`). This is a local controller-support capacitor, not the main USB input reservoir. See the [AP53781 documentation](https://www.diodes.com/part/view/AP53781).
