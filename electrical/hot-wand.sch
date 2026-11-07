@@ -23066,7 +23066,7 @@ if temperature unstable
 or excessive power draw</text>
 <text x="287.528" y="-266.7" size="1.27" layer="97" align="center-left">useless, short</text>
 <text x="262.89" y="-261.366" size="1.016" layer="97" rot="R180">LFP @ 187kHz</text>
-<text x="74.93" y="-67.31" size="1.27" layer="97" rot="R90">sw freq 450kHz</text>
+<text x="74.93" y="-67.31" size="1.27" layer="97" rot="R90">sw freq 360kHz</text>
 <text x="171.45" y="-57.15" size="0.6096" layer="97" rot="R90">tune for unloaded voltage
 10K for maximum voltage</text>
 <text x="161.798" y="-15.748" size="0.6096" layer="97" rot="R180" align="top-left">Wurth 744750460220 (22uH)</text>
@@ -23076,7 +23076,7 @@ MCU can lower this to about 9V
 <text x="203.708" y="-26.162" size="0.8128" layer="97" rot="R270">cause instant voltage cut
 when voltage exceeds 24V</text>
 <text x="121.158" y="-34.036" size="0.8128" layer="97" rot="R180" align="top-left">FB target 0.8V</text>
-<text x="161.798" y="-14.478" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 13uH minimum</text>
+<text x="161.798" y="-14.478" size="0.6096" layer="97" rot="R180" align="top-left">calculations say 16.3uH minimum</text>
 <text x="312.42" y="-472.44" size="5.08" layer="97">Fan CTRL</text>
 <text x="284.48" y="-320.04" size="1.778" layer="97">debug port</text>
 <text x="78.232" y="-420.37" size="0.8128" layer="97" rot="R180" align="top-left">rated 36V max
