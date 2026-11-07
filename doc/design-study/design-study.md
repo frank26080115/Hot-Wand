@@ -29,7 +29,9 @@ In SergeyMax's design, there are the major sections:
 
 SergeyMax's schematic is a bit hard to decode as it is drawn to fit everything onto one sheet of paper and also does not use net flags. Drawing it out again into logical blocks help.
 
-[![Hot Wand schematic preview](./imgs/sch_preview_thumb.jpg)](../../electrical/hot-wand.sch_preview.pdf)
+ * [Interactive Circuit Deep Dive for the Hot Wand (13.56 MHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-13mhz.html)
+ * [Interactive Circuit Deep Dive for the Hot Wand Lite (470 kHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-lite-470khz.html)
+
 
 ### Input Power
 

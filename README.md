@@ -127,5 +127,5 @@ Please explore the [documentation directory itself](doc), as I might've written 
  * [Operation Instructions for the Hot Wand (13.56 MHz version)](doc/operating-instructions.md)
  * [Operation Instructions for the Hot Wand Lite (470 kHz version)](doc/operating-instructions-for-lite.md)
  * [DIY build guide for the Folding Iron Stand](doc/build-guide-iron-stand.md)
- * [Circuit Deep Dive for the Hot Wand (13.56 MHz version)](doc/electrical-deep-dive/electrical-deep-dive-13mhz.md)
- * [Circuit Deep Dive for the Hot Wand Lite (470 kHz version)](doc/electrical-deep-dive/electrical-deep-dive-lite-470khz.md)
+ * [Interactive Circuit Deep Dive for the Hot Wand (13.56 MHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-13mhz.html)
+ * [Interactive Circuit Deep Dive for the Hot Wand Lite (470 kHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-lite-470khz.html)

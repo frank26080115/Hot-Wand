@@ -4,6 +4,9 @@ The main `hot-wand` project is the 13.56 MHz version, while the `hot-wand-lite` 
 
 The schematic and PCB are designed with CadSoft EAGLE 7. PDF versions of the schematic and image previews of the PCB are provided for convenience.
 
+ * [Interactive Circuit Deep Dive for the Hot Wand (13.56 MHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-13mhz.html)
+ * [Interactive Circuit Deep Dive for the Hot Wand Lite (470 kHz version)](https://eleccelerator.com/hot-wand-deep-dive/electrical-deep-dive-lite-470khz.html)
+
 The `mfg` directory will contain the BOM and gerber files, along with some helpers that aid in generating these files.
 
 The BOM, CPL files, and the design rules, are all meant for use with JLCPCB's PCBA service.
