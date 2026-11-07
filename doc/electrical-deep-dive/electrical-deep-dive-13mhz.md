@@ -2,7 +2,9 @@
 
 This [switching buck converter](https://www.ti.com/product/TPS54560) turns the input supply into the DC voltage that feeds the main RF amplifier. L1/C2 perform the main energy conversion; L2/C4 add a second filter stage to reduce RF returning from the amplifier.
 
-The feedback takeoff is before L2. Its three control inputs are the output divider, the [current-transformer phase detector](../design-study/current-transformer.md), and the microcontroller's attenuation PWM. The transformer branch can move the voltage up or down; the microcontroller branch is arranged to lower it only.
+The feedback takeoff is before L2. Its three control inputs are the output divider, the [current-transformer phase-detector](../design-study/current-transformer.md), and the microcontroller's attenuation PWM. The transformer branch can move the voltage up or down; the microcontroller branch is arranged to lower it only.
+
+The circuit design here was initiated by copying the original SergeyMax design and then evolved to improve upon it.
 
 ## U1
 
@@ -240,6 +242,8 @@ In a class-E amplifier, they also shape the voltage so it falls close to zero be
 
 The surrounding inductors and capacitors shape its switching waveform and deliver energy into the output network. For the topology and voltage behavior, see the [RF matching study](../design-study/impedance-matching-13.56MHz.md).
 
+The circuit design here was initiated by copying the original SergeyMax design and then evolved to improve upon it.
+
 ## Q1
 
 Value: STP19NF20
@@ -471,6 +475,8 @@ Connects the optional VR4 feedback path. Leaving it open isolates the trimmer; c
 
 This is a small RF amplifier driving the gate of the larger one. U2 drives Q2, and Q2's tuned output drives Q1 through L8. See why the design uses two stages in the [gate-driver comparison](../design-study/gate-driver-method-comparison.md).
 
+The circuit design here was initiated by copying the original SergeyMax design and then evolved to improve upon it.
+
 ## U2
 
 Value: 1EDN8511BXUSA1
@@ -562,6 +568,8 @@ A measurement position in the gate-driver 12 V supply. A temporary shunt here me
 # Tip Detection
 
 A small DC current tests continuity through the handpiece and cartridge while an RF filter keeps the carrier away from Q3. The tip-detection signal net (`TIP-DET`) is high for a connected tip and low for a disconnection. See the [tip-detector study](../design-study/tip-detector.md).
+
+The circuit design here was initiated by copying the original SergeyMax design and then evolved to improve upon it.
 
 ## Q3
 
@@ -761,6 +769,8 @@ Transient/ESD protection on the exposed button input.
 
 These fixed regulators provide 12 V for the gate driver/fan and 3.3 V for the microcontroller, display, and sensors.
 
+I chose to use off-the-shelf pre-packaged buck converters here for convenience and size, they are not the "fun" part of the design so I prioritized size and convenience over cost.
+
 ## IC1
 
 Value: 12V R-78K12-2.0
@@ -852,13 +862,13 @@ Due to budget cuts, most of these are not populated on the first batch of gift u
 
 NTC sensors report temperatures, they are supposed to be epoxied to the TO-220 MOSFETs of Hot-Wand. Each sensor forms a divider with a 3.3 V pull-up, followed by an ADC filter.
 
-## THERM1
+## THERM1 and THERM2
 
 Value: 10kΩ, β ≈3950K
 
 [Digi-Key: B57891M0103K000](https://www.digikey.com/en/products/detail/tdk/B57891M0103K000/3500546)
 
-The NTC sensor for the first monitored hot spot. Its resistance falls as it warms, pulling its ADC voltage lower through the divider with R50. It measures device temperature where attached, not the soldering tip temperature.
+The NTC sensor for the two monitored MOSFET hot spots. Its resistance falls as it warms, pulling its ADC voltage lower through the divider with R50. It measures device temperature where attached, not the soldering tip temperature.
 
 ## R50
 
@@ -875,14 +885,6 @@ Value: 100nF
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
 A noise filter from the THERM1 ADC input to ground. It smooths electrical pickup while the thermistor and R50 set the measurement's DC level.
-
-## THERM2
-
-Value: 10kΩ, β ≈3950K
-
-[Digi-Key: B57891M0103K000](https://www.digikey.com/en/products/detail/tdk/B57891M0103K000/3500546)
-
-The NTC sensor for the second monitored hot spot. Its resistance falls as it warms, pulling its ADC voltage lower through the divider with R51. It measures device temperature where attached, not the soldering tip temperature.
 
 ## R51
 
@@ -1041,7 +1043,7 @@ Value: LM74810QDRRRQ1
 
 [LCSC: C3215601](https://www.lcsc.com/product-detail/C3215601.html)
 
-The ideal-diode and disconnect controller for the XT30 input. It drives Q4/Q5 to limit reverse current and provide controlled startup. Q8 disables this input (via the enable pin) when USB power is present. See the [LM74810-Q1 documentation](https://www.ti.com/product/LM7481-Q1).
+The ideal-diode and disconnect controller for the XT30 input. It drives Q4/Q5 to limit reverse current and provide controlled startup. Q8 disables this input (via the enable pin) when USB power is present. See the [LM74810-Q1 documentation](https://www.ti.com/product/LM7481-Q1), which also contains example circuit diagrams that my design learns from.
 
 ## Q4
 
@@ -1061,7 +1063,7 @@ Value: SIS862ADN-T1-GE3
 
 [Digi-Key: SIS862ADN-T1-GE3](https://www.digikey.com/en/products/detail/vishay-siliconix/SIS862ADN-T1-GE3/10273791)
 
-The output-side MOSFET controlled by U6's HGATE pin. With Q4, it allows the controller to disconnect the XT30 path; its controlled turn-on also limits capacitor-charging inrush.
+The output-side MOSFET controlled by U6's HGATE pin. With Q4, it allows the controller to disconnect the XT30 path; its controlled turn-on also limits capacitor-charging inrush (with the help of R56, C62, C63, also notice the direction the body diode faces).
 
 [Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2mΩ at a 10 V gate drive**.
 
@@ -1163,7 +1165,7 @@ Value: AP53781
 
 [LCSC: C52730979](https://www.lcsc.com/product-detail/C52730979.html)
 
-The USB-PD controller, configured as a power consumer. It negotiates a voltage/current request from its resistor settings and drives the external input MOSFETs. The requested profile still depends on charger and cable support. See the [AP53781 product page](https://www.diodes.com/part/view/AP53781).
+The USB-PD controller, configured as a power consumer. It negotiates a voltage/current request from its resistor settings and drives the external input MOSFETs. The requested profile still depends on charger and cable support. See the [AP53781 product page](https://www.diodes.com/part/view/AP53781), which provides examples of how to implement the circuitry around it.
 
 ## Q6
 

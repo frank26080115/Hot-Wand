@@ -4,11 +4,13 @@ Q1 switches at 470 kHz, with the input supply feeding the RF stage directly. The
 
 The transistor rapidly switches current through an inductor, storing energy in its magnetic field. When it switches off, the inductor keeps pushing current, charging the surrounding capacitance and raising the voltage. The inductors and capacitors shape the waveform so the voltage falls close to zero before the transistor switches on again, reducing wasted heat. See the [introduction to class-E amplifiers](https://www.allaboutcircuits.com/technical-articles/introduction-to-the-class-e-power-amplifier/).
 
+This part of the circuit started by copying the original Radio Thermal design, then evolved as I adapted it for Hot-Wand Lite. See the [design notes](../design-study/design-study.md) for the original projects that inspired both versions.
+
 ## Q1
 
-[Digi-Key: IXFP26N30X3, one documented option](https://www.digikey.com/en/products/detail/ixys/IXFP26N30X3/8032441)
+[Digi-Key: IXFP26N30X3](https://www.digikey.com/en/products/detail/ixys/IXFP26N30X3/8032441)
 
-The main 470 kHz RF power switch. Its drain network shapes voltage and current for efficient class-E operation. The schematic leaves the model as NCHAN; use one of the documented [MOSFET choices](../build-guide-lite-470khz/shopping.md#main-470-khz-rf-mosfet), with suitable gate charge and voltage margin.
+The main 470 kHz RF power switch. Its drain network shapes voltage and current for efficient class-E operation. Use one of the documented [MOSFET choices](../build-guide-lite-470khz/shopping.md#main-470-khz-rf-mosfet) but IXFP26N30X3 is preferred.
 
 ## L1
 
@@ -17,6 +19,8 @@ Value: 33μH
 [LCSC: C2453886](https://www.lcsc.com/product-detail/C2453886.html) | [Digi-Key: PA4343.333NLT](https://www.digikey.com/en/products/detail/pulse-electronics/PA4343-333NLT/5641830)
 
 A purchased 33μH RF choke feeding DC into Q1's drain. It resists the carrier-frequency current so the matching network (rather than the input supply) receives most of the RF. Its saturation current and loss matter as well as its inductance.
+
+On the original Radio Thermal design, this is supposed to be a [SRP1265A-330M](https://www.digikey.com/en/products/detail/bourns-inc/SRP1265A-330M/4876626), which is pretty much the same thing but it was out-of-stock when I built Hot-Wand Lite.
 
 ## C1
 
@@ -125,6 +129,8 @@ Four parallel connection positions between the SMA shell/RF return and circuit g
 # RF Amp Gate Driver
 
 U2 drives Q1 directly through separate turn-on and turn-off resistors. This is simpler than the resonant two-amplifier driver in the 13.56 MHz version. See the [gate-driver comparison](../design-study/gate-driver-method-comparison.md).
+
+The gate-driver circuit also started from the original Radio Thermal design and was adapted for Hot-Wand Lite.
 
 ## U2
 
@@ -282,6 +288,8 @@ An optional second status LED, driven by the same microcontroller output as LED1
 
 IC1 produces 12 V for the gate driver and fan; IC2 drops that rail to 5 V for the microcontroller module. The fan switching circuit and its routing jumpers are in this schematic section too.
 
+I chose the off-the-shelf buck module at IC1 for convenience and size. This isn't the "fun" part of the design, so I was happy to spend a bit more on it.
+
 ## IC1
 
 Value: 12V R-78K12-2.0
@@ -391,7 +399,7 @@ Value: LM74810QDRRRQ1
 
 [LCSC: C3215601](https://www.lcsc.com/product-detail/C3215601.html)
 
-The ideal-diode/disconnect controller on the XT30 path. It drives Q2 and Q3 for low-loss forward power, reverse-current blocking, and controlled startup. Q6 disables this input via the enable pin when USB power is present. See the [controller documentation](https://www.ti.com/product/LM7481-Q1).
+The ideal-diode/disconnect controller on the XT30 path. It drives Q2 and Q3 for low-loss forward power, reverse-current blocking, and controlled startup. Q6 disables this input via the enable pin when USB power is present. See the [LM74810-Q1 documentation](https://www.ti.com/product/LM7481-Q1), which also contains example circuits that guided this design.
 
 ## Q2
 
@@ -411,7 +419,7 @@ Value: SIS862ADN-T1-GE3
 
 [Digi-Key: SIS862ADN-T1-GE3](https://www.digikey.com/en/products/detail/vishay-siliconix/SIS862ADN-T1-GE3/10273791)
 
-The output-side MOSFET controlled by U3's HGATE output. It allows the XT30 input to be disconnected and turns on gradually to limit bulk-capacitor charging current.
+The output-side MOSFET controlled by U3's HGATE output. It allows the XT30 input to be disconnected and turns on gradually to limit bulk-capacitor charging current, with the help of R29, C25, and C26. Notice the body-diode direction: it blocks input-to-output charging while Q3 is off, allowing the gate ramp to control inrush.
 
 [Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2mΩ at a 10 V gate drive**.
 
@@ -529,7 +537,7 @@ Value: AP53781
 
 [LCSC: C52730979](https://www.lcsc.com/product-detail/C52730979.html)
 
-The USB-PD controller, used as a power consumer. Resistance codes on its `VSEL` voltage-selection pin and `ISEL` current-selection pin request voltage and current, and its gate driver controls the USB input MOSFETs. A request still depends on source/cable support. See [AP53781 documentation](https://www.diodes.com/part/view/AP53781).
+The USB-PD controller, used as a power consumer. Resistance codes on its `VSEL` voltage-selection pin and `ISEL` current-selection pin request voltage and current, and its gate driver controls the USB input MOSFETs. A request still depends on source/cable support. See the [AP53781 documentation](https://www.diodes.com/part/view/AP53781), which also gives examples of the circuitry around it.
 
 ## Q4
 
