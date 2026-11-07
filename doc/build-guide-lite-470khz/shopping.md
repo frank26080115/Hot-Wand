@@ -111,6 +111,8 @@ Quantity: **two seven-pin segments cut from a long 2.54 mm female breakaway sock
 
 Quantity: **one Molex 0470531000**. Install it at FAN1 for the 12 V PWM fan. It is the keyed four-position PC-fan header expected by the fan cable. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0470531000/2421261).
 
+Alternative for a two-pin fan: **JST B2B-XH-A**, a 2.5 mm-pitch XH header. Fit it to FAN1's `V` and `G` pads and select the switched ground return through SJ7; it has no separate PWM control pin. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045).
+
 ### Output-selection header
 
 ![Right-angle breakaway pin header](../imgs-shopping/small/right-angle-pin-headers-breakaway.s.jpg)

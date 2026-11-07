@@ -154,7 +154,7 @@ Quantity: **two TODO:TBD thermistors**. Install them at THERM1 and THERM2 agains
 
 Quantity: **one Molex 0470531000**. Install it at FAN1 for the 12 V PWM fan. It is the keyed four-position PC-fan header expected by the fan cable. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/molex/0470531000/2421261).
 
-Alternative: JST `B2B-XH-A`, which is a 2 pin XH header so it won't support PWM. It is used by cheaper fans like WINNSINN. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045).
+Alternative: JST `B2B-XH-A`, a two-pin XH header with no separate PWM control pin. It is used by cheaper fans like WINNSINN. Fit it to FAN1's `V` and `G` pads and configure the fan's ground return for switching. Shop at [Digi-Key](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045).
 
 ### Optional indicator LEDs
 

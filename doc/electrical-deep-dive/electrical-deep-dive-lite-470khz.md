@@ -268,35 +268,18 @@ Value: 100n
 
 Filters the microcontroller's input-voltage sensing net (`ADC`) to ground. It smooths switching noise while R21 and R22 determine the DC scaling.
 
-## LED1
+## Indicator LEDs and Current-Limiting Resistors
 
-Value: LED
+LED1 and LED2 Value: LED
 
-[LCSC: C284935](https://www.lcsc.com/product-detail/C284935.html)
+Firmware status indicators. Blink patterns report operating state, input-voltage range, and power selection; see the [Lite operating guide](../operating-instructions-for-lite.md#led-indicators). Both use the same microcontroller output, with a separate resistor limiting each LED's current.
 
-The main firmware status LED. Blink patterns report operating state, input-voltage range, and power selection; it is not a simple input-rail indicator. See the [Lite operating guide](../operating-instructions-for-lite.md#led-indicators).
+| LED | Purpose | Current-limiting resistor | Resistor value | Expected drive current while lit |
+| --- | --- | --- | --- | --- |
+| LED1 ([LCSC](https://www.lcsc.com/product-detail/C284935.html)) | Main firmware status indicator | R5 ([LCSC](https://www.lcsc.com/product-detail/C23179.html)) | 470 ohm | About 2.8 mA |
+| LED2 | Optional second indicator; mirrors LED1 | R6 ([LCSC](https://www.lcsc.com/product-detail/C23179.html)) | 470 ohm | About 2.8 mA when fitted |
 
-## R5
-
-Value: 470Ω
-
-[LCSC: C23179](https://www.lcsc.com/product-detail/C23179.html)
-
-Limits current through LED1 from the microcontroller status output. It sets brightness and keeps the output pin from having to drive an unrestricted LED current.
-
-## LED2
-
-Value: LED
-
-An optional second status-LED footprint driven by the same signal as LED1, through its own resistor R6. It mirrors the status indication rather than providing a separate firmware channel.
-
-## R6
-
-Value: 470Ω
-
-[LCSC: C23179](https://www.lcsc.com/product-detail/C23179.html)
-
-The current-limiting resistor for optional LED2. A separate resistor lets the two parallel LED branches operate without relying on their forward voltages being identical.
+These estimates use `I = (Vdrive - VLED) / R`, assuming a **3.3 V logic-high output** and **2 V LED forward voltage**. Actual current depends on the LED and output voltage; blinking reduces the average current.
 
 # Secondary Power
 
@@ -362,9 +345,12 @@ The fan-control MOSFET. The solder jumpers can route it to switch the fan ground
 
 Value: FAN-CONN-X4-CONN-X4
 
-[Digi-Key: 0470531000](https://www.digikey.com/en/products/detail/molex/0470531000/2421261)
+- Four-pin PWM fan: [Digi-Key: Molex 0470531000](https://www.digikey.com/en/products/detail/molex/0470531000/2421261).
+- Two-pin fan: [Digi-Key: JST B2B-XH-A](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045), a 2.5 mm-pitch XH header.
 
 The 12 V fan connector. SJ6 chooses the PWM source and SJ7 chooses the ground connection; a four-wire fan's speed input and a two-wire fan's switched supply require different routing.
+
+Fit the two-pin header to FAN1's `V` and `G` pads. It has no separate PWM control pin; select the switched ground return through SJ7 for two-wire fan control.
 
 ## R27
 
@@ -418,6 +404,10 @@ Value: SIS862ADN-T1-GE3
 
 The input-side MOSFET controlled by U3's DGATE output. It implements the low-loss ideal-diode path from XT30 and helps prevent reverse current toward the battery.
 
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
+
 ## Q3
 
 Value: SIS862ADN-T1-GE3
@@ -425,6 +415,10 @@ Value: SIS862ADN-T1-GE3
 [Digi-Key: SIS862ADN-T1-GE3](https://www.digikey.com/en/products/detail/vishay-siliconix/SIS862ADN-T1-GE3/10273791)
 
 The output-side MOSFET controlled by U3's HGATE output. It allows the XT30 input to be disconnected and turns on gradually to limit bulk-capacitor charging current.
+
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
 
 ## JP3
 
@@ -478,7 +472,7 @@ Value: 100n each
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-Two series 100 nF capacitors in the slew-control branch on U3's `HGATE` pin, giving about 50 nF overall. They slow Q3 turn-on and share voltage stress while the bulk capacitors charge. See the [inrush-control documentation](https://www.ti.com/product/LM7481-Q1).
+Two 100 nF capacitors in the slew-control branch on U3's `HGATE` pin. **They are in series because one capacitor's voltage rating isn't high enough for this position; the pair shares the applied voltage.** Together they give about 50 nF and slow Q3 turn-on while the bulk capacitors charge. See the [inrush-control documentation](https://www.ti.com/product/LM7481-Q1).
 
 ## R30
 
@@ -546,6 +540,10 @@ Value: DMTH64M2LPDWQ-13
 
 A dual MOSFET package forming the back-to-back USB power switch. U4 drives the common gate to connect negotiated USB power and allows the input path to block when disabled.
 
+[Diodes' ratings](https://www.diodes.com/part/view/DMTH64M2LPDWQ) are **60 V drain-source**, **±20 V gate-source**, and **90 A continuous per MOSFET with the case held at 25°C**. Maximum on-resistance is **5 milliohms per MOSFET at a 10 V gate drive**, or **10 milliohms for the conducting pair** under those conditions.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
+
 ## Q5
 
 Value: SIS862ADN-T1-GE3
@@ -553,6 +551,10 @@ Value: SIS862ADN-T1-GE3
 [Digi-Key: SIS862ADN-T1-GE3](https://www.digikey.com/en/products/detail/vishay-siliconix/SIS862ADN-T1-GE3/10273791)
 
 An additional isolation MOSFET between the common DC bus and the USB switching circuit. It helps keep high battery voltage away from the AP53781's lower-voltage pins.
+
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
 
 ## JP2
 

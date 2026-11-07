@@ -829,77 +829,28 @@ A transient suppressor on the 3.3 V rail.
 
 In practice, this one is probably useless. The actual intent is to protect any potentially higher-than-normal voltages that may come from a malfunctioning tip-detector circuit.
 
-## LED1
+## Indicator LEDs and Current-Limiting Resistors (LED1 thru LED4, R38 thru R43)
 
-Value: LED
+LED1-LED4
 
-A simple voltage-presence indicator for the input power rail (`DC-IN`), with current limited by R38. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
+Four optional rail-presence indicators. They show that their respective supply rails have voltage.
 
-## R38
+| LED  | Purpose               | Current-limiting resistor | Resistor value | Expected drive current |
+| ---- | --------------------- | --- | -------- | --- |
+| LED1 | Input power (`DC-IN`) | R38 | 22 kohm  | About 1.0 mA at 24 V input |
+| LED2 | 12 V rail             | R40 | 4.7 kohm | About 2.1 mA at 12 V |
+| LED3 | 3.3 V logic rail      | R41 | 1 kohm   | About 1.3 mA at 3.3 V |
+| LED4 | buck converter output | R42 | 22 kohm  | About 0.73-0.82 mA at 18-20 V |
 
-Value: 22K
+R39 and R43 Value: DNP. These optional resistor positions in LED1's and LED4's paths are bypassed in the current schematic, so they don't affect current while those bypasses remain. R38 and R42 provide the current limiting.
 
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
+LED4's brightness gives a clue as to what the buck converter voltage is being output at a present moment.
 
-Limits current through LED1 from the input power rail (`DC-IN`). Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
-
-## R39
-
-Value: DNP
-
-An optional resistor position in LED1's path. It is bypassed in the current schematic and normally left unpopulated, so fitting it alone does not add series resistance while that bypass remains.
-
-## LED2
-
-Value: LED
-
-A simple 12 V presence indicator, with current limited by R40. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
-
-## R40
-
-Value: 4K7
-
-[LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
-
-Limits current through LED2 from the 12 V rail. Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
-
-## LED3
-
-Value: LED
-
-A simple 3.3 V presence indicator, with current limited by R41. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
-
-## R41
-
-Value: 1K
-
-[LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)
-
-Limits current through LED3 from the 3.3 V rail. Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
-
-## LED4
-
-Value: LED
-
-A simple RF-amplifier supply presence indicator, with current limited by R42. It shows that the rail has voltage, not that the voltage is accurate or that RF power is reaching the tip.
-
-## R42
-
-Value: 22K
-
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
-
-Limits current through LED4 from the RF-amplifier supply rail. Its resistance sets brightness and dissipation; the LED must not be connected directly across the supply.
-
-## R43
-
-Value: DNP
-
-An optional resistor position in LED4's path. It is bypassed in the current schematic and normally left unpopulated; the bypass must change before this resistor can affect LED current.
+Due to budget cuts, most of these are not populated on the first batch of gift units of Hot-Wand.
 
 # Thermistors
 
-Optional NTC sensors report temperatures at the hardware locations where they are attached. Each sensor forms a divider with a 3.3 V pull-up, followed by an ADC filter.
+NTC sensors report temperatures, they are supposed to be epoxied to the TO-220 MOSFETs of Hot-Wand. Each sensor forms a divider with a 3.3 V pull-up, followed by an ADC filter.
 
 ## THERM1
 
@@ -949,9 +900,9 @@ Value: 100n
 
 A noise filter from the THERM2 ADC input to ground. It smooths electrical pickup while the thermistor and R51 set the measurement's DC level.
 
-# Fan CTRL
+# Fan Control
 
-The solder jumpers select switched ground, direct PWM, or open-drain PWM fan control. The bridge pattern and firmware polarity must agree; see the [fan setup instructions](../build-guide-13mhz/assembly-supplement.md#fan-solder-jumper-selection).
+This section of the circuit has a bunch of parts related to controlling the cooling fan. See the [fan setup instructions](../build-guide-13mhz/assembly-supplement.md#fan-solder-jumper-selection).
 
 ## Q9
 
@@ -963,11 +914,12 @@ The fan-control MOSFET. Depending on the solder-jumper configuration, it either 
 
 ## FAN1
 
-Value: FAN-CONN-X4-CONN-X4
-
-[Digi-Key: 0470533000](https://www.digikey.com/en/products/detail/molex/0470533000/3262217)
+- Four-pin PWM fan: [Digi-Key: Molex 0470533000](https://www.digikey.com/en/products/detail/molex/0470533000/3262217).
+- Two-pin fan: [Digi-Key: JST B2B-XH-A](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B2B-XH-A/1651045), a 2.5 mm-pitch XH header.
 
 The fan connector, supplying 12 V and the selected ground/PWM connections. SJ4 and SJ5 adapt the circuit to two-wire or PWM fans. See the [fan configuration guide](../build-guide-13mhz/assembly-supplement.md#fan-solder-jumper-selection).
+
+If using a 2 pin fan, fit the two-pin header to FAN1's `V` and `G` pads. It has no separate PWM control pin; two-wire fan control works by switching the fan's ground return.
 
 ## R45
 
@@ -986,8 +938,6 @@ Value: 4K7
 Pulls the fan-control signal low when the microcontroller is not driving it. This gives Q9 a defined command during reset; the fan's actual behavior still depends on the selected jumper mode.
 
 ## SJ3
-
-Value: SHORTED
 
 Connects the fan-control circuit to the microcontroller's debug-data net (`SWDIO`). Keep programming access in mind when bridging it. See the [assembly instructions](../build-guide-13mhz/assembly-supplement.md#solder-jumpers-and-tuning-parts).
 
@@ -1009,7 +959,7 @@ Local 12 V reservoir at the fan connector. It reduces rail disturbances from fan
 
 # Power Sensing
 
-U5 measures DC current entering the RF amplifier, and two resistor dividers measure the RF supply and DC input voltages. These support supervision and DC power estimates; they are not a direct measurement of RF power delivered to the cartridge.
+U5 measures DC current entering the RF amplifier, and two resistor dividers measure the RF supply and DC input voltages. This is how the firmware measures an estimate of the power consumption, to display to the user, and to manage power.
 
 ## U5
 
@@ -1091,7 +1041,7 @@ Value: LM74810QDRRRQ1
 
 [LCSC: C3215601](https://www.lcsc.com/product-detail/C3215601.html)
 
-The ideal-diode and disconnect controller for the XT30 input. It drives Q4/Q5 to limit reverse current and provide controlled startup. Q8 disables this input when USB power is present. See the [LM74810-Q1 documentation](https://www.ti.com/product/LM7481-Q1).
+The ideal-diode and disconnect controller for the XT30 input. It drives Q4/Q5 to limit reverse current and provide controlled startup. Q8 disables this input (via the enable pin) when USB power is present. See the [LM74810-Q1 documentation](https://www.ti.com/product/LM7481-Q1).
 
 ## Q4
 
@@ -1101,6 +1051,10 @@ Value: SIS862ADN-T1-GE3
 
 The input-side MOSFET controlled by U6's DGATE pin. It provides the low-loss ideal-diode path from XT30 to the common-drain node and helps block reverse current toward the battery.
 
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
+
 ## Q5
 
 Value: SIS862ADN-T1-GE3
@@ -1109,11 +1063,13 @@ Value: SIS862ADN-T1-GE3
 
 The output-side MOSFET controlled by U6's HGATE pin. With Q4, it allows the controller to disconnect the XT30 path; its controlled turn-on also limits capacitor-charging inrush.
 
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
+
 ## JP3
 
-Value: XT-CONNECTOR-XT30PW
-
-The XT30 DC-input connector. Its positive pin enters the protected Q4/Q5 path; it does not connect straight to the RF amplifier supply.
+The XT30 DC-input connector. Its positive pin enters the protected Q4/Q5 path.
 
 ## TVS3
 
@@ -1121,7 +1077,7 @@ Value: 36V
 
 [LCSC: C134984](https://www.lcsc.com/product-detail/C134984.html)
 
-A transient suppressor across the XT30 input. The SMAJ36CA has a **36 V stand-off rating**, **40-44.2 V breakdown at 1 mA**, and a **58.1 V maximum clamp at 6.9 A** for a 10/1000 us surge pulse. Its 36 V rating therefore isn't a fixed clamp level or a recommended supply voltage; downstream component ratings still limit the allowed supply.
+A transient suppressor across the XT30 input. In practice, this is a bit useless, as I am using USB-C input and there's no reason to ever connect a desktop DC input that is higher than 24V.
 
 ## C50
 
@@ -1161,7 +1117,11 @@ Value: 100n each
 
 [LCSC: C14663](https://www.lcsc.com/product-detail/C14663.html)
 
-Two series 100 nF capacitors in the slew-control branch on U6's `HGATE` pin, giving about 50 nF overall. They slow Q5 turn-on to reduce bulk-capacitor inrush and share voltage stress. See the [controller's inrush guidance](https://www.ti.com/product/LM7481-Q1).
+Two 100 nF capacitors in the slew-control branch on U6's `HGATE` pin.
+
+They are in series because one capacitor's voltage rating isn't high enough for this position; the pair shares the applied voltage. Using two capacitors with values already used elsewhere in the design saves cost on PCBA, where loading a new component tape reel costs more than the single component itself.
+
+Together they give about 50 nF and slow Q5 turn-on to reduce bulk-capacitor inrush. See the [controller's inrush guidance](https://www.ti.com/product/LM7481-Q1).
 
 ## R53
 
@@ -1169,7 +1129,7 @@ Value: 82K
 
 [LCSC: C23254](https://www.lcsc.com/product-detail/C23254.html)
 
-The upper resistor of U6's overvoltage-sense divider. With R54 in parallel with R55, it sets the nominal cutoff near 39.5 V. That threshold does not make every downstream component safe at 39 V.
+The upper resistor of U6's overvoltage-sense divider. With R54 in parallel with R55, it sets the nominal cutoff near 39.5 V.
 
 ## R54 and R55
 
@@ -1182,6 +1142,8 @@ R55 Value: 22K
 [R55 LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
 
 The two parallel lower resistors in U6's overvoltage divider. R54's 3 kohms in parallel with R55's 22 kohms gives about 2.64 kohms. With upper resistor R53, this sets the XT30 overvoltage cutoff threshold.
+
+Using two resistors with values already used elsewhere in the design saves cost on PCBA, where loading a new component tape reel costs more than the single component itself.
 
 ## R34
 
@@ -1209,7 +1171,11 @@ Value: DMTH64M2LPDWQ-13
 
 [Digi-Key: DMTH64M2LPDWQ-13](https://www.digikey.com/en/products/detail/diodes-incorporated/DMTH64M2LPDWQ-13/28171648)
 
-Two MOSFETs in one package, connected back-to-back in the USB power path. U7 drives their common gate to admit negotiated power while allowing the path to block when disabled.
+Two MOSFETs in one package (selected for convenience), connected back-to-back in the USB power path. U7 drives their common gate to admit negotiated power while allowing the path to block when disabled.
+
+[Diodes' ratings](https://www.diodes.com/part/view/DMTH64M2LPDWQ) are **60 V drain-source**, **±20 V gate-source**, and **90 A continuous per MOSFET with the case held at 25°C**. Maximum on-resistance is **5 milliohms per MOSFET at a 10 V gate drive**, or **10 milliohms for the conducting pair** under those conditions.
+
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
 
 ## Q7
 
@@ -1219,13 +1185,15 @@ Value: SIS862ADN-T1-GE3
 
 An additional controlled isolation MOSFET between the shared DC bus and the USB switching circuit. It helps keep high battery voltage away from the AP53781's lower-voltage circuitry when USB is not supplying power.
 
-## JP2
+[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2 milliohms at a 10 V gate drive**.
 
-Value: USBC-CHGONLY-4M-DRILL
+This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
+
+## JP2
 
 [Digi-Key: UJC-H-G-SMT-2-P6-TR](https://www.digikey.com/en/products/detail/same-sky-formerly-cui-devices/UJC-H-G-SMT-2-P6-TR/24818567)
 
-The charge-only USB-C connector. Its VBUS pins supply power and its CC1/CC2 pins carry USB-C/PD negotiation; this connector does not provide a general-purpose USB data interface.
+The charge-only USB-C connector. Its VBUS pins supply power and its CC1/CC2 pins carry USB-C/PD negotiation.
 
 ## R31 and R32
 
@@ -1234,6 +1202,8 @@ Value: 100Ω each
 [LCSC: C441975](https://www.lcsc.com/product-detail/C441975.html)
 
 Two series resistors between U7's VOUT sense pin and the Q6/Q7 junction, totaling 200 ohms. They limit transient current into the sense connection and isolate it from the power-switch junction. They do not add resistance to the main load-current path.
+
+Using two resistors with values already used elsewhere in the design saves cost on PCBA, where loading a new component tape reel costs more than the single component itself.
 
 ## R30
 
@@ -1265,11 +1235,11 @@ Value: 75K
 
 [LCSC: C23242](https://www.lcsc.com/product-detail/C23242.html)
 
-Completes the alternate programming branch for U7's `VSEL` voltage-selection pin, from R48 to JP5. With R47, this is a resistor-code selection for USB-PD negotiation, not a divider regulating the power-bus voltage.
+Completes the alternate programming branch for U7's `VSEL` voltage-selection pin, from R48 to JP5. With R47, this is a resistor-code selection for USB-PD negotiation.
 
 ## JP5
 
-The USB-PD selection header. The voltage shunt enables the alternate 28 V resistance code; the current shunt grounds U7's `ISEL` current-selection pin directly for a 5 A request. With the current shunt open and R46/R46B unpopulated, current selection is automatic. Move shunts with power disconnected.
+The USB-PD selection header. The voltage shunt enables the alternate 28 V resistance code; the current shunt grounds U7's `ISEL` current-selection pin directly for a 5 A request. With the current shunt open and R46/R46B unpopulated, current selection is automatic.
 
 ## R46
 
@@ -1281,7 +1251,7 @@ An optional hardwired programming branch from U7's `ISEL` current-selection pin,
 
 Value: DNP
 
-An optional second resistor from the programming path for U7's `ISEL` current-selection pin to ground. It can provide a fixed current-selection resistance; its DNP default is an open circuit, not a zero-ohm link.
+An optional second resistor from the programming path for U7's `ISEL` current-selection pin to ground. It can provide a fixed current-selection resistance.
 
 ## Q8
 
@@ -1313,7 +1283,7 @@ Value: 15V
 
 [LCSC: C2987151](https://www.lcsc.com/product-detail/C2987151.html)
 
-Protects Q8's gate from excessive voltage and fast spikes on the USB-presence signal. The linked TECH PUBLIC SD15C-01FTG is listed with a **15 V stand-off rating** and a **35 V clamp rating at 10 A** for an 8/20 us pulse. So "15V" doesn't mean the gate is held at exactly 15 V. The BOM also lists other part options, whose clamp ratings differ.
+Protects Q8's gate from excessive voltage and fast spikes on the USB-presence signal.
 
 Its placement protects the small detection MOSFET, not the whole USB power bus.
 
@@ -1323,7 +1293,7 @@ Value: 36V
 
 [LCSC: C134984](https://www.lcsc.com/product-detail/C134984.html)
 
-A transient suppressor across the USB power rail (`USB-VBUS`). The SMAJ36CA has a **36 V stand-off rating**, **40-44.2 V breakdown at 1 mA**, and a **58.1 V maximum clamp at 6.9 A** for a 10/1000 us surge pulse. It catches short spikes above that rail's normal voltage; it does not regulate the negotiated voltage or make AP53781's pins tolerant of continuous overvoltage.
+A transient suppressor across the USB power rail (`USB-VBUS`). In practice, this is useless in the same way that TVS3 is useless.
 
 ## C64
 
