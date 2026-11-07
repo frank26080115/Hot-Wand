@@ -49,7 +49,7 @@ The feedback from the current transformer is kind of a power saving feature for 
        width="360">
 </a>
 
-You might have noticed that the buck converter circuit has a second LC stage before the current sensor and RF amplifier. This is simply a filter stage to isolate the buck converter's domain from the RF domain, the first is switching at 450 kHz and the latter is switching at 13.56 Mhz and SergeyMax picked 450 kHz and added the filter stage so these two domains don't interact or beat with each other.
+You might have noticed the second LC stage before the current sensor and RF amplifier. This is an extra filter to keep RF from getting back into the buck converter. SergeyMax picked 450 kHz to avoid audible beats with his upstream LLC power supply, which I removed from my design. Oddly, his schematic uses a 270 kohm resistor, which works out to about 360 kHz according to the TPS54560 datasheet. I kept that resistor value because 360 kHz works fine with the inductor I picked. I don’t know why his schematic and blog post disagree on the frequency.
 
 Important: another builder pointed out that the 6.8kohm resistor on the buck converter feedback network is the wrong value, and will only allow for about 14V maximum output. He swapped it for a 22kohm and so did I. The original design had a 22V zener beside this resistor in the feedback network that would've capped the voltage at 22V, I upped this zener to 24V as well. My design might be considered a bit "overclocked", but you don't have to actually tune it that high. Later in this document I discuss more protection mechanisms placed around this buck converter. (in other good news, 24V zeners and TVS diodes are wayyy more common anyways, a win for DFM)
 
