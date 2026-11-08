@@ -1175,7 +1175,7 @@ Value: DMTH64M2LPDWQ-13
 
 Two MOSFETs in one package (selected for convenience), connected back-to-back in the USB power path. U7 drives their common gate to admit negotiated power while allowing the path to block when disabled.
 
-[Diodes' ratings](https://www.diodes.com/part/view/DMTH64M2LPDWQ) are **60 V drain-source**, **±20 V gate-source**, and **90 A continuous per MOSFET with the case held at 25°C**. Maximum on-resistance is **5mΩ per MOSFET at a 10 V gate drive**, or **10mΩ for the conducting pair** under those conditions.
+[DMTH64M2LPDWQ-13 ratings](https://www.diodes.com/part/view/DMTH64M2LPDWQ) are **60 V drain-source**, **±20 V gate-source**, and **90 A continuous per MOSFET with the case held at 25°C**. Maximum on-resistance is **5mΩ per MOSFET at a 10 V gate drive**, or **10mΩ for the conducting pair** under those conditions.
 
 This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
 
@@ -1187,7 +1187,7 @@ Value: SIS862ADN-T1-GE3
 
 An additional controlled isolation MOSFET between the shared DC bus and the USB switching circuit. It helps keep high battery voltage away from the AP53781's lower-voltage circuitry when USB is not supplying power.
 
-[Vishay's ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2mΩ at a 10 V gate drive**.
+[SIS862ADN-T1-GE3 ratings](https://www.vishay.com/en/product/76785/) are **60 V drain-source**, **±20 V gate-source**, and **52 A continuous with the case held at 25°C**. Maximum on-resistance is **7.2mΩ at a 10 V gate drive**.
 
 This is deliberately a bit overkill, and that's a personal choice. For a one-off project, I'd rather pay a little extra for the margin and not worry about it.
 
@@ -1215,45 +1215,19 @@ Value: 4.3kΩ
 
 The series resistor from U7's VG_A output to the power-MOSFET gates. It limits gate-charging current and affects turn-on speed, including the initial capacitor-charging surge.
 
-## R47
+## USB-PD Settings (JP5, R46, R46B, R47, R48, and R49)
 
-Value: 39kΩ
+- R47 Value: 39kΩ — [LCSC: C23153](https://www.lcsc.com/product-detail/C23153.html)
+- R48 Value: 3kΩ — [LCSC: C4211](https://www.lcsc.com/product-detail/C4211.html)
+- R49 Value: 75kΩ — [LCSC: C23242](https://www.lcsc.com/product-detail/C23242.html)
+- R46 and R46B Value: DNP
 
-[LCSC: C23153](https://www.lcsc.com/product-detail/C23153.html)
+U7's `VSEL` pin reads a resistance to ground to choose the requested USB-PD voltage; `ISEL` does the same for current. These are negotiation settings, so the charger and cable still need to support the request. See the [AP53781 selection settings](https://www.diodes.com/part/view/AP53781) for the full resistor-code table.
 
-The default programming resistor for U7's `VSEL` voltage-selection pin. Its 39kΩ path requests the documented 20 V profile; grounding the alternate JP5 path adds a parallel resistance to select a different request.
+- **Voltage:** R47 is already connected to ground, so its 39kΩ selects **20 V by default**. Enabling the alternate branch through JP5 adds R48 and R49 in series: 3kΩ + 75kΩ = 78kΩ. In parallel with R47, **39kΩ ∥ 78kΩ = 26kΩ**, selecting **28 V**.
+- **Current:** An open `ISEL` pin selects **Auto**; grounding it through JP5 requests **5 A**. R46 and R46B are strictly for a developer to experiment with other `ISEL` settings. Leave them unpopulated for normal use; if fitted, their series resistance sets the current code, unless overridden by JP5's ground connection.
 
-## R48
-
-Value: 3kΩ
-
-[LCSC: C4211](https://www.lcsc.com/product-detail/C4211.html)
-
-Part of the alternate programming branch for U7's `VSEL` voltage-selection pin, with R49. Grounding that branch through JP5 puts their series resistance in parallel with R47, giving approximately 26kΩ overall for the 28 V request.
-
-## R49
-
-Value: 75kΩ
-
-[LCSC: C23242](https://www.lcsc.com/product-detail/C23242.html)
-
-Completes the alternate programming branch for U7's `VSEL` voltage-selection pin, from R48 to JP5. With R47, this is a resistor-code selection for USB-PD negotiation.
-
-## JP5
-
-The USB-PD selection header. The voltage shunt enables the alternate 28 V resistance code; the current shunt grounds U7's `ISEL` current-selection pin directly for a 5 A request. With the current shunt open and R46/R46B unpopulated, current selection is automatic.
-
-## R46
-
-Value: DNP
-
-An optional hardwired programming branch from U7's `ISEL` current-selection pin, in series with R46B to ground. Their total resistance can set a fixed current request; JP5's direct-to-ground current shunt overrides that branch. With both positions unpopulated and no shunt, that pin uses the automatic setting.
-
-## R46B
-
-Value: DNP
-
-An optional second resistor from the programming path for U7's `ISEL` current-selection pin to ground. It can provide a fixed current-selection resistance.
+JP5 has two positions for each shunt: **1–2 selects 5 A**, and **4–5 selects 28 V**. The other positions, **2–3 and 5–6**, respectively, connect ground to ground and simply store the tiny jumper blocks so they do not get lost. Parking both shunts leaves the default **Auto current / 20 V** settings selected.
 
 ## Q8
 

@@ -234,16 +234,20 @@ class FragmentParser(HTMLParser):
             node.text = (node.text or "") + data
 
 
-def heading_refs(title, known):
-    expanded = title
+def expand_heading_ranges(title):
+    """Expand component ranges for parsing and individually linked section indexes."""
     pattern = r"\b([A-Z]+)(\d+)(?:\s*(?:-|–|—|thru|through|to)\s*)(?:\1)?(\d+)\b"
     def expand(match):
         prefix, first, last = match.groups()
         start, end = int(first), int(last)
         if end < start or end - start > 1000:
             raise ValueError(f"Invalid component range: {match.group()}")
-        return " ".join(f"{prefix}{i}" for i in range(start, end + 1))
-    expanded = re.sub(pattern, expand, expanded)
+        return ", ".join(f"{prefix}{i}" for i in range(start, end + 1))
+    return re.sub(pattern, expand, title)
+
+
+def heading_refs(title, known):
+    expanded = expand_heading_ranges(title)
     return list(dict.fromkeys(ref for ref in re.findall(r"[A-Z]+\d+[A-Z]*", expanded) if ref in known))
 
 
@@ -581,7 +585,14 @@ def build_content(guide, components, titles, rendering):
         for gid in section["groups"]:
             group = groups[gid]
             row = ET.SubElement(listing, "li")
-            ET.SubElement(row, "a", {"href": "#" + group["refs"][0], "data-target": group["refs"][0]}).text = group["label"]
+            if len(group["refs"]) > 1:
+                # Keep each named member navigable when several components share
+                # one explanation, including suffixes such as R46 and R46B.
+                row.text = expand_heading_ranges(group["label"])
+                rewrite_links(row, components, anchors, guide)
+            else:
+                ref = group["refs"][0]
+                ET.SubElement(row, "a", {"href": "#" + ref, "data-target": ref}).text = group["label"]
         templates[sid] = serialize(body)
         boxes = [section_boxes[sid]] + [union_all(components[ref]["boxes"]) for ref in components if assignments[ref][1] == sid]
         targets[sid] = {"id": sid, "label": section["label"], "kind": "section", "entry": sid,

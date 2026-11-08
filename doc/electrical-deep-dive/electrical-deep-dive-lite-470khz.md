@@ -587,71 +587,21 @@ Value: 4.3kΩ
 
 The series resistor between U4's VG_A output and the power-MOSFET gates. It limits charging current and affects turn-on speed, including startup inrush.
 
-## R15 and R16
+## USB-PD Settings (JP5, R13-R20, SJ8, and SJ9)
 
-R15 Value: 51kΩ
+- R13 Value: 24kΩ ([LCSC: C23352](https://www.lcsc.com/product-detail/C23352.html)); R14 Value: 2kΩ ([LCSC: C22975](https://www.lcsc.com/product-detail/C22975.html))
+- R15 Value: 51kΩ ([LCSC: C23196](https://www.lcsc.com/product-detail/C23196.html)); R16 Value: 1kΩ ([LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html))
+- R17 Value: 100kΩ ([LCSC: C25803](https://www.lcsc.com/product-detail/C25803.html)); R18 Value: 56kΩ ([LCSC: C23206](https://www.lcsc.com/product-detail/C23206.html))
+- R19 Value: 51kΩ ([LCSC: C23196](https://www.lcsc.com/product-detail/C23196.html)); R20 Value: 1kΩ ([LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)); **both DNP**
 
-R16 Value: 1kΩ
+U4's `VSEL` pin reads a resistance to ground to choose the USB-PD voltage request; `ISEL` selects the current request. The charger and cable must support the selected profile. See the [AP53781 selection settings](https://www.diodes.com/part/view/AP53781) for the full resistor-code table. These hardware settings are separate from JP6's firmware power modes.
 
-[R15 LCSC: C23196](https://www.lcsc.com/product-detail/C23196.html)
+- **15 V default:** R15 + R16 = 52kΩ is already connected to ground.
+- **20 V:** R17 + R18 = 156kΩ; grounding the `USB-V-SEL-20V` net through JP5 or SJ8 gives **52kΩ ∥ 156kΩ = 39kΩ**.
+- **28 V option:** R19 + R20 adds another 52kΩ branch through JP5, giving **52kΩ ∥ 52kΩ = 26kΩ**, with the 20 V branch disabled. Both resistors are unpopulated in the current BOM, so moving the shunt alone cannot select 28 V. Reusing the 51kΩ and 1kΩ values avoids loading another resistor value for PCBA.
+- **Current:** R13 + R14 = 26kΩ requests **3 A by default**. JP5 or SJ9 can ground the `USB-I-SEL` net directly to request **5 A**. An open `ISEL` pin would select Auto, but these fitted resistors provide the normal 3 A setting.
 
-[R16 LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)
-
-The default resistance code for U4's `VSEL` voltage-selection pin: R15 is 51kΩ and R16 adds 1kΩ in series, giving about 52kΩ to ground for a 15 V request. Enabled alternate branches change the effective programming resistance.
-
-The same 51kΩ and 1kΩ values are reused elsewhere, including R19/R20 for the optional 28 V request. Combining existing values avoids loading another resistor value for PCBA.
-
-## R17 and R18
-
-R17 Value: 100kΩ
-
-R18 Value: 56kΩ
-
-[R17 LCSC: C25803](https://www.lcsc.com/product-detail/C25803.html)
-
-[R18 LCSC: C23206](https://www.lcsc.com/product-detail/C23206.html)
-
-The alternate 20 V selection branch. R17 and R18 total 156kΩ in series. Grounding the voltage-selection control net (`USB-V-SEL-20V`) through JP5 or SJ8 puts this branch in parallel with the default R15/R16 branch, giving about 39kΩ at U4's `VSEL` pin and requesting 20 V.
-
-## R19 and R20
-
-R19 Value: 51kΩ
-
-R20 Value: 1kΩ
-
-[R19 LCSC: C23196](https://www.lcsc.com/product-detail/C23196.html)
-
-[R20 LCSC: C21190](https://www.lcsc.com/product-detail/C21190.html)
-
-The optional 28 V selection branch. Their 51kΩ and 1kΩ in series add another 52kΩ path when grounded through JP5. In parallel with the default R15/R16 branch, this gives approximately 26kΩ at U4's `VSEL` voltage-selection pin for a 28 V request. Both parts are DNP in the current BOM, so the shunt alone cannot enable this option unless they are fitted.
-
-## JP5
-
-The USB-PD profile-selection header. It grounds the current-code path and either alternate voltage branch. The current BOM fits the 20 V branch and leaves the 28 V pair unpopulated; these selections are separate from JP6's firmware power modes.
-
-## R13 and R14
-
-R13 Value: 24kΩ
-
-R14 Value: 2kΩ
-
-[R13 LCSC: C23352](https://www.lcsc.com/product-detail/C23352.html)
-
-[R14 LCSC: C22975](https://www.lcsc.com/product-detail/C22975.html)
-
-The default resistance code for U4's `ISEL` current-selection pin: R13 and R14 total 26kΩ to ground, requesting 3 A. A JP5 current shunt or SJ9 overrides this pair with a direct ground connection to request 5 A. These are negotiation settings; the source and cable must support the requested current.
-
-## SJ8
-
-Value: SJ-SMALL-2S-NO
-
-A solder-jumper alternative to the JP5 20 V shunt. Bridging it permanently grounds the voltage-selection control net (`USB-V-SEL-20V`), enabling the R17/R18 branch.
-
-## SJ9
-
-Value: SJ-SMALL-2S-NO
-
-A solder-jumper alternative to JP5's current-selection shunt. Bridging it shorts the current-selection control net (`USB-I-SEL`) directly to ground, overriding the default R13/R14 resistance and requesting 5 A. It selects current independently of SJ8's voltage choice.
+On JP5, **1–2 selects 5 A**; **2–3 is ground-to-ground storage** for the current shunt, preserving 3 A. The voltage shunt selects **20 V on 5–6** or the optional **28 V on 4–5**. Unlike the full design, there is no ground-to-ground voltage storage position: with SJ8 open, removing that shunt leaves 15 V selected.
 
 ## Q6
 
