@@ -248,6 +248,16 @@ def expand_heading_ranges(title):
 
 def heading_refs(title, known):
     expanded = expand_heading_ranges(title)
+    # A descriptive title may reference a related component without including it
+    # in this entry: "U6 Enable/Disable Switch (Q8, R28, ...)". An explicit final
+    # parenthesized refdes list defines membership; U6 keeps its own explanation.
+    listed = re.search(r"\(([^()]*)\)\s*$", expanded)
+    if listed:
+        content = listed.group(1)
+        remainder = re.sub(r"[A-Z]+\d+[A-Z]*", "", content)
+        remainder = re.sub(r"\b(?:and|or)\b|[\s,;]+", "", remainder)
+        if not remainder and re.search(r"[A-Z]+\d+[A-Z]*", content):
+            expanded = content
     return list(dict.fromkeys(ref for ref in re.findall(r"[A-Z]+\d+[A-Z]*", expanded) if ref in known))
 
 

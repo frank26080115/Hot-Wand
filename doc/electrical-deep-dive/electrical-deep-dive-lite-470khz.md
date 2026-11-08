@@ -503,14 +503,6 @@ Value: DNP
 
 An optional resistor position in parallel with R31. Fitting it changes the overvoltage divider and cutoff; the default DNP position leaves R31 as the lower arm.
 
-## R12
-
-Value: 22kΩ
-
-[LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
-
-Pulls U3's enable input up from the common-drain supply node. USB voltage turns Q6 on to override this pull-up and disable the battery/DC path.
-
 ## F1
 
 Value: 7A 20×5mm
@@ -603,39 +595,20 @@ U4's `VSEL` pin reads a resistance to ground to choose the USB-PD voltage reques
 
 On JP5, **1–2 selects 5 A**; **2–3 is ground-to-ground storage** for the current shunt, preserving 3 A. The voltage shunt selects **20 V on 5–6** or the optional **28 V on 4–5**. Unlike the full design, there is no ground-to-ground voltage storage position: with SJ8 open, removing that shunt leaves 15 V selected.
 
-## Q6
+## U3 Enable/Disable Switch (Q6, R12, R7, R8, and TVS3)
 
-Value: Si2318
+The main job here is to **keep USB power from feeding the battery when both inputs are plugged in**. Uncontrolled backfeeding can overcharge a battery and cause a fire or explosion.
 
-[LCSC: C14498](https://www.lcsc.com/product-detail/C14498.html)
+- Q6 Value: Si2318 — [LCSC: C14498](https://www.lcsc.com/product-detail/C14498.html)
+- R12 Value: 22kΩ — [LCSC: C31850](https://www.lcsc.com/product-detail/C31850.html)
+- R7 and R8 Value: 4.7kΩ each — [LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
+- TVS3 Value: 15 V — [LCSC: C2987151](https://www.lcsc.com/product-detail/C2987151.html)
 
-The USB-presence switch. The USB power rail (`USB-VBUS`) drives its gate through R8/R7, and its drain pulls U3's enable low so the XT30 path is disabled while USB is present.
+The USB power net (`USB-VBUS`) drives Q6's gate through the R8/R7 voltage divider. Q6 then pulls U3's `EN/UVLO` pin low through the `U3-EN` net, disabling the XT30 path through Q2/Q3. TVS3 clamps the gate-to-source voltage of Q6; R8 limits current into both the gate and TVS3.
 
-## R7
+When USB power disappears, R7 discharges the gate and R12 pulls the enable pin high again, enabling battery power. See the [LM74810-Q1 enable behavior](https://www.ti.com/product/LM7481-Q1).
 
-Value: 4.7kΩ
-
-[LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
-
-The lower resistor of Q6's USB-presence divider and a gate pull-down. It returns Q6's gate toward ground when USB power is absent.
-
-## R8
-
-Value: 4.7kΩ
-
-[LCSC: C23162](https://www.lcsc.com/product-detail/C23162.html)
-
-The upper resistor from the USB power rail (`USB-VBUS`) to Q6's gate divider. It scales the signal with R7 and limits current into the gate-protection TVS.
-
-## TVS3
-
-Value: 15V
-
-[LCSC: C2987151](https://www.lcsc.com/product-detail/C2987151.html)
-
-Protects Q6's gate from excessive voltage and fast spikes on the USB-presence signal.
-
-It protects the USB-presence MOSFET rather than clamping the full VBUS rail.
+R12 pulls up to the **common-drain net (`VCD`)**. On battery-only startup, Q2's body diode supplies this node before the controller turns the MOSFETs on, so Q2 must be fitted for that startup path to work. The enable signal does not need fast switching, so the fairly large **22kΩ** keeps the current Q6 must sink low even at higher battery voltages. Reusing a value already fitted elsewhere also saves the assembly cost of loading another resistor reel.
 
 ## TVS2
 
