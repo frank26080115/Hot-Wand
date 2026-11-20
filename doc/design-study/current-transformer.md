@@ -47,17 +47,11 @@ later
 > So in essence this is not as dependent on the magnitude of output current and voltage, and much more on the relative phase, which makes sense.
 > 
 
-I read what he said, and it was difficult to get a nice graphic out of a simulator to represent it, so I came up with this theoretical signal animation instead:
+I read what he said, and it was difficult to get a nice graphic out of a simulator to represent it, so I came up with this theoretical signal interactive simulation instead:
 
-![](./imgs/current_transformer_plots/animation.apng)
+[Interactive Simulation](https://www.eleccelerator.com/hot-wand-deep-dive/ct-interactive.html)
 
-![](./imgs/current_transformer_plots/tiled_3x3.png)
-
-If you wish to see the individual frames, [click here for all the frame files](./imgs/current_transformer_plots/)
-
-For the three examples of tip temperature states and their resulting waveform:
-
-![](./imgs/current_transformer_plots/three_states.png)
+[![](./ct-interactive/imgs/ss.png)](https://www.eleccelerator.com/hot-wand-deep-dive/ct-interactive.html)
 
 The numbers used in this model are in this document at the bottom.
 
